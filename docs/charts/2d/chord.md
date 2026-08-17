@@ -61,6 +61,7 @@ Chord diagrams show relationships between entities using arcs and ribbons around
 <button class="sp-cls-tab" onclick="spCls('chord-en','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Directed</span></button>
+<button class="sp-cls-tab" onclick="spCls('chord-en','bipartite',this)"><span class="sp-cic">⧉</span><span class="sp-clb">Bipartite</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="chord-en-basic">
@@ -92,6 +93,12 @@ Chord diagrams show relationships between entities using arcs and ribbons around
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"directed"</code></span><span><strong>Aliases</strong> <code>directed / asymmetric / flow_direction / arrows</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-directed.html"></iframe>
+</div>
+<div class="sp-variant" id="chord-en-bipartite">
+<p>Splits the circle into two arcs — grouped items on one side, a colored attribute ring (sized by how many items link to it) on the other — with curved links between them and item labels rotated radially for readability.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bipartite"</code></span><span><strong>Aliases</strong> <code>bipartite / impact_map / influence_map / attribute_flow / grouped_chord</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/chord-bipartite.html"></iframe>
 </div>
 </div>
 </div>
@@ -144,6 +151,7 @@ Les diagrammes en accords (chord) montrent les relations entre entités à l'aid
 <button class="sp-cls-tab" onclick="spCls('chord-fr','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Dirigé</span></button>
+<button class="sp-cls-tab" onclick="spCls('chord-fr','bipartite',this)"><span class="sp-cic">⧉</span><span class="sp-clb">Bipartite</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="chord-fr-basic">
@@ -175,6 +183,12 @@ Les diagrammes en accords (chord) montrent les relations entre entités à l'aid
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"directed"</code></span><span><strong>Alias</strong> <code>directed / asymmetric / flow_direction / arrows</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-directed.html"></iframe>
+</div>
+<div class="sp-variant" id="chord-fr-bipartite">
+<p>Partage le cercle en deux arcs — items groupés d'un côté, anneau d'attributs coloré (dimensionné selon le nombre d'items qui y sont liés) de l'autre — avec des liens courbes entre les deux et des labels d'items en rotation radiale pour rester lisibles.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bipartite"</code></span><span><strong>Alias</strong> <code>bipartite / impact_map / influence_map / attribute_flow / grouped_chord</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/chord-bipartite.html"></iframe>
 </div>
 </div>
 </div>

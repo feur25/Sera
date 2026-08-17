@@ -65,6 +65,7 @@
   - [Venn Diagrams](charts/2d/venn.md)
   - [Correlogram](charts/2d/correlogram.md)
   - [Hive Plot](charts/2d/hive.md)
+  - [Circos Plot](charts/2d/circos.md)
   - [Pulse Chart](charts/2d/pulse.md)
   - [Orbita Chart](charts/2d/orbita.md)
   - [Event Plot](charts/2d/eventplot.md)
