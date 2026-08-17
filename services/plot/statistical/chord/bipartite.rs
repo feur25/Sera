@@ -4,7 +4,7 @@ use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json, Hover
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open};
 
 #[crate::chart_demo(
-    "labels=[\"Jenny Slate\",\"Jake Lacy\",\"Obvious Child\",\"Crazy Ex-Girlfriend\",\"Rachel Bloom\",\"Broad City\",\"Master of None\",\"Atlanta\",\"Jennifer Lawrence\",\"Hillary Clinton\",\"Amy Poehler\",\"Meryl Streep\",\"Ashley Graham\",\"Jack Antonoff\",\"Taylor Swift\",\"Lupita Nyong'o\",\"Riz Ahmed\",\"Star Wars\",\"Adam Driver\",\"Donald Glover\",\"Zachary Quinto\",\"Amy Schumer\",\"Trainwreck\",\"Judd Apatow\",\"Gillian Jacobs\"], categories=[\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\"], axes=[\"Promoted Feminism\",\"Featured Millennial Malaise\",\"Cited Girls as Inspiration\",\"Depicted Realistic Sex\",\"Collaborated with Dunham\",\"Created Starring Women\",\"Guest Starred on Girls\"], edges_i=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,0,3,5,6,8,10,14,17,19], edges_j=[5,5,5,5,5,5,5,5,0,0,0,2,2,3,3,2,4,4,6,6,6,1,1,1,1,6,6,6,6,3,5,0,4,6], variant=\"bipartite\", title=\"How Girls Shaped Pop Culture\", width=1180, height=940"
+    "labels=[\"Jenny Slate\",\"Jake Lacy\",\"Obvious Child\",\"Crazy Ex-Girlfriend\",\"Rachel Bloom\",\"Broad City\",\"Master of None\",\"Atlanta\",\"Jennifer Lawrence\",\"Hillary Clinton\",\"Amy Poehler\",\"Meryl Streep\",\"Ashley Graham\",\"Jack Antonoff\",\"Taylor Swift\",\"Lupita Nyong'o\",\"Riz Ahmed\",\"Star Wars\",\"Adam Driver\",\"Donald Glover\",\"Zachary Quinto\",\"Amy Schumer\",\"Trainwreck\",\"Judd Apatow\",\"Gillian Jacobs\"], categories=[\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Groundbreakers\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Activism\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\",\"Blockbusters\"], axes=[\"Promoted Feminism\",\"Featured Millennial Malaise\",\"Cited Girls as Inspiration\",\"Depicted Realistic Sex\",\"Collaborated with Dunham\",\"Created Starring Women\",\"Guest Starred on Girls\"], edges_i=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,0,3,5,6,8,10,14,17,19], edges_j=[5,5,5,5,5,5,5,5,0,0,0,2,2,3,3,2,4,4,6,6,6,1,1,1,1,6,6,6,6,3,5,0,4,6], variant=\"bipartite\", title=\"How Girls Shaped Pop Culture\", width=1240, height=1080"
 )]
 pub fn render(cfg: &ChordConfig) -> String {
     let n_items = cfg.item_labels.len();
@@ -15,8 +15,8 @@ pub fn render(cfg: &ChordConfig) -> String {
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;
-    let cx = w * 0.46;
-    let cy = h * 0.52;
+    let cx = w * 0.50;
+    let cy = h * 0.51;
 
     let mut group_order: Vec<&str> = Vec::new();
     for g in cfg.item_groups {
@@ -24,6 +24,7 @@ pub fn render(cfg: &ChordConfig) -> String {
             group_order.push(g.as_str());
         }
     }
+    group_order.reverse();
     let n_groups = group_order.len().max(1);
 
     let mut group_items: Vec<Vec<usize>> = vec![Vec::new(); n_groups];
@@ -32,14 +33,21 @@ pub fn render(cfg: &ChordConfig) -> String {
         group_items[gi].push(i);
     }
 
-    let item_span_total = 168.0_f64.to_radians();
+    let top_deg = -90.0_f64;
+    let ring_span = 191.0_f64.to_radians();
+    let split_gap = 4.0_f64.to_radians();
+    let items_span = 360.0_f64.to_radians() - ring_span - 2.0 * split_gap;
+
+    let ring_start = top_deg.to_radians() + split_gap;
+    let ring_end = ring_start + ring_span;
+    let items_start = ring_end + split_gap;
+
     let group_gap = 6.0_f64.to_radians();
-    let item_start = 180.0_f64.to_radians() - item_span_total / 2.0;
-    let avail = item_span_total - group_gap * (n_groups.saturating_sub(1)) as f64;
+    let avail = items_span - group_gap * (n_groups.saturating_sub(1)) as f64;
 
     let mut item_angle = vec![0.0_f64; n_items];
     let mut group_span: Vec<(f64, f64)> = Vec::with_capacity(n_groups);
-    let mut cursor = item_start;
+    let mut cursor = items_start;
     for items in &group_items {
         let m = items.len().max(1);
         let span = avail * items.len() as f64 / n_items as f64;
@@ -50,7 +58,8 @@ pub fn render(cfg: &ChordConfig) -> String {
         cursor += span + group_gap;
     }
 
-    let r_items = h * 0.40;
+    let r_items = h * 0.335;
+    let bracket_r = r_items + 148.0;
 
     let mut degree = vec![0u32; n_attrs];
     let e = cfg.link_items.len().min(cfg.link_attrs.len());
@@ -62,25 +71,23 @@ pub fn render(cfg: &ChordConfig) -> String {
     }
     let degree_total: u32 = degree.iter().sum::<u32>().max(1);
 
-    let attr_span_total = 132.0_f64.to_radians();
-    let attr_gap = 1.6_f64.to_radians();
-    let attr_start = -attr_span_total / 2.0;
-    let attr_avail = attr_span_total - attr_gap * (n_attrs.saturating_sub(1)) as f64;
+    let attr_gap = 1.4_f64.to_radians();
+    let attr_avail = ring_span - attr_gap * (n_attrs.saturating_sub(1)) as f64;
 
     let mut attr_arc: Vec<(f64, f64)> = Vec::with_capacity(n_attrs);
-    let mut ac = attr_start;
+    let mut ac = ring_start;
     for &d in &degree {
         let span = attr_avail * (d.max(1) as f64) / degree_total as f64;
         attr_arc.push((ac, ac + span));
         ac += span + attr_gap;
     }
 
-    let r_attr_in = w * 0.30;
-    let r_attr_out = r_attr_in + 40.0;
-    let r_attr_label = r_attr_out + 10.0;
+    let r_attr_in = h * 0.26;
+    let r_attr_out = r_attr_in + 96.0;
+    let r_attr_mid = (r_attr_in + r_attr_out) / 2.0;
 
     let hid = html_id();
-    let mut buf = Vec::<u8>::with_capacity(n_items * 200 + n_attrs * 200 + e * 160 + 8192);
+    let mut buf = Vec::<u8>::with_capacity(n_items * 220 + n_attrs * 260 + e * 160 + 8192);
     html_prefix(&mut buf, cfg.title, hid);
     svg_open(&mut buf, cfg.width, cfg.height);
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
@@ -88,7 +95,7 @@ pub fn render(cfg: &ChordConfig) -> String {
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, w / 2.0);
-        push_b(&mut buf, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"16\" font-weight=\"800\" fill=\"#1a202c\" class=\"sp-ttl\">");
+        push_b(&mut buf, b"\" y=\"30\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"18\" font-weight=\"800\" fill=\"#1a202c\" class=\"sp-ttl\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -117,7 +124,7 @@ pub fn render(cfg: &ChordConfig) -> String {
 
         push_b(&mut buf, b"<path stroke=\"#");
         buf.extend_from_slice(&color);
-        push_b(&mut buf, b"\" stroke-width=\"1.1\" stroke-opacity=\"0.34\" data-idx=\"");
+        push_b(&mut buf, b"\" stroke-width=\"1.1\" stroke-opacity=\"0.38\" data-idx=\"");
         push_i(&mut buf, k as i32);
         push_b(&mut buf, b"\" d=\"M");
         push_f2(&mut buf, sx);
@@ -140,7 +147,6 @@ pub fn render(cfg: &ChordConfig) -> String {
     push_b(&mut buf, b"</g>");
 
     for (gi, &(g1, g2)) in group_span.iter().enumerate() {
-        let bracket_r = r_items + 20.0;
         let (x1, y1) = (cx + bracket_r * g1.cos(), cy + bracket_r * g1.sin());
         let (x2, y2) = (cx + bracket_r * g2.cos(), cy + bracket_r * g2.sin());
         let large = if g2 - g1 > std::f64::consts::PI { 1 } else { 0 };
@@ -161,13 +167,13 @@ pub fn render(cfg: &ChordConfig) -> String {
         push_b(&mut buf, b"\"/>");
 
         let gm = (g1 + g2) / 2.0;
-        let (lx, ly) = (cx + (bracket_r + 16.0) * gm.cos(), cy + (bracket_r + 16.0) * gm.sin());
+        let (lx, ly) = (cx + (bracket_r + 18.0) * gm.cos(), cy + (bracket_r + 18.0) * gm.sin());
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, lx);
         push_b(&mut buf, b"\" y=\"");
         push_f2(&mut buf, ly);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"12\" font-weight=\"800\" letter-spacing=\"0.5\" fill=\"#0f172a\">");
-        escape_xml(&mut buf, group_order.get(gi).copied().unwrap_or(""));
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"13\" font-weight=\"800\" letter-spacing=\"0.6\" fill=\"#0f172a\">");
+        escape_xml(&mut buf, &group_order.get(gi).copied().unwrap_or("").to_uppercase());
         push_b(&mut buf, b"</text>");
     }
 
@@ -175,8 +181,8 @@ pub fn render(cfg: &ChordConfig) -> String {
         let a = item_angle[i];
         let x = cx + r_items * a.cos();
         let y = cy + r_items * a.sin();
-        let anchor = if a.cos() < 0.0 { "end" } else { "start" };
-        let tx = x + if a.cos() < 0.0 { -10.0 } else { 10.0 };
+        let deg = a.to_degrees();
+        let render_deg = deg + 180.0;
 
         let mut tick_colors: Vec<[u8; 6]> = Vec::new();
         for k in 0..e {
@@ -188,31 +194,31 @@ pub fn render(cfg: &ChordConfig) -> String {
             }
         }
 
-        let mut tick_x = tx;
+        push_b(&mut buf, b"<g transform=\"translate(");
+        push_f2(&mut buf, x);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, y);
+        push_b(&mut buf, b") rotate(");
+        push_f2(&mut buf, render_deg);
+        push_b(&mut buf, b")\">");
+
+        let mut tick_x = 8.0_f64;
         for c in &tick_colors {
-            let dxs = if a.cos() < 0.0 { -7.0 } else { 7.0 };
             push_b(&mut buf, b"<rect x=\"");
-            push_f2(&mut buf, tick_x - 2.5);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, y - 4.0);
-            push_b(&mut buf, b"\" width=\"5\" height=\"8\" fill=\"#");
+            push_f2(&mut buf, tick_x);
+            push_b(&mut buf, b"\" y=\"-4\" width=\"5\" height=\"8\" fill=\"#");
             buf.extend_from_slice(c);
             push_b(&mut buf, b"\"/>");
-            tick_x += dxs;
+            tick_x += 7.0;
         }
 
-        let label_x = tick_x + if a.cos() < 0.0 { -4.0 } else { 4.0 };
         push_b(&mut buf, b"<text x=\"");
-        push_f2(&mut buf, label_x);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, y + 3.5);
-        push_b(&mut buf, b"\" text-anchor=\"");
-        push_b(&mut buf, anchor.as_bytes());
-        push_b(&mut buf, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10.5\" font-weight=\"600\" fill=\"#334155\" data-idx=\"");
+        push_f2(&mut buf, tick_x + 4.0);
+        push_b(&mut buf, b"\" y=\"3.5\" text-anchor=\"start\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10.5\" font-weight=\"600\" fill=\"#334155\" data-idx=\"");
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\">");
         escape_xml(&mut buf, &cfg.item_labels[i]);
-        push_b(&mut buf, b"</text>");
+        push_b(&mut buf, b"</text></g>");
 
         slots.push(HoverSlot::new(cfg.item_labels[i].clone()).kv("Group", cfg.item_groups.get(i).cloned().unwrap_or_default()));
     }
@@ -228,9 +234,19 @@ pub fn render(cfg: &ChordConfig) -> String {
         push_b(&mut buf, b"\"/>");
 
         let am = (a1 + a2) / 2.0;
-        let lx = cx + r_attr_label * am.cos();
-        let ly = cy + r_attr_label * am.sin();
-        let deg = am.to_degrees();
+        let lx = cx + r_attr_mid * am.cos();
+        let ly = cy + r_attr_mid * am.sin();
+        let tangent = am - std::f64::consts::FRAC_PI_2;
+        let mut deg = tangent.to_degrees();
+        if tangent.cos() < 0.0 {
+            deg += 180.0;
+        }
+
+        let upper_label = cfg.attr_labels[ai].to_uppercase();
+        let lines = wrap_label(&upper_label);
+        let line_h = 11.0;
+        let first_dy = -(lines.len() as f64 - 1.0) * line_h / 2.0;
+
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, lx);
         push_b(&mut buf, b"\" y=\"");
@@ -241,8 +257,16 @@ pub fn render(cfg: &ChordConfig) -> String {
         push_f2(&mut buf, lx);
         push_b(&mut buf, b" ");
         push_f2(&mut buf, ly);
-        push_b(&mut buf, b")\" text-anchor=\"start\" dominant-baseline=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" letter-spacing=\"0.3\" fill=\"#1a202c\">");
-        escape_xml(&mut buf, cfg.attr_labels[ai].to_uppercase().as_str());
+        push_b(&mut buf, b")\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"8.5\" font-weight=\"800\" letter-spacing=\"0.1\" fill=\"#ffffff\">");
+        for (li, line) in lines.iter().enumerate() {
+            push_b(&mut buf, b"<tspan x=\"");
+            push_f2(&mut buf, lx);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, ly + first_dy + li as f64 * line_h);
+            push_b(&mut buf, b"\">");
+            escape_xml(&mut buf, line);
+            push_b(&mut buf, b"</tspan>");
+        }
         push_b(&mut buf, b"</text>");
 
         slots.push(HoverSlot::new(cfg.attr_labels[ai].clone()).kv("Linked items", degree[ai].to_string()));
@@ -251,6 +275,38 @@ pub fn render(cfg: &ChordConfig) -> String {
     push_b(&mut buf, b"</svg>");
     html_suffix(&mut buf, hid, &slots_to_json(&slots));
     unsafe { String::from_utf8_unchecked(buf) }
+}
+
+fn wrap_label(label: &str) -> Vec<&str> {
+    let words: Vec<&str> = label.split_whitespace().collect();
+    if words.len() <= 1 {
+        return vec![label];
+    }
+    let mut lines = Vec::new();
+    let mut start = 0usize;
+    let mut acc = 0usize;
+    for (i, word) in words.iter().enumerate() {
+        acc += word.len() + 1;
+        if acc >= 8 && i > start {
+            lines.push(join_range(label, &words, start, i + 1));
+            start = i + 1;
+            acc = 0;
+        }
+    }
+    if start < words.len() {
+        lines.push(join_range(label, &words, start, words.len()));
+    }
+    lines
+}
+
+fn join_range<'a>(label: &'a str, words: &[&'a str], start: usize, end: usize) -> &'a str {
+    if start >= end || end > words.len() {
+        return label;
+    }
+    let a = words[start].as_ptr() as usize - label.as_ptr() as usize;
+    let last = words[end - 1];
+    let b = (last.as_ptr() as usize - label.as_ptr() as usize) + last.len();
+    &label[a..b]
 }
 
 #[cfg(test)]
@@ -272,7 +328,7 @@ mod tests {
             link_items,
             link_attrs,
             width: 1000,
-            height: 800,
+            height: 900,
             ..ChordConfig::default()
         }
     }
@@ -310,19 +366,24 @@ mod tests {
     }
 
     #[test]
-    fn every_item_stays_on_the_left_half_and_every_attribute_arc_on_the_right_half() {
-        let width = 1000.0_f64;
-        let cx = width * 0.44;
-        let item_span_total = 168.0_f64.to_radians();
-        let item_start = std::f64::consts::PI - item_span_total / 2.0;
-        assert!(item_start.cos() < 0.0, "left edge of the item arc must stay left of the pivot");
-        assert!((item_start + item_span_total).cos() < 0.0, "right edge of the item arc must stay left of the pivot");
+    fn items_and_the_attribute_ring_tile_the_full_circle_without_overlapping() {
+        let top = (-90.0_f64).to_radians();
+        let ring_span = 191.0_f64.to_radians();
+        let split_gap = 4.0_f64.to_radians();
+        let items_span = 2.0 * std::f64::consts::PI - ring_span - 2.0 * split_gap;
+        let ring_start = top + split_gap;
+        let ring_end = ring_start + ring_span;
+        let items_start = ring_end + split_gap;
+        let items_end = items_start + items_span;
+        assert!((items_end + split_gap - (ring_start + 2.0 * std::f64::consts::PI)).abs() < 1e-9, "the two arcs plus their two gaps must close the full circle exactly");
+    }
 
-        let attr_span_total = 132.0_f64.to_radians();
-        let attr_start = -attr_span_total / 2.0;
-        assert!(attr_start.cos() > 0.0, "left edge of the attribute ring must stay right of the pivot");
-        assert!((attr_start + attr_span_total).cos() > 0.0, "right edge of the attribute ring must stay right of the pivot");
-        let _ = cx;
+    #[test]
+    fn wrap_label_never_drops_or_duplicates_characters() {
+        let label = "CREATED BY AND STARRING WOMEN";
+        let lines = wrap_label(label);
+        let rejoined: String = lines.join(" ");
+        assert_eq!(rejoined, label);
     }
 
     #[test]
