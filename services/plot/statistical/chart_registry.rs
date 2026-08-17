@@ -12,6 +12,7 @@ pub fn dispatch(family: &str) -> Option<BuilderFn> {
         "candlestick" => st::build_candlestick,
         "chord" => st::build_chord,
         "circle_pack" => st::build_circle_pack,
+        "circos" => st::build_circos,
         "correlogram" => st::build_correlogram,
         "dendrogram" => st::build_dendrogram,
         "donut" => st::build_donut_chart,
@@ -60,7 +61,7 @@ pub fn dispatch(family: &str) -> Option<BuilderFn> {
 pub fn family_names() -> &'static [&'static str] {
     &[
         "arc_diagram", "area", "bar", "boxplot", "bubble", "bullet", "candlestick", "chord",
-        "circle_pack", "correlogram", "dendrogram", "donut", "dumbbell", "eventplot", "facet",
+        "circle_pack", "circos", "correlogram", "dendrogram", "donut", "dumbbell", "eventplot", "facet",
         "funnel", "gantt", "gauge", "grouped_bar", "hive", "heatmap", "hexbin", "histogram",
         "icicle", "joint", "kde", "line", "lollipop", "multiline", "orbita", "parallel",
         "parcats", "pie", "plot_web", "pulse", "radar", "ridgeline", "sankey", "scatter",
