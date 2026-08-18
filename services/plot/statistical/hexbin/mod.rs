@@ -7,6 +7,7 @@ pub mod highlight;
 pub mod log_counts;
 pub mod marginals;
 pub mod mincnt;
+pub mod neural;
 pub mod nested;
 pub mod outlined;
 pub mod spaced;
@@ -31,6 +32,7 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Dotted => dotted::render(cfg),
         Marginals => marginals::render(cfg),
         Voronoi => voronoi::render(cfg),
+        Neural => neural::render(cfg),
     }
 }
 
