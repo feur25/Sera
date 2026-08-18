@@ -11,5 +11,6 @@ crate::plot_family! {
         Dotted    => "dotted" | "dashed" | "styled" | "magma",
         Marginals => "marginals" | "joint" | "with_histograms" | "density_marginals",
         Voronoi   => "voronoi" | "density_voronoi" | "tessellation" | "particle_density" | "cells",
+        Neural    => "neural" | "mesh" | "turbidity" | "particle_mesh" | "neural_mesh",
     }
 }
