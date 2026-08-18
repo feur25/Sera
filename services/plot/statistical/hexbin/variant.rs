@@ -10,5 +10,6 @@ crate::plot_family! {
         Weighted  => "weighted" | "mean" | "aggregate" | "reduce_mean",
         Dotted    => "dotted" | "dashed" | "styled" | "magma",
         Marginals => "marginals" | "joint" | "with_histograms" | "density_marginals",
+        Voronoi   => "voronoi" | "density_voronoi" | "tessellation" | "particle_density" | "cells",
     }
 }

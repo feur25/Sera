@@ -11,6 +11,7 @@ pub mod nested;
 pub mod outlined;
 pub mod spaced;
 pub mod variant;
+pub mod voronoi;
 pub mod weighted;
 
 pub use config::HexbinConfig;
@@ -29,6 +30,7 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Weighted => weighted::render(cfg),
         Dotted => dotted::render(cfg),
         Marginals => marginals::render(cfg),
+        Voronoi => voronoi::render(cfg),
     }
 }
 
