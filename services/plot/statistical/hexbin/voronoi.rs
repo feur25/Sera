@@ -1,7 +1,7 @@
 use super::common::{data_bounds, finalize};
 use super::config::HexbinConfig;
 use crate::plot::statistical::common::{
-    colorscale_color, escape_xml, hex6, push_b, push_f2, push_i, svg_open_rescalable, Frame,
+    colorscale_color, hex6, push_b, push_f2, push_i, svg_open_rescalable, svg_title, Frame,
 };
 
 #[crate::chart_demo(
@@ -17,23 +17,11 @@ pub fn render(cfg: &HexbinConfig) -> String {
         None => return String::new(),
     };
     let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 22, 40, 24, 150, n * 220 + 8192);
-    let bg: u32 = 0x05060a;
-    let ink: u32 = 0xf1f5f9;
-    let sub: u32 = 0x94a3b8;
+    let ink: u32 = 0x1a202c;
+    let sub: u32 = 0x6b7280;
 
     svg_open_rescalable(&mut f.buf, f.w, f.h, f.pl, f.pt, f.pw, f.ph);
-    push_b(&mut f.buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#");
-    f.buf.extend_from_slice(&hex6(bg));
-    push_b(&mut f.buf, b"\"/>");
-    if !cfg.title.is_empty() {
-        push_b(&mut f.buf, b"<text x=\"");
-        push_i(&mut f.buf, f.pl + f.pw / 2);
-        push_b(&mut f.buf, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#");
-        f.buf.extend_from_slice(&hex6(ink));
-        push_b(&mut f.buf, b"\">");
-        escape_xml(&mut f.buf, cfg.title);
-        push_b(&mut f.buf, b"</text>");
-    }
+    svg_title(&mut f.buf, cfg.title, f.pl + f.pw / 2, 26);
 
     let xr = (bounds.xmax - bounds.xmin).max(1e-9);
     let yr = (bounds.ymax - bounds.ymin).max(1e-9);
@@ -72,7 +60,7 @@ pub fn render(cfg: &HexbinConfig) -> String {
             continue;
         }
         let col = colorscale_color(scale, rank_t[i]);
-        draw_cell(&mut f.buf, i, &cells[i], col, raw[i], bg);
+        draw_cell(&mut f.buf, i, &cells[i], col, raw[i]);
     }
     push_b(&mut f.buf, b"</g>");
 
@@ -84,7 +72,7 @@ pub fn render(cfg: &HexbinConfig) -> String {
         push_f2(&mut f.buf, py);
         push_b(&mut f.buf, b"\" r=\"1.7\" fill=\"#");
         f.buf.extend_from_slice(&hex6(ink));
-        push_b(&mut f.buf, b"\" fill-opacity=\"0.92\"/>");
+        push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"0.6\" fill-opacity=\"0.92\"/>");
     }
     push_b(&mut f.buf, b"</g>");
 
@@ -92,7 +80,7 @@ pub fn render(cfg: &HexbinConfig) -> String {
     finalize(f, cfg)
 }
 
-fn draw_cell(buf: &mut Vec<u8>, idx: usize, poly: &[(f64, f64)], col: u32, val: f64, stroke: u32) {
+fn draw_cell(buf: &mut Vec<u8>, idx: usize, poly: &[(f64, f64)], col: u32, val: f64) {
     push_b(buf, b"<path data-idx=\"");
     push_i(buf, idx as i32);
     push_b(buf, b"\" data-y=\"");
@@ -109,9 +97,7 @@ fn draw_cell(buf: &mut Vec<u8>, idx: usize, poly: &[(f64, f64)], col: u32, val: 
     }
     push_b(buf, b" Z\" fill=\"#");
     buf.extend_from_slice(&hex6(col));
-    push_b(buf, b"\" fill-opacity=\"0.94\" stroke=\"#");
-    buf.extend_from_slice(&hex6(stroke));
-    push_b(buf, b"\" stroke-width=\"1.2\"/>");
+    push_b(buf, b"\" fill-opacity=\"0.94\" stroke=\"#fff\" stroke-width=\"1.2\"/>");
 }
 
 #[allow(clippy::too_many_arguments)]
