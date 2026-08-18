@@ -1,4 +1,4 @@
-use super::common::{data_bounds, finalize};
+use super::common::{data_bounds, finalize, polygon_area, voronoi_cell};
 use super::config::HexbinConfig;
 use crate::plot::statistical::common::{
     colorscale_color, hex6, push_b, push_f2, push_i, svg_open_rescalable, svg_title, Frame,
@@ -172,68 +172,6 @@ fn legend(f: &mut Frame, scale: &str, vmin: f64, vmax: f64, ink: u32, sub: u32) 
     push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#");
     f.buf.extend_from_slice(&hex6(ink));
     push_b(&mut f.buf, b"\">Particle tracking</text>");
-}
-
-fn voronoi_cell(i: usize, pts: &[(f64, f64)], rect: (f64, f64, f64, f64)) -> Vec<(f64, f64)> {
-    let (x0, y0, x1, y1) = rect;
-    let mut poly = vec![(x0, y0), (x1, y0), (x1, y1), (x0, y1)];
-    let (sx, sy) = pts[i];
-    for (j, &(ox, oy)) in pts.iter().enumerate() {
-        if j == i || poly.is_empty() {
-            continue;
-        }
-        let mx = (sx + ox) / 2.0;
-        let my = (sy + oy) / 2.0;
-        let dx = sx - ox;
-        let dy = sy - oy;
-        poly = clip_halfplane(&poly, mx, my, dx, dy);
-    }
-    poly
-}
-
-fn clip_halfplane(poly: &[(f64, f64)], mx: f64, my: f64, dx: f64, dy: f64) -> Vec<(f64, f64)> {
-    let n = poly.len();
-    if n == 0 {
-        return Vec::new();
-    }
-    let inside = |p: (f64, f64)| dx * (p.0 - mx) + dy * (p.1 - my) >= 0.0;
-    let mut out = Vec::with_capacity(n + 1);
-    for k in 0..n {
-        let cur = poly[k];
-        let prev = poly[(k + n - 1) % n];
-        let cur_in = inside(cur);
-        let prev_in = inside(prev);
-        if cur_in {
-            if !prev_in {
-                out.push(intersect(prev, cur, mx, my, dx, dy));
-            }
-            out.push(cur);
-        } else if prev_in {
-            out.push(intersect(prev, cur, mx, my, dx, dy));
-        }
-    }
-    out
-}
-
-fn intersect(a: (f64, f64), b: (f64, f64), mx: f64, my: f64, dx: f64, dy: f64) -> (f64, f64) {
-    let fa = dx * (a.0 - mx) + dy * (a.1 - my);
-    let fb = dx * (b.0 - mx) + dy * (b.1 - my);
-    let t = fa / (fa - fb);
-    (a.0 + (b.0 - a.0) * t, a.1 + (b.1 - a.1) * t)
-}
-
-fn polygon_area(poly: &[(f64, f64)]) -> f64 {
-    if poly.len() < 3 {
-        return 0.0;
-    }
-    let n = poly.len();
-    let mut sum = 0.0;
-    for k in 0..n {
-        let (x1, y1) = poly[k];
-        let (x2, y2) = poly[(k + 1) % n];
-        sum += x1 * y2 - x2 * y1;
-    }
-    (sum * 0.5).abs()
 }
 
 #[cfg(test)]
