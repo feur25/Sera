@@ -54,6 +54,8 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 <button class="sp-cls-tab" onclick="spCls('sankey-en','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','sorted',this)"><span class="sp-cic">⇅</span><span class="sp-clb">Sorted</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-en','hourglass',this)"><span class="sp-cic">⧗</span><span class="sp-clb">Hourglass</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-en','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrix</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-en-basic">
@@ -85,6 +87,18 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sorted"</code></span><span><strong>Aliases</strong> <code>sorted / reordered / by_flow / ranked</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-sorted.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-en-hourglass">
+<p>Every source starts as its own thin row on the left and every ribbon is pulled through a single fixed pinch point before fanning back out into a radial arc of target wedges on the right — each wedge's angular width is proportional to the square root of its total incoming flow (a mild compression so one outlier target can't visually swallow the rest of the arc). Built for bipartite many-sources-to-few-categories data, e.g. foods flowing into the nutrients they're rich in.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"hourglass"</code></span><span><strong>Aliases</strong> <code>hourglass / radiant_flow / nutrient_flow / braided / flow_bloom</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-hourglass.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-en-matrix">
+<p>Sources are laid out as a dot-matrix grid instead of a node list — one marker per record, sized by its own weight and colored by the category it ultimately flows to — with thin low-opacity ribbons converging on a handful of large target circles sized by total share and labeled with their percentage of the whole. Built for record-level "big data" flows: many individual rows collapsing into a few outcome buckets.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"matrix"</code></span><span><strong>Aliases</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
 </div>
 </div>
 </div>
@@ -137,6 +151,8 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','sorted',this)"><span class="sp-cic">⇅</span><span class="sp-clb">Trié</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','hourglass',this)"><span class="sp-cic">⧗</span><span class="sp-clb">Sablier</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrice</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-fr-basic">
@@ -168,6 +184,18 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"sorted"</code></span><span><strong>Alias</strong> <code>sorted / reordered / by_flow / ranked</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-sorted.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-hourglass">
+<p>Chaque source démarre comme une fine ligne à gauche, et chaque ruban est tiré à travers un unique point d'étranglement fixe avant de se déployer en éventail radial de secteurs cibles à droite — la largeur angulaire de chaque secteur est proportionnelle à la racine carrée de son flux entrant total (une légère compression pour qu'une cible atypique n'écrase pas visuellement tout l'arc). Conçu pour des données bipartites "beaucoup de sources vers peu de catégories", par exemple des aliments qui alimentent les nutriments dans lesquels ils sont riches.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"hourglass"</code></span><span><strong>Alias</strong> <code>hourglass / radiant_flow / nutrient_flow / braided / flow_bloom</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-hourglass.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-matrix">
+<p>Les sources sont disposées en grille de points plutôt qu'en liste de nœuds — un marqueur par enregistrement, dimensionné selon son propre poids et coloré selon la catégorie vers laquelle il finit par s'écouler — avec de fins rubans à faible opacité convergeant vers quelques grands cercles cibles dimensionnés par leur part totale et étiquetés avec leur pourcentage de l'ensemble. Conçu pour des flux "big data" au niveau enregistrement : de nombreuses lignes individuelles qui se regroupent en quelques catégories de résultat.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"matrix"</code></span><span><strong>Alias</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
 </div>
 </div>
 </div>
