@@ -6,5 +6,6 @@ crate::plot_family! {
         Minimal  => "minimal" | "thin" | "outline",
         Sorted   => "sorted" | "reordered" | "by_flow" | "ranked",
         Hourglass => "hourglass" | "radiant_flow" | "nutrient_flow" | "braided" | "flow_bloom",
+        Matrix    => "matrix" | "mosaic" | "dot_matrix" | "grid_flow" | "big_data",
     }
 }
