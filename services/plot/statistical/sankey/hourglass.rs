@@ -4,7 +4,7 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 use std::f64::consts::PI;
 
 #[crate::chart_demo(
-    "title=\"Food to Nutrient Flow\", labels=[\"Spinach\",\"Kale\",\"Salmon\",\"Beef Liver\",\"Egg Yolk\",\"Orange\",\"Red Bell Pepper\",\"Almonds\",\"Sunflower Seeds\",\"Milk\",\"Yogurt\",\"Sardines\",\"Broccoli\",\"Sweet Potato\",\"Carrots\",\"Oysters\",\"Beef Chuck\",\"Pumpkin Seeds\",\"Chickpeas\",\"Lentils\",\"Asparagus\",\"Avocado\",\"Banana\",\"Potato\",\"White Beans\",\"Dark Chocolate\",\"Tuna\",\"Brazil Nuts\",\"Turkey Breast\",\"Chicken Breast\",\"Pork Chop\",\"Cheddar Cheese\",\"Tofu\",\"Brown Rice\",\"Bell Pepper Green\",\"Strawberries\",\"Kiwi\",\"Papaya\",\"Watermelon\",\"Mango\",\"Cantaloupe\",\"Fortified Cereal\",\"Mushrooms\",\"Sesame Seeds\",\"Black Beans\",\"Vitamin K\",\"Iron\",\"Folate\",\"Magnesium\",\"Vitamin A\",\"Vitamin C\",\"Vitamin D\",\"Vitamin B12\",\"Selenium\",\"Potassium\",\"Choline\",\"Vitamin B6\",\"Vitamin E\",\"Calcium\",\"Zinc\"], edges_i=[0,0,0,0,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9,10,10,10,11,11,11,11,12,12,12,13,13,13,14,14,15,15,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,21,21,21,22,22,23,23,23,24,24,24,25,25,25,26,26,26,27,27,27,28,28,28,29,29,30,30,31,31,31,32,32,32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,41,41,41,42,42,42,43,43,43,44,44,44], edges_j=[45,46,47,48,45,49,50,51,52,53,54,49,52,46,47,51,52,53,55,50,47,54,50,49,56,57,48,58,57,53,48,58,51,52,58,52,59,58,51,52,53,50,45,47,49,54,50,49,45,59,52,53,46,59,46,52,59,48,46,47,46,48,47,46,54,47,45,54,57,47,54,56,54,50,56,46,48,54,48,46,59,51,52,53,53,48,59,59,56,53,56,53,56,59,58,52,59,58,46,48,48,56,50,56,50,47,50,45,50,47,50,49,49,50,49,50,52,46,47,51,53,54,58,46,59,47,46,48], edges_w=[180,15,49,20,684,206,134,66,117,36,12,522,1386,34,65,9,22,20,66,88,10,5,213,31,10,48,19,7,82,24,13,18,15,18,15,12,6,35,46,67,26,89,92,14,214,10,6,184,13,493,324,77,33,43,15,67,23,37,12,71,13,12,90,18,14,34,45,14,10,20,9,20,12,27,15,24,23,13,16,35,18,39,80,131,989,26,7,12,36,31,26,26,31,12,20,14,14,20,15,14,11,7,100,9,97,9,103,31,144,14,21,8,12,67,68,65,25,45,50,18,10,9,18,22,15,64,10,18], width=1100, height=1420, variant=\"hourglass\""
+    "title=\"Food to Nutrient Flow\", labels=[\"Spinach\",\"Kale\",\"Salmon\",\"Beef Liver\",\"Egg Yolk\",\"Orange\",\"Red Bell Pepper\",\"Almonds\",\"Sunflower Seeds\",\"Milk\",\"Yogurt\",\"Sardines\",\"Broccoli\",\"Sweet Potato\",\"Carrots\",\"Oysters\",\"Beef Chuck\",\"Pumpkin Seeds\",\"Chickpeas\",\"Lentils\",\"Asparagus\",\"Avocado\",\"Banana\",\"Potato\",\"White Beans\",\"Dark Chocolate\",\"Tuna\",\"Brazil Nuts\",\"Turkey Breast\",\"Chicken Breast\",\"Pork Chop\",\"Cheddar Cheese\",\"Tofu\",\"Brown Rice\",\"Bell Pepper Green\",\"Strawberries\",\"Kiwi\",\"Papaya\",\"Watermelon\",\"Mango\",\"Cantaloupe\",\"Fortified Cereal\",\"Mushrooms\",\"Sesame Seeds\",\"Black Beans\",\"Vitamin K\",\"Iron\",\"Folate\",\"Magnesium\",\"Vitamin A\",\"Vitamin C\",\"Vitamin D\",\"Vitamin B12\",\"Selenium\",\"Potassium\",\"Choline\",\"Vitamin B6\",\"Vitamin E\",\"Calcium\",\"Zinc\"], edges_i=[0,0,0,0,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9,10,10,10,11,11,11,11,12,12,12,13,13,13,14,14,15,15,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,21,21,21,22,22,23,23,23,24,24,24,25,25,25,26,26,26,27,27,27,28,28,28,29,29,30,30,31,31,31,32,32,32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,41,41,41,42,42,42,43,43,43,44,44,44], edges_j=[45,46,47,48,45,49,50,51,52,53,54,49,52,46,47,51,52,53,55,50,47,54,50,49,56,57,48,58,57,53,48,58,51,52,58,52,59,58,51,52,53,50,45,47,49,54,50,49,45,59,52,53,46,59,46,52,59,48,46,47,46,48,47,46,54,47,45,54,57,47,54,56,54,50,56,46,48,54,48,46,59,51,52,53,53,48,59,59,56,53,56,53,56,59,58,52,59,58,46,48,48,56,50,56,50,47,50,45,50,47,50,49,49,50,49,50,52,46,47,51,53,54,58,46,59,47,46,48], edges_w=[180,15,49,20,684,206,134,66,117,36,12,522,1386,34,65,9,22,20,66,88,10,5,213,31,10,48,19,7,82,24,13,18,15,18,15,12,6,35,46,67,26,89,92,14,214,10,6,184,13,493,324,77,33,43,15,67,23,37,12,71,13,12,90,18,14,34,45,14,10,20,9,20,12,27,15,24,23,13,16,35,18,39,80,131,989,26,7,12,36,31,26,26,31,12,20,14,14,20,15,14,11,7,100,9,97,9,103,31,144,14,21,8,12,67,68,65,25,45,50,18,10,9,18,22,15,64,10,18], width=1250, height=1080, variant=\"hourglass\""
 )]
 pub fn render(cfg: &SankeyConfig) -> String {
     let e = cfg.sources.len().min(cfg.targets.len()).min(cfg.weights.len());
@@ -289,8 +289,8 @@ mod tests {
             sources: si,
             targets: ti,
             weights: w,
-            width: 1100,
-            height: 1420,
+            width: 1250,
+            height: 1080,
             ..SankeyConfig::default()
         }
     }
@@ -344,7 +344,7 @@ mod tests {
     fn every_ribbon_passes_through_the_pinch_column() {
         let (labels, si, ti, w) = synth();
         let html = render(&cfg(&labels, &si, &ti, &w));
-        let pinch_x = 190.0 + (1100.0 - 190.0 - 90.0) * 0.40;
+        let pinch_x = 190.0 + (1250.0 - 190.0 - 90.0) * 0.40;
         let needle = format!("{:.2}", pinch_x);
         assert!(html.matches(needle.as_str()).count() >= si.len());
     }
