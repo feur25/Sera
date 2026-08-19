@@ -24,6 +24,7 @@ export const buildCandlestick3dChart: (a: number, b: number) => [number, number]
 export const buildChord: (a: number, b: number) => [number, number];
 export const buildChoropleth: (a: number, b: number) => [number, number];
 export const buildCirclePack: (a: number, b: number) => [number, number];
+export const buildCircos: (a: number, b: number) => [number, number];
 export const buildConeChart: (a: number, b: number) => [number, number];
 export const buildCorrelogram: (a: number, b: number) => [number, number];
 export const buildDbscanChart: (a: number, b: number) => [number, number];
