@@ -5,5 +5,6 @@ crate::plot_family! {
         Ribbon   => "ribbon" | "wide" | "thick",
         Minimal  => "minimal" | "thin" | "outline",
         Sorted   => "sorted" | "reordered" | "by_flow" | "ranked",
+        Hourglass => "hourglass" | "radiant_flow" | "nutrient_flow" | "braided" | "flow_bloom",
     }
 }
