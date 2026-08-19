@@ -5,6 +5,7 @@ pub mod common;
 pub mod config;
 pub mod gapped;
 pub mod hourglass;
+pub mod matrix;
 pub mod ribbon;
 pub mod sorted;
 pub mod variant;
@@ -21,6 +22,7 @@ pub fn render_sankey_html(cfg: &SankeyConfig) -> String {
         Minimal  => basic::render_minimal(cfg),
         Sorted   => sorted::render(cfg),
         Hourglass => hourglass::render(cfg),
+        Matrix    => matrix::render(cfg),
     }
 }
 
