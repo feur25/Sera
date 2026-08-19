@@ -87,6 +87,42 @@ pub fn render(cfg: &HexbinConfig) -> String {
         rank_t[i] = if n > 1 { r as f64 / (n - 1) as f64 } else { 0.0 };
     }
 
+    let (mut ccx, mut ccy, mut cn) = (0.0, 0.0, 0.0);
+    for (k, &(px, py)) in pts.iter().enumerate() {
+        if rank_t[k] > 0.55 {
+            ccx += px;
+            ccy += py;
+            cn += 1.0;
+        }
+    }
+    if cn > 0.0 {
+        ccx /= cn;
+        ccy /= cn;
+    } else {
+        ccx = f.pl as f64 + f.pw as f64 / 2.0;
+        ccy = f.pt as f64 + f.ph as f64 / 2.0;
+    }
+    let mut core_r_sum = 0.0;
+    let mut core_r_n = 0.0;
+    for (k, &(px, py)) in pts.iter().enumerate() {
+        if rank_t[k] > 0.55 {
+            let dx = px - ccx;
+            let dy = py - ccy;
+            core_r_sum += (dx * dx + dy * dy).sqrt();
+            core_r_n += 1.0;
+        }
+    }
+    let core_r = if core_r_n > 0.0 { core_r_sum / core_r_n } else { f.pw.min(f.ph) as f64 * 0.3 };
+    let eff_t: Vec<f64> = (0..n)
+        .map(|i| {
+            let dx = pts[i].0 - ccx;
+            let dy = pts[i].1 - ccy;
+            let d = (dx * dx + dy * dy).sqrt();
+            let mass = 1.0 - smoothstep(d, core_r * 1.5, core_r * 3.6);
+            rank_t[i] * mass
+        })
+        .collect();
+
     let color_at = |t: f64| -> u32 {
         if cfg.colorscale.is_empty() {
             mesh_color(t)
@@ -112,13 +148,13 @@ pub fn render(cfg: &HexbinConfig) -> String {
     push_b(&mut f.buf, b"<g fill=\"none\" filter=\"url(#nglowSoft)\">");
     for fk in 0..FRAMES {
         for &i in order.iter().rev() {
-            if rank_t[i] < 0.68 {
-                break;
+            if eff_t[i] < 0.68 {
+                continue;
             }
             if frame_cells[fk][i].len() < 3 {
                 continue;
             }
-            let col = color_at(rank_t[i]);
+            let col = color_at(eff_t[i]);
             draw_glow_cell(&mut f.buf, &frame_cells[fk][i], col, 2.6, 0.16);
         }
     }
@@ -127,14 +163,14 @@ pub fn render(cfg: &HexbinConfig) -> String {
     push_b(&mut f.buf, b"<g fill=\"none\" filter=\"url(#nglow)\">");
     for fk in 0..FRAMES {
         for &i in order.iter().rev() {
-            if rank_t[i] < 0.5 {
-                break;
+            if eff_t[i] < 0.5 {
+                continue;
             }
             if frame_cells[fk][i].len() < 3 {
                 continue;
             }
-            let col = color_at(rank_t[i]);
-            let sw = 1.5 + rank_t[i] * 1.5;
+            let col = color_at(eff_t[i]);
+            let sw = 1.5 + eff_t[i] * 1.5;
             draw_glow_cell(&mut f.buf, &frame_cells[fk][i], col, sw, 0.16);
         }
     }
@@ -142,13 +178,13 @@ pub fn render(cfg: &HexbinConfig) -> String {
 
     push_b(&mut f.buf, b"<g fill=\"none\">");
     for &i in order.iter().rev() {
-        let col = color_at(rank_t[i]);
-        let presence = 0.24 + rank_t[i].powf(1.3) * 0.68;
-        let sw = 0.28 + rank_t[i].powf(1.15) * 0.55;
+        let col = color_at(eff_t[i]);
+        let presence = 0.24 + eff_t[i].powf(1.3) * 0.68;
+        let sw = 0.28 + eff_t[i].powf(1.15) * 0.55;
         if frame_cells[0][i].len() >= 3 {
             draw_mesh_cell(&mut f.buf, i, &frame_cells[0][i], col, raw[i], presence, sw);
         }
-        let extra_w = smoothstep(rank_t[i], 0.22, 0.58);
+        let extra_w = smoothstep(eff_t[i], 0.22, 0.58);
         if extra_w <= 0.01 {
             continue;
         }
@@ -161,33 +197,6 @@ pub fn render(cfg: &HexbinConfig) -> String {
     }
     push_b(&mut f.buf, b"</g>");
 
-    let (mut ccx, mut ccy, mut cn) = (0.0, 0.0, 0.0);
-    for (k, &(px, py)) in pts.iter().enumerate() {
-        if rank_t[k] > 0.55 {
-            ccx += px;
-            ccy += py;
-            cn += 1.0;
-        }
-    }
-    if cn > 0.0 {
-        ccx /= cn;
-        ccy /= cn;
-    } else {
-        ccx = f.pl as f64 + f.pw as f64 / 2.0;
-        ccy = f.pt as f64 + f.ph as f64 / 2.0;
-    }
-
-    let mut core_r_sum = 0.0;
-    let mut core_r_n = 0.0;
-    for (k, &(px, py)) in pts.iter().enumerate() {
-        if rank_t[k] > 0.55 {
-            let dx = px - ccx;
-            let dy = py - ccy;
-            core_r_sum += (dx * dx + dy * dy).sqrt();
-            core_r_n += 1.0;
-        }
-    }
-    let core_r = if core_r_n > 0.0 { core_r_sum / core_r_n } else { f.pw.min(f.ph) as f64 * 0.3 };
     let streak_cutoff = core_r * 2.3;
 
     push_b(&mut f.buf, b"<g stroke=\"#dc2626\" stroke-linecap=\"round\">");
