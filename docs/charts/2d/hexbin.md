@@ -69,6 +69,8 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','weighted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Weighted</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','dotted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Dotted</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marginals</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','voronoi',this)"><span class="sp-cic">◈</span><span class="sp-clb">Voronoi</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','neural',this)"><span class="sp-cic">✦</span><span class="sp-clb">Neural</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-en-basic">
@@ -131,6 +133,18 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
 </div>
+<div class="sp-variant" id="hexbin-en-voronoi">
+<p>Tessellates the scattered points into a bounded Voronoi diagram instead of a regular hex grid — each cell's fill encodes local density (<code>values=</code> if supplied, otherwise the inverse of the cell's own area), so density is read from irregular organic cell sizes rather than a uniform lattice. Site points are drawn as small dots on top, echoing the "particle tracking" framing of density-Voronoi science posters.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"voronoi"</code></span><span><strong>Aliases</strong> <code>voronoi / density_voronoi / tessellation / particle_density / cells</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-voronoi.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-neural">
+<p>Draws the Voronoi tessellation as stroke-only outlines — no fill — overlaid across several independently-jittered site positions, so shared edges between frames build up into a dense tangled mesh in the high-density core while the sparse periphery stays a single clean web of long lines. A gray-to-red-to-orange-to-yellow ramp and soft glow pick out the densest region; short red streaks mark low-density outlier points.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"neural"</code></span><span><strong>Aliases</strong> <code>neural / mesh / turbidity / particle_mesh / neural_mesh</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -187,6 +201,8 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','weighted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Pondéré</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','dotted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Pointillé</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marges</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','voronoi',this)"><span class="sp-cic">◈</span><span class="sp-clb">Voronoï</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','neural',this)"><span class="sp-cic">✦</span><span class="sp-clb">Neural</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-fr-basic">
@@ -248,6 +264,18 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginals"</code></span><span><strong>Alias</strong> <code>marginals / joint / with_histograms / density_marginals</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-voronoi">
+<p>Découpe le nuage de points en diagramme de Voronoï borné au lieu d'une grille hexagonale régulière — le remplissage de chaque cellule encode la densité locale (<code>values=</code> si fourni, sinon l'inverse de l'aire de la cellule elle-même), donc la densité se lit dans des tailles de cellules organiques irrégulières plutôt que dans une grille uniforme. Les points sources sont dessinés en petits points par-dessus, en écho aux posters scientifiques de type "particle tracking".</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"voronoi"</code></span><span><strong>Alias</strong> <code>voronoi / density_voronoi / tessellation / particle_density / cells</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-voronoi.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-neural">
+<p>Trace la tessellation de Voronoï en contours seuls — sans remplissage — superposés sur plusieurs positions de sites légèrement décalées (jitter), si bien que les arêtes partagées entre ces passes s'accumulent en un maillage dense et enchevêtré dans le cœur de haute densité, tandis que la périphérie éparse reste un simple réseau propre de longues lignes. Un dégradé gris → rouge → orange → jaune et un léger halo mettent en évidence la zone la plus dense ; de courts traits rouges signalent les points isolés de faible densité.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"neural"</code></span><span><strong>Alias</strong> <code>neural / mesh / turbidity / particle_mesh / neural_mesh</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
 </div>
 </div>
 </div>
