@@ -54,6 +54,10 @@ fn render_impl(cfg: &SankeyConfig, minimal: bool, sorted: bool) -> String {
     push_i(&mut buf, cfg.width);
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b" ");
+    push_i(&mut buf, cfg.height);
     push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
 
     svg_title(&mut buf, cfg.title, cfg.width / 2, 24);
