@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-en','pivot',this)"><span class="sp-cic">⊡</span><span class="sp-clb">Pivot</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Radial Cluster</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','moods',this)"><span class="sp-cic">♬</span><span class="sp-clb">Moods</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -216,6 +217,17 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 </div>
 
+<div class="sp-variant" id="hm-en-moods">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"moods"</code> / <code>"mood_matrix"</code> / <code>"punchcard_grouped"</code> / <code>"library"</code> / <code>"sentiment_grid"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">A grouped punchcard: each row's label is read as <code>"Group::Subgroup::Item"</code> (e.g. genre/artist/album) and rendered as a real nested outline on the left, with a thin divider between groups and the group name set vertically alongside its own block — every row keeps a small checkbox marker. Every column gets its own fixed color from the palette instead of a shared value colorscale, so intensity is read from bubble size and opacity while color reads the category. Every cell still draws a small dot even near zero, so faint columns stay visible as a guide down the grid instead of disappearing.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-moods.html"></iframe>
+
+</div>
+
 </div>
 </div>
 
@@ -266,6 +278,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-fr','pivot',this)"><span class="sp-cic">⊟</span><span class="sp-clb">Pivot</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Cluster Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','moods',this)"><span class="sp-cic">♬</span><span class="sp-clb">Humeurs</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -302,6 +315,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="hm-fr-polar"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-polar.html"></iframe></div>
 
 <div class="sp-variant" id="hm-fr-radial_cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial_cluster"</code> / <code>"circular_cluster"</code> / <code>"circos"</code> / <code>"radial_dendrogram"</code> / <code>"circular_dendrogram"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Les colonnes sont réordonnées par la même classification hiérarchique average-linkage que la variante <code>cluster</code>, puis disposées en quartiers autour d'un anneau au lieu d'un axe droit, avec l'arbre de fusion dessiné comme un vrai dendrogramme radial au centre — les lignes deviennent des bandes colorées concentriques. <code>col_labels</code> est optionnel : si omis, retombe sur <code>labels</code>, comme <code>cluster</code>, pour une matrice symétrique.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-radial_cluster.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-moods"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"moods"</code> / <code>"mood_matrix"</code> / <code>"punchcard_grouped"</code> / <code>"library"</code> / <code>"sentiment_grid"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un punchcard groupé : le label de chaque ligne est lu comme <code>"Groupe::Sous-groupe::Élément"</code> (par ex. genre/artiste/album) et rendu comme une vraie arborescence à gauche, avec une fine séparation entre groupes et le nom du groupe affiché verticalement le long de son propre bloc — chaque ligne garde une petite case à cocher. Chaque colonne reçoit sa propre couleur fixe de la palette plutôt qu'une échelle de couleur partagée par valeur, donc l'intensité se lit dans la taille et l'opacité de la bulle pendant que la couleur indique la catégorie. Chaque cellule dessine toujours un petit point même proche de zéro, pour que les colonnes faibles restent visibles comme repère le long de la grille au lieu de disparaître.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-moods.html"></iframe></div>
 
 </div>
 </div>
