@@ -71,6 +71,7 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marginals</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','voronoi',this)"><span class="sp-cic">◈</span><span class="sp-clb">Voronoi</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','neural',this)"><span class="sp-cic">✦</span><span class="sp-clb">Neural</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','bloom',this)"><span class="sp-cic">❀</span><span class="sp-clb">Bloom</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-en-basic">
@@ -145,6 +146,12 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
 </div>
+<div class="sp-variant" id="hexbin-en-bloom">
+<p>Estimates a smooth 2D density field from the scattered points (a Gaussian-kernel distance field, bandwidth auto-derived from point count and plot area) and bands it into discrete iso-level cells — every cell is colored by the highest density threshold it clears, so overlapping seeds fuse into organic merged "islands" instead of staying as separate circles. Cell edges are lightly jittered per-cell for a hand-cut, faceted look, and the outermost frame borrows architectural-drawing conventions: a diagonal-hatch margin, circled grid-reference bubbles, and a data-derived "NODES" tally (seed count, band count, peak-band cell count, coverage, bandwidth).</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bloom"</code></span><span><strong>Aliases</strong> <code>bloom / contour / density_bloom / iso_contour / organic_contour</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-bloom.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -203,6 +210,7 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marges</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','voronoi',this)"><span class="sp-cic">◈</span><span class="sp-clb">Voronoï</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','neural',this)"><span class="sp-cic">✦</span><span class="sp-clb">Neural</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','bloom',this)"><span class="sp-cic">❀</span><span class="sp-clb">Bloom</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-fr-basic">
@@ -276,6 +284,12 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"neural"</code></span><span><strong>Alias</strong> <code>neural / mesh / turbidity / particle_mesh / neural_mesh</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-bloom">
+<p>Estime un champ de densité 2D lisse à partir des points épars (champ de distance à noyau gaussien, largeur de bande dérivée automatiquement du nombre de points et de la surface du graphique) puis le découpe en cellules à niveaux iso discrets — chaque cellule est colorée selon le seuil de densité le plus élevé qu'elle franchit, si bien que des points sources qui se chevauchent fusionnent en "îlots" organiques au lieu de rester des cercles séparés. Les bords des cellules sont légèrement décalés individuellement pour un rendu façon découpe à la main, et le cadre extérieur emprunte les conventions du dessin d'architecture : marge à hachures diagonales, bulles de référence de grille cerclées, et un décompte "NODES" dérivé des données (nombre de sources, de bandes, de cellules au niveau maximal, couverture, largeur de bande).</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bloom"</code></span><span><strong>Alias</strong> <code>bloom / contour / density_bloom / iso_contour / organic_contour</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-bloom.html"></iframe>
 </div>
 </div>
 </div>
