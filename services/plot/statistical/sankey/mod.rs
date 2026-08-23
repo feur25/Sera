@@ -1,6 +1,7 @@
 use crate::plot::{apply, parse_all};
 
 pub mod basic;
+pub mod beacon;
 pub mod common;
 pub mod config;
 pub mod gapped;
@@ -23,6 +24,7 @@ pub fn render_sankey_html(cfg: &SankeyConfig) -> String {
         Sorted   => sorted::render(cfg),
         Hourglass => hourglass::render(cfg),
         Matrix    => matrix::render(cfg),
+        Beacon    => beacon::render(cfg),
     }
 }
 
