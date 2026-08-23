@@ -7,5 +7,6 @@ crate::plot_family! {
         Sorted   => "sorted" | "reordered" | "by_flow" | "ranked",
         Hourglass => "hourglass" | "radiant_flow" | "nutrient_flow" | "braided" | "flow_bloom",
         Matrix    => "matrix" | "mosaic" | "dot_matrix" | "grid_flow" | "big_data",
+        Beacon    => "beacon" | "flight_radar" | "route_wheel" | "departure_board" | "hub_wheel",
     }
 }
