@@ -16,6 +16,7 @@ pub mod hex_grid;
 pub mod horizon;
 pub mod log;
 pub mod marginal;
+pub mod moods;
 pub mod pivot;
 pub mod radial_cluster;
 pub mod temporal;
@@ -48,6 +49,7 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
         HeatmapVariant::RadialCluster => radial_cluster::render(cfg),
         HeatmapVariant::HexGrid => hex_grid::render(cfg),
         HeatmapVariant::Horizon => horizon::render(cfg),
+        HeatmapVariant::Moods => moods::render(cfg),
     }
 }
 
