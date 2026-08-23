@@ -1,7 +1,6 @@
-use super::common::data_bounds;
+use super::common::{data_bounds, finalize};
 use super::config::HexbinConfig;
-use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
-use crate::plot::statistical::common::{colorscale_color, escape_xml, hash01, hex6, lerp_rgb, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{hash01, hex6, lerp_rgb, push_b, push_f2, push_i, Frame};
 
 const RING_STOPS: [u32; 4] = [0xf7d9e6, 0xec4899, 0xd6336c, 0xf4c430];
 const PEAK_COLOR: u32 = 0x3ec9b0;
@@ -30,73 +29,16 @@ pub fn render(cfg: &HexbinConfig) -> String {
         None => return String::new(),
     };
 
-    let pad = 46i32;
-    let pad_t = 82i32;
-    let pw = cfg.width - pad * 2;
-    let ph = cfg.height - pad_t - pad;
-    let ink: u32 = 0x1a202c;
     let sub: u32 = 0x6b7280;
-    let hatch: u32 = 0xf9c9d9;
-
-    let hid = html_id();
-    let mut buf = Vec::<u8>::with_capacity(n * 20 + 220_000);
-    html_prefix(&mut buf, cfg.title, hid);
-
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b" ");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
-
-    push_b(&mut buf, b"<defs><pattern id=\"spbhatch\" width=\"9\" height=\"9\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\"><rect width=\"9\" height=\"9\" fill=\"#ffffff\"/><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"9\" stroke=\"#");
-    buf.extend_from_slice(&hex6(hatch));
-    push_b(&mut buf, b"\" stroke-width=\"2.4\"/></pattern></defs>");
-    push_b(&mut buf, b"<rect x=\"0\" y=\"0\" width=\"");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\" fill=\"url(#spbhatch)\"/>");
-    let frame_x0 = 20;
-    let frame_y0 = 14;
-    let frame_x1 = cfg.width - 20;
-    let frame_y1 = cfg.height - 14;
-    push_b(&mut buf, b"<rect x=\"");
-    push_i(&mut buf, frame_x0);
-    push_b(&mut buf, b"\" y=\"");
-    push_i(&mut buf, frame_y0);
-    push_b(&mut buf, b"\" width=\"");
-    push_i(&mut buf, frame_x1 - frame_x0);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, frame_y1 - frame_y0);
-    push_b(&mut buf, b"\" fill=\"#ffffff\" stroke=\"#");
-    buf.extend_from_slice(&hex6(0xd63384));
-    push_b(&mut buf, b"\" stroke-width=\"1\"/>");
-
-    if !cfg.title.is_empty() {
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, pad);
-        push_b(&mut buf, b"\" y=\"36\" font-family=\"Arial,sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#");
-        buf.extend_from_slice(&hex6(ink));
-        push_b(&mut buf, b"\">");
-        escape_xml(&mut buf, cfg.title);
-        push_b(&mut buf, b"</text>");
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, pad);
-        push_b(&mut buf, b"\" y=\"53\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#");
-        buf.extend_from_slice(&hex6(sub));
-        push_b(&mut buf, b"\">Distance-field density contours, banded by iso-level</text>");
-    }
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 50, 40, 40, 150, n * 20 + 220_000);
+    f.open(cfg.title, true);
 
     let xr = (bounds.xmax - bounds.xmin).max(1e-9);
     let yr = (bounds.ymax - bounds.ymin).max(1e-9);
     let pts: Vec<(f64, f64)> = (0..n)
         .map(|i| {
-            let px = pad as f64 + (cfg.x_values[i] - bounds.xmin) / xr * pw as f64;
-            let py = pad_t as f64 + ph as f64 - (cfg.y_values[i] - bounds.ymin) / yr * ph as f64;
+            let px = f.pl as f64 + (cfg.x_values[i] - bounds.xmin) / xr * f.pw as f64;
+            let py = f.pt as f64 + f.ph as f64 - (cfg.y_values[i] - bounds.ymin) / yr * f.ph as f64;
             (px, py)
         })
         .collect();
@@ -121,17 +63,17 @@ pub fn render(cfg: &HexbinConfig) -> String {
     nn_dists.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     let median_nn = nn_dists[nn_dists.len() / 2].max(1.0);
     let bandwidth = median_nn * 3.5;
-    let cols = (pw as f64 / 8.0).round().max(20.0) as usize;
-    let rows = (ph as f64 / 8.0).round().max(20.0) as usize;
-    let cw = pw as f64 / cols as f64;
-    let ch = ph as f64 / rows as f64;
+    let cols = (f.pw as f64 / 8.0).round().max(20.0) as usize;
+    let rows = (f.ph as f64 / 8.0).round().max(20.0) as usize;
+    let cw = f.pw as f64 / cols as f64;
+    let ch = f.ph as f64 / rows as f64;
     let two_bw2 = 2.0 * bandwidth * bandwidth;
 
     let mut grid = vec![0.0_f64; (cols + 1) * (rows + 1)];
     for gy in 0..=rows {
-        let py = pad_t as f64 + gy as f64 * ch;
+        let py = f.pt as f64 + gy as f64 * ch;
         for gx in 0..=cols {
-            let px = pad as f64 + gx as f64 * cw;
+            let px = f.pl as f64 + gx as f64 * cw;
             let mut d = 0.0_f64;
             for (i, &(sx, sy)) in pts.iter().enumerate() {
                 let dx = px - sx;
@@ -158,7 +100,7 @@ pub fn render(cfg: &HexbinConfig) -> String {
         lvl.clamp(0, N_LEVELS as i32 - 1)
     };
 
-    push_b(&mut buf, b"<g>");
+    push_b(&mut f.buf, b"<g>");
     let mut cell_counts = vec![0usize; N_LEVELS];
     for gy in 0..rows {
         for gx in 0..cols {
@@ -178,103 +120,65 @@ pub fn render(cfg: &HexbinConfig) -> String {
             let jy = (hash01(seed + 1) - 0.5) * ch * 0.34;
             let jw = 1.0 + (hash01(seed + 2) - 0.5) * 0.3;
             let jh = 1.0 + (hash01(seed + 3) - 0.5) * 0.3;
-            let x0 = pad as f64 + gx as f64 * cw + jx;
-            let y0 = pad_t as f64 + gy as f64 * ch + jy;
+            let x0 = f.pl as f64 + gx as f64 * cw + jx;
+            let y0 = f.pt as f64 + gy as f64 * ch + jy;
             let col = if lvl == N_LEVELS - 1 {
                 PEAK_COLOR
             } else {
                 ring_color(lvl as f64 / (N_LEVELS as f64 - 2.0))
             };
-            push_b(&mut buf, b"<rect x=\"");
-            push_f2(&mut buf, x0);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, y0);
-            push_b(&mut buf, b"\" width=\"");
-            push_f2(&mut buf, (cw * jw).max(1.0));
-            push_b(&mut buf, b"\" height=\"");
-            push_f2(&mut buf, (ch * jh).max(1.0));
-            push_b(&mut buf, b"\" fill=\"#");
-            buf.extend_from_slice(&hex6(col));
-            push_b(&mut buf, b"\"/>");
+            push_b(&mut f.buf, b"<rect x=\"");
+            push_f2(&mut f.buf, x0);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_f2(&mut f.buf, y0);
+            push_b(&mut f.buf, b"\" width=\"");
+            push_f2(&mut f.buf, (cw * jw).max(1.0));
+            push_b(&mut f.buf, b"\" height=\"");
+            push_f2(&mut f.buf, (ch * jh).max(1.0));
+            push_b(&mut f.buf, b"\" fill=\"#");
+            f.buf.extend_from_slice(&hex6(col));
+            push_b(&mut f.buf, b"\"/>");
         }
     }
-    push_b(&mut buf, b"</g>");
+    push_b(&mut f.buf, b"</g>");
 
-    push_b(&mut buf, b"<g stroke=\"#");
-    buf.extend_from_slice(&hex6(hatch));
-    push_b(&mut buf, b"\" stroke-width=\"0.6\" stroke-opacity=\"0.8\">");
-    for gx in 0..=6 {
-        let x = pad as f64 + pw as f64 * gx as f64 / 6.0;
-        push_b(&mut buf, b"<line x1=\"");
-        push_f2(&mut buf, x);
-        push_b(&mut buf, b"\" y1=\"");
-        push_i(&mut buf, pad_t);
-        push_b(&mut buf, b"\" x2=\"");
-        push_f2(&mut buf, x);
-        push_b(&mut buf, b"\" y2=\"");
-        push_i(&mut buf, pad_t + ph);
-        push_b(&mut buf, b"\"/>");
-        let lbl = ((b'A' as u8) + gx as u8) as char;
-        push_b(&mut buf, b"<circle cx=\"");
-        push_f2(&mut buf, x);
-        push_b(&mut buf, b"\" cy=\"");
-        push_i(&mut buf, pad_t - 12);
-        push_b(&mut buf, b"\" r=\"7\" fill=\"#ffffff\" stroke=\"#");
-        buf.extend_from_slice(&hex6(0xd63384));
-        push_b(&mut buf, b"\" stroke-width=\"0.8\"/>");
-        push_b(&mut buf, b"<text x=\"");
-        push_f2(&mut buf, x);
-        push_b(&mut buf, b"\" y=\"");
-        push_i(&mut buf, pad_t - 9);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
-        buf.extend_from_slice(&hex6(0xd63384));
-        push_b(&mut buf, b"\">");
-        buf.push(lbl as u8);
-        push_b(&mut buf, b"</text>");
+    push_b(&mut f.buf, b"<g>");
+    for (i, &(sx, sy)) in pts.iter().enumerate() {
+        let mut d = 0.0_f64;
+        for (j, &(ox, oy)) in pts.iter().enumerate() {
+            let dx = sx - ox;
+            let dy = sy - oy;
+            let dist2 = dx * dx + dy * dy;
+            if dist2 > two_bw2 * 5.0 {
+                continue;
+            }
+            let w = if has_weights { cfg.values[j].max(0.1) } else { 1.0 };
+            d += w * (-dist2 / two_bw2).exp();
+        }
+        push_b(&mut f.buf, b"<circle data-idx=\"");
+        push_i(&mut f.buf, i as i32);
+        push_b(&mut f.buf, b"\" data-y=\"");
+        push_f2(&mut f.buf, d);
+        push_b(&mut f.buf, b"\" cx=\"");
+        push_f2(&mut f.buf, sx);
+        push_b(&mut f.buf, b"\" cy=\"");
+        push_f2(&mut f.buf, sy);
+        push_b(&mut f.buf, b"\" r=\"1.6\" fill=\"#1a202c\" stroke=\"#fff\" stroke-width=\"0.5\" fill-opacity=\"0.75\"/>");
     }
-    for gy in 0..=5 {
-        let y = pad_t as f64 + ph as f64 * gy as f64 / 5.0;
-        push_b(&mut buf, b"<line x1=\"");
-        push_i(&mut buf, pad);
-        push_b(&mut buf, b"\" y1=\"");
-        push_f2(&mut buf, y);
-        push_b(&mut buf, b"\" x2=\"");
-        push_i(&mut buf, pad + pw);
-        push_b(&mut buf, b"\" y2=\"");
-        push_f2(&mut buf, y);
-        push_b(&mut buf, b"\"/>");
-        push_b(&mut buf, b"<circle cx=\"");
-        push_i(&mut buf, pad - 12);
-        push_b(&mut buf, b"\" cy=\"");
-        push_f2(&mut buf, y);
-        push_b(&mut buf, b"\" r=\"7\" fill=\"#ffffff\" stroke=\"#");
-        buf.extend_from_slice(&hex6(0xd63384));
-        push_b(&mut buf, b"\" stroke-width=\"0.8\"/>");
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, pad - 12);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, y + 3.0);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
-        buf.extend_from_slice(&hex6(0xd63384));
-        push_b(&mut buf, b"\">");
-        push_i(&mut buf, gy + 1);
-        push_b(&mut buf, b"</text>");
-    }
-    push_b(&mut buf, b"</g>");
+    push_b(&mut f.buf, b"</g>");
 
     let filled_cells: usize = cell_counts.iter().sum();
     let coverage_pct = filled_cells as f64 / (cols * rows).max(1) as f64 * 100.0;
     let peak_cells = cell_counts[N_LEVELS - 1];
-    let stats_x = frame_x1 - 128;
-    let mut sy = frame_y0 + 22;
-    push_b(&mut buf, b"<text x=\"");
-    push_i(&mut buf, stats_x);
-    push_b(&mut buf, b"\" y=\"");
-    push_i(&mut buf, sy);
-    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" font-weight=\"700\" fill=\"#");
-    buf.extend_from_slice(&hex6(0xd63384));
-    push_b(&mut buf, b"\">NODES</text>");
-    let scale = if cfg.colorscale.is_empty() { "" } else { cfg.colorscale };
+    let side_x = f.pl + f.pw + 14;
+    let mut sy = f.pt + 8;
+    push_b(&mut f.buf, b"<text x=\"");
+    push_i(&mut f.buf, side_x);
+    push_b(&mut f.buf, b"\" y=\"");
+    push_i(&mut f.buf, sy);
+    push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" font-weight=\"700\" fill=\"#");
+    f.buf.extend_from_slice(&hex6(sub));
+    push_b(&mut f.buf, b"\" letter-spacing=\"0.6\">DENSITY BLOOM</text>");
     let stats: [(&str, String); 5] = [
         ("SEEDS", n.to_string()),
         ("BANDS", N_LEVELS.to_string()),
@@ -283,39 +187,21 @@ pub fn render(cfg: &HexbinConfig) -> String {
         ("BANDWIDTH", format!("{bandwidth:.1}px")),
     ];
     for (label, val) in stats.iter() {
-        sy += 16;
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, stats_x);
-        push_b(&mut buf, b"\" y=\"");
-        push_i(&mut buf, sy);
-        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"8.5\" fill=\"#");
-        buf.extend_from_slice(&hex6(sub));
-        push_b(&mut buf, b"\">");
-        push_b(&mut buf, label.as_bytes());
-        push_b(&mut buf, b" ");
-        escape_xml(&mut buf, val);
-        push_b(&mut buf, b"</text>");
+        sy += 18;
+        push_b(&mut f.buf, b"<text x=\"");
+        push_i(&mut f.buf, side_x);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, sy);
+        push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#");
+        f.buf.extend_from_slice(&hex6(sub));
+        push_b(&mut f.buf, b"\">");
+        push_b(&mut f.buf, label.as_bytes());
+        push_b(&mut f.buf, b" ");
+        push_b(&mut f.buf, val.as_bytes());
+        push_b(&mut f.buf, b"</text>");
     }
-    let _ = colorscale_color(scale, 0.5);
 
-    push_b(&mut buf, b"<text x=\"");
-    push_i(&mut buf, frame_x0 + 10);
-    push_b(&mut buf, b"\" y=\"");
-    push_i(&mut buf, frame_y1 - 12);
-    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
-    buf.extend_from_slice(&hex6(sub));
-    push_b(&mut buf, b"\">DOCUMENT TOP</text>");
-    push_b(&mut buf, b"<text x=\"");
-    push_i(&mut buf, frame_x0 + 10);
-    push_b(&mut buf, b"\" y=\"");
-    push_i(&mut buf, frame_y1 - 30);
-    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#");
-    buf.extend_from_slice(&hex6(ink));
-    push_b(&mut buf, b"\">SERAPLOT - DENSITY BLOOM</text>");
-
-    push_b(&mut buf, b"</svg>");
-    html_suffix(&mut buf, hid, &slots_to_json(cfg.hover));
-    unsafe { String::from_utf8_unchecked(buf) }
+    finalize(f, cfg)
 }
 
 #[cfg(test)]
@@ -353,13 +239,15 @@ mod tests {
     }
 
     #[test]
-    fn renders_grid_cells_and_decorators() {
+    fn renders_grid_cells_with_hover_and_stats() {
         let (x, y) = synth(60);
         let html = render(&cfg(&x, &y));
         assert!(!html.is_empty());
-        assert!(html.contains("NODES"));
-        assert!(html.contains("spbhatch"));
+        assert!(html.contains("DENSITY BLOOM"));
+        assert!(html.contains("COVERAGE"));
         assert!(html.matches("<rect x=\"").count() > 10);
+        assert_eq!(html.matches("<circle data-idx=\"").count(), x.len());
+        assert_eq!(html.matches("data-y=\"").count(), x.len());
     }
 
     #[test]
