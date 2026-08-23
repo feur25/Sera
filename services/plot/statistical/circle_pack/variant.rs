@@ -5,5 +5,6 @@ crate::plot_family! {
         Outlined => "outlined" | "outline" | "stroke",
         Bubble   => "bubble" | "bubbles" | "plain",
         LeafFocus => "leaf_focus" | "leaves" | "leaves_only" | "focus",
+        Swarm => "swarm" | "commit_swarm" | "commit_history" | "dev_swarm" | "orca",
     }
 }
