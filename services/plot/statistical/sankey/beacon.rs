@@ -69,6 +69,46 @@ pub fn render(cfg: &SankeyConfig) -> String {
     let r_ring = max_r * 0.7;
     let r_hub = 22.0;
 
+    let min_w = cfg.weights[..e].iter().cloned().fold(f64::INFINITY, f64::min);
+    let max_w = cfg.weights[..e].iter().cloned().fold(0.0_f64, f64::max).max(min_w + 1e-9);
+    let angle_of: Vec<f64> = (0..nf).map(|i| -PI / 2.0 + 2.0 * PI * i as f64 / nf as f64).collect();
+    let mean_t: f64 = flight_idx
+        .iter()
+        .filter_map(|&li| {
+            let k = edge_of[li];
+            if k < 0 {
+                None
+            } else {
+                Some(((cfg.weights[k as usize] - min_w) / (max_w - min_w)).clamp(0.0, 1.0))
+            }
+        })
+        .sum::<f64>()
+        / nf as f64;
+    let atmo_col = colorscale_color(scale, mean_t);
+
+    push_b(&mut buf, b"<defs>");
+    push_b(&mut buf, b"<filter id=\"spglow\" x=\"-80%\" y=\"-80%\" width=\"260%\" height=\"260%\"><feGaussianBlur stdDeviation=\"3.2\"/></filter>");
+    push_b(&mut buf, b"<filter id=\"spshadow\" x=\"-80%\" y=\"-80%\" width=\"260%\" height=\"260%\"><feDropShadow dx=\"0\" dy=\"2\" stdDeviation=\"2.1\" flood-color=\"#0f172a\" flood-opacity=\"0.22\"/></filter>");
+    push_b(&mut buf, b"<radialGradient id=\"spatmo\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#");
+    buf.extend_from_slice(&hex6(atmo_col));
+    push_b(&mut buf, b"\" stop-opacity=\"0.16\"/><stop offset=\"55%\" stop-color=\"#");
+    buf.extend_from_slice(&hex6(atmo_col));
+    push_b(&mut buf, b"\" stop-opacity=\"0.06\"/><stop offset=\"100%\" stop-color=\"#");
+    buf.extend_from_slice(&hex6(atmo_col));
+    push_b(&mut buf, b"\" stop-opacity=\"0\"/></radialGradient>");
+    push_b(&mut buf, b"<radialGradient id=\"spbeaconhub\" cx=\"35%\" cy=\"30%\" r=\"75%\"><stop offset=\"0%\" stop-color=\"#475569\"/><stop offset=\"100%\" stop-color=\"#");
+    buf.extend_from_slice(&hex6(ink));
+    push_b(&mut buf, b"\"/></radialGradient>");
+    push_b(&mut buf, b"</defs>");
+
+    push_b(&mut buf, b"<circle cx=\"");
+    push_f2(&mut buf, cx);
+    push_b(&mut buf, b"\" cy=\"");
+    push_f2(&mut buf, cy);
+    push_b(&mut buf, b"\" r=\"");
+    push_f2(&mut buf, r_ring * 1.22);
+    push_b(&mut buf, b"\" fill=\"url(#spatmo)\"/>");
+
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, cx);
@@ -81,22 +121,31 @@ pub fn render(cfg: &SankeyConfig) -> String {
 
     push_b(&mut buf, b"<g fill=\"none\" stroke=\"#");
     buf.extend_from_slice(&hex6(ring_col));
-    push_b(&mut buf, b"\" stroke-width=\"1\">");
-    for k in 1..=3 {
-        let r = r_ring * k as f64 / 3.0;
+    push_b(&mut buf, b"\">");
+    for k in 1..=4 {
+        let r = r_ring * k as f64 / 4.0;
+        let op = 0.9 - k as f64 * 0.14;
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, cx);
         push_b(&mut buf, b"\" cy=\"");
         push_f2(&mut buf, cy);
         push_b(&mut buf, b"\" r=\"");
         push_f2(&mut buf, r);
+        push_b(&mut buf, b"\" stroke-width=\"1\" stroke-opacity=\"");
+        push_f2(&mut buf, op);
         push_b(&mut buf, b"\"/>");
     }
     push_b(&mut buf, b"</g>");
 
-    let min_w = cfg.weights[..e].iter().cloned().fold(f64::INFINITY, f64::min);
-    let max_w = cfg.weights[..e].iter().cloned().fold(0.0_f64, f64::max).max(min_w + 1e-9);
-    let angle_of: Vec<f64> = (0..nf).map(|i| -PI / 2.0 + 2.0 * PI * i as f64 / nf as f64).collect();
+    push_b(&mut buf, b"<circle cx=\"");
+    push_f2(&mut buf, cx);
+    push_b(&mut buf, b"\" cy=\"");
+    push_f2(&mut buf, cy);
+    push_b(&mut buf, b"\" r=\"");
+    push_f2(&mut buf, r_hub * 1.9);
+    push_b(&mut buf, b"\" fill=\"#");
+    buf.extend_from_slice(&hex6(ink));
+    push_b(&mut buf, b"\" opacity=\"0.14\" filter=\"url(#spglow)\"/>");
 
     push_b(&mut buf, b"<g fill=\"none\">");
     for (i, &li) in flight_idx.iter().enumerate() {
@@ -107,6 +156,7 @@ pub fn render(cfg: &SankeyConfig) -> String {
         let w = cfg.weights[k as usize];
         let t = ((w - min_w) / (max_w - min_w)).clamp(0.0, 1.0);
         let col = colorscale_color(scale, t);
+        let hx = hex6(col);
         let a = angle_of[i];
         let bend = 0.16;
         let tx = cx + r_ring * a.cos();
@@ -126,7 +176,22 @@ pub fn render(cfg: &SankeyConfig) -> String {
         push_b(&mut buf, b" ");
         push_f2(&mut buf, ty);
         push_b(&mut buf, b"\" stroke=\"#");
-        buf.extend_from_slice(&hex6(col));
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" stroke-width=\"3\" stroke-opacity=\"0.1\" stroke-linecap=\"round\"/>");
+        push_b(&mut buf, b"<path d=\"M ");
+        push_f2(&mut buf, cx + r_hub * a.cos());
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, cy + r_hub * a.sin());
+        push_b(&mut buf, b" Q ");
+        push_f2(&mut buf, mx);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, my);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, tx);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, ty);
+        push_b(&mut buf, b"\" stroke=\"#");
+        buf.extend_from_slice(&hx);
         push_b(&mut buf, b"\" stroke-width=\"1\" stroke-opacity=\"0.42\" stroke-dasharray=\"1,3\" stroke-linecap=\"round\"/>");
     }
     push_b(&mut buf, b"</g>");
@@ -151,6 +216,18 @@ pub fn render(cfg: &SankeyConfig) -> String {
             None => (label, ""),
         };
 
+        push_b(&mut buf, b"<rect x=\"");
+        push_f2(&mut buf, tx - pw);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, ty - ph / 2.0 - 3.0);
+        push_b(&mut buf, b"\" width=\"");
+        push_f2(&mut buf, pw * 2.0);
+        push_b(&mut buf, b"\" height=\"");
+        push_f2(&mut buf, ph + 6.0);
+        push_b(&mut buf, b"\" rx=\"3\" fill=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" opacity=\"0.4\" filter=\"url(#spglow)\"/>");
+
         push_b(&mut buf, b"<rect data-idx=\"");
         push_i(&mut buf, li as i32);
         push_b(&mut buf, b"\" data-lbl=\"");
@@ -167,7 +244,7 @@ pub fn render(cfg: &SankeyConfig) -> String {
         push_f2(&mut buf, ph);
         push_b(&mut buf, b"\" rx=\"2.6\" fill=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"0.8\"/>");
+        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"0.8\" filter=\"url(#spshadow)\"/>");
 
         let lr = r_ring + ph / 2.0 + 12.0;
         let lx = cx + lr * a.cos();
@@ -216,7 +293,7 @@ pub fn render(cfg: &SankeyConfig) -> String {
         push_f2(&mut buf, py);
         push_b(&mut buf, b"\" r=\"11\" fill=\"#ffffff\" stroke=\"#");
         buf.extend_from_slice(&hex6(ring_col));
-        push_b(&mut buf, b"\" stroke-width=\"1.2\"/>");
+        push_b(&mut buf, b"\" stroke-width=\"1.2\" filter=\"url(#spshadow)\"/>");
         let tri = format!(
             "M {:.2} {:.2} L {:.2} {:.2} L {:.2} {:.2} Z",
             px + dx * 5.0,
@@ -249,9 +326,7 @@ pub fn render(cfg: &SankeyConfig) -> String {
     push_f2(&mut buf, cy);
     push_b(&mut buf, b"\" r=\"");
     push_f2(&mut buf, r_hub);
-    push_b(&mut buf, b"\" fill=\"#");
-    buf.extend_from_slice(&hex6(ink));
-    push_b(&mut buf, b"\"/>");
+    push_b(&mut buf, b"\" fill=\"url(#spbeaconhub)\" filter=\"url(#spshadow)\"/>");
     let dart = format!(
         "M {:.2} {:.2} L {:.2} {:.2} L {:.2} {:.2} L {:.2} {:.2} Z",
         cx,
