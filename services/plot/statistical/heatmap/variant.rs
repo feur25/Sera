@@ -19,5 +19,6 @@ crate::plot_family! {
         RadialCluster => "radial_cluster" | "circular_cluster" | "circos" | "radial_dendrogram" | "circular_dendrogram",
         HexGrid => "hex_grid" | "hexbin_grid" | "hex_calendar" | "honeycomb" | "hex_matrix",
         Horizon => "horizon" | "horizon_chart" | "stock_ridge" | "banded_horizon" | "sentiment_bands",
+        Moods => "moods" | "mood_matrix" | "punchcard_grouped" | "library" | "sentiment_grid",
     }
 }
