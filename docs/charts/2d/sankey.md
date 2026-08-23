@@ -56,6 +56,7 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 <button class="sp-cls-tab" onclick="spCls('sankey-en','sorted',this)"><span class="sp-cic">⇅</span><span class="sp-clb">Sorted</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','hourglass',this)"><span class="sp-cic">⧗</span><span class="sp-clb">Hourglass</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrix</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-en','beacon',this)"><span class="sp-cic">◎</span><span class="sp-clb">Beacon</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-en-basic">
@@ -99,6 +100,12 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"matrix"</code></span><span><strong>Aliases</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-en-beacon">
+<p>A single source radiates to every target around a full circle instead of two flat columns — each target sits at its own angle with a short pill sized and colored by weight (a continuous colorscale, not a fixed palette), connected back to the hub by a thin bowed spoke. Built for one-to-many schedules where each target also carries its own label, e.g. a departure board: one hub airport, every outbound flight arranged around the dial with its destination, time and duration.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"beacon"</code></span><span><strong>Aliases</strong> <code>beacon / flight_radar / route_wheel / departure_board / hub_wheel</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-beacon.html"></iframe>
 </div>
 </div>
 </div>
@@ -153,6 +160,7 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','sorted',this)"><span class="sp-cic">⇅</span><span class="sp-clb">Trié</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','hourglass',this)"><span class="sp-cic">⧗</span><span class="sp-clb">Sablier</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrice</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','beacon',this)"><span class="sp-cic">◎</span><span class="sp-clb">Balise</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-fr-basic">
@@ -196,6 +204,12 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"matrix"</code></span><span><strong>Alias</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-beacon">
+<p>Une seule source rayonne vers chaque cible sur un cercle complet plutôt que sur deux colonnes plates — chaque cible occupe son propre angle avec une pastille dimensionnée et colorée selon son poids (une échelle de couleur continue, pas une palette fixe), reliée au centre par un fin arc courbe. Conçu pour des horaires un-vers-plusieurs où chaque cible porte aussi sa propre étiquette, par exemple un tableau des départs : un aéroport central, chaque vol au départ disposé autour du cadran avec sa destination, son heure et sa durée.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"beacon"</code></span><span><strong>Alias</strong> <code>beacon / flight_radar / route_wheel / departure_board / hub_wheel</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-beacon.html"></iframe>
 </div>
 </div>
 </div>
