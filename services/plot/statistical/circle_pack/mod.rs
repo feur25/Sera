@@ -5,6 +5,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod flat;
+pub mod swarm;
 pub mod variant;
 
 pub use config::CirclePackConfig;
@@ -18,6 +19,7 @@ pub fn render_circle_pack_html(cfg: &CirclePackConfig) -> String {
         Outlined => basic::render_outlined(cfg),
         Bubble   => bubble::render(cfg),
         LeafFocus => basic::render_leaf_focus(cfg),
+        Swarm    => swarm::render(cfg),
     }
 }
 

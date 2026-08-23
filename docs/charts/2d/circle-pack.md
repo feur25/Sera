@@ -64,6 +64,7 @@ Circle packing represents hierarchical data as nested circles, where the area of
 <button class="sp-cls-tab" onclick="spCls('cp-en','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bubble</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Leaf Focus</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-en','swarm',this)"><span class="sp-cic">◐</span><span class="sp-clb">Swarm</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-en-basic">
@@ -95,6 +96,12 @@ Circle packing represents hierarchical data as nested circles, where the area of
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"leaf_focus"</code></span><span><strong>Aliases</strong> <code>leaf_focus / leaves / leaves_only / focus</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-leaf_focus.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-en-swarm">
+<p>Reimagines circle packing as a chronological commit swarm: <code>parents</code> becomes a month bucket instead of a tree parent, and every leaf is one real commit — a genuine front-chain circle-packing pass clusters each month's commits into an organic, non-overlapping blob strung along a single dated baseline. Circle size encodes lines changed, fill color encodes the commit type (feat / fix / docs / refactor / chore / style / perf / test), and automated commits render as hexagons instead of circles. The bundled demo plots SeraPlot's own real git history.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"swarm"</code></span><span><strong>Aliases</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
 </div>
 </div>
 </div>
@@ -147,6 +154,7 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 <button class="sp-cls-tab" onclick="spCls('cp-fr','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bulle</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Focus feuilles</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','swarm',this)"><span class="sp-cic">◐</span><span class="sp-clb">Essaim</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-fr-basic">
@@ -178,6 +186,12 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"leaf_focus"</code></span><span><strong>Alias</strong> <code>leaf_focus / leaves / leaves_only / focus</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-leaf_focus.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-swarm">
+<p>Réinvente le circle packing en essaim chronologique de commits : <code>parents</code> devient un mois plutôt qu'un parent d'arbre, et chaque feuille est un commit réel — un véritable algorithme de tassement en chaîne frontale regroupe les commits de chaque mois en un amas organique et sans chevauchement, enfilé sur une seule frise datée. La taille du cercle encode les lignes modifiées, la couleur le type de commit (feat / fix / docs / refactor / chore / style / perf / test), et les commits automatisés s'affichent en hexagones plutôt qu'en cercles. La démo intégrée trace le véritable historique git de SeraPlot.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code></span><span><strong>Alias</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
 </div>
 </div>
 </div>
