@@ -140,7 +140,6 @@ pub fn render(cfg: &SankeyConfig) -> String {
     let atmo_col = colorscale_color(scale, mean_t);
 
     push_b(&mut buf, b"<defs>");
-    push_b(&mut buf, b"<filter id=\"spglow\" x=\"-80%\" y=\"-80%\" width=\"260%\" height=\"260%\"><feGaussianBlur stdDeviation=\"3.2\"/></filter>");
     push_b(&mut buf, b"<filter id=\"spshadow\" x=\"-80%\" y=\"-80%\" width=\"260%\" height=\"260%\"><feDropShadow dx=\"0\" dy=\"2\" stdDeviation=\"2.1\" flood-color=\"#0f172a\" flood-opacity=\"0.22\"/></filter>");
     push_b(&mut buf, b"<radialGradient id=\"spatmo\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#");
     buf.extend_from_slice(&hex6(atmo_col));
@@ -190,16 +189,6 @@ pub fn render(cfg: &SankeyConfig) -> String {
         push_b(&mut buf, b"\"/>");
     }
     push_b(&mut buf, b"</g>");
-
-    push_b(&mut buf, b"<circle cx=\"");
-    push_f2(&mut buf, cx);
-    push_b(&mut buf, b"\" cy=\"");
-    push_f2(&mut buf, cy);
-    push_b(&mut buf, b"\" r=\"");
-    push_f2(&mut buf, r_hub * 1.9);
-    push_b(&mut buf, b"\" fill=\"#");
-    buf.extend_from_slice(&hex6(ink));
-    push_b(&mut buf, b"\" opacity=\"0.14\" filter=\"url(#spglow)\"/>");
 
     let time_top: [f64; 4] = [3.0, 6.0, 9.0, 12.0];
     let time_bottom: [f64; 4] = [15.0, 18.0, 21.0, 24.0];
@@ -306,18 +295,6 @@ pub fn render(cfg: &SankeyConfig) -> String {
         let ph = 12.0 + t * 32.0;
         let pw = 6.0;
         let label = cfg.labels[li].as_str();
-
-        push_b(&mut buf, b"<rect x=\"");
-        push_f2(&mut buf, tx - pw);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, ty - ph / 2.0 - 3.0);
-        push_b(&mut buf, b"\" width=\"");
-        push_f2(&mut buf, pw * 2.0);
-        push_b(&mut buf, b"\" height=\"");
-        push_f2(&mut buf, ph + 6.0);
-        push_b(&mut buf, b"\" rx=\"3\" fill=\"#");
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" opacity=\"0.4\" filter=\"url(#spglow)\"/>");
 
         push_b(&mut buf, b"<rect data-idx=\"");
         push_i(&mut buf, li as i32);
