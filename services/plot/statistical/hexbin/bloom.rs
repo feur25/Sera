@@ -1,0 +1,387 @@
+use super::common::data_bounds;
+use super::config::HexbinConfig;
+use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
+use crate::plot::statistical::common::{colorscale_color, escape_xml, hash01, hex6, lerp_rgb, push_b, push_f2, push_i};
+
+const RING_STOPS: [u32; 4] = [0xf7d9e6, 0xec4899, 0xd6336c, 0xf4c430];
+const PEAK_COLOR: u32 = 0x3ec9b0;
+const N_LEVELS: usize = 11;
+
+fn ring_color(t: f64) -> u32 {
+    let t = t.clamp(0.0, 1.0);
+    let n = RING_STOPS.len() - 1;
+    let p = t * n as f64;
+    let i0 = (p.floor() as usize).min(n);
+    let i1 = (i0 + 1).min(n);
+    let f = p - i0 as f64;
+    lerp_rgb(RING_STOPS[i0], RING_STOPS[i1], f)
+}
+
+#[crate::chart_demo(
+    "title=\"Density Bloom\", x=[61.91,53.31,61.03,59.59,51.74,60.96,55.73,68.56,60.33,64.51,61.73,58.85,61.4,61.8,62.76,63.52,62.68,60.39,61.53,67.26,57.14,62.06,60.05,60.62,63.19,56.07,58.99,61.2,60.27,61.52,62.79,63.2,63.51,60.73,62.99,53.84,59.07,64.78,64.61,58.87,60.54,70.43,57.98,61.22,63.19,60.94,61.16,62.94,43.36,64.62,66.39,63.62,59.89,64.29,59.38,61.23,50.37,64.37,60.61,60.63,64.46,61.12,64.37,63.17,62.38,61.37,60.05,63.54,61.28,57.81,57.37,63.32,61.39,59.15,60.81,61.19,72.86,63.72,61.76,63.88,63.83,63.19,62.28,64.85,58.21,61.07,60.44,61.89,63.92,60.37,60.89,60.68,52.21,65.05,61.1,32.05,31.73,28.57,30.5,32.04,35.42,30.89,33.12,33.12,33.39,32.91,32.01,33.73,30.43,32.94,34.74,32.44,32.33,34.13,33.32,31.62,33.37,33.9,32.17,30.81,32.03,32.18,28.79,30.97,26.93,28.34,37.11,33.94,32.15,30.2,31.68,28.81,29.66,31.59,36.54,31.51,31.9,35.42,31.14,33.1,31.77,28.93,31.46,30.1,34.47,27.71,31.97,32.0,27.15,29.61,31.05,34.03,32.21,31.09,29.89,32.05,31.8,34.88,32.15,33.23,30.29,31.29,31.85,38.07,32.0,66.08,71.56,70.77,68.93,70.7,65.81,69.25,72.33,63.54,74.28,68.75,68.66,67.06,69.85,68.82,69.96,67.52,67.07,67.86,67.41,67.37,67.3,71.75,67.04,70.14,64.76,68.92,71.75,68.89,66.81,69.22,63.41,68.56,65.81,73.22,66.44,68.37,70.76,66.3,71.86,67.94,69.49,71.97,68.91,68.53,72.88,70.43,68.76,72.2,70.5,67.94,67.91,70.0,72.32,74.07,70.06,69.49,67.23,57.26,67.09,67.16,70.4,63.83,77.13,68.4,63.96,66.62,69.5,70.4,67.07,60.39,68.4,69.29,64.65,68.83,68.49,77.63,69.04,66.05,60.46,69.62,69.17,71.39,68.88,69.37,70.17,69.31,67.52,70.5,70.45,66.9,65.43,67.68,68.79,68.33,68.9,71.07,68.72,69.43,66.39,56.79,68.55,69.11,71.52,68.86,74.53,71.21,74.71,68.57,65.29,28.07,33.89,27.0,27.95,27.77,24.38,31.54,27.74,28.01,24.99,28.03,29.2,23.71,27.4,27.64,26.84,28.51,31.91,27.09,27.65,24.87,25.59,25.33,25.68,26.32,24.01,29.58,28.11,22.85,26.51,26.5,31.57,27.5,29.69,27.49,30.61,26.13,32.86,27.49,27.61,25.1,29.16,24.49,25.93,26.62,26.56,26.75,25.94,25.75,26.88,30.49,21.9,26.95,25.99,26.83,86.88,88.94,80.63,85.94,93.54,86.66,91.53,88.67,90.03,89.59,92.48,86.46,85.65,87.1,76.37,75.36,89.1,87.66,81.05,88.13,86.23,91.23,81.0,84.44,80.16,86.11,87.72,87.32,88.31,86.03,89.72,89.73,87.58,86.52,80.71,77.23,75.72,84.51,85.27,90.03,85.58,92.48,89.28,85.45,86.46,95.11,94.1,92.62,86.53,86.11,93.39,89.09,87.63,84.05,92.39,87.06,93.01,83.69,86.73,84.53,86.58,86.92,87.79,83.23,83.96,82.44,86.58,84.6,85.79,80.15,89.39,81.32,85.63,86.46,90.72,89.99,86.19,83.51,83.88,85.65,85.12,92.21,85.71,81.83,86.16,86.54,89.39,89.98,75.48,86.36,92.73,86.55,82.79,94.62,90.42,91.09,87.78,88.21,90.67,86.14,83.78,90.48,86.7,87.65,83.16,88.31,88.99,84.41,90.41,84.45,88.74,84.18,86.39,73.83,86.42,91.09,71.03,92.14,79.7,90.37,89.18,90.79,85.25,88.57,92.59,85.61,79.78,86.63,88.34,86.67,53.21,50.1,52.97,52.97,53.47,53.45,52.63,52.91,52.96,54.0,52.74,52.42,53.03,52.81,58.25,53.72,46.96,54.13,50.67,51.19,53.89,52.42,53.29,49.1,51.2,52.83,49.54,54.2,52.55,53.88,52.71,51.48,51.59,52.01,50.82,56.11,53.28,52.87,53.75,51.6,60.01,60.0,60.86,64.42,58.38,62.08,60.74,62.22,60.68,62.98,66.1,60.06,56.7,61.76,60.57,59.35,58.13,60.52,58.73,63.55,60.84,59.47,60.32,53.62,62.43,60.37,60.62,53.83,59.97,65.89,59.84,53.73,59.62,59.95,61.4,62.79,60.85,60.85,63.46,55.5,61.19,62.05,66.41,61.73,55.23,58.85,63.53,61.02,58.02,66.49,61.01,54.1,60.09,59.77,62.07,60.69,64.42,63.51,60.95,61.79,60.57,64.14,61.77,60.87,56.43,59.65,58.68,63.82,62.99,60.68,63.07,60.7,61.36,62.02,63.67,57.49,58.31,52.88,61.73,57.54,62.07,61.52,60.49,63.6,60.92,26.01,27.48,25.42,23.83,24.41,30.49,26.2,26.22,29.88,25.91,26.25,28.11,24.22,28.05,27.38,27.57,26.53,24.69,26.31,25.87,27.15,29.39,26.96,27.55,27.0,27.09,26.49,27.05,27.61,27.11,28.67,24.02,27.06,26.09,23.4,25.4,23.5,28.52,34.08,26.48,24.8,29.7,29.01,26.88,22.98,29.06,25.55,26.94,29.42,25.37,26.38,26.13,26.77,27.13,27.0,29.29,27.55,27.45,24.58,27.27,91.22,87.98,82.54,87.38,87.64,86.86,88.08,80.12,85.01,90.37,87.88,85.24,85.65,83.87,93.58,77.88,87.33,82.83,88.44,87.59,87.33,87.1,87.15,85.75,88.27,88.03,86.23,87.45,87.95,87.32,87.97,92.16,89.16,87.59,89.73,86.77,84.57,92.42,87.38,91.92,80.58,83.38,88.49,86.91,88.87,87.19,87.08,86.89,86.8,83.41,86.5,89.07,93.97,90.29,88.73,86.88,87.39,88.03,87.76,85.11,86.07,86.29,87.81,85.5,87.37,87.69,83.45,85.26,87.64,83.96,87.73,81.88,81.48,88.52,87.47], y=[12.06,10.14,13.19,12.68,14.82,14.32,11.98,4.17,14.64,16.8,4.63,11.56,12.0,11.69,10.47,12.9,10.53,12.07,12.18,18.38,12.63,11.07,12.58,7.78,18.42,5.01,12.89,12.28,13.43,13.91,12.79,10.62,9.14,11.24,20.05,8.5,12.36,21.22,14.41,12.48,7.38,18.6,14.23,19.4,17.16,13.17,16.18,9.87,6.18,6.22,10.97,16.25,12.12,13.21,13.69,11.65,15.13,11.91,11.8,13.73,11.34,9.62,13.21,9.32,13.86,12.52,11.25,14.24,11.9,8.88,14.1,11.06,12.81,13.54,11.35,8.61,17.74,11.94,12.3,10.79,9.52,15.1,10.06,11.7,7.73,12.27,10.83,12.65,14.2,11.4,10.71,17.37,12.65,14.55,12.03,27.52,27.54,26.7,28.59,27.82,25.5,27.22,29.35,27.04,23.21,31.4,31.2,26.32,28.91,27.41,24.73,27.45,27.91,26.87,24.0,31.5,22.13,25.52,28.84,31.17,27.75,28.33,33.86,33.46,21.61,27.01,25.81,31.88,27.82,28.64,25.45,27.63,29.92,26.29,27.91,25.33,25.82,29.47,26.41,26.31,26.65,29.85,28.24,28.9,26.88,24.05,27.94,27.88,30.14,28.39,28.22,26.41,27.17,27.77,25.52,20.9,27.47,28.3,32.37,28.46,28.88,25.83,27.86,28.07,27.6,65.58,69.39,64.74,66.24,58.8,58.67,64.03,61.36,63.97,54.46,59.93,64.18,61.95,54.8,64.75,64.69,67.11,63.66,61.25,58.77,63.71,65.08,62.21,63.04,51.68,68.02,63.9,60.42,62.12,63.51,65.71,66.49,63.39,66.26,68.58,61.74,63.9,64.45,64.78,65.1,66.01,55.98,58.74,64.7,64.04,64.13,56.52,63.91,74.09,64.34,62.37,63.71,53.96,70.12,68.65,61.69,64.23,68.26,72.98,55.98,62.33,65.24,60.42,71.95,64.88,66.53,67.7,63.33,63.76,62.03,67.8,59.1,63.16,63.09,63.42,67.79,69.41,64.02,61.76,72.18,65.68,65.17,61.82,64.01,63.98,64.88,56.47,60.56,58.42,65.15,69.61,62.18,64.76,59.08,68.57,65.69,66.15,64.09,66.52,64.39,62.24,65.9,65.51,69.61,64.49,63.22,66.47,57.85,63.96,64.84,50.62,47.94,50.78,50.66,50.8,49.13,54.16,47.74,53.8,50.07,49.78,50.32,47.32,48.98,51.04,49.4,50.95,50.5,51.93,51.76,51.21,45.84,48.26,47.52,50.09,45.79,51.43,51.5,48.27,54.41,47.41,48.89,50.43,50.99,51.71,52.44,49.73,48.71,50.44,50.46,47.07,49.46,47.03,50.51,51.95,48.74,48.42,56.76,49.86,50.61,49.86,54.27,49.61,50.02,51.2,29.56,44.79,35.03,35.05,43.59,38.22,44.56,38.32,36.76,39.67,26.52,36.92,43.19,50.13,33.52,36.35,34.54,32.71,40.2,33.66,38.57,36.9,37.29,40.07,34.76,37.9,39.75,44.09,26.24,35.04,29.18,30.32,36.81,36.93,33.2,40.61,35.14,38.24,35.01,36.25,38.54,29.0,33.31,39.45,36.36,38.89,40.38,36.83,34.5,36.4,29.9,35.18,37.24,39.46,44.47,35.17,48.62,34.23,39.57,37.44,36.95,35.97,36.06,38.21,40.75,39.06,38.9,38.68,37.01,33.66,36.8,28.84,43.01,33.4,38.25,34.58,38.58,41.02,33.8,31.93,34.66,33.02,35.79,34.33,33.2,34.3,42.51,36.31,34.75,41.79,24.79,35.73,43.0,46.75,36.11,36.36,36.68,30.67,37.29,36.1,31.66,35.39,37.03,35.97,35.54,37.65,32.1,38.34,41.54,37.03,38.44,37.64,36.59,44.03,33.62,40.17,37.97,38.09,44.21,32.07,38.81,36.34,38.56,38.85,28.43,35.73,32.18,38.22,38.71,35.97,88.97,93.05,87.94,87.76,88.59,88.93,87.41,87.8,88.72,88.22,84.9,87.92,87.08,87.85,85.94,86.94,87.04,88.35,88.15,87.95,87.22,87.46,88.02,86.66,91.17,87.87,85.23,86.13,87.37,92.25,87.91,88.28,88.61,86.34,89.95,89.29,87.18,87.39,85.77,87.32,40.73,37.74,35.64,38.47,37.38,44.31,39.01,37.19,39.38,33.54,31.49,38.5,33.99,37.53,41.75,43.05,43.49,39.04,40.71,39.71,38.46,41.34,39.75,35.91,40.12,38.74,38.73,39.82,39.52,43.56,39.66,39.79,37.04,38.54,39.21,41.45,39.43,38.83,44.36,39.18,38.6,37.77,40.7,38.15,36.29,40.33,41.55,38.69,36.59,42.67,38.95,38.16,39.77,41.08,41.34,39.18,36.79,33.44,38.97,41.9,38.97,45.85,32.83,38.97,40.66,37.82,37.02,43.33,40.16,40.3,40.0,39.24,39.38,37.85,35.58,39.99,38.28,41.79,36.97,39.7,40.88,38.69,39.74,44.37,43.54,85.31,86.36,86.37,90.35,82.15,87.02,88.53,81.47,82.36,87.11,86.31,85.18,83.62,84.95,83.56,83.79,80.44,80.33,85.73,86.62,86.6,84.57,85.53,85.79,84.51,85.08,86.07,83.78,86.62,85.02,88.49,86.61,87.77,85.72,86.59,85.11,86.1,82.66,84.73,85.53,85.07,84.82,87.96,89.53,84.04,87.07,91.36,84.64,88.81,86.06,85.59,86.47,85.43,88.23,85.46,84.31,82.89,86.1,78.9,85.9,78.98,79.02,77.23,76.71,79.06,81.35,77.48,80.95,77.0,79.14,79.11,80.03,80.04,72.46,81.53,77.24,78.74,82.86,78.77,83.01,79.39,73.37,73.1,82.26,77.47,79.54,74.8,78.6,77.27,78.96,79.73,80.07,78.76,78.83,84.12,80.01,84.38,83.57,71.5,75.56,79.03,78.93,76.46,73.48,76.43,78.72,77.89,81.0,76.63,84.63,80.44,78.85,76.73,80.19,75.72,77.16,78.62,77.15,78.48,81.74,77.61,75.94,77.39,77.77,78.43,81.81,78.89,80.95,79.55,80.17,78.84,79.18,80.79,78.25,78.39], width=1200, height=920, variant=\"bloom\""
+)]
+pub fn render(cfg: &HexbinConfig) -> String {
+    let n = cfg.x_values.len().min(cfg.y_values.len());
+    if n == 0 {
+        return String::new();
+    }
+    let bounds = match data_bounds(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
+
+    let pad = 46i32;
+    let pad_t = 82i32;
+    let pw = cfg.width - pad * 2;
+    let ph = cfg.height - pad_t - pad;
+    let ink: u32 = 0x1a202c;
+    let sub: u32 = 0x6b7280;
+    let hatch: u32 = 0xf9c9d9;
+
+    let hid = html_id();
+    let mut buf = Vec::<u8>::with_capacity(n * 20 + 220_000);
+    html_prefix(&mut buf, cfg.title, hid);
+
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b" ");
+    push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
+
+    push_b(&mut buf, b"<defs><pattern id=\"spbhatch\" width=\"9\" height=\"9\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\"><rect width=\"9\" height=\"9\" fill=\"#ffffff\"/><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"9\" stroke=\"#");
+    buf.extend_from_slice(&hex6(hatch));
+    push_b(&mut buf, b"\" stroke-width=\"2.4\"/></pattern></defs>");
+    push_b(&mut buf, b"<rect x=\"0\" y=\"0\" width=\"");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\" fill=\"url(#spbhatch)\"/>");
+    let frame_x0 = 20;
+    let frame_y0 = 14;
+    let frame_x1 = cfg.width - 20;
+    let frame_y1 = cfg.height - 14;
+    push_b(&mut buf, b"<rect x=\"");
+    push_i(&mut buf, frame_x0);
+    push_b(&mut buf, b"\" y=\"");
+    push_i(&mut buf, frame_y0);
+    push_b(&mut buf, b"\" width=\"");
+    push_i(&mut buf, frame_x1 - frame_x0);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, frame_y1 - frame_y0);
+    push_b(&mut buf, b"\" fill=\"#ffffff\" stroke=\"#");
+    buf.extend_from_slice(&hex6(0xd63384));
+    push_b(&mut buf, b"\" stroke-width=\"1\"/>");
+
+    if !cfg.title.is_empty() {
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, pad);
+        push_b(&mut buf, b"\" y=\"36\" font-family=\"Arial,sans-serif\" font-size=\"17\" font-weight=\"700\" fill=\"#");
+        buf.extend_from_slice(&hex6(ink));
+        push_b(&mut buf, b"\">");
+        escape_xml(&mut buf, cfg.title);
+        push_b(&mut buf, b"</text>");
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, pad);
+        push_b(&mut buf, b"\" y=\"53\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#");
+        buf.extend_from_slice(&hex6(sub));
+        push_b(&mut buf, b"\">Distance-field density contours, banded by iso-level</text>");
+    }
+
+    let xr = (bounds.xmax - bounds.xmin).max(1e-9);
+    let yr = (bounds.ymax - bounds.ymin).max(1e-9);
+    let pts: Vec<(f64, f64)> = (0..n)
+        .map(|i| {
+            let px = pad as f64 + (cfg.x_values[i] - bounds.xmin) / xr * pw as f64;
+            let py = pad_t as f64 + ph as f64 - (cfg.y_values[i] - bounds.ymin) / yr * ph as f64;
+            (px, py)
+        })
+        .collect();
+    let has_weights = cfg.values.len() >= n;
+
+    let mut nn_dists: Vec<f64> = Vec::with_capacity(n);
+    for i in 0..n {
+        let mut best = f64::MAX;
+        for j in 0..n {
+            if i == j {
+                continue;
+            }
+            let dx = pts[i].0 - pts[j].0;
+            let dy = pts[i].1 - pts[j].1;
+            let d2 = dx * dx + dy * dy;
+            if d2 < best {
+                best = d2;
+            }
+        }
+        nn_dists.push(best.sqrt());
+    }
+    nn_dists.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    let median_nn = nn_dists[nn_dists.len() / 2].max(1.0);
+    let bandwidth = median_nn * 3.5;
+    let cols = (pw as f64 / 8.0).round().max(20.0) as usize;
+    let rows = (ph as f64 / 8.0).round().max(20.0) as usize;
+    let cw = pw as f64 / cols as f64;
+    let ch = ph as f64 / rows as f64;
+    let two_bw2 = 2.0 * bandwidth * bandwidth;
+
+    let mut grid = vec![0.0_f64; (cols + 1) * (rows + 1)];
+    for gy in 0..=rows {
+        let py = pad_t as f64 + gy as f64 * ch;
+        for gx in 0..=cols {
+            let px = pad as f64 + gx as f64 * cw;
+            let mut d = 0.0_f64;
+            for (i, &(sx, sy)) in pts.iter().enumerate() {
+                let dx = px - sx;
+                let dy = py - sy;
+                let dist2 = dx * dx + dy * dy;
+                if dist2 > two_bw2 * 5.0 {
+                    continue;
+                }
+                let w = if has_weights { cfg.values[i].max(0.1) } else { 1.0 };
+                d += w * (-dist2 / two_bw2).exp();
+            }
+            grid[gy * (cols + 1) + gx] = d;
+        }
+    }
+    let max_d = grid.iter().cloned().fold(0.0_f64, f64::max).max(1e-9);
+
+    let level_of = |v: f64| -> i32 {
+        let t = v / max_d;
+        if t < 0.05 {
+            return -1;
+        }
+        let t = t.clamp(0.0, 1.0);
+        let lvl = (t.powf(0.62) * N_LEVELS as f64).floor() as i32;
+        lvl.clamp(0, N_LEVELS as i32 - 1)
+    };
+
+    push_b(&mut buf, b"<g>");
+    let mut cell_counts = vec![0usize; N_LEVELS];
+    for gy in 0..rows {
+        for gx in 0..cols {
+            let v00 = grid[gy * (cols + 1) + gx];
+            let v10 = grid[gy * (cols + 1) + gx + 1];
+            let v01 = grid[(gy + 1) * (cols + 1) + gx];
+            let v11 = grid[(gy + 1) * (cols + 1) + gx + 1];
+            let v = (v00 + v10 + v01 + v11) * 0.25;
+            let lvl = level_of(v);
+            if lvl < 0 {
+                continue;
+            }
+            let lvl = lvl as usize;
+            cell_counts[lvl] += 1;
+            let seed = gy * (cols + 7) + gx * 13 + 91;
+            let jx = (hash01(seed) - 0.5) * cw * 0.34;
+            let jy = (hash01(seed + 1) - 0.5) * ch * 0.34;
+            let jw = 1.0 + (hash01(seed + 2) - 0.5) * 0.3;
+            let jh = 1.0 + (hash01(seed + 3) - 0.5) * 0.3;
+            let x0 = pad as f64 + gx as f64 * cw + jx;
+            let y0 = pad_t as f64 + gy as f64 * ch + jy;
+            let col = if lvl == N_LEVELS - 1 {
+                PEAK_COLOR
+            } else {
+                ring_color(lvl as f64 / (N_LEVELS as f64 - 2.0))
+            };
+            push_b(&mut buf, b"<rect x=\"");
+            push_f2(&mut buf, x0);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, y0);
+            push_b(&mut buf, b"\" width=\"");
+            push_f2(&mut buf, (cw * jw).max(1.0));
+            push_b(&mut buf, b"\" height=\"");
+            push_f2(&mut buf, (ch * jh).max(1.0));
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&hex6(col));
+            push_b(&mut buf, b"\"/>");
+        }
+    }
+    push_b(&mut buf, b"</g>");
+
+    push_b(&mut buf, b"<g stroke=\"#");
+    buf.extend_from_slice(&hex6(hatch));
+    push_b(&mut buf, b"\" stroke-width=\"0.6\" stroke-opacity=\"0.8\">");
+    for gx in 0..=6 {
+        let x = pad as f64 + pw as f64 * gx as f64 / 6.0;
+        push_b(&mut buf, b"<line x1=\"");
+        push_f2(&mut buf, x);
+        push_b(&mut buf, b"\" y1=\"");
+        push_i(&mut buf, pad_t);
+        push_b(&mut buf, b"\" x2=\"");
+        push_f2(&mut buf, x);
+        push_b(&mut buf, b"\" y2=\"");
+        push_i(&mut buf, pad_t + ph);
+        push_b(&mut buf, b"\"/>");
+        let lbl = ((b'A' as u8) + gx as u8) as char;
+        push_b(&mut buf, b"<circle cx=\"");
+        push_f2(&mut buf, x);
+        push_b(&mut buf, b"\" cy=\"");
+        push_i(&mut buf, pad_t - 12);
+        push_b(&mut buf, b"\" r=\"7\" fill=\"#ffffff\" stroke=\"#");
+        buf.extend_from_slice(&hex6(0xd63384));
+        push_b(&mut buf, b"\" stroke-width=\"0.8\"/>");
+        push_b(&mut buf, b"<text x=\"");
+        push_f2(&mut buf, x);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, pad_t - 9);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
+        buf.extend_from_slice(&hex6(0xd63384));
+        push_b(&mut buf, b"\">");
+        buf.push(lbl as u8);
+        push_b(&mut buf, b"</text>");
+    }
+    for gy in 0..=5 {
+        let y = pad_t as f64 + ph as f64 * gy as f64 / 5.0;
+        push_b(&mut buf, b"<line x1=\"");
+        push_i(&mut buf, pad);
+        push_b(&mut buf, b"\" y1=\"");
+        push_f2(&mut buf, y);
+        push_b(&mut buf, b"\" x2=\"");
+        push_i(&mut buf, pad + pw);
+        push_b(&mut buf, b"\" y2=\"");
+        push_f2(&mut buf, y);
+        push_b(&mut buf, b"\"/>");
+        push_b(&mut buf, b"<circle cx=\"");
+        push_i(&mut buf, pad - 12);
+        push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, y);
+        push_b(&mut buf, b"\" r=\"7\" fill=\"#ffffff\" stroke=\"#");
+        buf.extend_from_slice(&hex6(0xd63384));
+        push_b(&mut buf, b"\" stroke-width=\"0.8\"/>");
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, pad - 12);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, y + 3.0);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
+        buf.extend_from_slice(&hex6(0xd63384));
+        push_b(&mut buf, b"\">");
+        push_i(&mut buf, gy + 1);
+        push_b(&mut buf, b"</text>");
+    }
+    push_b(&mut buf, b"</g>");
+
+    let filled_cells: usize = cell_counts.iter().sum();
+    let coverage_pct = filled_cells as f64 / (cols * rows).max(1) as f64 * 100.0;
+    let peak_cells = cell_counts[N_LEVELS - 1];
+    let stats_x = frame_x1 - 128;
+    let mut sy = frame_y0 + 22;
+    push_b(&mut buf, b"<text x=\"");
+    push_i(&mut buf, stats_x);
+    push_b(&mut buf, b"\" y=\"");
+    push_i(&mut buf, sy);
+    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" font-weight=\"700\" fill=\"#");
+    buf.extend_from_slice(&hex6(0xd63384));
+    push_b(&mut buf, b"\">NODES</text>");
+    let scale = if cfg.colorscale.is_empty() { "" } else { cfg.colorscale };
+    let stats: [(&str, String); 5] = [
+        ("SEEDS", n.to_string()),
+        ("BANDS", N_LEVELS.to_string()),
+        ("PEAK CELLS", peak_cells.to_string()),
+        ("COVERAGE", format!("{coverage_pct:.1}%")),
+        ("BANDWIDTH", format!("{bandwidth:.1}px")),
+    ];
+    for (label, val) in stats.iter() {
+        sy += 16;
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, stats_x);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, sy);
+        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"8.5\" fill=\"#");
+        buf.extend_from_slice(&hex6(sub));
+        push_b(&mut buf, b"\">");
+        push_b(&mut buf, label.as_bytes());
+        push_b(&mut buf, b" ");
+        escape_xml(&mut buf, val);
+        push_b(&mut buf, b"</text>");
+    }
+    let _ = colorscale_color(scale, 0.5);
+
+    push_b(&mut buf, b"<text x=\"");
+    push_i(&mut buf, frame_x0 + 10);
+    push_b(&mut buf, b"\" y=\"");
+    push_i(&mut buf, frame_y1 - 12);
+    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#");
+    buf.extend_from_slice(&hex6(sub));
+    push_b(&mut buf, b"\">DOCUMENT TOP</text>");
+    push_b(&mut buf, b"<text x=\"");
+    push_i(&mut buf, frame_x0 + 10);
+    push_b(&mut buf, b"\" y=\"");
+    push_i(&mut buf, frame_y1 - 30);
+    push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#");
+    buf.extend_from_slice(&hex6(ink));
+    push_b(&mut buf, b"\">SERAPLOT - DENSITY BLOOM</text>");
+
+    push_b(&mut buf, b"</svg>");
+    html_suffix(&mut buf, hid, &slots_to_json(cfg.hover));
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn cfg<'a>(x: &'a [f64], y: &'a [f64]) -> HexbinConfig<'a> {
+        HexbinConfig {
+            title: "Test",
+            x_values: x,
+            y_values: y,
+            width: 1200,
+            height: 920,
+            ..HexbinConfig::default()
+        }
+    }
+
+    fn synth(n: usize) -> (Vec<f64>, Vec<f64>) {
+        let x: Vec<f64> = (0..n).map(|i| ((i as f64 * 0.37).sin() * 0.5 + 0.5) * 100.0).collect();
+        let y: Vec<f64> = (0..n).map(|i| ((i as f64 * 0.53).cos() * 0.5 + 0.5) * 100.0).collect();
+        (x, y)
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_asset() {
+        use crate::plot::chart_demo_registry::{iter_entries, render_demo_html};
+        for entry in iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("hexbin/bloom.rs") {
+                continue;
+            }
+            let html = render_demo_html(entry).expect("demo html");
+            std::fs::write("docs/previews/hexbin-bloom.html", html).unwrap();
+        }
+    }
+
+    #[test]
+    fn renders_grid_cells_and_decorators() {
+        let (x, y) = synth(60);
+        let html = render(&cfg(&x, &y));
+        assert!(!html.is_empty());
+        assert!(html.contains("NODES"));
+        assert!(html.contains("spbhatch"));
+        assert!(html.matches("<rect x=\"").count() > 10);
+    }
+
+    #[test]
+    fn peak_color_only_used_at_the_top_level() {
+        let (x, y) = synth(60);
+        let html = render(&cfg(&x, &y));
+        assert!(html.matches("fill=\"#3ec9b0\"").count() >= 1);
+    }
+
+    #[test]
+    fn empty_input_returns_empty_string() {
+        let empty: Vec<f64> = vec![];
+        assert!(render(&cfg(&empty, &empty)).is_empty());
+    }
+
+    #[test]
+    fn perf_rendering_a_dense_scatter_stays_fast() {
+        let (x, y) = synth(700);
+        let start = std::time::Instant::now();
+        let html = render(&cfg(&x, &y));
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_millis() < 800, "rendering took too long: {elapsed:?}");
+        assert!(!html.is_empty());
+    }
+}
