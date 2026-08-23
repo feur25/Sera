@@ -12,5 +12,6 @@ crate::plot_family! {
         Marginals => "marginals" | "joint" | "with_histograms" | "density_marginals",
         Voronoi   => "voronoi" | "density_voronoi" | "tessellation" | "particle_density" | "cells",
         Neural    => "neural" | "mesh" | "turbidity" | "particle_mesh" | "neural_mesh",
+        Bloom     => "bloom" | "contour" | "density_bloom" | "iso_contour" | "organic_contour",
     }
 }

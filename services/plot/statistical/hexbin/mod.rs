@@ -1,5 +1,6 @@
 use crate::plot::{apply, parse_all};
 pub mod basic;
+pub mod bloom;
 pub mod common;
 pub mod config;
 pub mod dotted;
@@ -33,6 +34,7 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Marginals => marginals::render(cfg),
         Voronoi => voronoi::render(cfg),
         Neural => neural::render(cfg),
+        Bloom => bloom::render(cfg),
     }
 }
 
