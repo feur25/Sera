@@ -5,6 +5,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod flat;
+pub mod matrix;
 pub mod swarm;
 pub mod variant;
 
@@ -20,6 +21,7 @@ pub fn render_circle_pack_html(cfg: &CirclePackConfig) -> String {
         Bubble   => bubble::render(cfg),
         LeafFocus => basic::render_leaf_focus(cfg),
         Swarm    => swarm::render(cfg),
+        Matrix   => matrix::render(cfg),
     }
 }
 
@@ -36,6 +38,10 @@ pub fn build(input: &str) -> String {
     let labels  = a.labels.unwrap_or_default();
     let parents = a.parents.unwrap_or_default();
     let values  = a.values.unwrap_or_default();
+    let categories  = a.categories.clone().unwrap_or_default();
+    let categories2 = a.categories2.clone().unwrap_or_default();
+    let symbols      = o.symbols.clone().unwrap_or_default();
+    let color_values = o.color_values.clone().unwrap_or_default();
     let hover   = o.hj();
     let variant = CirclePackVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let palette = o.pal();
@@ -51,6 +57,10 @@ pub fn build(input: &str) -> String {
         width:   o.w(700),
         height:  o.h(700),
         show_labels: o.show_text.unwrap_or(true),
+        categories:  &categories,
+        categories2: &categories2,
+        symbols:     &symbols,
+        color_values: &color_values,
         ..CirclePackConfig::default()
     });
     apply(html, &o)
