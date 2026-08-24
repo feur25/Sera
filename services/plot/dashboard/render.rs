@@ -158,10 +158,10 @@ pub(super) fn render_el(el: &El, defs: &mut String, body: &mut String) {
                 ));
             } else {
                 body.push_str(&format!(
-                    "<circle class=\"sp-anch\" data-sp-grp=\"{}\" data-r=\"{:.2}\" \
+                    "<circle class=\"sp-anch\" data-sp-grp=\"{}\" data-group=\"{}\" data-r=\"{:.2}\" \
                      cx=\"{:.2}\" cy=\"{:.2}\" r=\"{:.2}\" fill=\"{}\" \
                      stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{} pointer-events=\"all\"/>\n",
-                    group, r, cx, cy, r, fill, stroke, sw, opacity, name_attr(name)
+                    group, group, r, cx, cy, r, fill, stroke, sw, opacity, name_attr(name)
                 ));
             }
         }
@@ -255,17 +255,19 @@ pub(super) fn render_el(el: &El, defs: &mut String, body: &mut String) {
             stroke,
             sw,
             opacity,
+            group,
             name,
             ..
         } => {
             body.push_str(&format!(
                 "<polygon points=\"{}\" fill=\"{}\" stroke=\"{}\" \
-                 stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}/>\n",
+                 stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}{}/>\n",
                 pts_to_svg(pts),
                 fill,
                 stroke,
                 sw,
                 opacity,
+                grp_attr(group),
                 name_attr(name)
             ));
         }

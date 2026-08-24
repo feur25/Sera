@@ -156,6 +156,7 @@ pub(super) enum El {
         sw: f64,
         opacity: f64,
         layer: Layer,
+        group: String,
         name: String,
     },
     RawPath {

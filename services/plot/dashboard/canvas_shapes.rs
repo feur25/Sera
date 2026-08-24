@@ -350,7 +350,7 @@ impl Canvas {
     }
 
     #[pyo3(signature = (points, fill = "none", stroke = "#ffffff",
-                        stroke_width = 1.5, opacity = 1.0, layer = "fg", name = ""))]
+                        stroke_width = 1.5, opacity = 1.0, layer = "fg", hover_group = "", name = ""))]
     pub fn polygon(
         &mut self,
         points: Vec<Vec<f64>>,
@@ -359,6 +359,7 @@ impl Canvas {
         stroke_width: f64,
         opacity: f64,
         layer: &str,
+        hover_group: &str,
         name: &str,
     ) -> usize {
         let element_idx = self.elements.len();
@@ -370,6 +371,7 @@ impl Canvas {
             sw: stroke_width,
             opacity,
             layer: Layer::from_str(layer),
+            group: hover_group.to_string(),
             name: name.to_string(),
         });
         element_idx
@@ -543,6 +545,7 @@ impl Canvas {
                 sw: stroke_width,
                 opacity,
                 layer: Layer::from_str(layer),
+                group: String::new(),
                 name,
             });
             out.push(element_idx);

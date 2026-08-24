@@ -27,7 +27,8 @@ pub(super) fn grp_attr(group: &str) -> String {
     if group.is_empty() {
         String::new()
     } else {
-        format!(" data-sp-grp=\"{}\"", escape_html(group))
+        let g = escape_html(group);
+        format!(" data-sp-grp=\"{g}\" data-group=\"{g}\"")
     }
 }
 

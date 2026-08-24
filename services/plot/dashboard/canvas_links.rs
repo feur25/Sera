@@ -22,6 +22,7 @@ impl Canvas {
                 El::Text { group, .. } => Some(group),
                 El::Rect { group, .. } => Some(group),
                 El::Wedge { group, .. } => Some(group),
+                El::Polygon { group, .. } => Some(group),
                 _ => None,
             };
             if let Some(g) = target {
