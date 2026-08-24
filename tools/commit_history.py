@@ -417,7 +417,7 @@ type_raw = sp.scatter(
     color_values=type_counts, min_size=16, max_size=52, labels=type_order,
     color_low=ins_color, color_high=del_color, theme="none",
     width=int(type_w), height=int(type_chart_h),
-).no_axes().hide_grid().no_select()
+).no_axes().hide_grid().no_select().no_legend()
 type_cxs = [float(m) for m in re.findall(r'<circle[^>]*\scx="([-\d.]+)"', type_raw.html)]
 type_chart = flatten_chart(type_raw)
 cv.place(type_chart, top_x, type_top_y, type_w, type_chart_h, name="type-scatter")
