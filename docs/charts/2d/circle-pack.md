@@ -65,6 +65,7 @@ Circle packing represents hierarchical data as nested circles, where the area of
 <button class="sp-cls-tab" onclick="spCls('cp-en','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bubble</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Leaf Focus</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','swarm',this)"><span class="sp-cic">◐</span><span class="sp-clb">Swarm</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-en','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrix</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-en-basic">
@@ -102,6 +103,12 @@ Circle packing represents hierarchical data as nested circles, where the area of
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"swarm"</code></span><span><strong>Aliases</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-en-matrix">
+<p>Turns circle packing into a two-axis category grid: <code>parents</code> and <code>categories</code> become any pair of categorical fields (say, region × orbit class), and every cell runs its own real front-chain circle-packing pass, scaled to how much of the data actually lands there — a busy combination visibly earns more room instead of just cramming more dots into the same box. Circle size encodes a magnitude (<code>values</code>), fill color encodes one category (<code>categories2</code>), and marker shape (circle / star / diamond / triangle / …) encodes a second, independent one (<code>symbols</code>) — three readable encodings stacked on top of the two axes. An optional continuous field (<code>color_values</code>, e.g. a launch year) fades older points and keeps recent ones at full strength. The bundled demo plots a synthetic satellite catalog.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"matrix"</code></span><span><strong>Aliases</strong> <code>matrix / grid / swarm_matrix / category_grid / space_wars</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-matrix.html"></iframe>
 </div>
 </div>
 </div>
@@ -155,6 +162,7 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 <button class="sp-cls-tab" onclick="spCls('cp-fr','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bulle</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Focus feuilles</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','swarm',this)"><span class="sp-cic">◐</span><span class="sp-clb">Essaim</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','matrix',this)"><span class="sp-cic">▦</span><span class="sp-clb">Matrice</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-fr-basic">
@@ -192,6 +200,12 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code></span><span><strong>Alias</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-matrix">
+<p>Transforme le circle packing en grille catégorielle à deux axes : <code>parents</code> et <code>categories</code> deviennent n'importe quelle paire de champs catégoriels (région × type d'orbite, par exemple), et chaque cellule exécute son propre véritable tassement de cercles en chaîne frontale, mis à l'échelle selon la part réelle de données qui y atterrit — une combinaison chargée gagne visiblement plus de place, au lieu de simplement entasser plus de points dans la même case. La taille du cercle encode une magnitude (<code>values</code>), la couleur de remplissage encode une catégorie (<code>categories2</code>), et la forme du marqueur (cercle / étoile / losange / triangle / …) en encode une seconde, indépendante (<code>symbols</code>) — trois encodages lisibles superposés aux deux axes. Un champ continu optionnel (<code>color_values</code>, par exemple une année de lancement) estompe les points anciens et garde les récents à pleine intensité. La démo intégrée trace un catalogue synthétique de satellites.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"matrix"</code></span><span><strong>Alias</strong> <code>matrix / grid / swarm_matrix / category_grid / space_wars</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-matrix.html"></iframe>
 </div>
 </div>
 </div>
