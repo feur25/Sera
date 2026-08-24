@@ -254,13 +254,6 @@ pub fn render(cfg: &CirclePackConfig) -> String {
         let fit_scale = (cell_r / g.enclosing_r.max(1e-6)).min(1.0);
 
         if ng > 1 {
-            push_b(&mut buf, b"<circle cx=\"");
-            push_f2(&mut buf, gx);
-            push_b(&mut buf, b"\" cy=\"");
-            push_f2(&mut buf, gy);
-            push_b(&mut buf, b"\" r=\"");
-            push_f2(&mut buf, cell_r);
-            push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"1\"/>");
             push_b(&mut buf, b"<text x=\"");
             push_f2(&mut buf, gx);
             push_b(&mut buf, b"\" y=\"");
@@ -453,7 +446,7 @@ mod tests {
     }
 
     #[test]
-    fn renders_one_hoverable_mark_per_commit_and_a_frame_per_group() {
+    fn renders_one_hoverable_mark_per_commit_and_a_caption_per_group() {
         let (labels, parents, values) = synth(120);
         let html = render(&cfg(&labels, &parents, &values));
         assert!(!html.is_empty());
@@ -473,7 +466,12 @@ mod tests {
     }
 
     #[test]
-    fn a_single_group_renders_without_a_frame_ring() {
+    fn no_group_ever_renders_a_frame_ring_around_its_cluster() {
+        let (labels, parents, values) = synth(120);
+        let html = render(&cfg(&labels, &parents, &values));
+        assert!(!html.is_empty());
+        assert!(!html.contains("stroke=\"#e2e8f0\""));
+
         let n = 30;
         let labels: Vec<String> = (0..n)
             .map(|i| format!("feat::0::abc{i:04}::{:02}::feur25::commit number {i}", (i % 28) + 1))
