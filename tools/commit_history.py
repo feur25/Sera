@@ -477,7 +477,7 @@ try:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": W + 80, "height": H + 80}, device_scale_factor=2)
         page.goto(OUT_HTML.resolve().as_uri())
-        page.wait_for_timeout(1200)
+        page.wait_for_timeout(3500)
         page.screenshot(path=str(OUT_PNG), full_page=True)
         browser.close()
     print("saved", OUT_PNG)
