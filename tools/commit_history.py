@@ -1,5 +1,4 @@
 import datetime
-import html as htmllib
 import math
 import re
 import subprocess
@@ -10,7 +9,6 @@ import seraplot as sp
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_HTML = REPO_ROOT / "docs" / "commit-history.html"
 OUT_PNG = REPO_ROOT / "docs" / "theme" / "images" / "commit-history-preview.png"
-OUT_SVG = REPO_ROOT / "docs" / "theme" / "images" / "commit-history.svg"
 
 BOT_AVATAR = "https://avatars.githubusercontent.com/in/15368?v=4"
 KNOWN_AUTHORS = {
@@ -298,7 +296,6 @@ for i, (ax, ay, r) in enumerate(anchors):
     cv.text(weeks[i][5:], ax, ay + r + 34.0, size=14.0, color="#475569", weight="600", anchor="middle")
 
 idx = 0
-titles = {}
 for wi, wk in enumerate(weeks):
     entries = by_week.get(wk, [])
     if not entries:
@@ -324,7 +321,6 @@ for wi, wk in enumerate(weeks):
         r = radii[k] * fit
         ring_col = RATIO_COLOR[c["ratio"]]
         name = f"m{idx}"
-        titles[idx] = f"{c['display_name']}\n{c['subject']}\n{fmt_date(c['date'])} · +{c['ins']}/-{c['del']}"
         idx += 1
         if c["bot"] == "1":
             pts = [
@@ -441,52 +437,10 @@ cv.text(
     W - 110, H - 40, size=13.0, color=FAINT, anchor="end",
 )
 
-def export_svg_preview(chart_html, marks, path):
-    body = re.sub(r'<div style="position:absolute;[^"]*"[^>]*>\s*<iframe.*?</iframe>\s*</div>', "", chart_html, flags=re.S)
-    blocks = re.findall(r"<svg[^>]*>.*?</svg>", body, flags=re.S)
-    if not blocks:
-        return
-    svg_attrs = re.search(r'width="\d+" height="\d+"', blocks[0]).group(0)
-    inner = "".join(re.sub(r"^<svg[^>]*>|</svg>$", "", b, flags=re.S) for b in blocks)
-    tag_re = re.compile(r"<(circle|polygon)([^>]*)/>")
-
-    def inject(m):
-        tag, attrs = m.group(1), m.group(2)
-        idx_m = re.search(r'data-idx="(\d+)"', attrs)
-        text = marks.get(int(idx_m.group(1))) if idx_m else None
-        if not text:
-            return m.group(0)
-        return f"<{tag}{attrs}><title>{htmllib.escape(text)}</title></{tag}>"
-
-    inner = tag_re.sub(inject, inner)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" {svg_attrs}>{inner}</svg>', encoding="utf-8")
-
-
-def update_readme(svg_path):
-    readme_path = REPO_ROOT / "README.md"
-    text = readme_path.read_text(encoding="utf-8")
-    svg = svg_path.read_text(encoding="utf-8")
-    start_marker = "<!-- commit-history:start -->"
-    end_marker = "<!-- commit-history:end -->"
-    start = text.find(start_marker)
-    end = text.find(end_marker)
-    if start == -1 or end == -1:
-        return
-    block = f"{start_marker}\n{svg}\n{end_marker}"
-    readme_path.write_text(text[:start] + block + text[end + len(end_marker):], encoding="utf-8")
-
-
 chart = cv.build()
 OUT_HTML.parent.mkdir(parents=True, exist_ok=True)
 chart.save(str(OUT_HTML))
 print("saved", OUT_HTML)
-
-export_svg_preview(chart.html, titles, OUT_SVG)
-print("saved", OUT_SVG)
-
-update_readme(OUT_SVG)
-print("updated README.md")
 
 try:
     from playwright.sync_api import sync_playwright
