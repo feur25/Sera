@@ -120,6 +120,7 @@ pub(super) enum El {
         opacity: f64,
         layer: Layer,
         group: String,
+        tip_idx: i64,
         name: String,
     },
     Ring {
@@ -157,6 +158,7 @@ pub(super) enum El {
         opacity: f64,
         layer: Layer,
         group: String,
+        tip_idx: i64,
         name: String,
     },
     RawPath {

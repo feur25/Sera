@@ -168,6 +168,7 @@ impl Canvas {
             opacity,
             layer: Layer::from_str(layer),
             group: hover_group.to_string(),
+            tip_idx: -1,
             name: name.to_string(),
         });
         element_idx
@@ -372,6 +373,7 @@ impl Canvas {
             opacity,
             layer: Layer::from_str(layer),
             group: hover_group.to_string(),
+            tip_idx: -1,
             name: name.to_string(),
         });
         element_idx
@@ -546,6 +548,7 @@ impl Canvas {
                 opacity,
                 layer: Layer::from_str(layer),
                 group: String::new(),
+                tip_idx: -1,
                 name,
             });
             out.push(element_idx);

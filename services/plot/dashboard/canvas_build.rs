@@ -117,6 +117,29 @@ impl Canvas {
         let h = self.height;
         let bg = &self.background;
 
+        let tip_id = crate::html::hover::html_id();
+        let has_tips = !self.tips.is_empty();
+        let tip_css = if has_tips { crate::html::hover::HOVER_CSS } else { "" };
+        let tip_json = crate::html::hover::slots_to_json(&self.tips);
+        let tip_js = if has_tips {
+            format!(
+                "{}spp{}{}{}{}",
+                crate::html::hover::JS_P1,
+                tip_id,
+                crate::html::hover::JS_P2,
+                tip_json,
+                crate::html::hover::JS_P3
+            )
+        } else {
+            String::new()
+        };
+        let tip_open = if has_tips {
+            format!("<div id=\"spp{}\" style=\"display:contents\">", tip_id)
+        } else {
+            String::new()
+        };
+        let tip_close = if has_tips { "</div>" } else { "" };
+
         let has_hover = self.elements.iter().any(|el| match el {
             El::Line { group, .. }
             | El::Circle { group, .. }
@@ -248,8 +271,10 @@ impl Canvas {
                 "overflow:hidden;background:{bg};transform-origin:center}}\n",
                 ".sp-cv{{position:absolute;top:0;left:0}}\n",
                 "{hover_css}",
+                "{tip_css}",
                 "{extra_css}",
                 "</style>\n</head>\n<body>\n",
+                "{tip_open}",
                 "<div id=\"sp-canvas-root\">\n",
                 "<svg class=\"sp-cv\" style=\"z-index:0;pointer-events:none\" ",
                 "width=\"{w}\" height=\"{h}\" xmlns=\"http://www.w3.org/2000/svg\">\n",
@@ -259,6 +284,7 @@ impl Canvas {
                 "width=\"{w}\" height=\"{h}\" xmlns=\"http://www.w3.org/2000/svg\">\n",
                 "<defs>{fg_defs}</defs>\n{fg_body}</svg>\n",
                 "</div>\n",
+                "{tip_close}",
                 "<script>(function(){{",
                 "var W={w},H={h},root=document.getElementById('sp-canvas-root');",
                 "function fit(){{",
@@ -271,6 +297,7 @@ impl Canvas {
                 "fit();window.addEventListener('resize',fit,{{passive:true}});",
                 "}})();</script>\n",
                 "{hover_js}",
+                "{tip_js}",
                 "{extra_js}",
                 "</body>\n</html>"
             ),
@@ -284,6 +311,10 @@ impl Canvas {
             fg_body = fg_body,
             hover_css = hover_css,
             hover_js = hover_js,
+            tip_css = tip_css,
+            tip_open = tip_open,
+            tip_close = tip_close,
+            tip_js = tip_js,
             extra_css = extra_css,
             extra_js = extra_js,
         );

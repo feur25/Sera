@@ -23,6 +23,7 @@ impl Canvas {
             custom_css: Vec::new(),
             custom_js: Vec::new(),
             slots: HashMap::new(),
+            tips: Vec::new(),
         }
     }
 
@@ -224,6 +225,7 @@ impl Canvas {
             custom_css: self.custom_css.clone(),
             custom_js: self.custom_js.clone(),
             slots: self.slots.clone(),
+            tips: self.tips.clone(),
         }
     }
 }

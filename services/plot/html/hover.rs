@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 static CHART_ID: AtomicU64 = AtomicU64::new(1);
 
-#[derive(Clone)]
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct HoverSlot {
     pub title: String,
     pub kv: Vec<(String, String)>,
@@ -153,7 +153,45 @@ pub fn parse_hover_json(json: &str) -> Vec<HoverSlot> {
         .collect()
 }
 
-pub const HOVER_CSS: &str = "";
+pub const HOVER_CSS: &str = concat!(
+    "#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;",
+    "transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);",
+    "background:#0b0e18;color:#f1f5f9;",
+    "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;",
+    "font-size:13px;border-radius:10px;min-width:160px;max-width:340px;",
+    "box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);",
+    "overflow:hidden}",
+    "#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}",
+    ".sp-nav{display:flex;align-items:center;justify-content:space-between;",
+    "padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}",
+    ".sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;",
+    "line-height:22px;font-size:18px;",
+    "background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}",
+    ".sp-nav-btn:hover{background:rgba(255,255,255,.22)}",
+    ".sp-nav-dis{opacity:.25;pointer-events:none}",
+    ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
+    ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
+    "border-bottom:1px solid rgba(255,255,255,.08)}",
+    ".sp-body{padding:8px 14px 12px}",
+    ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
+    "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",
+    ".sp-row:last-child{border-bottom:none}",
+    ".sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}",
+    ".sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}",
+    "#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;",
+    "border-top:1px solid rgba(255,255,255,.07)}",
+    "#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}",
+    ".sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}",
+    "[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}",
+    "[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}",
+    ".sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);",
+    "background:#0b0e18;color:#f1f5f9;",
+    "border-radius:10px;padding:8px 16px;font-size:12px;",
+    "font-family:-apple-system,Arial,sans-serif;",
+    "box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}",
+    ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
+    ".sp-cls-x:hover{color:#f87171}",
+);
 pub const HOVER_JS: &str = "";
 
 pub const DEFAULT_BG: &str = "transparent";
@@ -373,12 +411,12 @@ fn parse_attr_int(s: &str, key: &str) -> i32 {
     0
 }
 
-const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";
+pub(crate) const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";
 
-const JS_P2: &str =
-    "');if(!wrap)return;wrap.removeAttribute('id');\nvar svg=wrap.querySelector('svg');if(!svg)return;var data=";
+pub(crate) const JS_P2: &str =
+    "');if(!wrap)return;wrap.removeAttribute('id');\nvar svg=wrap.querySelector('svg:last-of-type')||wrap.querySelector('svg');if(!svg)return;var data=";
 
-const JS_P3: &str = r#";
+pub(crate) const JS_P3: &str = r#";
 
 var dpts=Array.prototype.slice.call(svg.querySelectorAll('[data-idx]'));
 dpts.forEach(function(el,i){el.setAttribute('tabindex',i===0?'0':'-1');if(!el.hasAttribute('role'))el.setAttribute('role','img');var lb=el.getAttribute('data-lbl'),v=el.getAttribute('data-v'),dx=el.getAttribute('data-x'),dy=el.getAttribute('data-y');var lbl;if(lb!=null||v!=null)lbl=(lb||'')+(v!=null?' '+v:'');else if(dx!=null||dy!=null)lbl='x '+(dx||'')+', y '+(dy||'');else lbl='Data point '+(i+1);el.setAttribute('aria-label',lbl.trim());});
