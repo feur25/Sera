@@ -40,4 +40,4 @@ Every commit, packed by week, sized by lines changed, colored by insertions vs. 
 
 ![Commit history graph](docs/theme/images/commit-history-preview.png)
 
-**<a href="https://feur25.github.io/Sera/commit-history.html" target="_blank" rel="noopener">Open the live, interactive version →</a>** — hover a commit for its details, or an author's mark to rescale the margins to their own activity.
+**<a href="https://feur25.github.io/Sera/commit-history.html" target="_blank" rel="noopener">Open the live, interactive version →</a>** — hover a commit for its details, or an author's mark to rescale the margins to their own activity. GitHub's markdown sanitizer strips `<script>`/`<iframe>`, so a static image is the most this page itself can show.

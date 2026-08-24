@@ -476,19 +476,26 @@ function getSlot(idx){
  var d=data[idx];if(d)return d;
  var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
  var kv=[];
+ var lbl=el.getAttribute('data-lbl');
+ var vAttr=el.getAttribute('data-v');
+ var an=el.attributes;
+ if(lbl!=null&&vAttr!=null){
+  kv.push(['Valeur',parseFloat(vAttr).toFixed(0)]);
+  if(an){for(var bi=0;bi<an.length;bi++){var b=an[bi];if(b.name.substring(0,8)==='data-kv-'){kv.push([b.name.substring(8),b.value]);}}}
+  return{title:lbl,kv:kv};
+ }
  var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
  if(x!=null){var xf=parseFloat(x);kv.push(['X',xf===xf?xf.toFixed(2):x]);}
  if(y!=null){kv.push(['Valeur',parseFloat(y).toFixed(2)]);}
- else{var v=el.getAttribute('data-v');
- if(v!=null){
+ else{
+ if(vAttr!=null){
   var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
-  kv.push(['Valeur',parseFloat(v).toFixed(3)]);
+  kv.push(['Valeur',parseFloat(vAttr).toFixed(3)]);
   if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}}
  var z=el.getAttribute('data-z');
  if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
- var lbl=el.getAttribute('data-lbl');
- var an=el.attributes;if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
- var title=lbl||(el.getAttribute('data-v')!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
+ var title=lbl||(vAttr!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
  return{title:title,kv:kv};}
 function renderTip(){
  if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}

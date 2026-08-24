@@ -1,7 +1,7 @@
 use super::common::{compute_layout, make_frame, point_px};
 use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
-use crate::plot::statistical::common::{hex6, lerp_rgb, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, hex6, lerp_rgb, push_b, push_f2, push_i};
 
 #[crate::chart_demo(
     "x=[16.99,10.34,21.01,23.68,24.59,25.29,8.77,26.88,15.04,14.78,10.27,35.26,15.42,18.43,14.83,21.58,10.33,16.29,16.97,20.65,17.92,20.29,15.77,39.42,19.82,17.81,13.37,12.69,21.7,19.65], y=[1.01,1.66,3.5,3.31,3.61,4.71,2.0,3.12,1.96,3.23,1.71,5.0,1.57,3.0,3.02,3.92,1.67,3.71,3.5,3.35,4.08,3.21,2.23,7.58,3.18,2.34,2.0,2.0,4.3,3.0], color_values=[2,3,3,2,4,4,2,4,2,2,2,4,2,4,2,2,3,3,3,3,2,2,2,4,2,4,2,2,2,2], variant=\"sized\""
@@ -48,6 +48,12 @@ pub fn render(cfg: &ScatterConfig) -> String {
         push_f2(&mut f.buf, cfg.x_values[i]);
         push_b(&mut f.buf, b"\" data-y=\"");
         push_f2(&mut f.buf, cfg.y_values[i]);
+        push_b(&mut f.buf, b"\" data-v=\"");
+        push_f2(&mut f.buf, v);
+        if i < cfg.labels.len() {
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, &cfg.labels[i]);
+        }
         push_b(&mut f.buf, b"\" cx=\"");
         push_i(&mut f.buf, cx);
         push_b(&mut f.buf, b"\" cy=\"");
