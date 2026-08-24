@@ -941,6 +941,32 @@ cv.link("story", ["revenue_chart", "trend_chart", "kpi_card"])
 cv.circle(120, 80, 6, fill="#2dd4bf", hover_group="alice", name="c1")
 ```
 
+Groups with many matching elements (a busy chart with hundreds of marks
+sharing one `hover_group`) automatically skip the per-element glow/enlarge
+on hover and fall back to the plain family dim — the highlight stays cheap
+regardless of group size.
+
+### `tooltip` — attach a native hover card
+
+`tooltip(name, title, kv=[], avatar="", subtitle="", image="", video="", html="") -> bool`
+retroactively attaches a hover card to an already-created `circle(...)` or
+`polygon(...)`, reusing the exact `#sp-tip` card every chart-family hover
+already renders — no extra CSS or JS to write. `title` and each `kv`
+`(key, value)` pair are escaped and laid out automatically; `avatar` renders
+as a small circular chip next to the title (a person, a team, a repo
+owner...); `subtitle` is a left-aligned line under the title, the right home
+for a longer sentence a `kv` row would otherwise wrap awkwardly; `image`/
+`video` attach a full-width banner-style media block below the card body;
+`html` is a raw, unescaped last-resort slot for anything the structured
+fields can't express. Returns `False` if `name` isn't a taggable `Circle`/
+`Polygon`.
+
+```python
+cv.circle(cx, cy, 6, fill="#2dd4bf", hover_group="alice", name="c1")
+cv.tooltip("c1", "Alice Martin", [("Role", "Engineer"), ("Since", "2019")],
+           avatar="https://.../alice.png", subtitle="Joined the data team")
+```
+
 ### `frieze` / `timeline` / `chronology` — inter-plot chronological layout
 
 Three names for the same primitive: lay out `labels` in a boustrophedon
@@ -2012,6 +2038,34 @@ que le halo/pulsation natif s'occupe de celles qui correspondent.
 ```python
 cv.link("story", ["revenue_chart", "trend_chart", "kpi_card"])
 cv.circle(120, 80, 6, fill="#2dd4bf", hover_group="alice", name="c1")
+```
+
+Les groupes comptant beaucoup d'éléments (un chart chargé avec des centaines
+de marques dans le même `hover_group`) sautent automatiquement le halo/
+agrandissement par élément au survol et retombent sur le simple
+assombrissement de famille — la mise en avant reste légère quelle que soit
+la taille du groupe.
+
+### `tooltip` — attacher une carte de survol native
+
+`tooltip(name, title, kv=[], avatar="", subtitle="", image="", video="", html="") -> bool`
+attache après coup une carte de survol à un `circle(...)` ou `polygon(...)`
+déjà créé, en réutilisant exactement la carte `#sp-tip` que tout chart de la
+famille chart affiche déjà au survol — aucun CSS ni JS supplémentaire à
+écrire. `title` et chaque paire `kv` `(clé, valeur)` sont échappés et mis en
+page automatiquement ; `avatar` s'affiche en petite puce ronde à côté du
+titre (une personne, une équipe, un propriétaire de dépôt...) ; `subtitle`
+est une ligne alignée à gauche sous le titre, la bonne place pour une phrase
+plus longue qu'une ligne `kv` ferait sinon s'enrouler maladroitement ;
+`image`/`video` ajoutent un bloc média en bannière pleine largeur sous le
+corps de la carte ; `html` est un dernier recours brut, non échappé, pour
+tout ce que les champs structurés ne peuvent pas exprimer. Renvoie `False`
+si `name` n'est pas un `Circle`/`Polygon` adressable.
+
+```python
+cv.circle(cx, cy, 6, fill="#2dd4bf", hover_group="alice", name="c1")
+cv.tooltip("c1", "Alice Martin", [("Rôle", "Ingénieure"), ("Depuis", "2019")],
+           avatar="https://.../alice.png", subtitle="A rejoint l'équipe data")
 ```
 
 ### `frieze` / `timeline` / `chronology` — disposition chronologique inter-plot
