@@ -69,6 +69,7 @@ pub fn render(cfg: &ScatterConfig) -> String {
         push_b(&mut f.buf, b"\"/>");
     }
 
+    push_b(&mut f.buf, b"<g data-legend=\"size\">");
     let lx = cfg.width - legend_w + 24;
     let mut ly = f.pt + 14;
     push_b(&mut f.buf, b"<text x=\"");
@@ -110,6 +111,7 @@ pub fn render(cfg: &ScatterConfig) -> String {
         push_b(&mut f.buf, b"</text>");
         ly = cy + size_max as i32 + 10;
     }
+    push_b(&mut f.buf, b"</g>");
 
     let slots_json;
     let json: &str = if cfg.hover.is_empty() {
