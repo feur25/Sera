@@ -7,6 +7,10 @@ crate::chart_config!(CirclePackConfig, 700, 700;
         pub palette:    &'a [u32],
         pub show_labels: bool,
         pub padding:    f64,
+        pub categories:  &'a [String],
+        pub categories2: &'a [String],
+        pub symbols:     &'a [String],
+        pub color_values: &'a [f64],
     }
     defaults {
         variant:     super::variant::CirclePackVariant::Basic,
@@ -16,5 +20,9 @@ crate::chart_config!(CirclePackConfig, 700, 700;
         palette:     &[],
         show_labels: true,
         padding:     2.0,
+        categories:  &[],
+        categories2: &[],
+        symbols:     &[],
+        color_values: &[],
     }
 );
