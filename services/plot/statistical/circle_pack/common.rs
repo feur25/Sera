@@ -193,6 +193,27 @@ fn spiral_fallback(placed: &[(f64, f64)], placed_r: &[f64], ri: f64, padding: f6
     (radius, 0.0)
 }
 
+pub fn shelf_pack(order: &[usize], radii_all: &[f64], avail_w: f64, gap: f64) -> (Vec<(f64, f64)>, f64) {
+    let mut pos = vec![(0.0, 0.0); order.len()];
+    let mut x = 0.0_f64;
+    let mut row_y = 0.0_f64;
+    let mut row_max_r = 0.0_f64;
+    for (k, &i) in order.iter().enumerate() {
+        let r = radii_all[i];
+        let d = r * 2.0;
+        if x > 0.0 && x + d > avail_w {
+            x = 0.0;
+            row_y += row_max_r * 2.0 + gap;
+            row_max_r = 0.0;
+        }
+        pos[k] = (x + r, row_y + r);
+        row_max_r = row_max_r.max(r);
+        x += d + gap;
+    }
+    let total_h = row_y + row_max_r * 2.0;
+    (pos, total_h.max(1.0))
+}
+
 pub fn pack_local(radii: &[f64], padding: f64) -> Vec<(f64, f64)> {
     let n = radii.len();
     let mut pos = vec![(0.0, 0.0); n];
