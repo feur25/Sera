@@ -193,7 +193,7 @@ pub const HOVER_CSS: &str = concat!(
     ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
     "border-bottom:1px solid rgba(255,255,255,.08)}",
     ".sp-head-av{display:flex;align-items:center;gap:8px}",
-    ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+    "#sp-tip .sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
     ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
     ".sp-body{padding:8px 14px 12px}",
     ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
@@ -585,7 +585,7 @@ function resetVB(){
  if(origVB)svg.setAttribute('viewBox',origVB);
  restoreTicks();
  setTimeout(function(){svg.style.transition='';},500);}
-function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*14)+'ms';});}
+function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;var st=Math.min(14,650/Math.max(els.length,1));els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*st)+'ms';});}
 var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
 wrap.addEventListener('mousedown',function(e){
  if(e.button!==0)return;
@@ -710,7 +710,7 @@ function spRescale(){
  var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
  var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
 }
-svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDelay=(i*18)+'ms';});
+var _dpe=svg.querySelectorAll('[data-idx]');var _dst=Math.min(18,650/Math.max(_dpe.length,1));_dpe.forEach(function(el,i){el.style.animationDelay=(i*_dst)+'ms';});
 })();</script>"#;
 
 pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
@@ -737,7 +737,7 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
         ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
           "border-bottom:1px solid rgba(255,255,255,.08)}",
         ".sp-head-av{display:flex;align-items:center;gap:8px}",
-        ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+        "#sp-tip .sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
         ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
         ".sp-body{padding:8px 14px 12px}",
         ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
@@ -866,7 +866,7 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
         ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
           "border-bottom:1px solid rgba(255,255,255,.08)}",
         ".sp-head-av{display:flex;align-items:center;gap:8px}",
-        ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+        "#sp-tip .sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
         ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
         ".sp-body{padding:8px 14px 12px}",
         ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
