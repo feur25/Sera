@@ -4,6 +4,8 @@ static CHART_ID: AtomicU64 = AtomicU64::new(1);
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct HoverSlot {
     pub title: String,
+    pub avatar: Option<String>,
+    pub subtitle: Option<String>,
     pub kv: Vec<(String, String)>,
     pub image: Option<String>,
     pub video: Option<String>,
@@ -14,6 +16,8 @@ impl Default for HoverSlot {
     fn default() -> Self {
         HoverSlot {
             title: String::new(),
+            avatar: None,
+            subtitle: None,
             kv: Vec::new(),
             image: None,
             video: None,
@@ -31,6 +35,14 @@ impl HoverSlot {
     }
     pub fn kv(mut self, k: impl Into<String>, v: impl Into<String>) -> Self {
         self.kv.push((k.into(), v.into()));
+        self
+    }
+    pub fn avatar(mut self, url: impl Into<String>) -> Self {
+        self.avatar = Some(url.into());
+        self
+    }
+    pub fn subtitle(mut self, text: impl Into<String>) -> Self {
+        self.subtitle = Some(text.into());
         self
     }
     pub fn image(mut self, url: impl Into<String>) -> Self {
@@ -57,6 +69,14 @@ pub fn slots_to_json(slots: &[HoverSlot]) -> String {
         buf.push(b'{');
         buf.extend_from_slice(b"\"title\":");
         json_str(&mut buf, &s.title);
+        if let Some(ref av) = s.avatar {
+            buf.extend_from_slice(b",\"avatar\":");
+            json_str(&mut buf, av);
+        }
+        if let Some(ref sub) = s.subtitle {
+            buf.extend_from_slice(b",\"subtitle\":");
+            json_str(&mut buf, sub);
+        }
         buf.extend_from_slice(b",\"kv\":[");
         for (ki, (k, v)) in s.kv.iter().enumerate() {
             if ki > 0 {
@@ -172,6 +192,9 @@ pub const HOVER_CSS: &str = concat!(
     ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
     ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
     "border-bottom:1px solid rgba(255,255,255,.08)}",
+    ".sp-head-av{display:flex;align-items:center;gap:8px}",
+    ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+    ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
     ".sp-body{padding:8px 14px 12px}",
     ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
     "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",
@@ -428,7 +451,9 @@ tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.set
 var tipIdxs=[],tipPos=0,lastE=null;
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function cardHTML(d){
- var h='';if(d.title)h+='<div class="sp-head">'+esc(d.title)+'</div>';
+ var h='';
+ if(d.title)h+='<div class="sp-head'+(d.avatar?' sp-head-av':'')+'">'+(d.avatar?'<img class="sp-avatar" src="'+esc(d.avatar)+'" alt="" loading="lazy">':'')+'<span>'+esc(d.title)+'</span></div>';
+ if(d.subtitle)h+='<div class="sp-subtitle">'+esc(d.subtitle)+'</div>';
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class="sp-body">'+rows+'</div>';
@@ -711,6 +736,9 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
         ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
         ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
           "border-bottom:1px solid rgba(255,255,255,.08)}",
+        ".sp-head-av{display:flex;align-items:center;gap:8px}",
+        ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+        ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
         ".sp-body{padding:8px 14px 12px}",
         ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
           "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",
@@ -837,6 +865,9 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
         ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
         ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
           "border-bottom:1px solid rgba(255,255,255,.08)}",
+        ".sp-head-av{display:flex;align-items:center;gap:8px}",
+        ".sp-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}",
+        ".sp-subtitle{padding:0 14px 8px;font-size:11.5px;font-style:italic;color:#cbd5e1;line-height:1.4}",
         ".sp-body{padding:8px 14px 12px}",
         ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
           "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",

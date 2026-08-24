@@ -153,10 +153,7 @@ pub(super) fn render_el(el: &El, defs: &mut String, body: &mut String) {
         } => {
             let mut extra = String::new();
             if !group.is_empty() {
-                extra.push_str(&format!(
-                    " class=\"sp-anch\" data-sp-grp=\"{}\" data-group=\"{}\" data-r=\"{:.2}\"",
-                    group, group, r
-                ));
+                extra.push_str(&format!(" class=\"sp-anch\" data-sp-grp=\"{}\" data-group=\"{}\"", group, group));
             }
             if *tip_idx >= 0 {
                 extra.push_str(&format!(" data-idx=\"{}\"", tip_idx));
@@ -264,10 +261,12 @@ pub(super) fn render_el(el: &El, defs: &mut String, body: &mut String) {
             ..
         } => {
             let idx_attr = if *tip_idx >= 0 { format!(" data-idx=\"{}\"", tip_idx) } else { String::new() };
+            let cls = if group.is_empty() { "" } else { " class=\"sp-anch\"" };
             let pe = if !group.is_empty() || *tip_idx >= 0 { " pointer-events=\"all\"" } else { "" };
             body.push_str(&format!(
-                "<polygon points=\"{}\" fill=\"{}\" stroke=\"{}\" \
+                "<polygon{} points=\"{}\" fill=\"{}\" stroke=\"{}\" \
                  stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}{}{}{}/>\n",
+                cls,
                 pts_to_svg(pts),
                 fill,
                 stroke,

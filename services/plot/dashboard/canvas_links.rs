@@ -38,12 +38,14 @@ impl Canvas {
         self.groups.insert(group_name.to_string(), members);
     }
 
-    #[pyo3(signature = (name, title, kv = vec![], image = "", video = "", html = ""))]
+    #[pyo3(signature = (name, title, kv = vec![], avatar = "", subtitle = "", image = "", video = "", html = ""))]
     pub fn tooltip(
         &mut self,
         name: &str,
         title: &str,
         kv: Vec<(String, String)>,
+        avatar: &str,
+        subtitle: &str,
         image: &str,
         video: &str,
         html: &str,
@@ -58,6 +60,12 @@ impl Canvas {
         let mut slot = crate::html::hover::HoverSlot::new(title);
         for (k, v) in kv {
             slot = slot.kv(k, v);
+        }
+        if !avatar.is_empty() {
+            slot = slot.avatar(avatar);
+        }
+        if !subtitle.is_empty() {
+            slot = slot.subtitle(subtitle);
         }
         if !image.is_empty() {
             slot = slot.image(image);
