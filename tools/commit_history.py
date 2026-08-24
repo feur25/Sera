@@ -104,25 +104,25 @@ commits, weeks = load_commits()
 
 RATIO_COLOR = {"ins": "#2dd4bf", "del": "#ec4899", "even": "#1e3a8a", "none": "#f4b400"}
 RATIO_LABEL = {
-    "ins": "Anneau turquoise : plus d'insertions que de suppressions",
-    "del": "Anneau rose : plus de suppressions que d'insertions",
-    "even": "Cercle bleu foncé : autant d'insertions que de suppressions",
-    "none": "Petit cercle jaune : commit sans fichier modifié",
+    "ins": "Turquoise ring: more insertions than deletions",
+    "del": "Pink ring: more deletions than insertions",
+    "even": "Dark blue circle: as many insertions as deletions",
+    "none": "Small yellow circle: commit with no file changed",
 }
 INK = "#1e2430"
 SUB = "#64748b"
 FAINT = "#94a3b8"
 BG = "#fbfbfd"
 
-MONTHS_FR = [
-    "janvier", "février", "mars", "avril", "mai", "juin",
-    "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+MONTHS = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
 ]
 
 
-def fmt_date_fr(iso):
+def fmt_date(iso):
     d = datetime.date.fromisoformat(iso)
-    return f"{d.day} {MONTHS_FR[d.month - 1]} {d.year}"
+    return f"{MONTHS[d.month - 1]} {d.day}, {d.year}"
 
 
 by_week = {}
@@ -336,12 +336,12 @@ for wi, wk in enumerate(weeks):
                 cx, cy, r, fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.32, 0.7), opacity=0.95,
                 hover_group=c["author_key"], name=name,
             )
-        files_label = f"{c['files']} fichier modifié" if c["files"] == 1 else f"{c['files']} fichiers modifiés"
+        files_label = f"{c['files']} file changed" if c["files"] == 1 else f"{c['files']} files changed"
         kv = [
-            ("Date", f"commité le {fmt_date_fr(c['date'])}"),
-            ("Changements", files_label),
+            ("Date", f"committed on {fmt_date(c['date'])}"),
+            ("Changes", files_label),
             ("Insertions", f"+{c['ins']}"),
-            ("Suppressions", f"-{c['del']}"),
+            ("Deletions", f"-{c['del']}"),
             ("Hash", c["hash"]),
         ]
         cv.tooltip(name, c["display_name"], kv, avatar=c["avatar"], subtitle=c["subject"])
@@ -400,18 +400,18 @@ for author in author_order:
 
 place_margin(weekly_ins, weekly_del, "__combined__", "all")
 
-cv.text("INSERTIONS PAR SEMAINE", top_x, top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
-cv.text("SUPPRESSIONS PAR SEMAINE", right_x, right_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
+cv.text("INSERTIONS PER WEEK", top_x, top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
+cv.text("DELETIONS PER WEEK", right_x, right_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
 
-cv.text("Historique des commits", X0, 96, size=36, color=INK, weight="800", letter_spacing=1)
-cv.text("chaque commit réel du dépôt Sera, un cercle à la fois", X0, 132, size=16, color=SUB)
+cv.text("Commit History", X0, 96, size=36, color=INK, weight="800", letter_spacing=1)
+cv.text("every real commit from Sera's repo, one circle at a time", X0, 132, size=16, color=SUB)
 cv.text(f"{weeks[0]} → {weeks[-1]}", W - 110, 96, size=16, color=FAINT, anchor="end", weight="700")
 
 total = len(commits)
 total_lines = sum(c["ins"] + c["del"] for c in commits)
 authors = sorted({c["author_key"] for c in commits})
 cv.text(
-    f"{total} commits · {total_lines:,} lignes modifiées · {len(authors)} contributeurs",
+    f"{total} commits · {total_lines:,} lines changed · {len(authors)} contributors",
     W - 110, 132, size=15, color=SUB, anchor="end",
 )
 
@@ -425,15 +425,15 @@ for key in ("ins", "del", "even", "none"):
 
 hex_pts = [[leg_x + 9 + 8.0 * math.cos(math.pi / 3 * s - math.pi / 2), leg_y + 8.0 * math.sin(math.pi / 3 * s - math.pi / 2)] for s in range(6)]
 cv.polygon(hex_pts, fill="#94a3b8", stroke="#ffffff", stroke_width=2.6)
-cv.text("Un hexagone est un commit automatisé", leg_x + 26, leg_y + 5, size=13.0, color=SUB)
+cv.text("A hexagon is an automated commit", leg_x + 26, leg_y + 5, size=13.0, color=SUB)
 leg_y += 38
 
 cv.text(
-    "survolez un commit pour voir ses détails et faire ressortir tous les commits du même auteur sur la frise",
+    "hover a commit for its details, or an author's mark to rescale the margins to their own activity",
     leg_x, leg_y + 5, size=13.0, color=FAINT,
 )
 cv.text(
-    "seraplot · généré automatiquement chaque semaine depuis l'historique git de Sera",
+    "seraplot · regenerated automatically every week from Sera's git history",
     W - 110, H - 40, size=13.0, color=FAINT, anchor="end",
 )
 
@@ -448,7 +448,7 @@ try:
     OUT_PNG.parent.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": min(W, 2400), "height": 1400})
+        page = browser.new_page(viewport={"width": W + 80, "height": H + 80}, device_scale_factor=2)
         page.goto(OUT_HTML.resolve().as_uri())
         page.wait_for_timeout(1200)
         page.screenshot(path=str(OUT_PNG), full_page=True)
