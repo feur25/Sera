@@ -925,12 +925,38 @@ on a chart before a move/resize are shifted along with it automatically.
 
 **`link(group_name, member_names) -> int`** — ties elements **across
 different panels** into one hover group: hovering *any* linked element (a
-`Chart`, `Rect`, `Text` or `Circle`) glows/pulses all the others in the same
-group. Returns how many of the given names were actually linkable (`Line`,
-`RawPath` and other pure decoration types don't currently support it).
+`Chart`, `Rect`, `Text`, `Circle`, `Wedge` or `Polygon`) glows/pulses all the
+others in the same group. Returns how many of the given names were actually
+linkable (`Line`, `RawPath` and other pure decoration types don't currently
+support it). `circle(...)` and `polygon(...)` also accept a `hover_group=`
+kwarg to join a group right at creation time, without a separate `link()`
+call — both paths stamp the same `data-sp-grp`/`data-group` attributes, so
+grouped circles/polygons are also picked up by any chart's own chainable
+`.group_hover_opacity(dim)` (see [Chart Methods](../getting-started/chart-methods.md)),
+letting a single hover dim every non-matching mark on the canvas while the
+native glow/pulse handles the matching ones.
 
 ```python
 cv.link("story", ["revenue_chart", "trend_chart", "kpi_card"])
+cv.circle(120, 80, 6, fill="#2dd4bf", hover_group="alice", name="c1")
+```
+
+### `frieze` / `timeline` / `chronology` — inter-plot chronological layout
+
+Three names for the same primitive: lay out `labels` in a boustrophedon
+(snake) grid — left-to-right, then right-to-left on the next row, and so on —
+connected by straight segments within a row and an S-curve at each row wrap,
+with one enclosing ring and label per cell. Returns the `(x, y, ring_radius)`
+anchor of every cell, so any other chart or shape can be drawn/placed right
+on top of it — a natural fit for stringing several single-group
+`circle_pack(variant="swarm")` clusters, or any other small chart, along a
+real chronology instead of relying on a variant's own built-in layout.
+
+```python
+anchors = cv.frieze(week_labels, weights=week_counts, cols=8,
+                     cell_w=280, cell_h=280, ring_color="#7dd3fc")
+for (x, y, r), commits_in_week in zip(anchors, weeks):
+    ...
 ```
 
 ---
@@ -1970,13 +1996,42 @@ automatiquement décalés avec lui.
 
 **`link(group_name, member_names) -> int`** — relie des éléments **à
 travers des panneaux différents** en un seul groupe de survol : survoler
-*n'importe quel* élément lié (`Chart`, `Rect`, `Text` ou `Circle`) fait
-briller/pulser tous les autres du même groupe. Renvoie le nombre de noms
-effectivement liables (`Line`, `RawPath` et autres types purement
-décoratifs ne le supportent pas encore).
+*n'importe quel* élément lié (`Chart`, `Rect`, `Text`, `Circle`, `Wedge` ou
+`Polygon`) fait briller/pulser tous les autres du même groupe. Renvoie le
+nombre de noms effectivement liables (`Line`, `RawPath` et autres types
+purement décoratifs ne le supportent pas encore). `circle(...)` et
+`polygon(...)` acceptent aussi un paramètre `hover_group=` pour rejoindre un
+groupe dès la création, sans appel `link()` séparé — les deux chemins posent
+les mêmes attributs `data-sp-grp`/`data-group`, si bien que les cercles/
+polygones groupés sont aussi pris en compte par la méthode chainable
+`.group_hover_opacity(dim)` de n'importe quel chart (voir
+[Méthodes de Chart](../getting-started/chart-methods.md)) — un seul survol
+peut ainsi assombrir toutes les marques hors groupe sur le canvas pendant
+que le halo/pulsation natif s'occupe de celles qui correspondent.
 
 ```python
 cv.link("story", ["revenue_chart", "trend_chart", "kpi_card"])
+cv.circle(120, 80, 6, fill="#2dd4bf", hover_group="alice", name="c1")
+```
+
+### `frieze` / `timeline` / `chronology` — disposition chronologique inter-plot
+
+Trois noms pour le même outil : dispose `labels` en grille en serpentin
+(boustrophédon) — de gauche à droite, puis de droite à gauche à la ligne
+suivante, etc. — reliés par des segments droits au sein d'une ligne et par
+une courbe en S à chaque retour à la ligne, avec un anneau englobant et une
+étiquette par cellule. Renvoie l'ancre `(x, y, rayon_anneau)` de chaque
+cellule, pour dessiner ou placer n'importe quel autre chart ou forme
+directement dessus — idéal pour enfiler plusieurs amas
+`circle_pack(variant="swarm")` mono-groupe, ou tout autre petit chart, sur
+une vraie chronologie plutôt que de dépendre de la mise en page intégrée
+d'un variant.
+
+```python
+anchors = cv.frieze(week_labels, weights=week_counts, cols=8,
+                     cell_w=280, cell_h=280, ring_color="#7dd3fc")
+for (x, y, r), commits_in_week in zip(anchors, weeks):
+    ...
 ```
 
 ---

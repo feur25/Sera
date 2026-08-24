@@ -11,6 +11,7 @@ mod render;
 mod canvas_core;
 mod canvas_placement;
 mod canvas_shapes;
+mod canvas_frieze;
 mod canvas_links;
 mod canvas_pins;
 mod canvas_persistence;
