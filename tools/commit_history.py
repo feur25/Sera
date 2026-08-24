@@ -353,7 +353,6 @@ def flatten_chart(chart):
         "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)",
         "overflow:hidden",
     )
-    html = re.sub(r"<script.*?</script>", "", html, flags=re.S)
     return sp.Chart(html)
 
 
@@ -380,12 +379,12 @@ def place_margin(values_top, values_right, group, name_suffix):
         "", labels=week_short, values=values_top, variant="basic",
         color_hex=ins_color, theme="none", show_values=False,
         width=int(top_w), height=int(top_h),
-    ))
+    ).hide_grid().segment_bars().no_select())
     a_right = flatten_chart(sp.bar(
         "", labels=week_short, values=[-d for d in values_right], variant="diverging",
         color_low=del_color, color_high=ins_color, theme="none", show_values=False,
         width=int(right_w), height=int(right_h),
-    ))
+    ).hide_grid().segment_bars().no_select())
     top_name = f"margin-top-{name_suffix}"
     right_name = f"margin-right-{name_suffix}"
     cv.place(a_top, top_x, top_y, top_w, top_h, group=group, name=top_name)
