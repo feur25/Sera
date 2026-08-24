@@ -412,17 +412,19 @@ n_types = len(type_order)
 type_w = GRID_W + 2.0 * CELL_R
 type_chart_h = TYPE_H - 60.0
 type_top_y = H - 230.0 - TYPE_H + 30.0
-type_chart = flatten_chart(sp.scatter(
+type_raw = sp.scatter(
     "", x_values=list(range(n_types)), y_values=[0] * n_types, variant="sized",
-    color_values=type_counts, min_size=16, max_size=52,
+    color_values=type_counts, min_size=16, max_size=52, labels=type_order,
     color_low=ins_color, color_high=del_color, theme="none",
     width=int(type_w), height=int(type_chart_h),
-).no_axes().hide_grid().no_select())
+).no_axes().hide_grid().no_select()
+type_cxs = [float(m) for m in re.findall(r'<circle[^>]*\scx="([-\d.]+)"', type_raw.html)]
+type_chart = flatten_chart(type_raw)
 cv.place(type_chart, top_x, type_top_y, type_w, type_chart_h, name="type-scatter")
 cv.style("type-scatter", "animation:none!important;transform:none!important;filter:none!important;")
 cv.text("COMMIT TYPES", top_x, type_top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
 for i, t in enumerate(type_order):
-    tx = top_x + type_w * ((i + 0.5) / n_types)
+    tx = top_x + (type_cxs[i] if i < len(type_cxs) else type_w * ((i + 0.5) / n_types))
     cv.text(f"{t} ({type_counts[i]})", tx, type_top_y + type_chart_h + 18.0, size=12.0, color=SUB, anchor="middle", weight="600")
 
 cv.text("INSERTIONS PER WEEK", top_x, top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
