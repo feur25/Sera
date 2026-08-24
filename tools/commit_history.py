@@ -223,6 +223,7 @@ def pack(radii, padding=1.2):
 
 TOP_H = BAR_SPAN * (ins_max / scale_max) + 60.0
 RIGHT_W = RIGHT_LABEL_W + BAR_SPAN * (del_max / scale_max) + RIGHT_TICK_W
+TYPE_H = 210.0
 COLS = 9
 CELL = 340.0
 X0 = 220.0
@@ -230,7 +231,7 @@ Y0 = 240.0 + TOP_H
 ROWS = math.ceil(len(weeks) / COLS)
 GRID_W = (COLS - 1) * CELL
 W = int(X0 + GRID_W + 250 + RIGHT_W)
-H = int(Y0 + (ROWS - 1) * CELL + 420)
+H = int(Y0 + (ROWS - 1) * CELL + 420 + TYPE_H)
 CELL_R = CELL * 0.44
 
 cv = sp.canvas(W, H, BG)
@@ -399,6 +400,30 @@ for author in author_order:
     place_margin(a_ins, a_del, author, re.sub(r"[^a-zA-Z0-9]", "-", author))
 
 place_margin(weekly_ins, weekly_del, "__combined__", "all")
+
+TYPES_ALL = ["feat", "fix", "docs", "refactor", "perf", "test", "style", "chore", "other"]
+type_counts_all = {}
+for c in commits:
+    type_counts_all[c["type"]] = type_counts_all.get(c["type"], 0) + 1
+type_order = sorted((t for t in TYPES_ALL if type_counts_all.get(t, 0) > 0), key=lambda t: -type_counts_all[t])
+type_counts = [type_counts_all[t] for t in type_order]
+n_types = len(type_order)
+
+type_w = GRID_W + 2.0 * CELL_R
+type_chart_h = TYPE_H - 60.0
+type_top_y = H - 230.0 - TYPE_H + 30.0
+type_chart = flatten_chart(sp.scatter(
+    "", x_values=list(range(n_types)), y_values=[0] * n_types, variant="sized",
+    color_values=type_counts, min_size=16, max_size=52,
+    color_low=ins_color, color_high=del_color, theme="none",
+    width=int(type_w), height=int(type_chart_h),
+).no_axes().hide_grid().no_select())
+cv.place(type_chart, top_x, type_top_y, type_w, type_chart_h, name="type-scatter")
+cv.style("type-scatter", "animation:none!important;transform:none!important;filter:none!important;")
+cv.text("COMMIT TYPES", top_x, type_top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
+for i, t in enumerate(type_order):
+    tx = top_x + type_w * ((i + 0.5) / n_types)
+    cv.text(f"{t} ({type_counts[i]})", tx, type_top_y + type_chart_h + 18.0, size=12.0, color=SUB, anchor="middle", weight="600")
 
 cv.text("INSERTIONS PER WEEK", top_x, top_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
 cv.text("DELETIONS PER WEEK", right_x, right_y - 10.0, size=11.0, color=FAINT, weight="700", letter_spacing=1.2)
