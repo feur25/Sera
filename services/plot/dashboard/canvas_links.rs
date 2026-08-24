@@ -38,6 +38,46 @@ impl Canvas {
         self.groups.insert(group_name.to_string(), members);
     }
 
+    #[pyo3(signature = (name, title, kv = vec![], image = "", video = "", html = ""))]
+    pub fn tooltip(
+        &mut self,
+        name: &str,
+        title: &str,
+        kv: Vec<(String, String)>,
+        image: &str,
+        video: &str,
+        html: &str,
+    ) -> bool {
+        let Some(&idx) = self.names.get(name) else {
+            return false;
+        };
+        let taggable = matches!(self.elements.get(idx), Some(El::Circle { .. }) | Some(El::Polygon { .. }));
+        if !taggable {
+            return false;
+        }
+        let mut slot = crate::html::hover::HoverSlot::new(title);
+        for (k, v) in kv {
+            slot = slot.kv(k, v);
+        }
+        if !image.is_empty() {
+            slot = slot.image(image);
+        }
+        if !video.is_empty() {
+            slot = slot.video(video);
+        }
+        if !html.is_empty() {
+            slot = slot.html(html);
+        }
+        let new_tip_idx = self.tips.len() as i64;
+        self.tips.push(slot);
+        match self.elements.get_mut(idx) {
+            Some(El::Circle { tip_idx, .. }) => *tip_idx = new_tip_idx,
+            Some(El::Polygon { tip_idx, .. }) => *tip_idx = new_tip_idx,
+            _ => {}
+        }
+        true
+    }
+
     #[pyo3(signature = (group_name, dx, dy))]
     pub fn move_group(&mut self, group_name: &str, dx: f64, dy: f64) -> usize {
         let Some(members) = self.groups.get(group_name).cloned() else {

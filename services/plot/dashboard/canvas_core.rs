@@ -18,6 +18,7 @@ pub struct Canvas {
     pub(super) custom_css: Vec<(String, String)>,
     pub(super) custom_js: Vec<String>,
     pub(super) slots: HashMap<String, (f64, f64, f64, f64)>,
+    pub(super) tips: Vec<crate::html::hover::HoverSlot>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -34,6 +35,8 @@ pub(super) struct CanvasState {
     custom_js: Vec<String>,
     #[serde(default)]
     slots: HashMap<String, (f64, f64, f64, f64)>,
+    #[serde(default)]
+    tips: Vec<crate::html::hover::HoverSlot>,
 }
 
 impl Canvas {
@@ -137,6 +140,7 @@ impl Canvas {
             custom_css: self.custom_css.clone(),
             custom_js: self.custom_js.clone(),
             slots: self.slots.clone(),
+            tips: self.tips.clone(),
         }
     }
 
@@ -153,6 +157,7 @@ impl Canvas {
             custom_css: state.custom_css,
             custom_js: state.custom_js,
             slots: state.slots,
+            tips: state.tips,
         };
         canvas.rebuild_placed();
         canvas
