@@ -5,6 +5,7 @@ use super::render::{
     AdvancedBatchRenderer, AdvancedBatchRendererBuilder, PointComputeBuilder, RenderState,
     VisibilityOptimizer,
 };
+use super::svg_bridge::{extract_svg, paint_svg_scene, parse_svg_scene, SvgScene};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use crate::bindings::utils::{simd_ops, BitSet};
@@ -299,6 +300,13 @@ struct ChartApp {
     selection_active: bool,
     show_region_filter: bool,
     active_regions: Vec<bool>,
+    catalog_preview: Option<CatalogPreview>,
+}
+
+struct CatalogPreview {
+    family: String,
+    variant: String,
+    scene: SvgScene,
 }
 
 struct ChartAppBuilder {
@@ -354,6 +362,7 @@ impl ChartAppBuilder {
             selection_active: false,
             show_region_filter: false,
             active_regions: vec![true; 5],
+            catalog_preview: None,
         }
     }
 }
@@ -388,39 +397,6 @@ fn launch_chart_app(app: ChartApp) -> bool {
     let _ = eframe::run_native("SeraPlot", native_options, Box::new(|_| Box::new(app)));
 
     true
-}
-
-fn open_in_browser(path: &std::path::Path) {
-    #[cfg(target_os = "windows")]
-    let spawned = std::process::Command::new("explorer").arg(path).spawn();
-    #[cfg(target_os = "macos")]
-    let spawned = std::process::Command::new("open").arg(path).spawn();
-    #[cfg(all(unix, not(target_os = "macos")))]
-    let spawned = std::process::Command::new("xdg-open").arg(path).spawn();
-
-    if let Err(e) = spawned {
-        eprintln!(
-            "seraplot: failed to open '{}' in the default browser: {e}",
-            path.display()
-        );
-    }
-}
-
-fn write_and_open_demo_html(family: &str, variant: &str, html: String) {
-    let timestamp = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    let filepath = std::env::temp_dir()
-        .join(format!("seraplot_family_{family}_{variant}_{timestamp}.html"));
-    if let Err(e) = std::fs::write(&filepath, html) {
-        eprintln!(
-            "seraplot: failed to export '{family}/{variant}' to '{}': {e}",
-            filepath.display()
-        );
-        return;
-    }
-    open_in_browser(&filepath);
 }
 
 fn render_svg_by_type(
@@ -736,12 +712,32 @@ impl eframe::App for ChartApp {
                 });
                 ui.separator();
 
-                if d.values.is_empty() {
+                let mut close_preview = false;
+                if let Some(preview) = &self.catalog_preview {
+                    ui.horizontal(|ui| {
+                        ui.label(format!("Chart Catalog: {} / {}", preview.family, preview.variant));
+                        if ui.button("✕ back to native").clicked() {
+                            close_preview = true;
+                        }
+                    });
+                    if preview.scene.primitives.is_empty() {
+                        ui.label(
+                            "No static preview available for this variant (client-side rendered, or a multi-panel composite).",
+                        );
+                    } else {
+                        let (response, painter) =
+                            ui.allocate_painter(ui.available_size(), egui::Sense::hover());
+                        paint_svg_scene(&painter, &preview.scene, response.rect);
+                    }
+                } else if d.values.is_empty() {
                     ui.label("No data");
                 } else if self.is_3d_mode {
                     self.render_3d_viewer(ctx, ui, &d);
                 } else {
                     self.render_plot(ctx, ui, &d, self.orientation, self.current_chart_kind);
+                }
+                if close_preview {
+                    self.catalog_preview = None;
                 }
             } else {
                 ui.label("Waiting for data...");
@@ -866,6 +862,7 @@ impl eframe::App for ChartApp {
 
                                         if ui.button(&button_text).clicked() {
                                             self.current_chart_kind = *kind;
+                                            self.catalog_preview = None;
                                             crate::plot::controller::set_current_chart_group(
                                                 group_name,
                                             );
@@ -882,24 +879,32 @@ impl eframe::App for ChartApp {
                     });
 
                     ui.separator();
-                    ui.label("Chart Catalog (opens as HTML)");
+                    ui.label("Chart Catalog");
                     ui.separator();
 
                     egui::ScrollArea::vertical().max_height(240.0).id_source("transform_catalog").show(ui, |ui| {
                         for (family, variants) in crate::plot::chart_demo_registry::families_2d() {
                             egui::CollapsingHeader::new(family.as_str()).show(ui, |ui| {
                                 for (variant, entry) in &variants {
-                                    if ui.button(variant.as_str()).clicked() {
-                                        let family = family.clone();
-                                        let variant = variant.clone();
-                                        let entry = *entry;
-                                        std::thread::spawn(move || {
-                                            if let Some(html) =
-                                                crate::plot::chart_demo_registry::render_demo_html(entry)
-                                            {
-                                                write_and_open_demo_html(&family, &variant, html);
-                                            }
+                                    let is_selected = self
+                                        .catalog_preview
+                                        .as_ref()
+                                        .is_some_and(|p| &p.family == family.as_str() && &p.variant == variant);
+                                    let button_text =
+                                        if is_selected { format!("[{}]", variant) } else { variant.clone() };
+                                    if ui.button(&button_text).clicked() {
+                                        let html = crate::plot::chart_demo_registry::render_demo_html(entry);
+                                        let scene = html
+                                            .as_deref()
+                                            .and_then(extract_svg)
+                                            .map(parse_svg_scene)
+                                            .unwrap_or_default();
+                                        self.catalog_preview = Some(CatalogPreview {
+                                            family: family.clone(),
+                                            variant: variant.clone(),
+                                            scene,
                                         });
+                                        ctx.request_repaint();
                                     }
                                 }
                             });
