@@ -54,6 +54,8 @@ declare namespace wasm_bindgen {
 
     export function buildCirclePack(input: string): string;
 
+    export function buildCircos(input: string): string;
+
     export function buildConeChart(input: string): string;
 
     export function buildCorrelogram(input: string): string;
@@ -460,6 +462,7 @@ declare interface InitOutput {
     readonly buildChord: (a: number, b: number) => [number, number];
     readonly buildChoropleth: (a: number, b: number) => [number, number];
     readonly buildCirclePack: (a: number, b: number) => [number, number];
+    readonly buildCircos: (a: number, b: number) => [number, number];
     readonly buildConeChart: (a: number, b: number) => [number, number];
     readonly buildCorrelogram: (a: number, b: number) => [number, number];
     readonly buildDbscanChart: (a: number, b: number) => [number, number];
