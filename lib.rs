@@ -184,7 +184,7 @@ pub use viewer::gui;
 
 #[cfg(feature = "python")]
 use crate::bindings::chart_methods::{build_compare_page, build_grid_page, cmp_score};
-pub use wiki::{MethodDoc, ModuleDoc, WikiExport, WikiExtractor};
+pub use wiki::{MethodDoc, ModuleDoc, WikiExport};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
