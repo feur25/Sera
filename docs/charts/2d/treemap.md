@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('treemap-en','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Trend</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','voronoi',this)"><span class="sp-cic">V</span><span class="sp-clb">Voronoi</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -122,6 +123,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
 </div>
 
+<div class="sp-variant" id="treemap-en-voronoi">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"voronoi"</code></span><span><strong>Aliases</strong> <code>voronoi / voronoi_treemap / organic / polygon_treemap / power_diagram</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Real Voronoi treemap: a weighted power diagram is relaxed over many iterations until each organic polygon's area matches its value, no rectangles involved. Pass <code>parents</code> to split the disc into value-sized angular sectors (first sector gets full category color via <code>categories</code> plus an optional hatch flag via <code>categories2</code>; every other sector renders in neutral gray) — built for "how much of the whole is in this hazardous/flagged/priority group" breakdowns.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-voronoi.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -164,6 +174,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Tendance</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','voronoi',this)"><span class="sp-cic">V</span><span class="sp-clb">Voronoi</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -237,6 +248,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-voronoi">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"voronoi"</code></span><span><strong>Alias</strong> <code>voronoi / voronoi_treemap / organic / polygon_treemap / power_diagram</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un vrai treemap de Voronoi : un diagramme de puissance pondere est relaxe sur de nombreuses iterations jusqu a ce que l aire de chaque polygone organique corresponde a sa valeur, sans le moindre rectangle. Passez <code>parents</code> pour decouper le disque en secteurs angulaires proportionnels a leur valeur (le premier secteur recoit la couleur de categorie via <code>categories</code> plus un hachurage optionnel via <code>categories2</code> ; tous les autres secteurs restent gris neutre) — concu pour les repartitions du type "quelle part de l ensemble est dangereuse/marquee/prioritaire".</p>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-voronoi.html"></iframe>
 </div>
 
 </div>
