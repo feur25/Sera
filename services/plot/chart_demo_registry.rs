@@ -24,6 +24,10 @@ pub fn family_variant(file: &str) -> Option<(String, String)> {
     Some((parent.to_string(), variant))
 }
 
+pub fn is_3d_file(file: &str) -> bool {
+    file.split(['/', '\\']).any(|c| c == "_3d")
+}
+
 const SKIP_VARIANTS: &[&str] = &["mod", "common", "config", "shared", "variant"];
 
 fn split_top_level(s: &str, sep: char) -> Vec<&str> {
@@ -235,6 +239,23 @@ pub fn families() -> Vec<(String, Vec<(String, &'static ChartDemoEntry)>)> {
         .collect()
 }
 
+pub fn families_2d() -> Vec<(String, Vec<(String, &'static ChartDemoEntry)>)> {
+    families()
+        .into_iter()
+        .filter_map(|(family, variants)| {
+            let variants: Vec<(String, &'static ChartDemoEntry)> = variants
+                .into_iter()
+                .filter(|(_, entry)| !is_3d_file(entry.file))
+                .collect();
+            if variants.is_empty() {
+                None
+            } else {
+                Some((family, variants))
+            }
+        })
+        .collect()
+}
+
 pub fn render_demo_html(entry: &ChartDemoEntry) -> Option<String> {
     let payload = demo_payload(entry)?;
     let fe = crate::bindings::fn_registry::iter_entries().find(|f| f.name == payload.builder)?;
@@ -245,6 +266,44 @@ pub fn render_demo_html(entry: &ChartDemoEntry) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn is_3d_file_recognizes_a_file_directly_under_a_group_3d_directory() {
+        assert!(is_3d_file(
+            "src/services/plot/statistical/_3d/radar3d.rs"
+        ));
+        assert!(is_3d_file("src\\services\\plot\\default\\_3d\\line_3d.rs"));
+    }
+
+    #[test]
+    fn is_3d_file_does_not_flag_an_ordinary_2d_variant_file() {
+        assert!(!is_3d_file("src/services/plot/statistical/bar/pictogram.rs"));
+        assert!(!is_3d_file("src/services/plot/statistical/histogram.rs"));
+    }
+
+    #[test]
+    fn families_2d_never_returns_an_entry_backed_by_a_3d_source_file() {
+        for (_, variants) in families_2d() {
+            for (_, entry) in variants {
+                assert!(
+                    !is_3d_file(entry.file),
+                    "families_2d leaked a 3D entry: {}",
+                    entry.file
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn families_2d_is_never_empty_and_is_strictly_smaller_than_the_unfiltered_catalog() {
+        let all: usize = families().into_iter().map(|(_, v)| v.len()).sum();
+        let only_2d: usize = families_2d().into_iter().map(|(_, v)| v.len()).sum();
+        assert!(only_2d > 0, "families_2d filtered out everything");
+        assert!(
+            only_2d < all,
+            "expected some 3D entries to exist in the full catalog (all={all}, 2d={only_2d})"
+        );
+    }
 
     #[test]
     fn family_variant_reads_family_from_the_parent_directory_and_variant_from_the_file_stem() {
