@@ -390,18 +390,19 @@ fn launch_chart_app(app: ChartApp) -> bool {
     true
 }
 
-fn open_in_browser(path: &str) {
+fn open_in_browser(path: &std::path::Path) {
     #[cfg(target_os = "windows")]
-    let spawned = std::process::Command::new("cmd")
-        .args(["/C", "start", "", path])
-        .spawn();
+    let spawned = std::process::Command::new("explorer").arg(path).spawn();
     #[cfg(target_os = "macos")]
     let spawned = std::process::Command::new("open").arg(path).spawn();
     #[cfg(all(unix, not(target_os = "macos")))]
     let spawned = std::process::Command::new("xdg-open").arg(path).spawn();
 
     if let Err(e) = spawned {
-        eprintln!("seraplot: failed to open '{path}' in the default browser: {e}");
+        eprintln!(
+            "seraplot: failed to open '{}' in the default browser: {e}",
+            path.display()
+        );
     }
 }
 
@@ -410,9 +411,13 @@ fn write_and_open_demo_html(family: &str, variant: &str, html: String) {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let filepath = format!("seraplot_family_{family}_{variant}_{timestamp}.html");
+    let filepath = std::env::temp_dir()
+        .join(format!("seraplot_family_{family}_{variant}_{timestamp}.html"));
     if let Err(e) = std::fs::write(&filepath, html) {
-        eprintln!("seraplot: failed to export '{family}/{variant}' to '{filepath}': {e}");
+        eprintln!(
+            "seraplot: failed to export '{family}/{variant}' to '{}': {e}",
+            filepath.display()
+        );
         return;
     }
     open_in_browser(&filepath);
@@ -881,7 +886,7 @@ impl eframe::App for ChartApp {
                     ui.separator();
 
                     egui::ScrollArea::vertical().max_height(240.0).id_source("transform_catalog").show(ui, |ui| {
-                        for (family, variants) in crate::plot::chart_demo_registry::families() {
+                        for (family, variants) in crate::plot::chart_demo_registry::families_2d() {
                             egui::CollapsingHeader::new(family.as_str()).show(ui, |ui| {
                                 for (variant, entry) in &variants {
                                     if ui.button(variant.as_str()).clicked() {
