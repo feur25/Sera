@@ -699,6 +699,17 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825c";
     return el ? el.getAttribute("data-family") : "";
   }
 
+  function fillVariantPreview(varDiv, sp, family, v, lang) {
+    if (!sp || typeof sp.demo !== "function") return false;
+    var code = "";
+    try { code = sp.demo(JSON.stringify({ family: family, variant: v })) || ""; } catch (e) {}
+    if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
+    var previewHtml = buildVariantPreviewHtml(buildChartPreviewHtml(sp, family, v, code), lang === "fr" ? "Aperçu" : "Preview");
+    if (previewHtml) varDiv.innerHTML += previewHtml;
+    varDiv.removeAttribute("data-sp-lazy");
+    return true;
+  }
+
   function injectVariantCls(panel, body, data, lang) {
     var family = data.functionName;
     if (!family) return;
@@ -724,10 +735,16 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825c";
       var label = variantLabel(item);
       var btn = document.createElement("button");
       btn.className = "sp-cls-tab" + (i === 0 ? " sp-cact" : "");
-      btn.setAttribute("onclick", "spCls('" + clsId + "','" + v.replace(/'/g, "\\'") + "',this)");
       btn.setAttribute("data-variant", v);
       btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
       btn.innerHTML = '<span class="sp-cic">' + variantIcon(v) + '</span><span class="sp-clb">' + escapeAttr(label) + '</span>';
+      btn.addEventListener("click", function () {
+        var target = document.getElementById(variantDomId(clsId, v));
+        if (target && target.hasAttribute("data-sp-lazy")) {
+          fillVariantPreview(target, window.SeraplotWASM, family, v, getLang());
+        }
+        if (typeof window.spCls === "function") window.spCls(clsId, v, btn);
+      });
       clsDiv.appendChild(btn);
 
       var varDiv = document.createElement("div");
@@ -740,14 +757,11 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825c";
       var geomOpts = geometryOptionsFor(family);
       if (geomOpts) varDiv.innerHTML += buildGeometryPickerHtml(clsId, v, geomOpts, lang);
 
-      if (sp && typeof sp.demo === "function") {
-        try {
-          var code = sp.demo(JSON.stringify({ family: family, variant: v })) || "";
-          if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
-        } catch (e) {}
+      if (i === 0) {
+        fillVariantPreview(varDiv, sp, family, v, lang);
+      } else {
+        varDiv.setAttribute("data-sp-lazy", "1");
       }
-      var previewHtml = buildVariantPreviewHtml(buildChartPreviewHtml(sp, family, v, code), lang === "fr" ? "Aper\u00e7u" : "Preview");
-      if (previewHtml) varDiv.innerHTML += previewHtml;
 
       clsDiv.appendChild(varDiv);
     });
@@ -775,25 +789,20 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825c";
             btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
           });
           var geomOpts2 = geometryOptionsFor(family);
-          root.querySelectorAll(".sp-variant").forEach(function (varDiv) {
-            var variant = varDiv.getAttribute("data-variant") || "basic";
+          var activeDiv = root.querySelector(".sp-variant.sp-von") || root.querySelector(".sp-variant");
+          if (activeDiv) {
+            var variant = activeDiv.getAttribute("data-variant") || "basic";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
-            try {
-              var code = sp2.demo(JSON.stringify({ family: family, variant: variant })) || "";
-              if (code) {
-                varDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
-                if (geomOpts2) varDiv.innerHTML += buildGeometryPickerHtml(clsId, variant, geomOpts2, getLang());
-                if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
-                varDiv.innerHTML += buildVariantPreviewHtml(buildChartPreviewHtml(sp2, family, variant, code), getLang() === "fr" ? "Aper\u00e7u" : "Preview");
-                if (window.hljs) {
-                  var hFn = hljs.highlightElement || hljs.highlightBlock;
-                  if (hFn) varDiv.querySelectorAll("pre code").forEach(function (c) {
-                    try { hFn.call(hljs, c); } catch (e) {}
-                  });
-                }
-              }
-            } catch (e) {}
-          });
+            activeDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
+            if (geomOpts2) activeDiv.innerHTML += buildGeometryPickerHtml(clsId, variant, geomOpts2, getLang());
+            fillVariantPreview(activeDiv, sp2, family, variant, getLang());
+            if (window.hljs) {
+              var hFn = hljs.highlightElement || hljs.highlightBlock;
+              if (hFn) activeDiv.querySelectorAll("pre code").forEach(function (c) {
+                try { hFn.call(hljs, c); } catch (e) {}
+              });
+            }
+          }
           wireGeometryPickers(root, sp2, family, getLang(), panel);
           hoistClassRails(panel);
           refreshRailToggleLabel();
