@@ -388,6 +388,15 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
     });
   }
 
+  // Builds the inner HTML for a single-tab code block.
+  function buildVariantCodeHtml(code) {
+    var esc = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return '<div class="sp-demo-code-wrap"><div class="sp-tabs">' +
+      '<div class="sp-tab-btns"></div>' +
+      '<div class="sp-tc sp-on"><pre><code class="language-python">' + esc + "</code></pre></div>" +
+      "</div></div>";
+  }
+
   function fitPreviewHtml(html) {
     var fit = '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fff}body>*{max-width:100%!important}svg,canvas{max-width:100%!important;height:auto!important;display:block;margin:0 auto}.chart-container,.plot-container,#chart,#plot{max-width:100%!important;width:100%!important;height:auto!important;box-sizing:border-box}</style>';
     if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, fit + "</head>");
@@ -583,12 +592,15 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
         try {
           var sceneCode = sp.demo(JSON.stringify({ family: family, variant: sceneKey })) || "";
           var code = buildCombinedDemoCode(sceneCode, geomKey);
+          var codeBlock = varDiv.querySelector(".sp-demo-code-wrap");
+          if (codeBlock) codeBlock.remove();
           var oldWrap = varDiv.querySelector(".sp-iframe-wrap");
           if (oldWrap) oldWrap.remove();
           var oldLabel = varDiv.querySelector(".sp-preview-label");
           if (oldLabel) oldLabel.remove();
           var oldFrame = varDiv.querySelector(".sp-preview-frame");
           if (oldFrame) oldFrame.remove();
+          if (code) varDiv.insertAdjacentHTML("beforeend", buildVariantCodeHtml(code));
           var chartHtml = buildChartPreviewHtml(sp, family, sceneKey, code, geomKey);
           var previewHtml = buildVariantPreviewHtml(chartHtml, lang === "fr" ? "Aperçu" : "Preview");
           if (previewHtml) varDiv.insertAdjacentHTML("beforeend", previewHtml);
@@ -691,6 +703,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
     if (!sp || typeof sp.demo !== "function") return false;
     var code = "";
     try { code = sp.demo(JSON.stringify({ family: family, variant: v })) || ""; } catch (e) {}
+    if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
     var previewHtml = buildVariantPreviewHtml(buildChartPreviewHtml(sp, family, v, code), lang === "fr" ? "Aperçu" : "Preview");
     if (previewHtml) varDiv.innerHTML += previewHtml;
     varDiv.removeAttribute("data-sp-lazy");
