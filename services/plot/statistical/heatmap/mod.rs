@@ -17,6 +17,7 @@ pub mod horizon;
 pub mod log;
 pub mod marginal;
 pub mod moods;
+pub mod native;
 pub mod pivot;
 pub mod radial_cluster;
 pub mod temporal;
@@ -24,6 +25,7 @@ pub mod unequal;
 pub mod variant;
 
 pub use config::HeatmapConfig;
+pub use native::render_heatmap_native;
 pub use variant::HeatmapVariant;
 
 pub struct Heatmap;
