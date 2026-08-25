@@ -122,7 +122,7 @@ pub use funnel::{render_funnel_html, FunnelConfig, FunnelVariant};
 pub use gantt::{render_gantt_html, GanttConfig, GanttVariant};
 pub use gauge::{render_gauge_html, GaugeConfig, GaugeVariant};
 pub use grouped_bar::{render_grouped_bar_html, GroupedBar, GroupedBarConfig};
-pub use heatmap::{render_heatmap_html, Heatmap, HeatmapConfig, HeatmapVariant};
+pub use heatmap::{render_heatmap_html, render_heatmap_native, Heatmap, HeatmapConfig, HeatmapVariant};
 pub use histogram::{
     compute_bins, render_histogram_html, Histogram, HistogramConfig, HistogramVariant,
 };
@@ -134,7 +134,7 @@ pub use lollipop::{render_lollipop_html, LollipopConfig, LollipopVariant};
 pub use multiline::{render_multiline_html, MultiLine, MultiLineConfig};
 pub use parallel::{render_parallel_html, ParallelConfig, ParallelVariant};
 pub use parcats::{render_parcats_html, ParcatsConfig, ParcatsVariant};
-pub use pie::{render_pie_html, Pie, PieConfig, PieVariant};
+pub use pie::{render_pie_html, render_pie_native, Pie, PieConfig, PieVariant};
 pub use radar::{render_radar_html, RadarConfig, RadarVariant};
 pub use ridgeline::{render_ridgeline_html, RidgelineConfig, RidgelineVariant};
 pub use plot_web::{render_plot_web_html, PlotWebConfig, PlotWebVariant};
@@ -150,49 +150,81 @@ pub use violin::{render_violin_html, ViolinConfig, ViolinVariant};
 pub use waterfall::{render_waterfall_html, WaterfallConfig, WaterfallVariant};
 pub use wordcloud::{render_wordcloud_html, WordCloudConfig, WordCloudShape, WordCloudVariant};
 
-use crate::plot::controller::chart_controller::{get_group_registry, ChartTypeBuilder};
+use crate::plot::controller::chart_controller::{ChartTypeEntry, SvgChartRenderer};
 
 pub const PIE_ID: u8 = 60;
 pub const HEATMAP_ID: u8 = 61;
 pub const HISTOGRAM_ID: u8 = 62;
 pub const GROUPED_BAR_ID: u8 = 63;
 
+fn noop_svg_renderer(
+    _svg: &mut String,
+    _values: &[f64],
+    _colors: &[&'static str],
+    _pad: i32,
+    _plot_w: i32,
+    _plot_h: i32,
+    _max: f64,
+    _vert: bool,
+) {
+}
+
+inventory::submit! {
+    ChartTypeEntry {
+        group: "statistical",
+        id: PIE_ID,
+        name: "pie",
+        renderer: pie::render_pie_native as crate::plot::controller::chart_controller::ChartRenderer,
+        svg_renderer: Some(noop_svg_renderer as SvgChartRenderer),
+        color: 0x8B5CF6,
+    }
+}
+inventory::submit! {
+    ChartTypeEntry {
+        group: "statistical",
+        id: HEATMAP_ID,
+        name: "heatmap",
+        renderer: heatmap::render_heatmap_native as crate::plot::controller::chart_controller::ChartRenderer,
+        svg_renderer: Some(noop_svg_renderer as SvgChartRenderer),
+        color: 0xEF4444,
+    }
+}
+inventory::submit! {
+    ChartTypeEntry {
+        group: "statistical",
+        id: HISTOGRAM_ID,
+        name: "histogram",
+        renderer: crate::plot::default::render_bars as crate::plot::controller::chart_controller::ChartRenderer,
+        svg_renderer: Some(crate::plot::default::bar::render_svg_bars as SvgChartRenderer),
+        color: 0x06B6D4,
+    }
+}
+inventory::submit! {
+    ChartTypeEntry {
+        group: "statistical",
+        id: GROUPED_BAR_ID,
+        name: "grouped_bar",
+        renderer: crate::plot::default::render_bars as crate::plot::controller::chart_controller::ChartRenderer,
+        svg_renderer: Some(crate::plot::default::bar::render_svg_bars as SvgChartRenderer),
+        color: 0x22C55E,
+    }
+}
+
 pub fn register_statistical_types() {
-    use crate::plot::default::PlotRenderContext;
+    crate::plot::controller::chart_controller::register_group_from_inventory("statistical");
+}
 
-    fn noop_renderer(_ctx: PlotRenderContext) {}
-    fn noop_svg_renderer(
-        _svg: &mut String,
-        _values: &[f64],
-        _colors: &[&'static str],
-        _pad: i32,
-        _plot_w: i32,
-        _plot_h: i32,
-        _max: f64,
-        _vert: bool,
-    ) {
+#[cfg(test)]
+mod inventory_tests {
+    use crate::plot::controller::chart_controller::test_support::*;
+
+    #[test]
+    fn statistical_group_is_well_formed() {
+        assert_group_well_formed("statistical");
     }
 
-    let ids: Vec<u8> = vec![PIE_ID, HEATMAP_ID, HISTOGRAM_ID, GROUPED_BAR_ID];
-    let names = ["pie", "heatmap", "histogram", "grouped_bar"];
-
-    for (&id, &name) in ids.iter().zip(names.iter()) {
-        if let Err(e) = ChartTypeBuilder::new(id)
-            .with_name(name)
-            .with_renderer(noop_renderer)
-            .build()
-        {
-            eprintln!("seraplot: failed to register statistical chart type '{name}' (id {id}): {e}");
-        }
-        crate::plot::controller::chart_controller::with_registry_mut(
-            "register_statistical_types/svg",
-            |reg| reg.register_svg(id, noop_svg_renderer),
-        );
-    }
-
-    if let Ok(mut grp_reg) = get_group_registry().lock() {
-        grp_reg.register_group("statistical".to_string(), ids);
-    } else {
-        eprintln!("seraplot: failed to register 'statistical' chart group, group registry lock poisoned");
+    #[test]
+    fn register_statistical_types_matches_inventory() {
+        assert_registered_group_matches_inventory("statistical", super::register_statistical_types);
     }
 }
