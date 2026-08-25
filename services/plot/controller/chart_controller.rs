@@ -478,4 +478,38 @@ mod tests {
             "duplicate ids across ChartTypeEntry groups (they share one flat u8 registry): {ids:?}"
         );
     }
+
+    #[test]
+    fn switching_current_chart_kind_to_any_native_type_in_any_group_finds_a_real_renderer() {
+        let mut group_names: Vec<&'static str> =
+            inventory::iter::<ChartTypeEntry>().map(|e| e.group).collect();
+        group_names.sort_unstable();
+        group_names.dedup();
+
+        for group in &group_names {
+            register_group_from_inventory(group);
+        }
+
+        for group in &group_names {
+            assert!(
+                set_current_chart_group(group),
+                "group '{group}' failed to become current after being registered"
+            );
+            let types = get_current_group_types();
+            assert!(
+                !types.is_empty(),
+                "group '{group}' listed no types after registration"
+            );
+            for (id, name) in types {
+                let found = get_registry()
+                    .lock()
+                    .map(|reg| reg.get(id).is_some())
+                    .unwrap_or(false);
+                assert!(
+                    found,
+                    "type '{name}' (id {id}) listed under group '{group}' has no renderer in the flat registry"
+                );
+            }
+        }
+    }
 }
