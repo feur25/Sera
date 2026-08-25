@@ -193,24 +193,49 @@ fn spiral_fallback(placed: &[(f64, f64)], placed_r: &[f64], ri: f64, padding: f6
     (radius, 0.0)
 }
 
-pub fn shelf_pack(order: &[usize], radii_all: &[f64], avail_w: f64, gap: f64) -> (Vec<(f64, f64)>, f64) {
-    let mut pos = vec![(0.0, 0.0); order.len()];
-    let mut x = 0.0_f64;
-    let mut row_y = 0.0_f64;
-    let mut row_max_r = 0.0_f64;
-    for (k, &i) in order.iter().enumerate() {
-        let r = radii_all[i];
-        let d = r * 2.0;
-        if x > 0.0 && x + d > avail_w {
-            x = 0.0;
-            row_y += row_max_r * 2.0 + gap;
-            row_max_r = 0.0;
-        }
-        pos[k] = (x + r, row_y + r);
-        row_max_r = row_max_r.max(r);
-        x += d + gap;
+pub fn terrain_pack(radii: &[f64], avail_w: f64) -> (Vec<(f64, f64)>, f64) {
+    let n = radii.len();
+    let mut pos = vec![(0.0, 0.0); n];
+    if n == 0 || avail_w <= 0.0 {
+        return (pos, 0.0);
     }
-    let total_h = row_y + row_max_r * 2.0;
+    let buckets = 240usize;
+    let step = (avail_w / buckets as f64).max(0.25);
+    let max_b = buckets.saturating_sub(1);
+    let mut height = vec![0.0_f64; buckets + 1];
+    for (idx, &r) in radii.iter().enumerate() {
+        let half = ((r / step).ceil() as usize).max(1).min(max_b);
+        let lo = half.min(max_b);
+        let hi = buckets.saturating_sub(half).max(lo);
+        let mut best_y = f64::MAX;
+        let mut best_cb = lo;
+        for cb in lo..=hi {
+            let b0 = cb.saturating_sub(half);
+            let b1 = (cb + half).min(max_b);
+            let mut y = 0.0_f64;
+            for b in b0..=b1 {
+                if height[b] > y {
+                    y = height[b];
+                }
+            }
+            let top = y + r * 2.0;
+            if top < best_y {
+                best_y = top;
+                best_cb = cb;
+            }
+        }
+        let cx = best_cb as f64 * step;
+        let cy = best_y - r;
+        pos[idx] = (cx, cy);
+        let b0 = best_cb.saturating_sub(half);
+        let b1 = (best_cb + half).min(max_b);
+        for b in b0..=b1 {
+            if height[b] < best_y {
+                height[b] = best_y;
+            }
+        }
+    }
+    let total_h = height.iter().cloned().fold(0.0_f64, f64::max);
     (pos, total_h.max(1.0))
 }
 
