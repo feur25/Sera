@@ -88,3 +88,10 @@ pub fn init_chart_types() {
         }
     });
 }
+
+pub fn load_all_groups() {
+    init_chart_types();
+    for (name, _) in LIST_PLOT {
+        load_group(name);
+    }
+}
