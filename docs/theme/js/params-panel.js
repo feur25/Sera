@@ -729,6 +729,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
     var clsDiv = document.createElement("div");
     clsDiv.className = "sp-cls";
     clsDiv.id = clsId;
+    clsDiv.setAttribute("data-family", family);
 
     variants.forEach(function (item, i) {
       var v = item.key;
@@ -945,11 +946,10 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
     clsContainers.forEach(function (cls) {
       var scope = cls.id;
       if (!scope) return;
+      var family = cls.getAttribute("data-family") || "";
       cls.querySelectorAll(".sp-cls-tab").forEach(function (origBtn) {
-        var oc = origBtn.getAttribute("onclick") || "";
-        var m  = oc.match(/spCls\('([^']+)','([^']+)'/);
-        if (!m) return;
-        var name = m[2];
+        var name = origBtn.getAttribute("data-variant");
+        if (!name) return;
         var icon = origBtn.querySelector(".sp-cic");
         var lbl  = origBtn.querySelector(".sp-clb");
 
@@ -957,7 +957,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
         btn.className = "sp-rail-btn" + (origBtn.classList.contains("sp-cact") ? " sp-cact" : "");
         btn.setAttribute("data-scope", scope);
         btn.setAttribute("data-name",  name);
-        btn.setAttribute("data-variant", origBtn.getAttribute("data-variant") || name);
+        btn.setAttribute("data-variant", name);
         btn.innerHTML =
           '<span class="sp-cic">'  + (icon ? icon.innerHTML   : "") + '</span>' +
           '<span class="sp-clb">'  + (lbl  ? lbl.textContent  : name) + '</span>';
@@ -973,6 +973,9 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
           var variantKey = btn.getAttribute("data-variant") || name;
           var v = document.getElementById(variantDomId(scope, variantKey));
           if (v) {
+            if (v.hasAttribute("data-sp-lazy")) {
+              fillVariantPreview(v, window.SeraplotWASM, family, variantKey, getLang());
+            }
             v.classList.add("sp-von");
             v.style.display = "block";
           }
