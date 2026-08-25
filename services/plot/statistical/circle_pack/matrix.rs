@@ -1,4 +1,4 @@
-use super::common::pack_local;
+use super::common::terrain_pack;
 use super::config::CirclePackConfig;
 use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open};
@@ -375,30 +375,25 @@ pub fn render(cfg: &CirclePackConfig) -> String {
 
             let cell_w = col_w[c];
             let cell_h = col_row_h[c][r];
-            let avail_w = cell_w * 0.94;
-            let avail_h = cell_h * 0.90;
+            let avail_w = cell_w * 0.96;
+            let avail_h = cell_h * 0.92;
 
             let total_area: f64 = base_radii.iter().map(|r| r * r * std::f64::consts::PI).sum();
-            let k = ((avail_w * avail_h * 0.62) / total_area.max(1e-6)).sqrt().clamp(0.3, 4.5);
+            let k = ((avail_w * avail_h * 0.72) / total_area.max(1e-6)).sqrt().clamp(0.3, 4.5);
             let seed_radii: Vec<f64> = base_radii.iter().map(|&r| r * k).collect();
-            let seed_pos = pack_local(&seed_radii, (0.42 * k).max(0.12));
+            let (seed_pos, seed_h) = terrain_pack(&seed_radii, avail_w);
 
             let mut min_x = f64::MAX;
             let mut max_x = f64::MIN;
-            let mut min_y = f64::MAX;
-            let mut max_y = f64::MIN;
-            for (i, &(px, py)) in seed_pos.iter().enumerate() {
+            for (i, &(px, _py)) in seed_pos.iter().enumerate() {
                 let rr = seed_radii[i];
                 min_x = min_x.min(px - rr);
                 max_x = max_x.max(px + rr);
-                min_y = min_y.min(py - rr);
-                max_y = max_y.max(py + rr);
             }
             let bbox_w = (max_x - min_x).max(1e-6);
-            let bbox_h = (max_y - min_y).max(1e-6);
-            let fit = ((avail_w / bbox_w).min(avail_h / bbox_h)).clamp(0.35, 1.9);
+            let fit = ((avail_w / bbox_w).min(avail_h / seed_h)).clamp(0.35, 1.9);
             let mid_x = (min_x + max_x) / 2.0;
-            let mid_y = (min_y + max_y) / 2.0;
+            let mid_y = seed_h / 2.0;
 
             let raw_pos = seed_pos;
             let local_radii: Vec<f64> = seed_radii.iter().map(|&r| r * fit).collect();
