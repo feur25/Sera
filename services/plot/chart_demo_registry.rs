@@ -216,6 +216,25 @@ pub fn apply_media(html: String, media_json: &str) -> String {
     out
 }
 
+pub fn families() -> Vec<(String, Vec<(String, &'static ChartDemoEntry)>)> {
+    use std::collections::BTreeMap;
+    let mut grouped: BTreeMap<String, BTreeMap<String, &'static ChartDemoEntry>> = BTreeMap::new();
+    for entry in iter_entries() {
+        let Some(payload) = demo_payload(entry) else {
+            continue;
+        };
+        grouped
+            .entry(payload.family)
+            .or_default()
+            .entry(payload.variant)
+            .or_insert(entry);
+    }
+    grouped
+        .into_iter()
+        .map(|(family, variants)| (family, variants.into_iter().collect()))
+        .collect()
+}
+
 pub fn render_demo_html(entry: &ChartDemoEntry) -> Option<String> {
     let payload = demo_payload(entry)?;
     let fe = crate::bindings::fn_registry::iter_entries().find(|f| f.name == payload.builder)?;
