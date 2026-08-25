@@ -806,16 +806,19 @@
         var pad = parseFloat(getComputedStyle(content).paddingLeft || '0') + parseFloat(getComputedStyle(content).paddingRight || '0');
         var avail = content.clientWidth - pad;
         var mainW = main.clientWidth;
+        var nextWidth, nextMargin;
         if (avail <= mainW + 4) {
-            wrap.style.width = '';
-            wrap.style.marginLeft = '';
-            wrap.style.marginRight = '';
-            return;
+            nextWidth = '';
+            nextMargin = '';
+        } else {
+            var offset = (avail - mainW) / 2;
+            nextWidth = avail + 'px';
+            nextMargin = (-offset) + 'px';
         }
-        var offset = (avail - mainW) / 2;
-        wrap.style.width = avail + 'px';
-        wrap.style.marginLeft = (-offset) + 'px';
-        wrap.style.marginRight = (-offset) + 'px';
+        if (wrap.style.width === nextWidth && wrap.style.marginLeft === nextMargin && wrap.style.marginRight === nextMargin) return;
+        wrap.style.width = nextWidth;
+        wrap.style.marginLeft = nextMargin;
+        wrap.style.marginRight = nextMargin;
     }
 
     function watchWrapWidth(wrap) {
