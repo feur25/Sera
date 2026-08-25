@@ -10,6 +10,8 @@ pub mod nested;
 pub mod outlined;
 pub mod trend;
 pub mod variant;
+pub mod voronoi;
+pub mod voronoi_engine;
 
 pub use config::TreemapConfig;
 pub use variant::TreemapVariant;
@@ -25,6 +27,7 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
         Heat => heat::render(cfg),
         Mono => mono::render(cfg),
         Trend => trend::render(cfg),
+        Voronoi => voronoi::render(cfg),
     }
 }
 
@@ -45,6 +48,8 @@ pub fn build(input: &str) -> String {
     let values = a.values.unwrap_or_default();
     let pars = a.parents.unwrap_or_default();
     let comparisons = o.comparisons.clone().unwrap_or_default();
+    let cats = a.categories.clone().unwrap_or_default();
+    let cats2 = a.categories2.clone().unwrap_or_default();
     use crate::plot::statistical::{render_treemap_html, TreemapConfig, TreemapVariant};
     let hover = o.hj();
     let variant = TreemapVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -61,6 +66,8 @@ pub fn build(input: &str) -> String {
         variant,
         show_text: o.show_text.unwrap_or(false),
         prior_values: &comparisons,
+        categories: &cats,
+        categories2: &cats2,
         ..TreemapConfig::default()
     });
     apply(html, &o)

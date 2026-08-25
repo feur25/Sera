@@ -8,5 +8,6 @@ crate::plot_family! {
         Heat     => "heat" | "ramp" | "magnitude" | "intensity",
         Mono     => "mono" | "monochrome" | "single" | "uniform",
         Trend    => "trend" | "change" | "delta" | "yoy",
+        Voronoi  => "voronoi" | "voronoi_treemap" | "organic" | "polygon_treemap" | "power_diagram",
     }
 }
