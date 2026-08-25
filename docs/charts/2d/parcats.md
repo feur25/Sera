@@ -69,13 +69,13 @@ Aliases: `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.paralle
 <p>Flat semi-transparent ribbons colored by their source node.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parcats-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-en-highlight">
 <p>Dims every ribbon except each node's single heaviest outgoing flow, which is boosted to full opacity with a thin white outline — traces the dominant path through the categories.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parcats-highlight.html"></iframe>
 </div>
 </div>
 </div>
@@ -133,13 +133,13 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 <p>Rubans plats semi-transparents colorés selon leur nœud source.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parcats-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-fr-highlight">
 <p>Estompe tous les rubans sauf le flux sortant le plus lourd de chaque nœud, poussé à pleine opacité avec un fin contour blanc — trace le chemin dominant à travers les catégories.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"highlight"</code></span><span><strong>Alias</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parcats-highlight.html"></iframe>
 </div>
 </div>
 </div>

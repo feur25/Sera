@@ -68,19 +68,19 @@ Aliases: `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `s
 <p>Flat colored bar per task.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-en-progress">
 <p>Outlined bar with an inner fill proportional to `color_values` (0–1 completion fraction) and a `%` label.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"progress"</code></span><span><strong>Aliases</strong> <code>progress / percent / completion / filled</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-progress.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-progress.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-en-milestone">
 <p>Renders zero-duration tasks (`start == end`) as a diamond marker instead of a degenerate bar — the standard way project-planning tools distinguish milestones from work items.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"milestone"</code></span><span><strong>Aliases</strong> <code>milestone / diamonds / checkpoints / markers</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-milestone.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-milestone.html"></iframe>
 </div>
 </div>
 </div>
@@ -137,19 +137,19 @@ Alias : `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `sp
 <p>Barre colorée pleine par tâche.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-fr-progress">
 <p>Barre en contour avec un remplissage interne proportionnel à `color_values` (fraction de complétion 0–1) et un libellé `%`.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"progress"</code></span><span><strong>Alias</strong> <code>progress / percent / completion / filled</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-progress.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-progress.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-fr-milestone">
 <p>Affiche les tâches de durée nulle (`start == end`) sous forme de losange plutôt qu'une barre dégénérée — la façon standard dont les outils de planification distinguent les jalons des tâches.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"milestone"</code></span><span><strong>Alias</strong> <code>milestone / diamonds / checkpoints / markers</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-milestone.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gantt-milestone.html"></iframe>
 </div>
 </div>
 </div>

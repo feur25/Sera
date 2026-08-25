@@ -58,56 +58,56 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Direction-coloured straight lines (green up, red down) with endpoint dots.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-monochrome">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"monochrome"</code></span><span><strong>Aliases</strong> <code>monochrome / mono / uniform / single_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Uniform palette colour per row, no direction tint — ideal for categorical narratives.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-monochrome.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-monochrome.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-highlighted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlighted"</code></span><span><strong>Aliases</strong> <code>highlighted / highlight / top / movers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Top 3 movers (largest |Δ|) drawn in vivid colour, the rest dimmed in grey.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-highlighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-highlighted.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-bumps">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bumps"</code></span><span><strong>Aliases</strong> <code>bumps / bumpchart / rank / ranking</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bump chart: y axis encodes the rank (1..n) at each side instead of the raw value.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-bumps.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-bumps.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-curved">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"curved"</code></span><span><strong>Aliases</strong> <code>curved / curve / bezier / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cubic-Bezier S-curves between the two endpoints — smoother visual flow.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-curved.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-curved.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-thick">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"thick"</code></span><span><strong>Aliases</strong> <code>thick / magnitude / weighted / weight</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-width proportional to |right - left| — magnitude becomes the visual weight.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-thick.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-thick.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-diverging">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / delta / change / centered</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Centered delta bars: positive bars grow right (green), negative grow left (red).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-diverging.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-diverging.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-en-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / step / elbow / rectilinear</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">L-shape connector: horizontal then vertical then horizontal — rectilinear flow.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-stepped.html"></iframe>
 </div>
 </div>
 </div>
@@ -162,56 +162,56 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes droites colorées selon la direction (vert haut, rouge bas) avec points aux extrémités.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-monochrome">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"monochrome"</code></span><span><strong>Aliases</strong> <code>monochrome / mono / uniform / single_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Couleur uniforme par ligne tirée de la palette, sans coloration directionnelle.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-monochrome.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-monochrome.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-highlighted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlighted"</code></span><span><strong>Aliases</strong> <code>highlighted / highlight / top / movers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Top 3 des plus grands Δ mis en avant en couleur vive, le reste estompé en gris.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-highlighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-highlighted.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-bumps">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bumps"</code></span><span><strong>Aliases</strong> <code>bumps / bumpchart / rank / ranking</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bump chart : l’axe y encode le rang (1..n) à chaque côté plutôt que la valeur.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-bumps.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-bumps.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-curved">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"curved"</code></span><span><strong>Aliases</strong> <code>curved / curve / bezier / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes de Bézier cubiques en S entre les deux extrémités — transition douce.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-curved.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-curved.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-thick">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"thick"</code></span><span><strong>Aliases</strong> <code>thick / magnitude / weighted / weight</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Épaisseur du trait proportionnelle à |droite - gauche| — la magnitude devient le poids visuel.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-thick.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-thick.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-diverging">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / delta / change / centered</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres delta centrées : positives à droite (vert), négatives à gauche (rouge).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-diverging.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-diverging.html"></iframe>
 </div>
 <div class="sp-variant" id="slope-fr-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / step / elbow / rectilinear</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Connecteur en L : horizontal puis vertical puis horizontal — flux rectiligne.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slope-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slope-stepped.html"></iframe>
 </div>
 </div>
 </div>

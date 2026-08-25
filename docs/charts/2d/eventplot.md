@@ -68,19 +68,19 @@ Aliases: `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp
 <p>Tick marks only, one color per row.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / ticks</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-en-density">
 <p>Tick marks plus a smoothed density curve per row, computed with the same native kernel density estimator as [`kde()`](kde.md) (`scott_bw` bandwidth selection, Gaussian kernel) — a rug plot and a KDE in one chart.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-density.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-en-connected">
 <p>Draws a thin line connecting each row's events in chronological order, on top of the usual ticks — traces the sequence/trajectory through time, not just where events landed.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"connected"</code></span><span><strong>Aliases</strong> <code>connected / sequence / path / trajectory</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-connected.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-connected.html"></iframe>
 </div>
 </div>
 </div>
@@ -137,19 +137,19 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 <p>Traits verticaux seuls, une couleur par ligne.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / ticks</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-fr-density">
 <p>Traits verticaux plus une courbe de densité lissée par ligne, calculée avec le même estimateur de densité par noyau natif que [`kde()`](kde.md) (sélection de bande passante `scott_bw`, noyau gaussien) — un rug plot et un KDE en un seul graphique.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code></span><span><strong>Alias</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-density.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-fr-connected">
 <p>Trace un trait fin reliant les événements de chaque ligne dans l'ordre chronologique, par-dessus les graduations habituelles — trace la séquence/trajectoire dans le temps, pas seulement où les événements sont tombés.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"connected"</code></span><span><strong>Alias</strong> <code>connected / sequence / path / trajectory</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-connected.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/eventplot-connected.html"></iframe>
 </div>
 </div>
 </div>

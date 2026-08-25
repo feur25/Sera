@@ -56,56 +56,56 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / overlay / default / simple</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each series drawn as an independent semi-transparent filled area from its own value down to the baseline - overlapping regions blend visually, useful to compare overlapping magnitudes directly.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-stacked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Series drawn on top of one another so the top boundary tracks the running total - reads both individual contribution and combined magnitude at once.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-stacked.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-percent">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"percent"</code></span><span><strong>Aliases</strong> <code>percent / percent_stacked / normalized / stream100</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">100%-stacked area - every x position sums to 100%, showing the changing composition (share of total) instead of absolute magnitude.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-percent.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-percent.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-spline">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"spline"</code></span><span><strong>Aliases</strong> <code>spline / smooth / curved</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Catmull-Rom smoothed boundary through every point instead of straight segments - a softer, more organic silhouette for trend-focused series.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-spline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-spline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-step">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / stepped / stairs</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Step-interpolated boundary - the fill jumps at each data point instead of interpolating, correct for values that hold constant between samples (inventory levels, active counts...).</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-step.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-step.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / glow / fade</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Smooth spline boundary filled with a vertical gradient fading from the series color to transparent at the baseline - a modern dashboard look.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-gradient.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-ribbon">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / outlined / bordered / ggplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">100%-stacked area with bold black borders around every band instead of colored ones - the ggplot2 <code>geom_area</code> look, ideal for many groups (works well beyond two) where the outline is what separates adjacent bands visually.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-ribbon.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-en-wave">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"wave"</code></span><span><strong>Aliases</strong> <code>wave / signed / oscillating / stackplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">True signed stacking - unlike <code>stacked</code>, negative values are never clamped to zero, so oscillating series (sin/cos-like data crossing above and below the baseline) stack correctly on both sides of zero. Matches matplotlib's <code>stackplot()</code> behavior for signed data.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/area-wave.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-wave.html"></iframe>
 </div>
 
 </div>
@@ -159,56 +159,56 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / overlay / default / simple</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque série dessinée comme une aire remplie semi-transparente indépendante depuis sa propre valeur jusqu'à la ligne de base - les zones qui se chevauchent se mélangent visuellement, utile pour comparer directement des magnitudes qui se recouvrent.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-stacked">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stacked"</code></span><span><strong>Alias</strong> <code>stacked / stack</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Séries dessinées les unes sur les autres pour que la frontière supérieure suive le total cumulé - lit à la fois la contribution individuelle et la magnitude combinée.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-stacked.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-percent">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"percent"</code></span><span><strong>Alias</strong> <code>percent / percent_stacked / normalized / stream100</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Aire empilée à 100% - chaque position x totalise 100%, montrant la composition changeante (part du total) plutôt que la magnitude absolue.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-percent.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-percent.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-spline">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"spline"</code></span><span><strong>Alias</strong> <code>spline / smooth / curved</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Frontière lissée par Catmull-Rom passant par chaque point au lieu de segments droits - une silhouette plus douce et organique pour les séries orientées tendance.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-spline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-spline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-step">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"step"</code></span><span><strong>Alias</strong> <code>step / stepped / stairs</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Frontière interpolée en escalier - le remplissage saute à chaque point de donnée au lieu d'interpoler, correct pour des valeurs constantes entre échantillons (niveaux de stock, compteurs actifs...).</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-step.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-step.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-gradient">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / glow / fade</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Frontière lissée remplie d'un dégradé vertical s'estompant de la couleur de la série vers la transparence à la ligne de base - un look de tableau de bord moderne.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-gradient.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-ribbon">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / outlined / bordered / ggplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Aire empilée à 100% avec des bordures noires marquées autour de chaque bande au lieu de bordures colorées - le look <code>geom_area</code> de ggplot2, idéal pour de nombreux groupes (fonctionne bien au-delà de deux) où le contour est ce qui sépare visuellement les bandes adjacentes.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-ribbon.html"></iframe>
 </div>
 
 <div class="sp-variant" id="area-fr-wave">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"wave"</code></span><span><strong>Alias</strong> <code>wave / signed / oscillating / stackplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Empilement signé véritable - contrairement à <code>stacked</code>, les valeurs négatives ne sont jamais ramenées à zéro, si bien que des séries oscillantes (type sinus/cosinus traversant la ligne de base) s'empilent correctement des deux côtés de zéro. Reproduit le comportement de <code>stackplot()</code> de matplotlib pour des données signées.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/area-wave.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/area-wave.html"></iframe>
 </div>
 
 </div>

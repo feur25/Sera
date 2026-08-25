@@ -30,7 +30,7 @@
 ---
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/slideshow-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/slideshow-basic.html"></iframe>
 
 </div>
 

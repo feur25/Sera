@@ -67,7 +67,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spiral packing inside a parametric shape mask. Pick the silhouette via the `shape=` argument (rect, circle, heart, bird, glasses, diamond, star).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-bubble">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -75,7 +75,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each word gets a colored disc sized by frequency - a packed-bubble word cloud. Words float in labeled circles, no overlap.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-context">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"context"</code></span><span><strong>Aliases</strong> <code>context / semantic / infranodus / text_network / textnetwork / force / force_directed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -83,7 +83,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Text-network word cloud (InfraNodus style): words positioned by force-directed layout based on co-occurrence edges, colored by semantic cluster - semantically close words appear spatially close.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-context.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-image">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -91,7 +91,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words flow inside a custom binary image mask - upload any silhouette (logo, icon, photo) and the cloud takes its shape.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-image.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-labelmap">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labelmap"</code></span><span><strong>Aliases</strong> <code>labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -99,7 +99,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-network">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -107,7 +107,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Keyword co-occurrence graph - golden-angle node layout, bezier-curved edges, frequency-sized circles. Editorial style of academic keyword maps.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-network.html"></iframe>
 </div>
 
 <div class="sp-variant" id="wordcloud-en-neuron">
@@ -116,7 +116,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Neural-network word cloud on a dark background. Words become glowing nodes; faint connecting edges link nearest neighbors, evoking a synaptic graph.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-neuron.html"></iframe>
 </div>
 
 <div class="sp-variant" id="wordcloud-en-cosmos">
@@ -125,7 +125,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words placed on a phyllotaxis (sunflower-seed) spiral on a starfield background, largest/most frequent words nearest the center — a constellation-like layout instead of a packed rectangle.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-cosmos.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-cosmos.html"></iframe>
 </div>
 </div>
 </div>
@@ -187,7 +187,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Packing en spirale dans un masque parametrique. Choisissez la silhouette via l argument `shape=` (rect, circle, heart, bird, glasses, diamond, star).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-fr-bubble">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -195,7 +195,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque mot obtient un disque colore dimensionne par frequence - un nuage de bulles pack. Les mots flottent dans des cercles etiquetes, sans chevauchement.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-fr-context">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"context"</code></span><span><strong>Aliases</strong> <code>context / semantic / infranodus / text_network / textnetwork / force / force_directed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -203,7 +203,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots texte-reseau (style InfraNodus) : mots positionnes par layout force-dirige base sur les aretes de co-occurrence, colores par cluster semantique - les mots proches semantiquement sont proches spatialement.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-context.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-fr-image">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -211,7 +211,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette et le nuage en prend la forme.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-image.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-fr-labelmap">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labelmap"</code></span><span><strong>Aliases</strong> <code>labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -219,7 +219,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Carte thematique style datamapplot - scatter de points clusterises colores par categorie, avec etiquettes de cluster positionnees via lignes de rappel.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-fr-network">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -227,7 +227,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Graphe de co-occurrence de mots-cles - layout en angle d or, aretes courbes bezier, cercles dimensionnes par frequence. Style editorial des cartes de mots-cles academiques.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-network.html"></iframe>
 </div>
 
 <div class="sp-variant" id="wordcloud-fr-neuron">
@@ -236,7 +236,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots style reseau de neurones sur fond sombre. Les mots deviennent des noeuds lumineux relies par des aretes fines evoquant un graphe synaptique.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-neuron.html"></iframe>
 </div>
 
 <div class="sp-variant" id="wordcloud-fr-cosmos">
@@ -245,7 +245,7 @@ La variante `basic` accepte un argument `shape=` :
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots places sur une spirale de phyllotaxie (graines de tournesol) sur fond etoile, les mots les plus frequents pres du centre - une disposition en constellation plutot qu'un rectangle compact.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-cosmos.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/wordcloud-cosmos.html"></iframe>
 </div>
 </div>
 </div>

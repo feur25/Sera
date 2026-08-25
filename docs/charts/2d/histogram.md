@@ -60,7 +60,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-horizontal">
@@ -68,7 +68,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-horizontal.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-normalized">
@@ -76,7 +76,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-normalized.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-cumulative">
@@ -84,7 +84,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-cumulative.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-stacked">
@@ -92,7 +92,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-stacked.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-overlay">
@@ -100,7 +100,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-overlay.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-en-step">
@@ -108,7 +108,7 @@ pass, not a separate variant, and apply the same way across every chart family.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-step.html"></iframe>
 </div>
 
 </div>
@@ -166,7 +166,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-horizontal">
@@ -174,7 +174,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-horizontal.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-normalized">
@@ -182,7 +182,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-normalized.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-cumulative">
@@ -190,7 +190,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-cumulative.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-stacked">
@@ -198,7 +198,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-stacked.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-overlay">
@@ -206,7 +206,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-overlay.html"></iframe>
 </div>
 
 <div class="sp-variant" id="histogram-fr-step">
@@ -214,7 +214,7 @@ façon sur toutes les familles de graphiques.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/histogram-step.html"></iframe>
 </div>
 
 </div>

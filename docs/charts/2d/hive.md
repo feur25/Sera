@@ -70,31 +70,31 @@ Hive plots organize network nodes on radial axes by category. Each axis correspo
 <p>Straight edge lines</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-en-curved">
 <p>Cubic bezier curves through center</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"curved"</code></span><span><strong>Aliases</strong> <code>curved / smooth / bezier</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-curved.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-curved.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-en-weighted">
 <p>Stroke width proportional to edge weight</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-en-minimal">
 <p>Straight (uncurved), thin, low-opacity edges with small strokeless nodes — a decluttered reading of dense hive plots that trades the curved-edge chrome for raw connectivity.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-en-directed">
 <p>Draws a small arrowhead where each edge lands on its target node — hive plots are frequently used for directed graphs (network traffic, citations), and this makes the direction readable at a glance instead of implied.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"directed"</code></span><span><strong>Aliases</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-directed.html"></iframe>
 </div>
 </div>
 </div>
@@ -153,31 +153,31 @@ Les hive plots organisent les nœuds d'un réseau sur des axes radiaux par caté
 <p>Arêtes en lignes droites</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-fr-curved">
 <p>Courbes de bézier cubiques passant par le centre</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"curved"</code></span><span><strong>Alias</strong> <code>curved / smooth / bezier</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-curved.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-curved.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-fr-weighted">
 <p>Épaisseur du trait proportionnelle au poids de l'arête</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-fr-minimal">
 <p>Arêtes droites (non courbées), fines et peu opaques, avec de petits nœuds sans contour — une lecture épurée des hive plots denses qui sacrifie le chrome des arêtes courbées au profit de la connectivité brute.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-fr-directed">
 <p>Trace une petite flèche là où chaque arête arrive sur son nœud cible — les hive plots servent souvent à représenter des graphes orientés (trafic réseau, citations), et ceci rend le sens lisible d'un coup d'œil plutôt qu'implicite.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"directed"</code></span><span><strong>Alias</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hive-directed.html"></iframe>
 </div>
 </div>
 </div>

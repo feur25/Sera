@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-basic.html"></iframe>
 
 </div>
 
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-horizontal.html"></iframe>
 
 </div>
 
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-notched.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-notched.html"></iframe>
 
 </div>
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-grouped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-grouped.html"></iframe>
 
 </div>
 
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-points.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-points.html"></iframe>
 
 </div>
 
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-outliers.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-outliers.html"></iframe>
 
 </div>
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"jitter"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-strip.html"></iframe>
 
 </div>
 
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"swarm"</code> / <code>"beeswarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-swarm.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-swarm.html"></iframe>
 
 </div>
 
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-violin.html"></iframe>
 
 </div>
 
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>boxen_depth</code> (2–7)</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-letter_value.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/boxplot-letter_value.html"></iframe>
 
 </div>
 
@@ -188,25 +188,25 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 </div>
 <div class="sp-cls-body">
 
-<div class="sp-variant sp-von" id="bx-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-basic.html"></iframe></div>
+<div class="sp-variant sp-von" id="bx-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-basic.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-horizontal.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-horizontal.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-notched"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-notched.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-notched"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-notched.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-grouped"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-grouped.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-grouped"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-grouped.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-points.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-points.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-outliers"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-outliers.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-outliers"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-outliers.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code> / <code>"jitter"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code> / <code>"jitter"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-strip.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-swarm"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code> / <code>"beeswarm"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-swarm.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-swarm"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code> / <code>"beeswarm"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-swarm.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-violin"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-violin"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-violin.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-letter"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-letter_value.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-letter"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/boxplot-letter_value.html"></iframe></div>
 
 </div>
 </div>

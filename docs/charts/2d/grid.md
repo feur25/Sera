@@ -27,7 +27,7 @@
 ---
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/grid-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/grid-basic.html"></iframe>
 
 </div>
 

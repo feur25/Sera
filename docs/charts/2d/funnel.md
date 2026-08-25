@@ -59,61 +59,61 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic centered trapezoid pyramid — each step’s top width inherits the previous bottom width.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / bar / rect / rectangle</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Centered rectangles per stage (no diagonal slope), width ∝ value/max.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-rounded">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rounded"</code></span><span><strong>Aliases</strong> <code>rounded / round / pill / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trapezoids with rounded outer corners — softer, pill-like aesthetic.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-rounded.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-rounded.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-chevron">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"chevron"</code></span><span><strong>Aliases</strong> <code>chevron / arrow / pipeline / pointer</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Pentagon arrow shapes pointing right — sales-pipeline / process flow style.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-chevron.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-chevron.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-pyramid">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pyramid"</code></span><span><strong>Aliases</strong> <code>pyramid / triangle / cone / point</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Continuous pyramid: each level narrows progressively to a point at the bottom.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-pyramid.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-pyramid.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-inverted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"inverted"</code></span><span><strong>Aliases</strong> <code>inverted / inverse / reverse / upside_down</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertically flipped funnel — widest stage at the bottom (growth pyramid).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-inverted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-inverted.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-conversion">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"conversion"</code></span><span><strong>Aliases</strong> <code>conversion / dropoff / rate / steps</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Basic trapezoid plus drop-off percentage between consecutive stages displayed in red.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-conversion.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-conversion.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-compare">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"compare"</code></span><span><strong>Aliases</strong> <code>compare / multi / side_by_side / funnels</code></span><span><strong>Required</strong> <code>series</code></span><span><strong>Optional</strong> <code>series_names</code>, <code>category_series</code>, <code>text_info</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Several independent funnels side by side, each with its own stage count and its own scale - the native equivalent of composing multiple <code>go.Funnel()</code> traces in Plotly, without ever building a trace by hand. Pass <code>series</code> (one value list per funnel), <code>series_names</code> (funnel names) and <code>category_series</code> (one stage-label list per funnel, since funnels can have different stage counts). Automatically selected whenever <code>series</code> has more than one entry and <code>category_series</code> is given - use <code>"grouped"</code> instead when every group shares the same stages. <code>text_info</code> combines <code>"value"</code>, <code>"percent_initial"</code>, <code>"percent_previous"</code> and <code>"percent_total"</code> with <code>+</code>.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-compare.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-compare.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-grouped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code></span><span><strong>Aliases</strong> <code>grouped / colored / by_color / shared_stages</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Optional</strong> <code>series_names</code>, <code>text_info</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">One funnel, several colored groups sharing the exact same stages - each stage's band splits into adjacent, touching segments (no gap) whose widths are proportional to each group's own value on one shared linear scale, so the combined shape tapers naturally like a single funnel. The native equivalent of <code>px.funnel(df, x="number", y="stage", color="office")</code> in Plotly - works with any number of groups, not just two. Auto-selected whenever <code>series</code> has more than one entry and <code>category_series</code> is not given.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-grouped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-grouped.html"></iframe>
 </div>
 </div>
 </div>
@@ -169,61 +169,61 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Pyramide trapézoïdale centrée classique — le haut de chaque étape hérite du bas de la précédente.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / bar / rect / rectangle</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Rectangles centrés par étape (sans pente diagonale), largeur ∝ valeur/max.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-rounded">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rounded"</code></span><span><strong>Aliases</strong> <code>rounded / round / pill / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trapèzes avec coins arrondis — esthétique douce de type pilule.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-rounded.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-rounded.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-chevron">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"chevron"</code></span><span><strong>Aliases</strong> <code>chevron / arrow / pipeline / pointer</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Pentagones en flèche pointant à droite — style pipeline commercial / processus.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-chevron.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-chevron.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-pyramid">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pyramid"</code></span><span><strong>Aliases</strong> <code>pyramid / triangle / cone / point</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Pyramide continue : chaque niveau se rétrécit progressivement jusqu’à une pointe.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-pyramid.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-pyramid.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-inverted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"inverted"</code></span><span><strong>Aliases</strong> <code>inverted / inverse / reverse / upside_down</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Entonnoir inversé verticalement — étape la plus large en bas (pyramide de croissance).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-inverted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-inverted.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-conversion">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"conversion"</code></span><span><strong>Aliases</strong> <code>conversion / dropoff / rate / steps</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trapèze de base avec le pourcentage de chute entre étapes affiché en rouge.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-conversion.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-conversion.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-compare">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"compare"</code></span><span><strong>Alias</strong> <code>compare / multi / side_by_side / funnels</code></span><span><strong>Requis</strong> <code>series</code></span><span><strong>Optionnel</strong> <code>series_names</code>, <code>category_series</code>, <code>text_info</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Plusieurs entonnoirs indépendants côte à côte, chacun avec son propre nombre d'étapes et sa propre échelle - l'équivalent natif de composer plusieurs traces <code>go.Funnel()</code> en Plotly, sans jamais construire de trace à la main. Passez <code>series</code> (une liste de valeurs par entonnoir), <code>series_names</code> (noms des entonnoirs) et <code>category_series</code> (une liste d'étiquettes d'étapes par entonnoir, puisque les entonnoirs peuvent avoir des nombres d'étapes différents). Sélectionné automatiquement dès que <code>series</code> a plus d'une entrée et que <code>category_series</code> est fourni - utilisez <code>"grouped"</code> quand tous les groupes partagent les mêmes étapes. <code>text_info</code> combine <code>"value"</code>, <code>"percent_initial"</code>, <code>"percent_previous"</code> et <code>"percent_total"</code> avec <code>+</code>.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-compare.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-compare.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-grouped">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code></span><span><strong>Alias</strong> <code>grouped / colored / by_color / shared_stages</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code></span><span><strong>Optionnel</strong> <code>series_names</code>, <code>text_info</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un seul entonnoir, plusieurs groupes colorés partageant exactement les mêmes étapes - la bande de chaque étape se divise en segments adjacents et jointifs (sans espace) dont les largeurs sont proportionnelles à la valeur de chaque groupe sur une même échelle linéaire partagée, si bien que la forme combinée se rétrécit naturellement comme un seul entonnoir. L'équivalent natif de <code>px.funnel(df, x="number", y="stage", color="office")</code> en Plotly - fonctionne avec n'importe quel nombre de groupes, pas seulement deux. Sélectionné automatiquement dès que <code>series</code> a plus d'une entrée et que <code>category_series</code> n'est pas fourni.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-grouped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/funnel-grouped.html"></iframe>
 </div>
 </div>
 </div>

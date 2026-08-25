@@ -70,31 +70,31 @@ The Pulse chart is an original SeraPlot chart type that maps temporal or cyclic 
 <p>Clock-face arc bars per period</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-wave">
 <p>Smooth closed radial polygon</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"wave"</code></span><span><strong>Aliases</strong> <code>wave / sine / smooth</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-wave.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-wave.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-dot">
 <p>Radial scatter with connecting spokes</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dot"</code></span><span><strong>Aliases</strong> <code>dot / scatter / bubble</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-dot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-filled">
 <p>Extends every slice into a continuous, gap-free ring at full opacity with no stroke — reads as a solid dial rather than a set of separated arc bars.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>filled / area / solid</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-outlined">
 <p>Stroke-only arc slices with no fill — the same radial clock-face layout, stripped down to outlines for a lighter, print-friendly look.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-outlined.html"></iframe>
 </div>
 </div>
 </div>
@@ -153,31 +153,31 @@ Le Pulse chart est un type de graphique original de SeraPlot qui projette des do
 <p>Barres en arc façon cadran par période</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-wave">
 <p>Polygone radial fermé et lissé</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"wave"</code></span><span><strong>Alias</strong> <code>wave / sine / smooth</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-wave.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-wave.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-dot">
 <p>Nuage de points radial avec rayons de connexion</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dot"</code></span><span><strong>Alias</strong> <code>dot / scatter / bubble</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-dot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-filled">
 <p>Étend chaque secteur en un anneau continu, sans espace, à pleine opacité et sans contour — se lit comme un cadran plein plutôt qu’un ensemble de barres en arc séparées.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / area / solid</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-outlined">
 <p>Secteurs en arc tracés en contour seul, sans remplissage — la même disposition radiale en cadran, allégée en simples contours pour un rendu plus léger, adapté à l'impression.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code></span><span><strong>Alias</strong> <code>outlined / outline / stroke / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pulse-outlined.html"></iframe>
 </div>
 </div>
 </div>

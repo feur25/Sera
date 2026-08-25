@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic</code> / <code>simple</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-en-categorical">
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code> / <code>"grouped"</code></span><span><strong>Aliases</strong> <code>category</code> / <code>groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-en-labeled">
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code> / <code>"text"</code></span><span><strong>Aliases</strong> <code>labels</code> / <code>annotated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-en-outlined">
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code> / <code>"hollow"</code></span><span><strong>Aliases</strong> <code>ring</code> / <code>open</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-en-negative">
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"negative"</code> / <code>"signed"</code></span><span><strong>Aliases</strong> <code>diverging</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-negative.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-en-split">
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>x_categories</code>, <code>y_categories</code>, <code>categories</code>, <code>sizes</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-split.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-split.html"></iframe>
 </div>
 
 </div>
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic</code> / <code>simple</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-fr-categorical">
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"grouped"</code></span><span><strong>Alias</strong> <code>category</code> / <code>groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-fr-labeled">
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code> / <code>"text"</code></span><span><strong>Alias</strong> <code>labels</code> / <code>annotated</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-fr-outlined">
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code> / <code>"hollow"</code></span><span><strong>Alias</strong> <code>ring</code> / <code>open</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-fr-negative">
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"negative"</code> / <code>"signed"</code></span><span><strong>Alias</strong> <code>diverging</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-negative.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubble-fr-split">
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>x_categories</code>, <code>y_categories</code>, <code>categories</code>, <code>sizes</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-split.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-split.html"></iframe>
 </div>
 
 </div>

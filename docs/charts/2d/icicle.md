@@ -72,31 +72,31 @@ Aliases: `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.b
 <p>Root row at the top, depth-based opacity, white separators between bands.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / layers</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-en-gapped">
 <p>Rounded corners with a small gap between every node, both across and between rows.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>gapped / spaced / isolated / padded</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-gapped.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-en-horizontal">
 <p>Root column on the left, depth grows rightward instead of downward.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-horizontal.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-en-radial">
 <p>The same hierarchy in polar coordinates instead of cartesian — depth becomes ring radius, horizontal span becomes angular span. The classic icicle/sunburst duality: identical data, identical layout math (`xspan`, `depth`), different coordinate system.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / sunburst / polar / mandala</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-en-rank">
 <p>Colors every node by its value rank among its same-depth peers (indigo → red, lowest to highest) instead of by raw share of the grand total — makes cross-branch comparisons at a given level obvious even when one branch is much bigger than another.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rank"</code></span><span><strong>Aliases</strong> <code>rank / percentile / peer_rank / standing</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-rank.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-rank.html"></iframe>
 </div>
 </div>
 </div>
@@ -157,31 +157,31 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 <p>Rangée racine en haut, opacité dégressive selon la profondeur, séparateurs blancs entre bandes.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / layers</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-gapped">
 <p>Coins arrondis avec un petit espace entre chaque nœud, en largeur comme entre rangées.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>gapped / spaced / isolated / padded</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-gapped.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-horizontal">
 <p>Colonne racine à gauche, la profondeur se développe vers la droite au lieu du bas.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Alias</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-horizontal.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-radial">
 <p>La même hiérarchie en coordonnées polaires plutôt que cartésiennes — la profondeur devient un rayon d'anneau, l'empan horizontal devient un empan angulaire. La dualité classique icicle/sunburst : mêmes données, même calcul de mise en page (`xspan`, `depth`), système de coordonnées différent.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / sunburst / polar / mandala</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-rank">
 <p>Colore chaque nœud selon son rang de valeur parmi ses pairs de même profondeur (indigo → rouge, du plus faible au plus élevé) plutôt que sa part brute du total général — rend évidentes les comparaisons entre branches à un niveau donné, même quand une branche est bien plus grande qu'une autre.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"rank"</code></span><span><strong>Alias</strong> <code>rank / percentile / peer_rank / standing</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/icicle-rank.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/icicle-rank.html"></iframe>
 </div>
 </div>
 </div>

@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Half-circle gauge with needle and color thresholds - the speedometer everyone knows.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-radial">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / donut / ring / full</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Full-circle donut progress arc - elegant ring KPI for dashboards.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-arc270">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"arc270"</code></span><span><strong>Aliases</strong> <code>arc270 / three_quarter / arc / wide</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">270-degree arc - more arc length for finer reading than a half-circle.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-arc270.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-arc270.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-sleek">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sleek"</code></span><span><strong>Aliases</strong> <code>sleek / minimal / clean / flat</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">No needle, no ticks - oversized value text on a clean colored arc.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-sleek.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-sleek.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-tick">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"tick"</code></span><span><strong>Aliases</strong> <code>tick / tickmarks / scaled / ruler</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Half-arc with ruler tick marks every 5% and major labels every 25%.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-tick.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-tick.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-segmented">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"segmented"</code></span><span><strong>Aliases</strong> <code>segmented / battery / signal / chunked</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Battery / signal-bar style with discrete chunks lighting up by threshold.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-segmented.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-segmented.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-glow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"glow"</code></span><span><strong>Aliases</strong> <code>glow / neon / halo / luminous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Neon glow effect on the active arc - dramatic dark dashboard look.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-en-concentric">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"concentric"</code></span><span><strong>Aliases</strong> <code>concentric / rings / target / dual</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Two concentric arcs: outer = current, inner = comparison or target.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-concentric.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-concentric.html"></iframe>
 </div>
 
 <div class="sp-variant" id="gauge-en-sparkline">
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Gauge + trend sparkline fusion: any other gauge style (arc, needle, value readout — pick it with <code>base_style</code>, e.g. <code>"tick"</code>, <code>"radial"</code>, <code>"glow"</code>...) with a bordered history panel drawn beneath: gradient-filled trend line, highlighted latest point, and an up/down delta badge comparing it to the start of the <code>history</code> array — the current reading in context, without needing a second chart.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-sparkline.html"></iframe>
 </div>
 </div>
 </div>
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Jauge demi-cercle avec aiguille et seuils colores - le compteur que tout le monde connait.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-radial">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / donut / ring / full</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Arc de progression circulaire complet - KPI elegant en anneau pour tableaux de bord.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-arc270">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"arc270"</code></span><span><strong>Aliases</strong> <code>arc270 / three_quarter / arc / wide</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Arc de 270 degres - plus de longueur pour une lecture plus fine qu un demi-cercle.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-arc270.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-arc270.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-sleek">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sleek"</code></span><span><strong>Aliases</strong> <code>sleek / minimal / clean / flat</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sans aiguille ni ticks - valeur en grand sur un arc colore epure.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-sleek.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-sleek.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-tick">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"tick"</code></span><span><strong>Aliases</strong> <code>tick / tickmarks / scaled / ruler</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Demi-arc avec graduations regle tous les 5% et labels majeurs tous les 25%.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-tick.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-tick.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-segmented">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"segmented"</code></span><span><strong>Aliases</strong> <code>segmented / battery / signal / chunked</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style batterie / barre de reseau avec segments discrets s allumant par seuil.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-segmented.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-segmented.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-glow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"glow"</code></span><span><strong>Aliases</strong> <code>glow / neon / halo / luminous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Effet neon sur l arc actif - look dashboard sombre tres marquant.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="gauge-fr-concentric">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"concentric"</code></span><span><strong>Aliases</strong> <code>concentric / rings / target / dual</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Deux arcs concentriques : externe = courant, interne = comparaison ou cible.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-concentric.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-concentric.html"></iframe>
 </div>
 
 <div class="sp-variant" id="gauge-fr-sparkline">
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion gauge + sparkline de tendance : n'importe quel autre style de gauge (arc, aiguille, valeur affichée — choisi via <code>base_style</code>, ex. <code>"tick"</code>, <code>"radial"</code>, <code>"glow"</code>...) avec un panneau d'historique dessiné en dessous : ligne de tendance à remplissage dégradé, dernier point mis en évidence, et un badge de variation ▲/▼ comparant à l'écart au début du tableau <code>history</code> — la mesure actuelle mise en contexte, sans avoir besoin d'un second graphique.</p>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/gauge-sparkline.html"></iframe>
 </div>
 </div>
 </div>

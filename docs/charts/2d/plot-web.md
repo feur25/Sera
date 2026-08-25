@@ -67,13 +67,13 @@ Aliases: `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_ch
 <p>Nodes positioned directly from `x_values`/`y_values`, connecting light-trail background.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"scatter"</code></span><span><strong>Aliases</strong> <code>scatter / web / connected / default / flow</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/plot-web.html"></iframe>
 </div>
 <div class="sp-variant" id="plot-web-en-radial">
 <p>Nodes re-projected onto concentric rings, angle and radius derived from the same input coordinates.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/plot-web-radial.html"></iframe>
 </div>
 </div>
 </div>
@@ -129,13 +129,13 @@ Alias : `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_cha
 <p>Nœuds positionnés directement depuis `x_values`/`y_values`, fond à traînées lumineuses.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"scatter"</code></span><span><strong>Alias</strong> <code>scatter / web / connected / default / flow</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/plot-web.html"></iframe>
 </div>
 <div class="sp-variant" id="plot-web-fr-radial">
 <p>Nœuds reprojetés sur des anneaux concentriques, angle et rayon dérivés des mêmes coordonnées d'entrée.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/plot-web-radial.html"></iframe>
 </div>
 </div>
 </div>

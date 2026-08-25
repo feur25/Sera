@@ -78,79 +78,79 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <p>Filled hexagons only, compact grid, right-side density legend.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / filled</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-outlined">
 <p>White cell borders; count printed inside each hexagon once cells are large enough to fit text.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / labeled</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-outlined.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-spaced">
 <p>Hexagons drawn at 72% size with a visible gap between neighbors — a "confetti" look instead of a solid tiled surface.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"spaced"</code></span><span><strong>Aliases</strong> <code>spaced / gapped / confetti</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-spaced.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-highlight">
 <p>Dims every cell except the densest ~15% (full opacity, white outline, count label) — draws the eye straight to the hotspots instead of the full density gradient.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / top / hotspot / peak</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-highlight.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-mincnt">
 <p>Bins below <code>min_count</code> are skipped entirely (left transparent) instead of drawn faint - a hard threshold rather than a dimmed gradient, matching R's <code>hexbin(mincnt=)</code>.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mincnt"</code></span><span><strong>Aliases</strong> <code>mincnt / threshold / sparse</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-mincnt.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-mincnt.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-nested">
 <p>Each cell's count is classed into an order-of-magnitude band (ones/tens/hundreds/thousands/10 thousands), colored and sized by band, with a smaller nested hexagon inside in the previous band's color - matching R hexbin's nested/centroid styles - plus a size+color legend.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code></span><span><strong>Aliases</strong> <code>nested / magnitude / rings / centroids</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-nested.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-log_counts">
 <p>Cell color is mapped on <code>log(count + 1)</code> instead of the raw count, matching matplotlib's <code>hexbin(bins="log")</code> — compresses the huge dynamic range that skewed point clouds produce so low-density cells stay visually distinguishable instead of collapsing near zero.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"log_counts"</code></span><span><strong>Aliases</strong> <code>log_counts / log / log_scale / logarithmic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-log_counts.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-log_counts.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-weighted">
 <p>Cell color encodes the average of a third variable (<code>values=</code>) inside each bin instead of the point count — the native equivalent of matplotlib's <code>hexbin(C=..., reduce_C_function=numpy.mean)</code>, for when the quantity of interest isn't density itself.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / mean / aggregate / reduce_mean</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-dotted">
 <p>White dashed cell borders over a full continuous colorscale (defaults to <code>magma</code>) with no plot border — matches matplotlib's <code>hexbin(edgecolor="white", linestyle="dotted", linewidth=1.5)</code> styling exactly.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dotted"</code></span><span><strong>Aliases</strong> <code>dotted / dashed / styled / magma</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-dotted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-dotted.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-marginals">
 <p>Adds 1D density strips above and to the right of the hexbin grid — a joint-plot style combination, showing the marginal distribution of each axis alongside the 2D density.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginals"</code></span><span><strong>Aliases</strong> <code>marginals / joint / with_histograms / density_marginals</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-marginals.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-voronoi">
 <p>Tessellates the scattered points into a bounded Voronoi diagram instead of a regular hex grid — each cell's fill encodes local density (<code>values=</code> if supplied, otherwise the inverse of the cell's own area), so density is read from irregular organic cell sizes rather than a uniform lattice. Site points are drawn as small dots on top, echoing the "particle tracking" framing of density-Voronoi science posters.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"voronoi"</code></span><span><strong>Aliases</strong> <code>voronoi / density_voronoi / tessellation / particle_density / cells</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-voronoi.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-voronoi.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-neural">
 <p>Draws the Voronoi tessellation as stroke-only outlines — no fill — overlaid across several independently-jittered site positions, so shared edges between frames build up into a dense tangled mesh in the high-density core while the sparse periphery stays a single clean web of long lines. A gray-to-red-to-orange-to-yellow ramp and soft glow pick out the densest region; short red streaks mark low-density outlier points.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"neural"</code></span><span><strong>Aliases</strong> <code>neural / mesh / turbidity / particle_mesh / neural_mesh</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-neural.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-en-bloom">
 <p>Estimates a smooth 2D density field from the scattered points (a Gaussian-kernel distance field, bandwidth auto-derived from point count and plot area) and bands it into discrete iso-level cells — every cell is colored by the highest density threshold it clears, so overlapping seeds fuse into organic merged "islands" instead of staying as separate circles. Cell edges are lightly jittered per-cell for a hand-cut, faceted look, and the outermost frame borrows architectural-drawing conventions: a diagonal-hatch margin, circled grid-reference bubbles, and a data-derived "NODES" tally (seed count, band count, peak-band cell count, coverage, bandwidth).</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bloom"</code></span><span><strong>Aliases</strong> <code>bloom / contour / density_bloom / iso_contour / organic_contour</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-bloom.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-bloom.html"></iframe>
 </div>
 </div>
 </div>
@@ -217,79 +217,79 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <p>Hexagones pleins uniquement, grille compacte, légende de densité à droite.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / filled</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-outlined">
 <p>Contours blancs ; le comptage est affiché dans chaque hexagone assez grand pour contenir le texte.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code></span><span><strong>Alias</strong> <code>outlined / outline / stroke / labeled</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-outlined.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-spaced">
 <p>Hexagones dessinés à 72% de leur taille avec un espace visible entre voisins — un rendu confetti plutôt qu'une surface pavée pleine.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"spaced"</code></span><span><strong>Alias</strong> <code>spaced / gapped / confetti</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-spaced.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-highlight">
 <p>Estompe toutes les cellules sauf les ~15% les plus denses (pleine opacité, contour blanc, effectif affiché) — attire l'œil directement sur les zones chaudes plutôt que sur le dégradé complet.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"highlight"</code></span><span><strong>Alias</strong> <code>highlight / top / hotspot / peak</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-highlight.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-mincnt">
 <p>Les cellules sous <code>min_count</code> sont totalement ignorées (laissées transparentes) plutôt que dessinées en estompé - un seuil dur plutôt qu'un dégradé atténué, comme <code>hexbin(mincnt=)</code> en R.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mincnt"</code></span><span><strong>Alias</strong> <code>mincnt / threshold / sparse</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-mincnt.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-mincnt.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-nested">
 <p>L'effectif de chaque cellule est classé dans une bande d'ordre de grandeur (unités/dizaines/centaines/milliers/dizaines de milliers), colorée et dimensionnée selon la bande, avec un hexagone imbriqué plus petit à l'intérieur dans la couleur de la bande précédente - comme les styles imbriqués/centroïdes du package R hexbin - plus une légende taille+couleur.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code></span><span><strong>Alias</strong> <code>nested / magnitude / rings / centroids</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-nested.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-log_counts">
 <p>La couleur des cellules est basée sur <code>log(effectif + 1)</code> plutôt que sur l'effectif brut, comme <code>hexbin(bins="log")</code> en matplotlib — comprime la large plage dynamique des nuages de points asymétriques pour que les cellules peu denses restent visuellement distinguables au lieu de s'écraser près de zéro.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"log_counts"</code></span><span><strong>Alias</strong> <code>log_counts / log / log_scale / logarithmic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-log_counts.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-log_counts.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-weighted">
 <p>La couleur des cellules encode la moyenne d'une troisième variable (<code>values=</code>) dans chaque cellule plutôt que l'effectif — l'équivalent natif de <code>hexbin(C=..., reduce_C_function=numpy.mean)</code> en matplotlib, quand la grandeur d'intérêt n'est pas la densité elle-même.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / mean / aggregate / reduce_mean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-dotted">
 <p>Contours pointillés blancs sur un dégradé continu complet (par défaut <code>magma</code>) sans bordure de graphique — reproduit exactement le style <code>hexbin(edgecolor="white", linestyle="dotted", linewidth=1.5)</code> de matplotlib.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dotted"</code></span><span><strong>Alias</strong> <code>dotted / dashed / styled / magma</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-dotted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-dotted.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-marginals">
 <p>Ajoute des bandes de densité 1D au-dessus et à droite de la grille hexbin — une combinaison façon joint-plot, montrant la distribution marginale de chaque axe en plus de la densité 2D.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginals"</code></span><span><strong>Alias</strong> <code>marginals / joint / with_histograms / density_marginals</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-marginals.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-voronoi">
 <p>Découpe le nuage de points en diagramme de Voronoï borné au lieu d'une grille hexagonale régulière — le remplissage de chaque cellule encode la densité locale (<code>values=</code> si fourni, sinon l'inverse de l'aire de la cellule elle-même), donc la densité se lit dans des tailles de cellules organiques irrégulières plutôt que dans une grille uniforme. Les points sources sont dessinés en petits points par-dessus, en écho aux posters scientifiques de type "particle tracking".</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"voronoi"</code></span><span><strong>Alias</strong> <code>voronoi / density_voronoi / tessellation / particle_density / cells</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-voronoi.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-voronoi.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-neural">
 <p>Trace la tessellation de Voronoï en contours seuls — sans remplissage — superposés sur plusieurs positions de sites légèrement décalées (jitter), si bien que les arêtes partagées entre ces passes s'accumulent en un maillage dense et enchevêtré dans le cœur de haute densité, tandis que la périphérie éparse reste un simple réseau propre de longues lignes. Un dégradé gris → rouge → orange → jaune et un léger halo mettent en évidence la zone la plus dense ; de courts traits rouges signalent les points isolés de faible densité.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"neural"</code></span><span><strong>Alias</strong> <code>neural / mesh / turbidity / particle_mesh / neural_mesh</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-neural.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-neural.html"></iframe>
 </div>
 <div class="sp-variant" id="hexbin-fr-bloom">
 <p>Estime un champ de densité 2D lisse à partir des points épars (champ de distance à noyau gaussien, largeur de bande dérivée automatiquement du nombre de points et de la surface du graphique) puis le découpe en cellules à niveaux iso discrets — chaque cellule est colorée selon le seuil de densité le plus élevé qu'elle franchit, si bien que des points sources qui se chevauchent fusionnent en "îlots" organiques au lieu de rester des cercles séparés. Les bords des cellules sont légèrement décalés individuellement pour un rendu façon découpe à la main, et le cadre extérieur emprunte les conventions du dessin d'architecture : marge à hachures diagonales, bulles de référence de grille cerclées, et un décompte "NODES" dérivé des données (nombre de sources, de bandes, de cellules au niveau maximal, couverture, largeur de bande).</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bloom"</code></span><span><strong>Alias</strong> <code>bloom / contour / density_bloom / iso_contour / organic_contour</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hexbin-bloom.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hexbin-bloom.html"></iframe>
 </div>
 </div>
 </div>

@@ -68,37 +68,37 @@ Chord diagrams show relationships between entities using arcs and ribbons around
 <p>Standard filled ribbons</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-ribbon">
 <p>Wider ribbon links</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / wide</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-ribbon.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-arc">
 <p>Arc-only (no filled ribbons)</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"arc"</code></span><span><strong>Aliases</strong> <code>arc / outline</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-arc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-arc.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-mono">
 <p>Single-color monochrome</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mono"</code></span><span><strong>Aliases</strong> <code>mono / single</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-mono.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-directed">
 <p>Draws a small arrowhead on each ribbon pointing toward whichever side receives more — reads the matrix's row/column asymmetry directly off the diagram instead of just the ribbon's natural taper.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"directed"</code></span><span><strong>Aliases</strong> <code>directed / asymmetric / flow_direction / arrows</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-directed.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-bipartite">
 <p>Splits the circle into two arcs — grouped items on one side, a colored attribute ring (sized by how many items link to it) on the other — with curved links between them and item labels rotated radially for readability.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bipartite"</code></span><span><strong>Aliases</strong> <code>bipartite / impact_map / influence_map / attribute_flow / grouped_chord</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-bipartite.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-bipartite.html"></iframe>
 </div>
 </div>
 </div>
@@ -158,37 +158,37 @@ Les diagrammes en accords (chord) montrent les relations entre entités à l'aid
 <p>Rubans pleins standards</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-ribbon">
 <p>Liens en rubans plus larges</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / wide</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-ribbon.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-arc">
 <p>Arcs seuls (sans rubans pleins)</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"arc"</code></span><span><strong>Alias</strong> <code>arc / outline</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-arc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-arc.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-mono">
 <p>Monochrome, couleur unique</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mono"</code></span><span><strong>Alias</strong> <code>mono / single</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-mono.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-directed">
 <p>Trace une petite flèche sur chaque ruban pointant vers le côté qui reçoit le plus — lit l'asymétrie ligne/colonne de la matrice directement sur le diagramme plutôt que par le seul évasement naturel du ruban.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"directed"</code></span><span><strong>Alias</strong> <code>directed / asymmetric / flow_direction / arrows</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-directed.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-bipartite">
 <p>Partage le cercle en deux arcs — items groupés d'un côté, anneau d'attributs coloré (dimensionné selon le nombre d'items qui y sont liés) de l'autre — avec des liens courbes entre les deux et des labels d'items en rotation radiale pour rester lisibles.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bipartite"</code></span><span><strong>Alias</strong> <code>bipartite / impact_map / influence_map / attribute_flow / grouped_chord</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-bipartite.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/chord-bipartite.html"></iframe>
 </div>
 </div>
 </div>

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic Tufte bullet: track + qualitative range + value bar + target tick.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-stacked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stacked_ranges / zones / qualitative</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Three graduated qualitative bands (poor / satisfactory / good) drawn behind the value bar.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-thermo">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"thermo"</code></span><span><strong>Aliases</strong> <code>thermo / thermometer / vertical / column</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical thermometer style with a bulb base - dramatic for KPIs in a row.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-thermo.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-thermo.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-segmented">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"segmented"</code></span><span><strong>Aliases</strong> <code>segmented / traffic / rag / zones_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Traffic-light segmented track (red / amber / green) for status dashboards.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-segmented.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-segmented.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / sparkline / clean / naked</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sparkline-thin pill bar with target tick only - ultra-clean inline indicator.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-dot">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dot"</code></span><span><strong>Aliases</strong> <code>dot / point / marker / pip</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Single dot on a track instead of a bar - dot-plot variant of the bullet.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-dot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-progress">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"progress"</code></span><span><strong>Aliases</strong> <code>progress / pill / bar / percent</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Pill-shape gradient progress bar with a percentage label centered inside.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-progress.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-progress.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-en-compare">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"compare"</code></span><span><strong>Aliases</strong> <code>compare / vs / ghost / prior</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Adds a ghost bar (e.g. previous period via comparisons) behind the current value.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-compare.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-compare.html"></iframe>
 </div>
 </div>
 </div>
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bullet de Tufte classique : piste + zone qualitative + barre de valeur + tick de cible.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-stacked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stacked_ranges / zones / qualitative</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trois bandes qualitatives graduees (faible / correct / bon) derriere la barre de valeur.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-thermo">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"thermo"</code></span><span><strong>Aliases</strong> <code>thermo / thermometer / vertical / column</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style thermometre vertical avec bulbe - tres parlant pour des KPIs alignes.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-thermo.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-thermo.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-segmented">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"segmented"</code></span><span><strong>Aliases</strong> <code>segmented / traffic / rag / zones_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Piste segmentee feu tricolore (rouge / orange / vert) pour tableaux de bord.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-segmented.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-segmented.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / sparkline / clean / naked</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barre pillule fine type sparkline avec uniquement le tick cible - indicateur inline epure.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-dot">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dot"</code></span><span><strong>Aliases</strong> <code>dot / point / marker / pip</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un seul point sur la piste au lieu d une barre - variante dot-plot du bullet.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-dot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-progress">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"progress"</code></span><span><strong>Aliases</strong> <code>progress / pill / bar / percent</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barre de progression pillule en degrade avec pourcentage centre.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-progress.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-progress.html"></iframe>
 </div>
 <div class="sp-variant" id="bullet-fr-compare">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"compare"</code></span><span><strong>Aliases</strong> <code>compare / vs / ghost / prior</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ajoute une barre fantome (par ex. periode precedente via comparisons) derriere la valeur courante.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bullet-compare.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bullet-compare.html"></iframe>
 </div>
 </div>
 </div>
