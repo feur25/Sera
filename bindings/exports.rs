@@ -40,3 +40,19 @@ macro_rules! register_ml_entry {
     };
 }
 crate::for_each_ml_oneshot_fn!(register_ml_entry);
+
+macro_rules! register_viewer_entry {
+    ($fn:ident) => {
+        inventory::submit! {
+            crate::bindings::fn_registry::FnEntry {
+                name: stringify!($fn),
+                input: crate::bindings::fn_registry::InputKind::Json,
+                output: crate::bindings::fn_registry::OutputKind::Bool,
+                invoke: crate::bindings::commands::charts::$fn,
+            }
+        }
+    };
+}
+register_viewer_entry!(show_chart_value);
+register_viewer_entry!(set_chart_kind);
+register_viewer_entry!(set_chart_orientation);
