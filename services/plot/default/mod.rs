@@ -11,8 +11,8 @@ pub use bar::{render_bars, render_bars_fast, render_bars_html};
 pub use line::{render_lines, render_lines_fast, render_lines_html};
 pub mod kmeans;
 pub use crate::plot::controller::chart_controller::{
-    get_current_group_types, render_by_type, set_current_chart_group, ChartGroupBuilder,
-    ChartTypeBuilder,
+    get_current_group_types, list_all_groups, render_by_type, set_current_chart_group,
+    ChartGroupBuilder, ChartTypeBuilder,
 };
 pub use _3d::render_bar3d_html;
 pub use _3d::render_line3d_html;
