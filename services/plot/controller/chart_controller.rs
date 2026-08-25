@@ -6,6 +6,74 @@ use std::sync::{Mutex, OnceLock};
 pub type ChartRenderer = fn(crate::plot::default::PlotRenderContext);
 pub type SvgChartRenderer = fn(&mut String, &[f64], &[&'static str], i32, i32, i32, f64, bool);
 
+pub struct ChartTypeEntry {
+    pub group: &'static str,
+    pub id: u8,
+    pub name: &'static str,
+    pub renderer: ChartRenderer,
+    pub svg_renderer: Option<SvgChartRenderer>,
+    pub color: u32,
+}
+
+inventory::collect!(ChartTypeEntry);
+
+pub fn register_group_from_inventory(group: &'static str) {
+    let mut ids: Vec<u8> = inventory::iter::<ChartTypeEntry>()
+        .filter(|entry| entry.group == group)
+        .map(|entry| {
+            let mut builder = ChartTypeBuilder::new(entry.id)
+                .with_name(entry.name)
+                .with_renderer(entry.renderer);
+            if let Some(svg_rend) = entry.svg_renderer {
+                builder = builder.with_svg_renderer(svg_rend);
+            }
+            if let Err(e) = builder.build() {
+                eprintln!(
+                    "seraplot: failed to register chart type '{}' (id {}) in group '{group}': {e}",
+                    entry.name, entry.id
+                );
+            }
+            with_registry_mut("register_group_from_inventory/color", |reg| {
+                reg.register_color(entry.id, entry.color)
+            });
+            entry.id
+        })
+        .collect();
+    ids.sort_unstable();
+
+    match get_group_registry().lock() {
+        Ok(mut grp_reg) => grp_reg.register_group(group.to_string(), ids),
+        Err(_) => warn_registry_lock_once("register_group_from_inventory"),
+    }
+}
+
+pub fn list_all_groups() -> Vec<(String, Vec<(u8, String)>)> {
+    let Ok(grp_reg) = get_group_registry().lock() else {
+        warn_registry_lock_once("list_all_groups");
+        return Vec::new();
+    };
+    let Ok(reg) = get_registry().lock() else {
+        warn_registry_lock_once("list_all_groups");
+        return Vec::new();
+    };
+
+    let mut groups = grp_reg.list_groups();
+    groups.sort();
+    groups
+        .into_iter()
+        .map(|name| {
+            let mut types: Vec<(u8, String)> = grp_reg
+                .get_group(&name)
+                .unwrap_or_default()
+                .into_iter()
+                .filter_map(|id| reg.get(id).map(|(n, _)| (id, n)))
+                .collect();
+            types.sort_by_key(|(id, _)| *id);
+            (name, types)
+        })
+        .collect()
+}
+
 pub struct ChartRegistry {
     entries: HashMap<u8, (String, ChartRenderer)>,
     svg_renderers: HashMap<u8, SvgChartRenderer>,
@@ -352,5 +420,62 @@ pub fn set_current_chart_group(name: &str) -> bool {
         grp_reg.set_current(name.to_string())
     } else {
         false
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod test_support {
+    use super::ChartTypeEntry;
+    use std::collections::HashSet;
+
+    pub fn group_entries(group: &'static str) -> Vec<&'static ChartTypeEntry> {
+        inventory::iter::<ChartTypeEntry>().filter(|e| e.group == group).collect()
+    }
+
+    pub fn assert_group_well_formed(group: &'static str) {
+        let entries = group_entries(group);
+        assert!(!entries.is_empty(), "group '{group}' has no registered entries");
+
+        let ids: Vec<u8> = entries.iter().map(|e| e.id).collect();
+        let unique_ids: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(ids.len(), unique_ids.len(), "duplicate ids in group '{group}': {ids:?}");
+
+        let names: Vec<&str> = entries.iter().map(|e| e.name).collect();
+        let unique_names: HashSet<&str> = names.iter().copied().collect();
+        assert_eq!(names.len(), unique_names.len(), "duplicate names in group '{group}': {names:?}");
+
+        for entry in &entries {
+            assert!(!entry.name.is_empty(), "entry id {} in group '{group}' has an empty name", entry.id);
+        }
+    }
+
+    pub fn assert_registered_group_matches_inventory(group: &'static str, register_fn: fn()) {
+        let inventory_ids: HashSet<u8> = group_entries(group).into_iter().map(|e| e.id).collect();
+
+        register_fn();
+        super::set_current_chart_group(group);
+        let registered_ids: HashSet<u8> = super::get_current_group_types()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+
+        assert_eq!(registered_ids, inventory_ids, "registered group '{group}' drifted from its inventory entries");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn all_chart_type_entries_share_a_globally_unique_id_space() {
+        let ids: Vec<u8> = inventory::iter::<ChartTypeEntry>().map(|e| e.id).collect();
+        let unique: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(
+            ids.len(),
+            unique.len(),
+            "duplicate ids across ChartTypeEntry groups (they share one flat u8 registry): {ids:?}"
+        );
     }
 }
