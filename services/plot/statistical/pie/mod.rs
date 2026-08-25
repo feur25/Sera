@@ -5,6 +5,7 @@ pub mod config;
 pub mod donut;
 pub mod exploded;
 pub mod kpi;
+pub mod native;
 pub mod nested;
 pub mod nightingale;
 pub mod pattern;
@@ -15,6 +16,7 @@ pub mod variant;
 pub mod waffle;
 
 pub use config::{Pie, PieConfig};
+pub use native::render_pie_native;
 pub use variant::PieVariant;
 
 use crate::html::hover::{build_chart_html, slots_to_json};
