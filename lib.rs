@@ -67,6 +67,72 @@ pub fn sera_aliases_for(key: &str) -> Option<&'static [&'static str]> {
     SERA_ALIASES.iter().find(|(k, _)| *k == key).map(|e| e.1)
 }
 
+fn wrap_demo_kwargs(s: &str, max_len: usize) -> String {
+    let mut out = String::with_capacity(s.len() + s.len() / 16);
+    let mut depth: i32 = 0;
+    let mut in_str = false;
+    let mut line_len: usize = 0;
+    for c in s.chars() {
+        match c {
+            '"' => in_str = !in_str,
+            '[' | '{' | '(' if !in_str => depth += 1,
+            ']' | '}' | ')' if !in_str => depth -= 1,
+            _ => {}
+        }
+        out.push(c);
+        line_len += 1;
+        if c == ',' && !in_str && depth > 0 && line_len > max_len {
+            out.push('\n');
+            out.push_str("        ");
+            line_len = 8;
+        }
+    }
+    out
+}
+
+#[cfg(test)]
+mod wrap_demo_kwargs_tests {
+    use super::wrap_demo_kwargs;
+
+    #[test]
+    fn never_wraps_at_the_top_level() {
+        let s = "a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12";
+        assert_eq!(wrap_demo_kwargs(s, 5), s);
+    }
+
+    #[test]
+    fn wraps_long_array_literals_without_losing_any_content() {
+        let items: Vec<String> = (0..200).map(|i| format!("\"item{i}\"")).collect();
+        let s = format!("labels=[{}]", items.join(","));
+        let wrapped = wrap_demo_kwargs(&s, 80);
+        assert!(wrapped.contains('\n'));
+        assert!(wrapped.lines().all(|l| l.len() <= 80 + 24));
+        let stripped: String = wrapped.chars().filter(|c| !c.is_whitespace()).collect();
+        let original_stripped: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+        assert_eq!(stripped, original_stripped);
+    }
+
+    #[test]
+    fn the_matrix_demo_snippet_never_hands_monaco_a_multi_kilobyte_line() {
+        let snippet = crate::demo_snippet("circle_pack", "matrix").expect("matrix demo exists");
+        let longest = snippet.lines().map(|l| l.len()).max().unwrap_or(0);
+        assert!(longest < 300, "longest line in the matrix demo snippet is {longest} chars, playground editors choke on huge single lines");
+    }
+
+    #[test]
+    fn the_swarm_demo_snippet_never_hands_monaco_a_multi_kilobyte_line() {
+        let snippet = crate::demo_snippet("circle_pack", "swarm").expect("swarm demo exists");
+        let longest = snippet.lines().map(|l| l.len()).max().unwrap_or(0);
+        assert!(longest < 300, "longest line in the swarm demo snippet is {longest} chars, playground editors choke on huge single lines");
+    }
+
+    #[test]
+    fn never_wraps_inside_a_quoted_string_even_with_a_comma_in_it() {
+        let s = "labels=[\"a, very, long, message, with, commas, that, keeps, going, and, going, and, going\"]";
+        assert_eq!(wrap_demo_kwargs(s, 10), s);
+    }
+}
+
 pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
     let is_scene = crate::plot::scene3d::Scene3DVariant::keys_and_aliases()
         .iter()
@@ -94,7 +160,7 @@ pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
     };
     Some(format!(
         "import seraplot as sp\n\nc = sp.{}(\n    \"{} demo\",\n    {}{}\n)\n",
-        family, title, k, suffix
+        family, title, wrap_demo_kwargs(k, 110), suffix
     ))
 }
 
