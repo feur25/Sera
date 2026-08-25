@@ -63,49 +63,49 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 <p>Standard bezier ribbon links</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-gapped">
 <p>Increased node spacing</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>gapped / spaced / separated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-gapped.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-ribbon">
 <p>Wider nodes and ribbons</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / wide / thick</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-ribbon.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-minimal">
 <p>Thin outline style</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / outline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-sorted">
 <p>Reorders nodes within each depth column by descending total throughput, so the dominant flows cluster together instead of sitting in input order — makes it easy to spot which nodes carry the most volume.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sorted"</code></span><span><strong>Aliases</strong> <code>sorted / reordered / by_flow / ranked</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-sorted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-sorted.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-hourglass">
 <p>Every source starts as its own thin row on the left and every ribbon is pulled through a single fixed pinch point before fanning back out into a radial arc of target wedges on the right — each wedge's angular width is proportional to the square root of its total incoming flow (a mild compression so one outlier target can't visually swallow the rest of the arc). Built for bipartite many-sources-to-few-categories data, e.g. foods flowing into the nutrients they're rich in.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"hourglass"</code></span><span><strong>Aliases</strong> <code>hourglass / radiant_flow / nutrient_flow / braided / flow_bloom</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-hourglass.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-hourglass.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-matrix">
 <p>Sources are laid out as a dot-matrix grid instead of a node list — one marker per record, sized by its own weight and colored by the category it ultimately flows to — with thin low-opacity ribbons converging on a handful of large target circles sized by total share and labeled with their percentage of the whole. Built for record-level "big data" flows: many individual rows collapsing into a few outcome buckets.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"matrix"</code></span><span><strong>Aliases</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-matrix.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-en-beacon">
 <p>A single source radiates to every target around a full circle instead of two flat columns — each target sits at its own angle with a short pill sized and colored by weight (a continuous colorscale, not a fixed palette), connected back to the hub by a thin bowed spoke. Built for one-to-many schedules where each target also carries its own label, e.g. a departure board: one hub airport, every outbound flight arranged around the dial with its destination, time and duration.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"beacon"</code></span><span><strong>Aliases</strong> <code>beacon / flight_radar / route_wheel / departure_board / hub_wheel</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-beacon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-beacon.html"></iframe>
 </div>
 </div>
 </div>
@@ -167,49 +167,49 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 <p>Liens en rubans bézier standards</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-gapped">
 <p>Espacement des nœuds augmenté</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>gapped / spaced / separated</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-gapped.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-ribbon">
 <p>Nœuds et rubans plus larges</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / wide / thick</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-ribbon.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-minimal">
 <p>Style filaire fin</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / outline</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-sorted">
 <p>Réordonne les nœuds de chaque colonne de profondeur par débit total décroissant, pour que les flux dominants se regroupent au lieu de rester dans l'ordre d'entrée — facilite le repérage des nœuds qui transportent le plus de volume.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"sorted"</code></span><span><strong>Alias</strong> <code>sorted / reordered / by_flow / ranked</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-sorted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-sorted.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-hourglass">
 <p>Chaque source démarre comme une fine ligne à gauche, et chaque ruban est tiré à travers un unique point d'étranglement fixe avant de se déployer en éventail radial de secteurs cibles à droite — la largeur angulaire de chaque secteur est proportionnelle à la racine carrée de son flux entrant total (une légère compression pour qu'une cible atypique n'écrase pas visuellement tout l'arc). Conçu pour des données bipartites "beaucoup de sources vers peu de catégories", par exemple des aliments qui alimentent les nutriments dans lesquels ils sont riches.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"hourglass"</code></span><span><strong>Alias</strong> <code>hourglass / radiant_flow / nutrient_flow / braided / flow_bloom</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-hourglass.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-hourglass.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-matrix">
 <p>Les sources sont disposées en grille de points plutôt qu'en liste de nœuds — un marqueur par enregistrement, dimensionné selon son propre poids et coloré selon la catégorie vers laquelle il finit par s'écouler — avec de fins rubans à faible opacité convergeant vers quelques grands cercles cibles dimensionnés par leur part totale et étiquetés avec leur pourcentage de l'ensemble. Conçu pour des flux "big data" au niveau enregistrement : de nombreuses lignes individuelles qui se regroupent en quelques catégories de résultat.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"matrix"</code></span><span><strong>Alias</strong> <code>matrix / mosaic / dot_matrix / grid_flow / big_data</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-matrix.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-matrix.html"></iframe>
 </div>
 <div class="sp-variant" id="sankey-fr-beacon">
 <p>Une seule source rayonne vers chaque cible sur un cercle complet plutôt que sur deux colonnes plates — chaque cible occupe son propre angle avec une pastille dimensionnée et colorée selon son poids (une échelle de couleur continue, pas une palette fixe), reliée au centre par un fin arc courbe. Conçu pour des horaires un-vers-plusieurs où chaque cible porte aussi sa propre étiquette, par exemple un tableau des départs : un aéroport central, chaque vol au départ disposé autour du cadran avec sa destination, son heure et sa durée.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"beacon"</code></span><span><strong>Alias</strong> <code>beacon / flight_radar / route_wheel / departure_board / hub_wheel</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/sankey-beacon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sankey-beacon.html"></iframe>
 </div>
 </div>
 </div>

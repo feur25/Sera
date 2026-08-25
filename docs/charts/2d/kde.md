@@ -55,67 +55,67 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled curve, single or multi-series.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-outline">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outline"</code></span><span><strong>Aliases</strong> <code>outline / line / stroke / compare / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-only curves for clean overlays.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-outline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-outline.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / step / stair / stairs</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stair-stepped density (rectangular look).</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-rug">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / carpet / ticks / rugplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE curve with rug ticks at sample positions.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-rug.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-histogram">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"histogram"</code></span><span><strong>Aliases</strong> <code>histogram / hist / with_hist / kdehist / distplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE curve overlaid on a normalized histogram.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-normalized">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / pdf / norm / density</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each series normalized so its area integrates to 1.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-cumulative">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cumulative density (CDF) curve in [0, 1].</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-cumulative.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-contour">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Aliases</strong> <code>contour / bivariate / kde2d / joint_density / smooth</code></span><span><strong>Required</strong> <code>x</code>, <code>y</code></span><span><strong>Optional</strong> <code>categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bivariate (2D) kernel density estimate — a product-kernel Gaussian evaluated on a grid and rendered as a shaded density surface with the raw points overlaid. Pass <code>categories</code> to overlay one density surface per group, each in its own color with a legend.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-contour.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-levels">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"levels"</code></span><span><strong>Aliases</strong> <code>levels / bands / iso_bands / ring_contour / banded</code></span><span><strong>Required</strong> <code>x</code>, <code>y</code></span><span><strong>Optional</strong> <code>categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bivariate KDE quantized into discrete iso-density bands with a visible ring border at each band boundary — matches seaborn's <code>kdeplot(x=, y=, hue=, fill=True)</code> stepped-level look, as opposed to <code>contour</code>'s continuous gradient.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-levels.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-stack">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stack"</code></span><span><strong>Aliases</strong> <code>stack / stacked / layered_stack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each group's density curve stacked on top of the previous one's (cumulative running total), all evaluated on one shared x-grid - matches seaborn's <code>kdeplot(hue=, multiple="stack")</code>.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-stack.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-stack.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-fill">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"fill"</code></span><span><strong>Aliases</strong> <code>fill / stack100 / percent_stack / filled_stack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">100%-stacked density - at every x position the groups sum to 100%, showing the changing share of the total instead of absolute density - matches seaborn's <code>kdeplot(hue=, multiple="fill")</code>.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-fill.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-fill.html"></iframe>
 </div>
 </div></div>
 
@@ -166,67 +166,67 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe pleine, mono ou multi-séries.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-outline">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outline"</code></span><span><strong>Alias</strong> <code>outline / line / stroke / compare / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes en trait seul pour des superpositions épurées.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-outline.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-outline.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-stepped">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stepped"</code></span><span><strong>Alias</strong> <code>stepped / step / stair / stairs</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité en escalier (rendu rectangulaire).</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-rug">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / carpet / ticks / rugplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe KDE avec ticks rug aux positions des points.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-rug.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-histogram">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"histogram"</code></span><span><strong>Alias</strong> <code>histogram / hist / with_hist / kdehist / distplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe KDE par-dessus un histogramme normalisé.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-normalized">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"normalized"</code></span><span><strong>Alias</strong> <code>normalized / pdf / norm / density</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque série normalisée pour que son aire vaille 1.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-cumulative">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"cumulative"</code></span><span><strong>Alias</strong> <code>cumulative / cdf / cum</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité cumulée (CDF) dans [0, 1].</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-cumulative.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-contour">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"contour"</code></span><span><strong>Alias</strong> <code>contour / bivariate / kde2d / joint_density / smooth</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code></span><span><strong>Optionnel</strong> <code>categories</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Estimation de densité bivariée (2D) — un noyau gaussien produit évalué sur une grille et rendu comme une surface de densité ombrée, avec les points bruts superposés. Passez <code>categories</code> pour superposer une surface de densité par groupe, chacune dans sa propre couleur avec une légende.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-contour.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-levels">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"levels"</code></span><span><strong>Alias</strong> <code>levels / bands / iso_bands / ring_contour / banded</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code></span><span><strong>Optionnel</strong> <code>categories</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE bivariée quantifiée en bandes iso-densité discrètes avec une bordure visible à chaque frontière de bande — reproduit le rendu par niveaux de <code>kdeplot(x=, y=, hue=, fill=True)</code> de seaborn, par opposition au dégradé continu de <code>contour</code>.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-levels.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-stack">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stack"</code></span><span><strong>Alias</strong> <code>stack / stacked / layered_stack</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La courbe de densité de chaque groupe est empilée sur celle du précédent (total cumulé), toutes évaluées sur une même grille x partagée - reproduit <code>kdeplot(hue=, multiple="stack")</code> de seaborn.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-stack.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-stack.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-fill">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"fill"</code></span><span><strong>Alias</strong> <code>fill / stack100 / percent_stack / filled_stack</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité empilée à 100% - à chaque position x, les groupes totalisent 100%, montrant la part changeante du total plutôt que la densité absolue - reproduit <code>kdeplot(hue=, multiple="fill")</code> de seaborn.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-fill.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/kde-fill.html"></iframe>
 </div>
 </div></div>
 

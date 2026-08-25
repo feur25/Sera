@@ -71,31 +71,31 @@ Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs abo
 <p>Arcs above the axis</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-bilateral">
 <p>Alternating arcs above and below</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bilateral"</code></span><span><strong>Aliases</strong> <code>bilateral / both / dual</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-bilateral.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-bilateral.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-weighted">
 <p>Stroke width proportional to edge weight</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-minimal">
 <p>Thin, low-opacity arcs with small strokeless nodes — strips away the visual weight so overlapping arcs stay legible in dense diagrams.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-directed">
 <p>Draws a small arrowhead where each arc lands on its target node — turns the diagram into a proper directed graph, e.g. for dependency or citation edges where "which way" matters as much as "how much".</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"directed"</code></span><span><strong>Aliases</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-directed.html"></iframe>
 </div>
 </div>
 </div>
@@ -154,31 +154,31 @@ Les diagrammes en arcs placent les nœuds sur un axe horizontal et tracent des a
 <p>Arcs au-dessus de l'axe</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-bilateral">
 <p>Arcs alternés au-dessus et en-dessous</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bilateral"</code></span><span><strong>Alias</strong> <code>bilateral / both / dual</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-bilateral.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-bilateral.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-weighted">
 <p>Épaisseur du trait proportionnelle au poids de l'arête</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-minimal">
 <p>Arcs fins et peu opaques, avec de petits nœuds sans contour — allège le rendu visuel pour que les arcs qui se chevauchent restent lisibles dans les diagrammes denses.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-directed">
 <p>Trace une petite flèche là où chaque arc arrive sur son nœud cible — transforme le diagramme en véritable graphe orienté, par ex. pour des arêtes de dépendance ou de citation où le sens compte autant que la quantité.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"directed"</code></span><span><strong>Alias</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-directed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/arc_diagram-directed.html"></iframe>
 </div>
 </div>
 </div>

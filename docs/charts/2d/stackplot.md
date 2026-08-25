@@ -70,31 +70,31 @@ Aliases: `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot
 <p>Traditional zero-baseline stacking, each series added on top of the previous one's cumulative total.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / stacked</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-en-streamgraph">
 <p>Centered ("silhouette") baseline — at every x-point the stack is centered around zero (`baseline = -total/2`) instead of starting at zero, giving the flowing ThemeRiver look.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"streamgraph"</code></span><span><strong>Aliases</strong> <code>streamgraph / stream / silhouette / themeriver</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-streamgraph.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-streamgraph.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-en-normalized">
 <p>100%-stacked — every series is divided by the x-point's total before stacking, so the top of the stack is always 1.0. Shows share of total over time instead of absolute magnitude.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-en-radial">
 <p>Polar-wrapped stacking — each x-point becomes an angle around a circle instead of a position along an axis, and the cumulative bands grow outward as concentric rings from a small central hole. A genuinely different read on the same stacked data: total magnitude becomes an overall silhouette size, and each series' share becomes a colored band thickness at that angle.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / polar / radar_stack / circular</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-en-ribbon">
 <p>Cartesian stacking rendered as smooth, glowing ribbons: quadratic-bezier-smoothed band edges, a top-to-bottom depth gradient per series, and a soft drop-shadow separating each layer — a more atmospheric, editorial look than the sharp-edged basic stack.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / glow / smooth / flow</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-ribbon.html"></iframe>
 </div>
 </div>
 </div>
@@ -153,31 +153,31 @@ Alias : `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot`
 <p>Empilement classique à ligne de base zéro, chaque série ajoutée au-dessus du total cumulé de la précédente.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / stacked</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-fr-streamgraph">
 <p>Ligne de base centrée ("silhouette") — à chaque point x, l'empilement est centré autour de zéro (`baseline = -total/2`) au lieu de partir de zéro, donnant le rendu fluide façon ThemeRiver.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"streamgraph"</code></span><span><strong>Alias</strong> <code>streamgraph / stream / silhouette / themeriver</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-streamgraph.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-streamgraph.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-fr-normalized">
 <p>Empilement à 100% — chaque série est divisée par le total du point x avant l'empilement, donc le sommet est toujours à 1.0. Montre la part du total dans le temps plutôt que la magnitude absolue.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"normalized"</code></span><span><strong>Alias</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-fr-radial">
 <p>Empilement enroulé en polaire — chaque point x devient un angle autour d'un cercle au lieu d'une position sur un axe, et les bandes cumulées s'étendent vers l'extérieur en anneaux concentriques depuis un petit trou central. Une lecture vraiment différente des mêmes données empilées : la magnitude totale devient une silhouette globale, et la part de chaque série devient l'épaisseur d'une bande colorée à cet angle.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / polar / radar_stack / circular</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="stackplot-fr-ribbon">
 <p>Empilement cartésien rendu en rubans lisses et lumineux : bords de bandes lissés par courbes de Bézier quadratiques, dégradé de profondeur haut-bas par série, et une ombre portée douce séparant chaque couche — un rendu plus atmosphérique et éditorial que l'empilement basique aux arêtes nettes.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / glow / smooth / flow</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stackplot-ribbon.html"></iframe>
 </div>
 </div>
 </div>

@@ -73,37 +73,37 @@ The Orbita chart is an original SeraPlot chart type that places multiple series 
 <p>Fixed-size dots on orbits</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"classic"</code></span><span><strong>Aliases</strong> <code>classic / default / basic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-classic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-classic.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-bubble">
 <p>Dot radius proportional to value</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / sized / area</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-trail">
 <p>Closed polygon trail connecting series dots</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"trail"</code></span><span><strong>Aliases</strong> <code>trail / line / connected</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-trail.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-trail.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-glow">
 <p>Gaussian blur glow effect on dots</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"glow"</code></span><span><strong>Aliases</strong> <code>glow / neon / light</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-minimal">
 <p>Drops the dashed orbit rings and radial spoke lines, and shrinks each point to a small strokeless dot — a decluttered read focused purely on relative position.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-delta">
 <p>Colors each point green or red depending on whether its value rose or fell versus the same category on the previous orbit — turns concentric orbits (e.g. one per year) into a trend view instead of a static snapshot.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"delta"</code></span><span><strong>Aliases</strong> <code>delta / change / trend / momentum</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-delta.html"></iframe>
 </div>
 </div>
 </div>
@@ -165,37 +165,37 @@ L'Orbita chart est un type de graphique original de SeraPlot qui place plusieurs
 <p>Points de taille fixe sur les orbites</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"classic"</code></span><span><strong>Alias</strong> <code>classic / default / basic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-classic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-classic.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-bubble">
 <p>Rayon des points proportionnel à la valeur</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / sized / area</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-trail">
 <p>Traînée en polygone fermé reliant les points d'une série</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"trail"</code></span><span><strong>Alias</strong> <code>trail / line / connected</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-trail.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-trail.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-glow">
 <p>Effet de lueur (flou gaussien) sur les points</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"glow"</code></span><span><strong>Alias</strong> <code>glow / neon / light</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-minimal">
 <p>Supprime les anneaux d'orbite en pointillés et les rayons radiaux, et réduit chaque point à un petit point sans contour — une lecture épurée centrée uniquement sur la position relative.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-delta">
 <p>Colore chaque point en vert ou rouge selon que sa valeur a augmenté ou diminué par rapport à la même catégorie sur l'orbite précédente — transforme des orbites concentriques (ex. une par année) en vue de tendance plutôt qu'un instantané statique.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"delta"</code></span><span><strong>Alias</strong> <code>delta / change / trend / momentum</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/orbita-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/orbita-delta.html"></iframe>
 </div>
 </div>
 </div>

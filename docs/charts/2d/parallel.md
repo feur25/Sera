@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Straight polylines through every axis - the textbook parallel-coordinates chart.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-en-smooth">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bezier-smoothed lines reduce visual clutter for dense datasets.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-smooth.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-en-categorical">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">One color per category - perfect for comparing classes side by side.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-categorical.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-en-highlight">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spotlights one series and dims the others - great for storytelling.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-highlight.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-en-density">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Translucent lines reveal density bands inside thousands of profiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-density.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-en-arc">
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Smooth cubic bezier curves with per-series gradient coloring. Reduces visual clutter compared to straight lines while preserving individual series identity.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-arc.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-en-ribbon">
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled bezier bands between adjacent axes. Each series is rendered as a translucent ribbon + thin solid stroke, creating a flowing Sankey-lite effect.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-ribbon.html"></iframe>
 </div>
 </div>
 </div>
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polylignes droites sur tous les axes - le parallel-coordinates canonique.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-fr-smooth">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes Bezier qui reduisent l encombrement visuel sur grands jeux.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-smooth.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-fr-categorical">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Une couleur par categorie - parfait pour comparer des classes.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-categorical.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-fr-highlight">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Met en avant une serie et estompe les autres - ideal pour storytelling.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-highlight.html"></iframe>
 </div>
 <div class="sp-variant" id="parallel-fr-density">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes translucides revelent les bandes de densite sur des milliers de profils.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-density.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-fr-arc">
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes de Bezier cubiques avec degrade de couleur par serie. Reduit l encombrement visuel par rapport aux lignes droites tout en preservant l identite de chaque serie.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-arc.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-fr-ribbon">
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bandes de Bezier remplies entre les axes adjacents. Chaque serie est rendue comme un ruban translucide + trait fin, creant un effet de flux style Sankey simplifie.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/parallel-ribbon.html"></iframe>
 </div>
 </div>
 </div>

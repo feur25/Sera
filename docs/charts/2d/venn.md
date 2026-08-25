@@ -71,31 +71,31 @@ Venn diagrams show set relationships using overlapping circles. Supply one value
 <p>Semi-transparent overlapping circles</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-en-euler">
 <p>Proportional circle areas (Euler diagram)</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"euler"</code></span><span><strong>Aliases</strong> <code>euler / proportional / area</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-euler.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-euler.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-en-filled">
 <p>Fully opaque circles</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>filled / solid / opaque</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-en-minimal">
 <p>Forces every circle into its stroke-only outline form regardless of the configured fill opacity, for a clean contour-only read of the set overlaps.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / outline / thin</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-en-exclusive">
 <p>Masks each circle down to the region that belongs to it alone and renders that region at full color, while shared/overlapping areas fade into the background — makes it obvious what's unique to each set versus what's shared.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"exclusive"</code></span><span><strong>Aliases</strong> <code>exclusive / unique / distinct</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-exclusive.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-exclusive.html"></iframe>
 </div>
 </div>
 </div>
@@ -154,31 +154,31 @@ Les diagrammes de Venn montrent des relations entre ensembles à l'aide de cercl
 <p>Cercles semi-transparents qui se chevauchent</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-fr-euler">
 <p>Aires de cercles proportionnelles (diagramme d'Euler)</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"euler"</code></span><span><strong>Alias</strong> <code>euler / proportional / area</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-euler.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-euler.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-fr-filled">
 <p>Cercles entièrement opaques</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / solid / opaque</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-fr-minimal">
 <p>Force chaque cercle dans sa forme en contour seul, quelle que soit l’opacité de remplissage configurée, pour une lecture épurée des recouvrements d’ensembles en simples contours.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / outline / thin</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-minimal.html"></iframe>
 </div>
 <div class="sp-variant" id="venn-fr-exclusive">
 <p>Masque chaque cercle jusqu'à la région qui lui appartient en propre et l'affiche en pleine couleur, tandis que les zones partagées/superposées s'estompent — rend évident ce qui est unique à chaque ensemble par rapport à ce qui est partagé.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"exclusive"</code></span><span><strong>Alias</strong> <code>exclusive / unique / distinct</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/venn-exclusive.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/venn-exclusive.html"></iframe>
 </div>
 </div>
 </div>

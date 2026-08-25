@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic squarified treemap with rounded corners and white separators between tiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-flat">
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Edge-to-edge mosaic with no stroke and no rounding for a dense, magazine-style block.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-flat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-outlined">
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Wireframe tiles: translucent fill with bold colored stroke and dark labels for print-ready look.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-gapped">
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each tile inset with extra padding so the structure breathes; rounded corners and color fill.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-nested">
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Draws parent group rectangles with header labels around their children, emphasising hierarchy.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-nested.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-heat">
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes value (cool blue -> hot red) instead of identity, turning the treemap into a heatmap.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-heat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-mono">
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Single hue with opacity decreasing by rank; editorial, minimalist, perfect for slides.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-mono.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-trend">
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap + period-over-period change fusion: pass <code>comparisons</code> (prior-period values, aligned with <code>values</code>) and every tile big enough gets a small colored badge (▲/▼ + %) in its corner — the Finviz-style "market map" look, natively.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
 </div>
 
 </div>
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap squarifie classique avec coins arrondis et separateurs blancs entre les tuiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-flat">
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mosaique bord-a-bord sans contour ni arrondi pour un bloc dense type magazine.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-flat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-outlined">
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Tuiles en fil de fer : fond translucide, contour colore epais et libelles sombres, style imprimable.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-gapped">
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque tuile en retrait avec marges supplementaires pour aerer la structure ; coins arrondis.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-nested">
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dessine les rectangles parents avec libelle d en-tete autour de leurs enfants, met en avant la hierarchie.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-nested.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-heat">
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-heat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-mono">
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-mono.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-trend">
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion treemap + variation d'une periode a l'autre : passez <code>comparisons</code> (valeurs de la periode precedente, alignees avec <code>values</code>) et chaque case assez grande recoit un petit badge colore (▲/▼ + %) dans son coin — le look "market map" façon Finviz, nativement.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
 </div>
 
 </div>

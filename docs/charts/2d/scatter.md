@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-categorical">
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-symbols">
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-symbols.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-labeled">
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-regression">
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-regression.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-residual">
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"residual"</code></span><span><strong>Aliases</strong> <code>residuals / residplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-residual.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-dual_style">
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dual_style"</code></span><span><strong>Aliases</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-dual_style.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-dual_style.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-continuous_hue">
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"continuous_hue"</code></span><span><strong>Aliases</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-continuous_hue.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-continuous_hue.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-facet">
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"facet"</code></span><span><strong>Aliases</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-facet.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-sized">
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sized"</code></span><span><strong>Aliases</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-sized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-sized.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-wide_form">
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"wide_form"</code></span><span><strong>Aliases</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-wide_form.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-rug">
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-rug.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-rug.html"></iframe>
 </div>
 
 </div>
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-categorical">
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-symbols">
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-symbols.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-labeled">
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-regression">
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-regression.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-residual">
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"residual"</code></span><span><strong>Alias</strong> <code>residuals / residplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-residual.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-dual_style">
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dual_style"</code></span><span><strong>Alias</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-dual_style.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-dual_style.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-continuous_hue">
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"continuous_hue"</code></span><span><strong>Alias</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-continuous_hue.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-continuous_hue.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-facet">
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"facet"</code></span><span><strong>Alias</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-facet.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-sized">
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"sized"</code></span><span><strong>Alias</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-sized.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-sized.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-wide_form">
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"wide_form"</code></span><span><strong>Alias</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-wide_form.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-rug">
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-rug.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-rug.html"></iframe>
 </div>
 
 </div>

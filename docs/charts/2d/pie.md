@@ -73,7 +73,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code> / <code>"pie"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-donut">
@@ -81,7 +81,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"donut"</code> / <code>"ring"</code> / <code>"hole"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-donut.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-donut.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-exploded">
@@ -89,7 +89,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"exploded"</code> / <code>"pulled"</code> / <code>"explode"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-exploded.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-exploded.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-subplots">
@@ -97,7 +97,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"subplots"</code> / <code>"grid"</code> / <code>"facet"</code> / <code>"multi"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-subplots.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-subplots.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-proportional">
@@ -105,7 +105,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code> / <code>"scaled"</code> / <code>"scalegroup"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-proportional.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-proportional.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-semi">
@@ -113,7 +113,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"semi"</code> / <code>"half_pie"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-semi.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-semi.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-kpi">
@@ -121,7 +121,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-kpi.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-kpi.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-nested">
@@ -129,7 +129,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code> / <code>"concentric"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code>, <code>secondary_values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-nested.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-pattern">
@@ -137,7 +137,7 @@ c = sp.pie(
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pattern"</code> / <code>"hatched"</code></span><span><strong>Patterns</strong> <code>"stripes"</code>, <code>"dots"</code>, <code>"diagonal"</code>, <code>"cross"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-pattern.html"></iframe>
 </div>
 
 <div class="sp-variant" id="pie-en-waffle">
@@ -147,7 +147,7 @@ c = sp.pie(
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">The "square pie" — a 10x10 grid of 100 cells filled proportionally to each category's share (largest-remainder allocation, so the cell count always sums to exactly 100), with a color-matched legend. Easier to read precise percentages from than wedge angles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pie-waffle.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pie-waffle.html"></iframe>
 </div>
 
 </div>
@@ -213,25 +213,25 @@ c = sp.pie(
 </div>
 <div class="sp-cls-body">
 
-<div class="sp-variant sp-von" id="pie-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-basic.html"></iframe></div>
+<div class="sp-variant sp-von" id="pie-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-basic.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-donut"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"donut"</code> / <code>"ring"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>inner_radius</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-donut.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-donut"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"donut"</code> / <code>"ring"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>inner_radius</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-donut.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-exploded"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"exploded"</code> / <code>"explode"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>pull</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-exploded.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-exploded"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"exploded"</code> / <code>"explode"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>pull</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-exploded.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-subplots"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"subplots"</code> / <code>"grid"</code></span><span><strong>Requis</strong> <code>panels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-subplots.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-subplots"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"subplots"</code> / <code>"grid"</code></span><span><strong>Requis</strong> <code>panels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-subplots.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-proportional"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code> / <code>"prop"</code></span><span><strong>Requis</strong> <code>panels</code>, <code>total_basis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-proportional.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-proportional"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code> / <code>"prop"</code></span><span><strong>Requis</strong> <code>panels</code>, <code>total_basis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-proportional.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-semi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"semi"</code> / <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-semi.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-semi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"semi"</code> / <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-semi.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-kpi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>center_text</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-kpi.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-kpi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>center_text</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-kpi.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-nested"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code> / <code>"sunburst"</code></span><span><strong>Requis</strong> <code>rings</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-nested.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-nested"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code> / <code>"sunburst"</code></span><span><strong>Requis</strong> <code>rings</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-nested.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-pattern"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pattern"</code> / <code>"hatch"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>patterns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-pattern"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pattern"</code> / <code>"hatch"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>patterns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-pattern.html"></iframe></div>
 
-<div class="sp-variant" id="pie-fr-waffle"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"waffle"</code> / <code>"square"</code> / <code>"pie_square"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Le « pie carré » — une grille 10x10 de 100 cellules remplies proportionnellement à la part de chaque catégorie (allocation par plus grand reste, la somme des cellules vaut donc toujours exactement 100), avec une légende assortie aux couleurs. Plus facile à lire précisément que des angles de camembert.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-waffle.html"></iframe></div>
+<div class="sp-variant" id="pie-fr-waffle"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"waffle"</code> / <code>"square"</code> / <code>"pie_square"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Le « pie carré » — une grille 10x10 de 100 cellules remplies proportionnellement à la part de chaque catégorie (allocation par plus grand reste, la somme des cellules vaut donc toujours exactement 100), avec une légende assortie aux couleurs. Plus facile à lire précisément que des angles de camembert.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/pie-waffle.html"></iframe></div>
 
 </div>
 </div>

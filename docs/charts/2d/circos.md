@@ -66,7 +66,7 @@ A multi-track circular plot in the spirit of Circos genome browsers: items sit o
 <p>Full multi-track layout: item labels, co-occurrence degree, average value + spread, cluster boundaries, bar tracks, a ratio and a rank track, a sequential heatmap, a normalized composition ring, and center co-occurrence chords.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / multitrack / genome_browser / circular_tracks</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circos-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circos-basic.html"></iframe>
 </div>
 </div>
 </div>
@@ -121,7 +121,7 @@ Un graphique circulaire multi-pistes dans l'esprit des navigateurs génomiques C
 <p>Disposition multi-pistes complète : noms des items, degré de co-occurrence, valeur moyenne + dispersion, frontières de cluster, pistes en barres, une piste de ratio et une de rang, une heatmap séquentielle, un anneau de composition normalisée, et des accords de co-occurrence au centre.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / multitrack / genome_browser / circular_tracks</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circos-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circos-basic.html"></iframe>
 </div>
 </div>
 </div>

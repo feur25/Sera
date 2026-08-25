@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic running-sum bars with dashed connectors between consecutive steps.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-stepped">
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bars touch each other forming a continuous staircase, no connectors needed.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-stepped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-lollipop">
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stick + circle marker at the end of each step. Excellent ink-to-data ratio.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-lollipop.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-lollipop.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-arrowed">
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Triangle on top (positives) or bottom (negatives) emphasizes direction at a glance.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-arrowed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-arrowed.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-delta">
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bars + signed percentage badge (Delta vs previous running total) above each step.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-delta.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-horizontal">
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Rotated 90 degrees: each step becomes a horizontal row stacking downward, anchored to the previous running total. Editorial layout for reports with long labels or vertical storytelling.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-horizontal.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-en-trend">
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Waterfall + running-total trend line fusion — the same increment/decrement bars, semi-transparent, with a smooth line connecting each step's running total drawn on top (white halo + solid color), plus a dot marker per step. Reveals the trajectory at a glance without losing the per-step breakdown.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-trend.html"></iframe>
 </div>
 
 </div>
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres classiques a somme cumulee avec connecteurs pointilles entre etapes.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-stepped">
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres jointives formant un escalier continu, sans connecteur.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-stepped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-stepped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-lollipop">
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Tige + cercle en fin de chaque etape. Excellent ratio encre/donnee.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-lollipop.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-lollipop.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-arrowed">
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Triangle dessus (positifs) ou dessous (negatifs) pour souligner la direction en un coup d oeil.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-arrowed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-arrowed.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-delta">
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres + badge de pourcentage signe (Delta vs cumul precedent) au-dessus de chaque etape.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-delta.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-horizontal">
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Waterfall pivote a 90 degres : les etapes deviennent des lignes empilees verticalement, chacune partant du cumul precedent. Layout editorial pour rapports avec libelles longs ou storytelling vertical.</p>
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-horizontal.html"></iframe>
 </div>
 
 <div class="sp-variant" id="waterfall-fr-trend">
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion waterfall + ligne de cumul progressif — les memes barres d'increment/decrement, semi-transparentes, avec une ligne lissee reliant le cumul de chaque etape dessinee par-dessus (halo blanc + couleur pleine), plus un marqueur point par etape. Revele la trajectoire d'un coup d'oeil sans perdre le detail par etape.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/waterfall-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/waterfall-trend.html"></iframe>
 </div>
 
 </div>

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical sticks topped with dots - the canonical lollipop for ranked categorical values.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-cleveland">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cleveland"</code></span><span><strong>Aliases</strong> <code>cleveland / horizontal / h / row</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Horizontal Cleveland dot plot - long labels read naturally and dots align cleanly along value axis.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-cleveland.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-cleveland.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-diverging">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / div / signed / delta</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sticks pivot around the mean: green points sit above, red points below - perfect for deviation analysis.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-diverging.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-diverging.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-circular">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Aliases</strong> <code>circular / polar / radial / round</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polar layout where each category is an angular spoke - eye-catching for small alphabets and dashboard tiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-circular.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-circular.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-office">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"office"</code></span><span><strong>Aliases</strong> <code>office / grouped / season / panel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Group-aware lollipops with per-group mean line and color band - inspired by The Office IMDb season chart.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-office.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-office.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-conditional_color">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"conditional_color"</code></span><span><strong>Aliases</strong> <code>conditional_color / conditional / threshold_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Horizontal sticks pivoting on zero, colored by sign alone (orange &ge; 0, sky blue &lt; 0) - the seaborn-gallery "lollipop with conditional color" recipe.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-conditional_color.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-conditional_color.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-en-trend">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / colormap / arrow / annotated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sticks colored by a continuous diverging colormap (magnitude from zero), a smoothed moving-average trend line, and an arrow annotation on the most extreme point - matching the "lollipop with colormap and arrow" gallery recipe.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-trend.html"></iframe>
 </div>
 </div>
 </div>
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons verticaux surmontes de points - le lollipop canonique pour valeurs categorielles classees.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-cleveland">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cleveland"</code></span><span><strong>Aliases</strong> <code>cleveland / horizontal / h / row</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cleveland dot plot horizontal - les longs libelles se lisent naturellement, les points s alignent sur l axe des valeurs.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-cleveland.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-cleveland.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-diverging">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / div / signed / delta</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons pivotent autour de la moyenne: vert au-dessus, rouge en-dessous - parfait pour les ecarts.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-diverging.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-diverging.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-circular">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Aliases</strong> <code>circular / polar / radial / round</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Disposition polaire ou chaque categorie est un rayon - tres lisible pour petits jeux et dashboards.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-circular.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-circular.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-office">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"office"</code></span><span><strong>Aliases</strong> <code>office / grouped / season / panel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lollipops groupes avec moyenne par groupe et bande de couleur - inspire du chart IMDb de The Office.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-office.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-office.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-conditional_color">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"conditional_color"</code></span><span><strong>Aliases</strong> <code>conditional_color / conditional / threshold_color</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons horizontaux pivotant sur zero, colores selon le seul signe (orange &ge; 0, bleu ciel &lt; 0) - la recette "lollipop with conditional color" de la galerie seaborn.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-conditional_color.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-conditional_color.html"></iframe>
 </div>
 <div class="sp-variant" id="lollipop-fr-trend">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / colormap / arrow / annotated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons colores par un degrade divergent continu (magnitude depuis zero), une courbe de tendance lissee, et une fleche d'annotation sur le point le plus extreme - la recette "lollipop with colormap and arrow".</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/lollipop-trend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/lollipop-trend.html"></iframe>
 </div>
 </div>
 </div>

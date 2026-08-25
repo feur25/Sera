@@ -75,43 +75,43 @@ Every variant is really just a preset of three lower-level params you can mix fr
 <p></p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circle"</code></span><span><strong>Aliases</strong> <code>circle / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-circle.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-circle.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-heatmap">
 <p>Filled squares (standard heatmap)</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"heatmap"</code></span><span><strong>Aliases</strong> <code>heatmap / heat / square</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-heatmap.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-heatmap.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-text">
 <p>Numeric correlation values only</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"text"</code></span><span><strong>Aliases</strong> <code>text / number / value</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-text.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-text.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-mixed">
 <p>Circles + text overlay</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mixed"</code></span><span><strong>Aliases</strong> <code>mixed / combo / both</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-mixed.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-ellipse">
 <p>Each cell is an ellipse tilted "/" for positive correlation, "\" for negative, flattening toward a line as |r| approaches 1 and toward a circle as it approaches 0.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ellipse"</code></span><span><strong>Aliases</strong> <code>ellipse / oval</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-ellipse.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-ellipse.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-pie_square">
 <p>Upper triangle as pie wedges (wedge angle = |r|, color = sign), lower triangle as flat colored squares, diagonal left blank - the classic mixed correlogram layout, unsorted.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pie_square"</code></span><span><strong>Aliases</strong> <code>pie_square / pie / mixed_pie</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-pie_square.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-pie_square.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-circle_legend">
 <p>Upper-triangle-only circles (lower triangle and diagonal left blank) with a color/value legend bar alongside instead of numeric labels on the cells.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circle_legend"</code></span><span><strong>Aliases</strong> <code>circle_legend / legend / scale</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-circle_legend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-circle_legend.html"></iframe>
 </div>
 </div>
 </div>
@@ -174,43 +174,43 @@ Chaque variante n'est en fait qu'un préréglage de trois paramètres de plus ba
 <p></p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"circle"</code></span><span><strong>Alias</strong> <code>circle / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-circle.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-circle.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-heatmap">
 <p>Carrés pleins (heatmap standard)</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"heatmap"</code></span><span><strong>Alias</strong> <code>heatmap / heat / square</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-heatmap.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-heatmap.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-text">
 <p>Valeurs de corrélation numériques seules</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"text"</code></span><span><strong>Alias</strong> <code>text / number / value</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-text.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-text.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-mixed">
 <p>Cercles + superposition de texte</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mixed"</code></span><span><strong>Alias</strong> <code>mixed / combo / both</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-mixed.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-ellipse">
 <p>Chaque cellule est une ellipse inclinée "/" pour une corrélation positive, "\" pour une négative, s'aplatissant vers une ligne quand |r| approche 1 et vers un cercle quand |r| approche 0.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ellipse"</code></span><span><strong>Alias</strong> <code>ellipse / oval</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-ellipse.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-ellipse.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-pie_square">
 <p>Triangle supérieur en camemberts (angle = |r|, couleur = signe), triangle inférieur en carrés pleins colorés, diagonale laissée vide - la disposition mixte classique, non triée.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"pie_square"</code></span><span><strong>Alias</strong> <code>pie_square / pie / mixed_pie</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-pie_square.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-pie_square.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-circle_legend">
 <p>Cercles uniquement dans le triangle supérieur (triangle inférieur et diagonale vides) avec une barre de légende couleur/valeur au lieu de libellés numériques sur les cellules.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"circle_legend"</code></span><span><strong>Alias</strong> <code>circle_legend / legend / scale</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-circle_legend.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/correlogram-circle_legend.html"></iframe>
 </div>
 </div>
 </div>

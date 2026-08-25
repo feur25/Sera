@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-basic.html"></iframe>
 
 </div>
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"box"</code> (default)</span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-box.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-box.html"></iframe>
 
 </div>
 
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartile"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-quartile.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-quartile.html"></iframe>
 
 </div>
 
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-mean.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-mean.html"></iframe>
 
 </div>
 
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-points.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-points.html"></iframe>
 
 </div>
 
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Raincloud layout - a translucent half-violin KDE silhouette on the left of each category paired with individual jittered points strictly on the right, so the density shape and the raw sample are both visible without ever overlapping.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-strip.html"></iframe>
 
 </div>
 
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-horizontal.html"></iframe>
 
 </div>
 
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-split.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-split.html"></iframe>
 
 </div>
 
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"half"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/violin-half.html"></iframe>
 
 </div>
 
@@ -175,23 +175,23 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('vl-fr','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Demi</span></button></div>
 <div class="sp-cls-body">
 
-<div class="sp-variant" id="vl-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-basic.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-basic.html"></iframe></div>
 
-<div class="sp-variant sp-von" id="vl-fr-box"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"box"</code> (par défaut)</span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-box.html"></iframe></div>
+<div class="sp-variant sp-von" id="vl-fr-box"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"box"</code> (par défaut)</span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-box.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-quartile"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"quartile"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-quartile.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-quartile"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"quartile"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-quartile.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-mean"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"mean"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-mean.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-mean"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"mean"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-mean.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-points.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-points.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Disposition raincloud - une silhouette KDE translucide en demi-violon à gauche de chaque catégorie associée à des points individuels dispersés strictement à droite, pour que la forme de densité et l'échantillon brut soient tous deux visibles sans jamais se chevaucher.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Disposition raincloud - une silhouette KDE translucide en demi-violon à gauche de chaque catégorie associée à des points individuels dispersés strictement à droite, pour que la forme de densité et l'échantillon brut soient tous deux visibles sans jamais se chevaucher.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-strip.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-horizontal.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-horizontal.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-split"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-split.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-split"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-split.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-half"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-half"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/violin-half.html"></iframe></div>
 
 </div>
 </div>

@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic concentric rings with depth-based opacity and white separators.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-donut">
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Larger central hole with the formatted grand total displayed at the center.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-donut.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-donut.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-outlined">
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Wireframe wedges: white fill + colored stroke that thins on deeper rings.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-gapped">
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Angular and radial margins between every wedge for crisp petal-like separation.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-depth_fade">
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Standard palette but opacity decreases with depth, focusing the eye on top levels.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-depth_fade.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-depth_fade.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-mono">
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Single-color rings differentiated only by depth-based opacity. Editorial look.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-mono.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-zoomable">
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Click a ring segment to zoom into that branch, animating every other segment to its new angle/radius. Click the center to zoom back out.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-zoomable.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-zoomable.html"></iframe>
 </div>
 
 </div>
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Anneaux concentriques classiques avec opacite degressive selon la profondeur.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-donut">
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Large trou central avec total general formate (k/M) au centre.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-donut.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-donut.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-outlined">
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Quartiers en fil de fer : fond blanc + contour colore amincissant en profondeur.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-gapped">
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Marges angulaires et radiales entre quartiers pour une separation nette en petales.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-depth_fade">
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Palette standard mais opacite decroissante en profondeur pour concentrer le regard.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-depth_fade.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-depth_fade.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-mono">
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Anneaux monochromes differencies uniquement par opacite. Rendu editorial.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-mono.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-zoomable">
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cliquer un segment zoome sur cette branche, en animant chaque autre segment vers son nouvel angle/rayon. Cliquer le centre pour dezoomer.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-zoomable.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/sunburst-zoomable.html"></iframe>
 </div>
 
 </div>

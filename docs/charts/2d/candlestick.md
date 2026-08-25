@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic OHLC candles: solid body, thin wick, green for up bars and red for down bars.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-hollow">
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Japanese-style hollow up candles (white fill + colored stroke) and filled down candles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-hollow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-hollow.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-ohlc">
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Western OHLC bars: vertical wick with left tick = open, right tick = close, no body.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-ohlc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-ohlc.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-heikin">
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Heikin-Ashi smoothed candles: filters market noise to highlight trends and reversals clearly.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-heikin.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-heikin.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-outlined">
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Wireframe candles: translucent body with bold colored stroke; lighter visual footprint.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-line">
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Close-price line chart with markers — same data, smoother trend reading without OHLC noise.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-line.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-line.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-mountain">
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Close-price area chart with vertical gradient under the line; great for hero / cover charts.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-mountain.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-mountain.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-range">
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">High-low range bars only (no open/close), single color — pure volatility visualization.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-range.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-range.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-volume">
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Candlestick + volume histogram fusion — the standard crypto/trading terminal layout. Candles fill the upper ~78% of the plot; a volume bar strip (colored by that period's up/down candle) fills the remaining band beneath, sharing the same x-axis. Pass a <code>volume</code> array alongside <code>open</code>/<code>high</code>/<code>low</code>/<code>close</code>.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-volume.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-milestone">
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ghosted candles as background texture behind two smooth moving-average trend curves (short + long period), with the strongest local peaks of the short curve auto-detected and marked with a circle, leader line, and bold value label — the "story slide" look for a report or a landing page, built entirely from real OHLC data, no hand-placed annotations.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-milestone.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-milestone.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-en-indicators">
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Candles, an optional volume pane, and five simultaneous moving averages (5/10/20/40/70-period, each its own color with a legend) overlaid on the same price axis — the full trading-terminal reading, matching what Grafana's candlestick panel offers (candles, volume, moving-average overlays) built natively in SVG.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-indicators.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-indicators.html"></iframe>
 </div>
 
 </div>
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bougies OHLC classiques : corps plein, meche fine, vert pour hausse et rouge pour baisse.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-hollow">
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style japonais : bougies haussieres creuses (fond blanc + contour colore) et baissieres pleines.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-hollow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-hollow.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-ohlc">
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres OHLC americaines : meche verticale, tick gauche = ouverture, droit = cloture, sans corps.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-ohlc.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-ohlc.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-heikin">
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bougies Heikin-Ashi lissees : filtre le bruit pour mettre en evidence tendances et retournements.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-heikin.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-heikin.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-outlined">
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bougies en fil de fer : corps translucide avec contour colore epais ; rendu plus aere.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-line">
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ligne des prix de cloture avec marqueurs — meme donnee, lecture de tendance plus lisse.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-line.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-line.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-mountain">
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Aire des prix de cloture avec degrade vertical sous la courbe ; ideal pour visuel de couverture.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-mountain.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-mountain.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-range">
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres haut-bas uniquement (sans ouverture/cloture), une seule couleur — visualisation de la volatilite.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-range.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-range.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-volume">
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion chandelier + histogramme de volume — la mise en page standard des terminaux crypto/trading. Les chandeliers occupent les ~78% superieurs du graphique ; une bande de barres de volume (colorees selon la hausse/baisse de la periode) occupe le reste, partageant le meme axe x. Passez un tableau <code>volume</code> en plus de <code>open</code>/<code>high</code>/<code>low</code>/<code>close</code>.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-volume.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-milestone">
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chandeliers estompes en texture de fond derriere deux courbes de tendance lissees (moyenne courte + longue periode), avec les pics locaux les plus marquants de la courbe courte detectes automatiquement et signales par un cercle, une ligne de rappel, et une etiquette de valeur en gras — l'allure "diapositive de recit" pour un rapport ou une page produit, construite entierement a partir de vraies donnees OHLC, sans annotation placee a la main.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-milestone.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-milestone.html"></iframe>
 </div>
 
 <div class="sp-variant" id="candlestick-fr-indicators">
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chandeliers, une bande de volume optionnelle, et cinq moyennes mobiles simultanees (periodes 5/10/20/40/70, chacune sa couleur avec legende) superposees sur le meme axe de prix — la lecture complete de terminal de trading, correspondant a ce qu'offre le panneau chandelier de Grafana (chandeliers, volume, moyennes mobiles superposees), construite nativement en SVG.</p>
 
 <div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/candlestick-indicators.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/candlestick-indicators.html"></iframe>
 </div>
 
 </div>

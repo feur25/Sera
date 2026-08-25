@@ -99,31 +99,31 @@ away from an existing chart page:
 <p>One histogram panel per <code>facet_by</code> group — matches seaborn's <code>faceted_histogram</code> example.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>facet(family="histogram", values=[...], facet_by=[...], cols=2)</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-faceted_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-faceted_histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-en-faceted_lineplot">
 <p>One line panel per group — matches seaborn's <code>faceted_lineplot</code> / <code>timeseries_facets</code> examples (use a time-ordered <code>labels=</code> for the latter).</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>facet(family="line", labels=[...], values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-faceted_lineplot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-faceted_lineplot.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-en-many_facets">
 <p>Faceting scales to any number of groups — matches seaborn's <code>many_facets</code> example.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>facet(family="bar", labels=[...], values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-many_facets.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-many_facets.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-en-multiple_conditional_kde">
 <p>One KDE curve per condition — matches seaborn's <code>multiple_conditional_kde</code> example.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>facet(family="kde", values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-multiple_conditional_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-multiple_conditional_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-en-three_variable_histogram">
 <p>Facets a bivariate <code>joint(variant="histogram2d")</code> panel by a third variable — matches seaborn's <code>three_variable_histogram</code> example, combining the facet mechanism with the [`joint`](joint.md) family's `histogram2d` alias.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>facet(family="joint", variant="histogram2d", x=[...], y=[...], facet_by=[...], cols=2)</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-three_variable_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-three_variable_histogram.html"></iframe>
 </div>
 </div>
 </div>
@@ -196,31 +196,31 @@ déjà à un appel d'une page de graphique existante :
 <p>Un panneau d'histogramme par groupe <code>facet_by</code> — correspond à l'exemple <code>faceted_histogram</code> de seaborn.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>facet(family="histogram", values=[...], facet_by=[...], cols=2)</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-faceted_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-faceted_histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-fr-faceted_lineplot">
 <p>Un panneau de courbe par groupe — correspond aux exemples <code>faceted_lineplot</code> / <code>timeseries_facets</code> de seaborn (utilisez un <code>labels=</code> ordonné dans le temps pour le second).</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>facet(family="line", labels=[...], values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-faceted_lineplot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-faceted_lineplot.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-fr-many_facets">
 <p>Le facettage passe à l'échelle pour n'importe quel nombre de groupes — correspond à l'exemple <code>many_facets</code> de seaborn.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>facet(family="bar", labels=[...], values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-many_facets.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-many_facets.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-fr-multiple_conditional_kde">
 <p>Une courbe de KDE par condition — correspond à l'exemple <code>multiple_conditional_kde</code> de seaborn.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>facet(family="kde", values=[...], facet_by=[...], cols=3)</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-multiple_conditional_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-multiple_conditional_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="facet-fr-three_variable_histogram">
 <p>Facette un panneau bivarié <code>joint(variant="histogram2d")</code> par une troisième variable — correspond à l'exemple <code>three_variable_histogram</code> de seaborn, combinant le mécanisme de facettage avec l'alias <code>histogram2d</code> de la famille [`joint`](joint.md).</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>facet(family="joint", variant="histogram2d", x=[...], y=[...], facet_by=[...], cols=2)</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/facet-three_variable_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/facet-three_variable_histogram.html"></iframe>
 </div>
 </div>
 </div>

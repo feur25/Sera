@@ -72,43 +72,43 @@ Circle packing represents hierarchical data as nested circles, where the area of
 <p>Filled nested circles with depth-based opacity</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / nested</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-flat">
 <p>Single-level bubble layout (no nesting)</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"flat"</code></span><span><strong>Aliases</strong> <code>flat / single</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-flat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-flat.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-outlined">
 <p>Stroke-only circles</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / stroke / border</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-outlined.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-bubble">
 <p>Runs a real greedy circle-packing layout: each circle is placed tangent to the best pair of already-placed circles (falling back to a spiral search when no tangent placement fits), producing a genuinely nested, non-overlapping bubble cluster instead of the grid-like flat layout.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-leaf_focus">
 <p>Fills only the leaf circles with color and shrinks every container circle to a faint dashed outline — declutters the hierarchy chrome so attention goes straight to the actual data points instead of the grouping structure.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"leaf_focus"</code></span><span><strong>Aliases</strong> <code>leaf_focus / leaves / leaves_only / focus</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-leaf_focus.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-leaf_focus.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-swarm">
 <p>Reimagines circle packing as a grouped commit swarm: <code>parents</code> becomes any grouping bucket instead of a tree parent, and every leaf is one real commit — a genuine front-chain circle-packing pass clusters each group's commits into its own organic, non-overlapping blob, auto-arranged in a grid. Circle size encodes lines changed, fill color encodes the commit type (feat / fix / docs / refactor / chore / style / perf / test), and automated commits render as hexagons instead of circles. Compose several single-group swarms with the canvas <code>frieze()</code>/<code>timeline()</code> method to string them along a real chronology instead. The bundled demo plots SeraPlot's own real git history.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"swarm"</code></span><span><strong>Aliases</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-swarm.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-en-matrix">
 <p>Turns circle packing into a two-axis category grid: <code>parents</code> and <code>categories</code> become any pair of categorical fields (say, region × orbit class), and every cell runs its own real front-chain circle-packing pass, scaled to how much of the data actually lands there — a busy combination visibly earns more room instead of just cramming more dots into the same box. Circle size encodes a magnitude (<code>values</code>), fill color encodes one category (<code>categories2</code>), and marker shape (circle / star / diamond / triangle / …) encodes a second, independent one (<code>symbols</code>) — three readable encodings stacked on top of the two axes. An optional continuous field (<code>color_values</code>, e.g. a launch year) fades older points and keeps recent ones at full strength. The bundled demo plots a synthetic satellite catalog.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"matrix"</code></span><span><strong>Aliases</strong> <code>matrix / grid / swarm_matrix / category_grid / space_wars</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-matrix.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-matrix.html"></iframe>
 </div>
 </div>
 </div>
@@ -169,43 +169,43 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 <p>Cercles imbriqués pleins, opacité selon la profondeur</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / nested</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-flat">
 <p>Disposition en bulles à un seul niveau (pas d'imbrication)</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"flat"</code></span><span><strong>Alias</strong> <code>flat / single</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-flat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-flat.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-outlined">
 <p>Cercles en contour seul</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code></span><span><strong>Alias</strong> <code>outlined / stroke / border</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-outlined.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-bubble">
 <p>Applique un véritable algorithme de tassement de cercles (« circle packing ») glouton : chaque cercle est placé tangent à la meilleure paire de cercles déjà posés (avec repli sur une recherche en spirale si aucun placement tangent ne convient), pour obtenir un amas de bulles réellement imbriqué et sans chevauchement, au lieu de la disposition en grille de la variante à plat.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-leaf_focus">
 <p>Ne remplit en couleur que les cercles feuilles et réduit chaque cercle conteneur à un fin contour pointillé — désencombre le chrome hiérarchique pour que l'attention aille directement aux points de données plutôt qu'à la structure de regroupement.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"leaf_focus"</code></span><span><strong>Alias</strong> <code>leaf_focus / leaves / leaves_only / focus</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-leaf_focus.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-leaf_focus.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-swarm">
 <p>Réinvente le circle packing en essaim de commits groupés : <code>parents</code> devient un groupement quelconque plutôt qu'un parent d'arbre, et chaque feuille est un commit réel — un véritable algorithme de tassement en chaîne frontale regroupe les commits de chaque groupe en un amas organique et sans chevauchement, disposé automatiquement en grille. La taille du cercle encode les lignes modifiées, la couleur le type de commit (feat / fix / docs / refactor / chore / style / perf / test), et les commits automatisés s'affichent en hexagones plutôt qu'en cercles. Composez plusieurs essaims mono-groupe avec la méthode canvas <code>frieze()</code>/<code>timeline()</code> pour les enfiler sur une véritable chronologie. La démo intégrée trace le véritable historique git de SeraPlot.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code></span><span><strong>Alias</strong> <code>swarm / commit_swarm / commit_history / dev_swarm / orca</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-swarm.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-swarm.html"></iframe>
 </div>
 <div class="sp-variant" id="cp-fr-matrix">
 <p>Transforme le circle packing en grille catégorielle à deux axes : <code>parents</code> et <code>categories</code> deviennent n'importe quelle paire de champs catégoriels (région × type d'orbite, par exemple), et chaque cellule exécute son propre véritable tassement de cercles en chaîne frontale, mis à l'échelle selon la part réelle de données qui y atterrit — une combinaison chargée gagne visiblement plus de place, au lieu de simplement entasser plus de points dans la même case. La taille du cercle encode une magnitude (<code>values</code>), la couleur de remplissage encode une catégorie (<code>categories2</code>), et la forme du marqueur (cercle / étoile / losange / triangle / …) en encode une seconde, indépendante (<code>symbols</code>) — trois encodages lisibles superposés aux deux axes. Un champ continu optionnel (<code>color_values</code>, par exemple une année de lancement) estompe les points anciens et garde les récents à pleine intensité. La démo intégrée trace un catalogue synthétique de satellites.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"matrix"</code></span><span><strong>Alias</strong> <code>matrix / grid / swarm_matrix / category_grid / space_wars</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-matrix.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circle_pack-matrix.html"></iframe>
 </div>
 </div>
 </div>

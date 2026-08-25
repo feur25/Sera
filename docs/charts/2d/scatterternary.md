@@ -69,19 +69,19 @@ Aliases: `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_pl
 <p>Single palette color, semi-transparent markers.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-en-bubble">
 <p>Point radius scales with `color_values` (4.5× range between smallest and largest) instead of a fixed `point_size` — a fourth variable encoded as size on top of the three ternary axes.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / sized / weighted / proportional</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-en-labeled">
 <p>Same layout as basic, with each point's label printed beside it — useful once you need to identify specific observations, not just see the overall distribution.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / annotated / named</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-labeled.html"></iframe>
 </div>
 </div>
 </div>
@@ -138,19 +138,19 @@ Alias : `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_plo
 <p>Couleur de palette unique, marqueurs semi-transparents.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-fr-bubble">
 <p>Le rayon des points varie selon `color_values` (facteur 4.5 entre le plus petit et le plus grand) au lieu d'un `point_size` fixe — une quatrième variable encodée en taille en plus des trois axes ternaires.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / sized / weighted / proportional</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-bubble.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-fr-labeled">
 <p>Même disposition que basic, avec le label de chaque point affiché à côté — utile dès qu'il faut identifier des observations précises, pas seulement voir la distribution globale.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / annotated / named</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatterternary-labeled.html"></iframe>
 </div>
 </div>
 </div>

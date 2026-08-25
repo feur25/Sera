@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic two-dot dumbbell with a gray connecting bar; the workhorse of before/after comparisons.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-arrow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"arrow"</code></span><span><strong>Aliases</strong> <code>arrow / directional / delta_arrow / flow</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Arrowhead points from start to end so direction of change is immediate.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-arrow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-arrow.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-delta">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"delta"</code></span><span><strong>Aliases</strong> <code>delta / change / diff / signed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bar between dots is colored by sign (green up, red down) to encode direction and magnitude.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-delta.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-barbell">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"barbell"</code></span><span><strong>Aliases</strong> <code>barbell / thick / weighted / editorial</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Square weighted endpoints on a thick gray axis - editorial barbell look for slides.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-barbell.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-barbell.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-glow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"glow"</code></span><span><strong>Aliases</strong> <code>glow / halo / neon / soft</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Soft halo around endpoints with thin connector for a luminous, modern feel.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-dotted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dotted"</code></span><span><strong>Aliases</strong> <code>dotted / dashed / minimal / thin</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dashed connector with hollow ring markers - lightweight and airy.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-dotted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-dotted.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-en-ranked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ranked"</code></span><span><strong>Aliases</strong> <code>ranked / ranking / ordered / numbered</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Adds a numeric rank in front of every label - perfect for top-N comparisons.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-ranked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-ranked.html"></iframe>
 </div>
 </div>
 </div>
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dumbbell classique a deux points et barre grise - la base des comparaisons avant/apres.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-arrow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"arrow"</code></span><span><strong>Aliases</strong> <code>arrow / directional / delta_arrow / flow</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Une fleche pointe du depart vers l arrivee, la direction du changement est immediate.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-arrow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-arrow.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-delta">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"delta"</code></span><span><strong>Aliases</strong> <code>delta / change / diff / signed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La barre entre les points prend la couleur du signe (vert hausse, rouge baisse).</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-delta.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-delta.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-barbell">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"barbell"</code></span><span><strong>Aliases</strong> <code>barbell / thick / weighted / editorial</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Halteres carres sur un axe epais - look editorial pour presentations.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-barbell.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-barbell.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-glow">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"glow"</code></span><span><strong>Aliases</strong> <code>glow / halo / neon / soft</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Halo doux autour des extremites avec connecteur fin - style lumineux et moderne.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-glow.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-dotted">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dotted"</code></span><span><strong>Aliases</strong> <code>dotted / dashed / minimal / thin</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Connecteur en pointilles et marqueurs en anneaux - leger et aere.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-dotted.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-dotted.html"></iframe>
 </div>
 <div class="sp-variant" id="dumbbell-fr-ranked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ranked"</code></span><span><strong>Aliases</strong> <code>ranked / ranking / ordered / numbered</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ajoute un rang numerique devant chaque label - ideal pour comparer un top-N.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dumbbell-ranked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dumbbell-ranked.html"></iframe>
 </div>
 </div>
 </div>

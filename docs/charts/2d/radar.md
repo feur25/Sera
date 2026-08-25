@@ -51,57 +51,57 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled polygon per series with stroke and dot markers — the standard radar.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-lines">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"lines"</code></span><span><strong>Aliases</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-only polygons, no fill — clean overlay for many series.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-lines.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-filled">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>filled / fill / solid / area</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Strong fill, no stroke, sorted back-to-front by total area for clarity.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-markers">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"markers"</code></span><span><strong>Aliases</strong> <code>markers / dots / points / marker</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Light stroke + bold outlined markers — emphasis on data points.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-markers.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-markers.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-dashed">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dashed"</code></span><span><strong>Aliases</strong> <code>dashed / dash / dotted</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dashed outline polygons — useful for projections, targets, baselines.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-dashed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-dashed.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-stacked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / cumulative</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cumulative stacking on each axis — visualizes part-of-whole composition.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-polar_bar">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar_bar"</code></span><span><strong>Aliases</strong> <code>polar_bar / polar / bar / radial_bar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radial bars per axis grouped by series — categorical polar histogram.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-polar_bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="radar-en-band">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"band"</code></span><span><strong>Aliases</strong> <code>band / range / uncertainty / minmax</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radar + uncertainty band fusion: instead of one line per series, each group gets a shaded ring between a low and a high bound per axis, with a dashed midline and markers — pass <code>series</code> as low/high pairs (<code>[group1_low, group1_high, group2_low, group2_high, ...]</code>). Ideal for confidence intervals, min/max ranges or forecast spreads across multiple dimensions at once.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-band.html"></iframe>
 </div>
 
 <div class="sp-variant" id="radar-en-petal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"petal"</code></span><span><strong>Aliases</strong> <code>petal / flower / bloom / petal_diagram / nightingale_petal</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each axis grows a symmetric leaf-shaped petal per series instead of a shared polygon vertex — length still encodes the value, but the rounded silhouette reads as a bloom. Historical vs. projected categories get solid vs. outlined badge markers automatically.</p>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-petal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-petal.html"></iframe>
 </div>
 </div></div>
 
@@ -150,57 +150,57 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygone rempli par série avec contour et points — le radar standard.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-lines">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"lines"</code></span><span><strong>Alias</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygones en trait seul, sans remplissage — overlay net pour plusieurs séries.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-lines.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-filled">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / fill / solid / area</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage fort sans contour, trié de l'arrière vers l'avant par aire totale.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-filled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-markers">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"markers"</code></span><span><strong>Alias</strong> <code>markers / dots / points / marker</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trait léger + marqueurs détourés — accent sur les points de données.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-markers.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-markers.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-dashed">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dashed"</code></span><span><strong>Alias</strong> <code>dashed / dash / dotted</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygones à contour pointillé — utile pour projections, cibles, références.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-dashed.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-dashed.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-stacked">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stacked"</code></span><span><strong>Alias</strong> <code>stacked / stack / cumulative</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Empilement cumulatif sur chaque axe — visualise une composition part/tout.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-stacked.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-polar_bar">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar_bar"</code></span><span><strong>Alias</strong> <code>polar_bar / polar / bar / radial_bar</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres radiales par axe groupées par série — histogramme polaire catégoriel.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-polar_bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="radar-fr-band">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"band"</code></span><span><strong>Alias</strong> <code>band / range / uncertainty / minmax</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion radar + bande d'incertitude : au lieu d'une ligne par série, chaque groupe reçoit un anneau ombré entre une borne basse et haute par axe, avec une ligne médiane en pointillés et des marqueurs — passez <code>series</code> comme des paires bas/haut (<code>[groupe1_bas, groupe1_haut, groupe2_bas, groupe2_haut, ...]</code>). Idéal pour des intervalles de confiance, des plages min/max ou des écarts de prévision sur plusieurs dimensions à la fois.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-band.html"></iframe>
 </div>
 
 <div class="sp-variant" id="radar-fr-petal">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"petal"</code></span><span><strong>Alias</strong> <code>petal / flower / bloom / petal_diagram / nightingale_petal</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque axe fait pousser un pétale symétrique en forme de feuille par série au lieu d'un sommet de polygone partagé — la longueur encode toujours la valeur, mais la silhouette arrondie se lit comme une fleur. Les catégories historiques vs. projetées reçoivent automatiquement des badges pleins vs. contour.</p>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-petal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/radar-petal.html"></iframe>
 </div>
 </div></div>
 

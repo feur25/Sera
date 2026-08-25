@@ -70,25 +70,25 @@ Aliases: `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.s
 <p>Off-diagonal cells are plain scatter plots in a single palette color.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-en-correlation">
 <p>Each off-diagonal cell's background is tinted by the Pearson correlation coefficient between its two dimensions (via the same continuous colorscale engine as [`heatmap()`](heatmap.md)), with points overlaid in a neutral color — a heatmap and a SPLOM in one chart.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code></span><span><strong>Aliases</strong> <code>correlation / corr / heat / shaded</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-correlation.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-correlation.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-en-density">
 <p>Every point drawn at 14% opacity with no stroke — overlapping points accumulate into darker regions, revealing density in datasets too large for solid dots to stay readable.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / alpha / overplot / cloud</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-density.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-en-regression">
 <p>Adds a least-squares trend line to every off-diagonal panel — the classic pairplot-with-regression view for spotting linear relationships across every pair of variables at once.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trend / fit / lm</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-regression.html"></iframe>
 </div>
 </div>
 </div>
@@ -146,25 +146,25 @@ Alias : `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.sc
 <p>Cellules hors-diagonale en nuage de points simple, couleur de palette unique.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-fr-correlation">
 <p>Le fond de chaque cellule hors-diagonale est teinté selon le coefficient de corrélation de Pearson entre ses deux dimensions (via le même moteur de dégradés continus que [`heatmap()`](heatmap.md)), avec les points superposés en couleur neutre — une heatmap et un SPLOM en un seul graphique.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"correlation"</code></span><span><strong>Alias</strong> <code>correlation / corr / heat / shaded</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-correlation.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-correlation.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-fr-density">
 <p>Chaque point dessiné à 14% d'opacité sans contour — les points superposés s'accumulent en zones plus sombres, révélant la densité sur des jeux de données trop grands pour rester lisibles en points pleins.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code></span><span><strong>Alias</strong> <code>density / alpha / overplot / cloud</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-density.html"></iframe>
 </div>
 <div class="sp-variant" id="splom-fr-regression">
 <p>Ajoute une droite de régression aux moindres carrés à chaque panneau hors-diagonale — la vue classique pairplot-avec-régression pour repérer les relations linéaires entre toutes les paires de variables à la fois.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"regression"</code></span><span><strong>Alias</strong> <code>regression / trend / fit / lm</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/splom-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/splom-regression.html"></iframe>
 </div>
 </div>
 </div>

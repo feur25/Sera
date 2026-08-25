@@ -72,37 +72,37 @@ Dendrograms display hierarchical tree structures using right-angle elbow connect
 <p>Root at top, leaves at bottom (elbow connectors)</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"vertical"</code></span><span><strong>Aliases</strong> <code>vertical / top / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-vertical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-vertical.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-en-horizontal">
 <p>Root at left, leaves at right</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / left / h</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-horizontal.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-en-radial">
 <p>Circular radial tree layout</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / circular / polar</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-en-compact">
 <p>Tighter spacing, smaller font</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"compact"</code></span><span><strong>Aliases</strong> <code>compact / dense / tight</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-compact.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-compact.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-en-elegant">
 <p>Smooth cubic bezier curves</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"elegant"</code></span><span><strong>Aliases</strong> <code>elegant / smooth / rounded</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-elegant.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-en-triangular">
 <p>Connects parent to child with a single straight diagonal line — a third connector style alongside the right-angle elbows (vertical/horizontal) and smooth beziers (elegant).</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"triangular"</code></span><span><strong>Aliases</strong> <code>triangular / diagonal / straight / angular</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-triangular.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-triangular.html"></iframe>
 </div>
 </div>
 </div>
@@ -162,37 +162,37 @@ Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aid
 <p>Racine en haut, feuilles en bas (connecteurs en coude)</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"vertical"</code></span><span><strong>Alias</strong> <code>vertical / top / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-vertical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-vertical.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-fr-horizontal">
 <p>Racine à gauche, feuilles à droite</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Alias</strong> <code>horizontal / left / h</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-horizontal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-horizontal.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-fr-radial">
 <p>Disposition arborescente radiale circulaire</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / circular / polar</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-radial.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-radial.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-fr-compact">
 <p>Espacement resserré, police plus petite</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"compact"</code></span><span><strong>Alias</strong> <code>compact / dense / tight</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-compact.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-compact.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-fr-elegant">
 <p>Courbes de bézier cubiques lisses</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"elegant"</code></span><span><strong>Alias</strong> <code>elegant / smooth / rounded</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-elegant.html"></iframe>
 </div>
 <div class="sp-variant" id="dend-fr-triangular">
 <p>Relie parent et enfant par une seule ligne diagonale droite — un troisième style de connecteur, aux côtés des coudes à angle droit (vertical/horizontal) et des courbes de bézier lisses (elegant).</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"triangular"</code></span><span><strong>Alias</strong> <code>triangular / diagonal / straight / angular</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/dendrogram-triangular.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/dendrogram-triangular.html"></iframe>
 </div>
 </div>
 </div>

@@ -77,7 +77,7 @@ When `series` is missing but `series_names` is provided, `values` is interpreted
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>sp.bar</code> <code>sp.bars</code> <code>sp.bar_unified</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-horizontal">
@@ -87,7 +87,7 @@ Horizontal bars — better for long category names. Alias: `"h"`.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"h"</code></span><span><strong>Aliases</strong> <code>sp.bar</code> + <code>variant="h"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hbar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hbar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-grouped">
@@ -97,7 +97,7 @@ Multiple series side-by-side per category. Alias: `"group"`.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"group"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/grouped-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/grouped-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-stacked">
@@ -107,7 +107,7 @@ Series stacked vertically — shows part-to-whole within each category. Alias: `
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code> / <code>"stack"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stacked-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stacked-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-relative">
@@ -117,7 +117,7 @@ Series stacked vertically — shows part-to-whole within each category. Alias: `
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> each column normalised to 100%</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/relative-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/relative-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-grouped_stacked">
@@ -127,7 +127,7 @@ Groups of stacked sub-bars per category. `offset_groups` assigns a stack-group n
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped_stacked"</code></span><span><strong>Required</strong> <code>series</code>, <code>offset_groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/grouped-stacked-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/grouped-stacked-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-marimekko">
@@ -137,7 +137,7 @@ Variable-width stacked bars (mosaic plot). `widths` encodes one dimension, stack
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marimekko"</code> / <code>"mekko"</code> / <code>"mosaic"</code></span><span><strong>Required</strong> <code>series</code>, <code>widths</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/marimekko-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/marimekko-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-pictogram">
@@ -147,7 +147,7 @@ A bar made of repeated icons. Each icon represents `units_per_icon` units. Alias
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pictogram"</code> / <code>"icon"</code></span><span><strong>Required</strong> <code>values</code>, <code>units_per_icon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pictogram-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pictogram-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-multicategory">
@@ -157,7 +157,7 @@ Two-level hierarchical x axis. `super_categories` groups adjacent bars under a b
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"multicategory"</code> / <code>"multi"</code></span><span><strong>Required</strong> <code>values</code>, <code>super_categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/multicategory-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-circular">
@@ -167,7 +167,7 @@ Bars arranged radially around a center, length proportional to value. Pass `show
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>show_values</code>, <code>gridlines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circular-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circular-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-circular_grouped">
@@ -177,7 +177,7 @@ Circular bars split into groups via `color_groups`, with an extra gap between gr
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular_grouped"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code>, <code>color_groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circular_grouped-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circular_grouped-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-population_pyramid">
@@ -187,7 +187,7 @@ Two horizontal bar sets mirrored left/right around a shared category axis, from 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"population_pyramid"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code> (≥ 2), <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/population_pyramid-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/population_pyramid-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-diverging">
@@ -197,7 +197,7 @@ Horizontal bars extending left or right from a zero line, colored by sign — `c
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/diverging-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-en-distribution">
@@ -207,7 +207,7 @@ Bar + boxplot fusion: a semi-transparent bar up to each category's mean, with a 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"distribution"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-distribution.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bar-distribution.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->
@@ -282,7 +282,7 @@ Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>sp.bar</code> <code>sp.bars</code> <code>sp.bar_unified</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-horizontal">
@@ -292,7 +292,7 @@ Barres horizontales — idéal pour les longs noms de catégories. Alias : `"h"`
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code> / <code>"h"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hbar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/hbar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-grouped">
@@ -302,7 +302,7 @@ Plusieurs séries côte à côte par catégorie. Alias : `"group"`.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code> / <code>"group"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/grouped-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/grouped-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-stacked">
@@ -312,7 +312,7 @@ Séries empilées verticalement — montre la part de chaque série dans le tota
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stacked"</code> / <code>"stack"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stacked-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/stacked-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-relative">
@@ -322,7 +322,7 @@ Séries empilées verticalement — montre la part de chaque série dans le tota
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> chaque colonne normalisée à 100%</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/relative-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/relative-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-grouped_stacked">
@@ -332,7 +332,7 @@ Groupes de sous-barres empilées par catégorie. `offset_groups` assigne un nom 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped_stacked"</code></span><span><strong>Requis</strong> <code>series</code>, <code>offset_groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/grouped-stacked-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/grouped-stacked-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-marimekko">
@@ -342,7 +342,7 @@ Barres empilées à largeur variable (mosaïque). `widths` encode une dimension,
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"marimekko"</code> / <code>"mekko"</code> / <code>"mosaic"</code></span><span><strong>Requis</strong> <code>series</code>, <code>widths</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/marimekko-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/marimekko-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-pictogram">
@@ -352,7 +352,7 @@ Barre composée d'icônes répétées. Chaque icône représente `units_per_icon
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"pictogram"</code> / <code>"icon"</code></span><span><strong>Requis</strong> <code>values</code>, <code>units_per_icon</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pictogram-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/pictogram-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-multicategory">
@@ -362,7 +362,7 @@ Axe x à deux niveaux. `super_categories` regroupe les barres adjacentes sous un
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"multicategory"</code> / <code>"multi"</code></span><span><strong>Requis</strong> <code>values</code>, <code>super_categories</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/multicategory-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-circular">
@@ -372,7 +372,7 @@ Barres disposées radialement autour d'un centre, longueur proportionnelle à la
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"circular"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Optionnel</strong> <code>show_values</code>, <code>gridlines</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circular-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circular-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-circular_grouped">
@@ -382,7 +382,7 @@ Barres circulaires réparties en groupes via `color_groups`, avec un écart supp
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"circular_grouped"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>color_groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circular_grouped-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/circular_grouped-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-population_pyramid">
@@ -392,7 +392,7 @@ Deux jeux de barres horizontales en miroir de part et d'autre d'un axe catégori
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"population_pyramid"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code> (≥ 2), <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/population_pyramid-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/population_pyramid-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-diverging">
@@ -402,7 +402,7 @@ Barres horizontales partant d'une ligne zéro vers la gauche ou la droite, color
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"diverging"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/diverging-bar.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bar-fr-distribution">
@@ -412,7 +412,7 @@ Fusion bar + boxplot : une barre semi-transparente jusqu'à la moyenne de chaque
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"distribution"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-distribution.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/bar-distribution.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->

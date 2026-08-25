@@ -88,37 +88,37 @@ The preset names from earlier releases (`hexbin_marginal`, `joint_histogram` / `
 <p>The raw entry point — <code>variant=</code> is simply the panel family's own name, and any registered family can fill it.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-hexbin_kde">
 <p>Hexagonal density panel with KDE curve marginals instead of the default histograms.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-hexbin_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-kde_histogram">
 <p>A 1D KDE panel with histogram marginals — mixing families freely, not just bivariate-native ones.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="kde", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-kde_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-kde_histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-scatter_bar">
 <p>Scatter panel with bar-chart marginals.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="scatter", marginal="bar")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-scatter_bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-scatter_bar.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-hexbin_outlined_kde">
 <p><code>panel_variant=</code> forwards to the panel family's own variant — here hexbin's <code>outlined</code> cell style, combined with KDE marginals.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-layered_bivariate">
 <p>The pre-existing <code>layered_bivariate</code> preset name still resolves (to <code>variant="kde", panel_variant="contour"</code> under the hood — a genuine bivariate density surface, not a flat 1D curve) — old code keeps working, and now renders correctly.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-layered_bivariate.html"></iframe>
 </div>
 </div>
 </div>
@@ -177,37 +177,37 @@ Les noms préréglés des versions précédentes (`hexbin_marginal`, `joint_hist
 <p>Le point d'entrée brut — <code>variant=</code> est simplement le nom de la famille du panneau, et n'importe quelle famille enregistrée peut le remplir.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-hexbin_kde">
 <p>Panneau de densité hexagonale avec des marges en courbes de KDE plutôt qu'en histogrammes par défaut.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-hexbin_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-kde_histogram">
 <p>Un panneau de KDE 1D avec des marges en histogrammes — mélange libre de familles, pas seulement celles nativement bivariées.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="kde", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-kde_histogram.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-kde_histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-scatter_bar">
 <p>Panneau en nuage de points avec des marges en bar chart.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="scatter", marginal="bar")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-scatter_bar.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-scatter_bar.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-hexbin_outlined_kde">
 <p><code>panel_variant=</code> est transmis à la variante propre de la famille du panneau — ici le style de cellule <code>outlined</code> de hexbin, combiné à des marges KDE.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-layered_bivariate">
 <p>L'ancien nom préréglé <code>layered_bivariate</code> se résout toujours (vers <code>variant="kde", panel_variant="contour"</code> en interne — une véritable surface de densité bivariée, pas une simple courbe 1D) — le code existant continue de fonctionner, et s'affiche désormais correctement.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/joint-layered_bivariate.html"></iframe>
 </div>
 </div>
 </div>
