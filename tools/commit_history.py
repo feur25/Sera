@@ -382,8 +382,8 @@ def place_margin(values_top, values_right, group, name_suffix):
         width=int(top_w), height=int(top_h),
     ).hide_grid().segment_bars().no_select())
     a_right = flatten_chart(sp.bar(
-        "", labels=week_short, values=[-d for d in values_right], variant="diverging",
-        color_low=del_color, color_high=ins_color, theme="none", show_values=False,
+        "", labels=week_short, values=values_right, variant="diverging",
+        color_hex=del_color, color_low=del_color, color_high=ins_color, theme="none", show_values=False,
         width=int(right_w), height=int(right_h),
     ).hide_grid().segment_bars().no_select())
     top_name = f"margin-top-{name_suffix}"
