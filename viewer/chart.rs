@@ -390,6 +390,34 @@ fn launch_chart_app(app: ChartApp) -> bool {
     true
 }
 
+fn open_in_browser(path: &str) {
+    #[cfg(target_os = "windows")]
+    let spawned = std::process::Command::new("cmd")
+        .args(["/C", "start", "", path])
+        .spawn();
+    #[cfg(target_os = "macos")]
+    let spawned = std::process::Command::new("open").arg(path).spawn();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let spawned = std::process::Command::new("xdg-open").arg(path).spawn();
+
+    if let Err(e) = spawned {
+        eprintln!("seraplot: failed to open '{path}' in the default browser: {e}");
+    }
+}
+
+fn write_and_open_demo_html(family: &str, variant: &str, html: String) {
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let filepath = format!("seraplot_family_{family}_{variant}_{timestamp}.html");
+    if let Err(e) = std::fs::write(&filepath, html) {
+        eprintln!("seraplot: failed to export '{family}/{variant}' to '{filepath}': {e}");
+        return;
+    }
+    open_in_browser(&filepath);
+}
+
 fn render_svg_by_type(
     chart_type: u8,
     _labels: &[String],
@@ -815,7 +843,7 @@ impl eframe::App for ChartApp {
                     ui.label("Chart Families");
                     ui.separator();
 
-                    egui::ScrollArea::vertical().max_height(360.0).show(ui, |ui| {
+                    egui::ScrollArea::vertical().max_height(220.0).id_source("transform_native").show(ui, |ui| {
                         for (group_name, types) in &groups {
                             let is_current_group =
                                 types.iter().any(|(id, _)| *id == self.current_chart_kind);
@@ -845,6 +873,31 @@ impl eframe::App for ChartApp {
                                         }
                                     }
                                 });
+                        }
+                    });
+
+                    ui.separator();
+                    ui.label("Chart Catalog (opens as HTML)");
+                    ui.separator();
+
+                    egui::ScrollArea::vertical().max_height(240.0).id_source("transform_catalog").show(ui, |ui| {
+                        for (family, variants) in crate::plot::chart_demo_registry::families() {
+                            egui::CollapsingHeader::new(family.as_str()).show(ui, |ui| {
+                                for (variant, entry) in &variants {
+                                    if ui.button(variant.as_str()).clicked() {
+                                        let family = family.clone();
+                                        let variant = variant.clone();
+                                        let entry = *entry;
+                                        std::thread::spawn(move || {
+                                            if let Some(html) =
+                                                crate::plot::chart_demo_registry::render_demo_html(entry)
+                                            {
+                                                write_and_open_demo_html(&family, &variant, html);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }
                     });
                 });
