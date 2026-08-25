@@ -806,30 +806,47 @@ impl eframe::App for ChartApp {
         }
 
         if self.show_transform_menu {
-            let chart_types = crate::plot::default::get_current_group_types();
+            let groups = crate::plot::default::list_all_groups();
 
             egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
-                .default_width(200.0)
+                .default_width(220.0)
                 .show(ctx, |ui| {
-                    ui.label("Chart Types");
+                    ui.label("Chart Families");
                     ui.separator();
 
-                    for (kind, name) in &chart_types {
-                        let is_selected = self.current_chart_kind == *kind;
-                        let button_text = if is_selected {
-                            format!("[{}]", name)
-                        } else {
-                            name.to_string()
-                        };
+                    egui::ScrollArea::vertical().max_height(360.0).show(ui, |ui| {
+                        for (group_name, types) in &groups {
+                            let is_current_group =
+                                types.iter().any(|(id, _)| *id == self.current_chart_kind);
 
-                        if ui.button(&button_text).clicked() {
-                            self.current_chart_kind = *kind;
-                            sera_set_current_chart_kind(*kind);
-                            self.last_render_state = (false, 255, -1, false);
-                            ctx.request_repaint();
+                            egui::CollapsingHeader::new(group_name.as_str())
+                                .default_open(is_current_group)
+                                .show(ui, |ui| {
+                                    for (kind, name) in types {
+                                        let is_selected = self.current_chart_kind == *kind;
+                                        let button_text = if is_selected {
+                                            format!("[{}]", name)
+                                        } else {
+                                            name.clone()
+                                        };
+
+                                        if ui.button(&button_text).clicked() {
+                                            self.current_chart_kind = *kind;
+                                            crate::plot::controller::set_current_chart_group(
+                                                group_name,
+                                            );
+                                            crate::plot::controller::plot_3d_controller::set_current_group(
+                                                group_name,
+                                            );
+                                            sera_set_current_chart_kind(*kind);
+                                            self.last_render_state = (false, 255, -1, false);
+                                            ctx.request_repaint();
+                                        }
+                                    }
+                                });
                         }
-                    }
+                    });
                 });
         }
 
@@ -1597,6 +1614,24 @@ impl ChartApp {
     }
 }
 
+fn group_name_from_c_char(group_name: *const c_char) -> String {
+    if group_name.is_null() {
+        "default".to_string()
+    } else {
+        unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
+    }
+}
+
+fn activate_chart_group(group: &str) {
+    crate::bindings::init_chart_types();
+    crate::bindings::load_all_groups();
+    crate::plot::controller::set_current_chart_group(group);
+    if let Some(&(first_id, _)) = crate::plot::default::get_current_group_types().first() {
+        sera_set_current_chart_kind(first_id);
+    }
+    crate::plot::controller::plot_3d_controller::set_current_group(group);
+}
+
 #[no_mangle]
 pub extern "C" fn sera_show_chart_data(
     labels: *const *const c_char,
@@ -1641,27 +1676,12 @@ pub extern "C" fn sera_show_chart_data_full(
     txt_b: u8,
     txt_a: u8,
 ) -> bool {
-    crate::bindings::init_chart_types();
-
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
     }
 
-    let group = if group_name.is_null() {
-        "default".to_string()
-    } else {
-        unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
-    };
-
-    crate::bindings::load_group(&group);
-    crate::plot::controller::set_current_chart_group(&group);
-    {
-        let group_types = crate::plot::default::get_current_group_types();
-        if let Some(&(first_id, _)) = group_types.first() {
-            sera_set_current_chart_kind(first_id);
-        }
-        crate::plot::controller::plot_3d_controller::set_current_group(&group);
-    }
+    let group = group_name_from_c_char(group_name);
+    activate_chart_group(&group);
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let interner = crate::bindings::utils::get_interner();
@@ -1746,27 +1766,12 @@ pub extern "C" fn sera_show_chart_data_json(
     group_name: *const c_char,
     hover_json: *const c_char,
 ) -> bool {
-    crate::bindings::init_chart_types();
-
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
     }
 
-    let group = if group_name.is_null() {
-        "default".to_string()
-    } else {
-        unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
-    };
-
-    crate::bindings::load_group(&group);
-    crate::plot::controller::set_current_chart_group(&group);
-    {
-        let group_types = crate::plot::default::get_current_group_types();
-        if let Some(&(first_id, _)) = group_types.first() {
-            sera_set_current_chart_kind(first_id);
-        }
-        crate::plot::controller::plot_3d_controller::set_current_group(&group);
-    }
+    let group = group_name_from_c_char(group_name);
+    activate_chart_group(&group);
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let mut label_vec = Vec::new();
@@ -1834,8 +1839,6 @@ pub extern "C" fn sera_show_chart_data_json(
 
 #[no_mangle]
 pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
-    crate::bindings::init_chart_types();
-
     if chart_json.is_null() {
         return false;
     }
@@ -1862,15 +1865,7 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
         .unwrap_or("default")
         .to_string();
 
-    crate::bindings::load_group(&group);
-    crate::plot::controller::set_current_chart_group(&group);
-    {
-        let group_types = crate::plot::default::get_current_group_types();
-        if let Some(&(first_id, _)) = group_types.first() {
-            sera_set_current_chart_kind(first_id);
-        }
-        crate::plot::controller::plot_3d_controller::set_current_group(&group);
-    }
+    activate_chart_group(&group);
 
     let mut label_vec = Vec::new();
     let mut value_vec = Vec::new();
