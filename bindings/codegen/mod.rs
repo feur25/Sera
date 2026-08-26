@@ -242,7 +242,7 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("pub fn wasm_call(name: &str, json: &str) -> String {\n");
     wasm_body.push_str("    let target = crate::bindings::alias_registry::resolve_call_target(name);\n");
     wasm_body.push_str("    match crate::bindings::fn_registry::find(&target) {\n");
-    wasm_body.push_str("        Some(entry) => (entry.invoke)(json),\n");
+    wasm_body.push_str("        Some(entry) => crate::bindings::fn_registry::invoke(entry, json),\n");
     wasm_body.push_str("        None => String::new(),\n");
     wasm_body.push_str("    }\n");
     wasm_body.push_str("}\n");
