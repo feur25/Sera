@@ -52,6 +52,28 @@
   color: var(--bg);
 }
 
+.pglang-select {
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--theme-popup-bg);
+  padding-right: 20px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--icons) 50%), linear-gradient(135deg, var(--icons) 50%, transparent 50%);
+  background-position: right 9px top 55%, right 5px top 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.pglang-select:hover {
+  background-color: var(--icons);
+  color: var(--bg);
+  background-image: linear-gradient(45deg, transparent 50%, var(--bg) 50%), linear-gradient(135deg, var(--bg) 50%, transparent 50%);
+}
+.pglang-select option {
+  background: var(--theme-popup-bg);
+  color: var(--fg);
+}
+
 /* ── Background fills edge-to-edge ──────────────────────────────────────── */
 html, body {
   background-color: var(--bg) !important;
