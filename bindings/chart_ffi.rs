@@ -114,13 +114,13 @@ pub unsafe extern "C" fn sera_call(
     let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
     let json = unsafe { CStr::from_ptr(json) }.to_str().unwrap_or("{}");
     let target = crate::bindings::alias_registry::resolve_call_target(name);
-    for entry in crate::bindings::fn_registry::iter_entries() {
-        if entry.name == target {
+    match crate::bindings::fn_registry::find(&target) {
+        Some(entry) => {
             let result = (entry.invoke)(json);
-            return CString::new(result).unwrap_or_default().into_raw();
+            CString::new(result).unwrap_or_default().into_raw()
         }
+        None => std::ptr::null_mut(),
     }
-    std::ptr::null_mut()
 }
 
 #[no_mangle]

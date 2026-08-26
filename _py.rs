@@ -151,15 +151,13 @@ fn py_any_to_json(v: &Bound<'_, PyAny>) -> serde_json::Value {
 #[pyfunction]
 fn _sera_call(name: &str, json: &str) -> PyResult<String> {
     let target = crate::bindings::alias_registry::resolve_call_target(name);
-    for entry in crate::bindings::fn_registry::iter_entries() {
-        if entry.name == target {
-            return Ok((entry.invoke)(json));
-        }
+    match crate::bindings::fn_registry::find(&target) {
+        Some(entry) => Ok((entry.invoke)(json)),
+        None => Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "seraplot: unknown function '{}'",
+            name
+        ))),
     }
-    Err(pyo3::exceptions::PyValueError::new_err(format!(
-        "seraplot: unknown function '{}'",
-        name
-    )))
 }
 
 pub(crate) enum NumSource<'py, T: numpy::Element> {
@@ -435,7 +433,7 @@ fn _sera_call_fast(
             break;
         }
         let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
-        let Some(fe) = crate::bindings::fn_registry::iter_entries().find(|e| e.name == target) else {
+        let Some(fe) = crate::bindings::fn_registry::find(&target) else {
             break;
         };
         let html = (fe.invoke)(&payload);
@@ -451,16 +449,16 @@ fn _sera_call_fast(
         return Ok(html);
     }
 
-    for entry in crate::bindings::fn_registry::iter_entries() {
-        if entry.name == target {
+    match crate::bindings::fn_registry::find(&target) {
+        Some(entry) => {
             let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
-            return Ok((entry.invoke)(&payload));
+            Ok((entry.invoke)(&payload))
         }
+        None => Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "seraplot: unknown function '{}'",
+            name
+        ))),
     }
-    Err(pyo3::exceptions::PyValueError::new_err(format!(
-        "seraplot: unknown function '{}'",
-        name
-    )))
 }
 
 fn kwarg<T: for<'a> pyo3::FromPyObject<'a>>(kwargs: Option<&Bound<'_, PyDict>>, key: &str) -> Option<T> {
