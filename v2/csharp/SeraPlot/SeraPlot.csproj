@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" />
-    <None Include="image.png" Pack="true" PackagePath="image.png" Condition="Exists('image.png')" />
     <None Include="runtimes/win-x64/native/seraplot.dll" Pack="true" PackagePath="runtimes/win-x64/native/seraplot.dll" Condition="Exists('runtimes/win-x64/native/seraplot.dll')" />
     <None Include="runtimes/win-x64/native/seraplot.dll" Link="seraplot.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" Condition="Exists('runtimes/win-x64/native/seraplot.dll')" />
   </ItemGroup>
