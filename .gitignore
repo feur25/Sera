@@ -4,3 +4,10 @@ target/
 .DS_Store
 src/telemetry/
 *.csv
+licensing/
+v2/csharp/**/*.g.cs
+v2/cpp/**/*.g.h
+v2/csharp/**/bin/
+v2/csharp/**/obj/
+v2/csharp/**/*.nupkg
+v2/cpp/build/
