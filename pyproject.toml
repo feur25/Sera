@@ -18,5 +18,5 @@ Documentation = "https://feur25.github.io/Sera/"
 Issues = "https://github.com/feur25/Sera/issues"
 
 [tool.maturin]
-features = ["python", "webapp"]
+features = ["python", "webapp", "sysmon", "telemetry-http"]
 python-source = "python"
