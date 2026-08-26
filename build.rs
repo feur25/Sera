@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-#[path = "docs/gen/bindings.rs"]
+#[path = "bindings/codegen/mod.rs"]
 mod build_bindings;
 #[path = "docs/gen/common.rs"]
 mod build_common;
