@@ -253,7 +253,7 @@ fn pascal_case(s: &str) -> String {
         .collect()
 }
 
-fn gen_csharp(fns: &[FnSpec<'_>]) -> String {
+fn gen_csharp() -> String {
     let mut s = String::new();
     s.push_str("#nullable enable\n");
     s.push_str("using System.Runtime.InteropServices;\n");
@@ -265,15 +265,6 @@ fn gen_csharp(fns: &[FnSpec<'_>]) -> String {
     s.push_str("            var r = Marshal.PtrToStringUTF8(ptr) ?? string.Empty;\n");
     s.push_str("            Free(ptr); return r;\n");
     s.push_str("        }\n\n");
-    for f in fns {
-        let p = pascal_case(f.name);
-        s.push_str(&format!("        [DllImport(\"seraplot\", EntryPoint = \"sera_{}\", CallingConvention = CallingConvention.Cdecl)]\n", f.name));
-        s.push_str(&format!("        private static extern IntPtr _{}([MarshalAs(UnmanagedType.LPUTF8Str)] string input);\n", f.name));
-        s.push_str(&format!(
-            "        public static string {}(string input) => Call(_{}(input));\n\n",
-            p, f.name
-        ));
-    }
     s.push_str(&gen_csharp_introspection());
     s.push_str("    }\n}\n");
     s
@@ -395,28 +386,13 @@ fn gen_go(fns: &[FnSpec<'_>]) -> String {
     s
 }
 
-fn gen_cpp_header(fns: &[FnSpec<'_>]) -> String {
+fn gen_cpp_header() -> String {
     let mut s = String::new();
     s.push_str("#pragma once\n#include <string>\nextern \"C\" {\n");
     s.push_str("    void seraplot_free(char* ptr);\n");
-    for f in fns {
-        s.push_str(&format!("    char* sera_{}(const char* input);\n", f.name));
-    }
     s.push_str(CPP_INTROSPECTION_EXTERN_DECLS);
     s.push_str("}\nnamespace seraplot {\n");
     s.push_str("    inline void free_str(char* p) { seraplot_free(p); }\n");
-    for f in fns {
-        let c = snake_to_camel(f.name);
-        s.push_str(&format!(
-            "    inline std::string {}(const std::string& input) {{\n",
-            c
-        ));
-        s.push_str(&format!(
-            "        char* r = sera_{}(input.c_str());\n",
-            f.name
-        ));
-        s.push_str("        std::string out(r); free_str(r); return out;\n    }\n");
-    }
     s.push_str(CPP_INTROSPECTION_WRAPPERS);
     s.push_str("}\n");
     s
@@ -822,45 +798,14 @@ pub(crate) fn write_all(
     let adapters = generate_adapters(&chart_fns, &ml_fns, &auto_util_fns);
     fs::write(out_dir.join("adapters.rs"), adapters).expect("write adapters.rs");
 
-    let all_fns: Vec<FnSpec<'_>> = chart_fns
-        .iter()
-        .filter(|n| should_emit_ffi(n))
-        .map(|n| FnSpec {
-            name: n.as_str(),
-            module: "bindings::commands::charts",
-            is_chart: true,
-        })
-        .chain(
-            auto_util_fns
-                .iter()
-                .filter(|n| should_emit_ffi(n))
-                .map(|n| FnSpec {
-                    name: n.as_str(),
-                    module: "bindings::commands::charts",
-                    is_chart: false,
-                }),
-        )
-        .chain(
-            ml_fns
-                .iter()
-                .filter(|n| should_emit_ffi(n))
-                .map(|n| FnSpec {
-                    name: n.as_str(),
-                    module: "bindings::commands::ml",
-                    is_chart: false,
-                }),
-        )
-        .collect();
-
     if let Some(v2_root) = manifest.parent() {
         let csharp_dir = v2_root.join("csharp").join("SeraPlot");
         let _ = fs::create_dir_all(&csharp_dir);
-        fs::write(csharp_dir.join("SeraPlot.g.cs"), gen_csharp(&all_fns))
-            .expect("write SeraPlot.g.cs");
+        fs::write(csharp_dir.join("SeraPlot.g.cs"), gen_csharp()).expect("write SeraPlot.g.cs");
 
         let cpp_dir = v2_root.join("cpp").join("include");
         let _ = fs::create_dir_all(&cpp_dir);
-        fs::write(cpp_dir.join("seraplot.g.h"), gen_cpp_header(&all_fns))
+        fs::write(cpp_dir.join("seraplot.g.h"), gen_cpp_header())
             .expect("write seraplot.g.h");
     }
 
