@@ -152,7 +152,7 @@ fn py_any_to_json(v: &Bound<'_, PyAny>) -> serde_json::Value {
 fn _sera_call(name: &str, json: &str) -> PyResult<String> {
     let target = crate::bindings::alias_registry::resolve_call_target(name);
     match crate::bindings::fn_registry::find(&target) {
-        Some(entry) => Ok((entry.invoke)(json)),
+        Some(entry) => Ok(crate::bindings::fn_registry::invoke(entry, json)),
         None => Err(pyo3::exceptions::PyValueError::new_err(format!(
             "seraplot: unknown function '{}'",
             name
@@ -436,7 +436,7 @@ fn _sera_call_fast(
         let Some(fe) = crate::bindings::fn_registry::find(&target) else {
             break;
         };
-        let html = (fe.invoke)(&payload);
+        let html = crate::bindings::fn_registry::invoke(fe, &payload);
         #[cfg(feature = "sera-pulse")]
         if let Some(hid) = crate::plot::push_registry::extract_hid(&html) {
             let refs: Vec<&[f64]> = series.iter().map(|s| s.as_slice()).collect();
@@ -452,7 +452,7 @@ fn _sera_call_fast(
     match crate::bindings::fn_registry::find(&target) {
         Some(entry) => {
             let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
-            Ok((entry.invoke)(&payload))
+            Ok(crate::bindings::fn_registry::invoke(entry, &payload))
         }
         None => Err(pyo3::exceptions::PyValueError::new_err(format!(
             "seraplot: unknown function '{}'",
