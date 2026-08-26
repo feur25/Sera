@@ -194,11 +194,15 @@ declare namespace wasm_bindgen {
 
     export function buildWordcloud(input: string): string;
 
+    export function call(name: string, json: string): string;
+
     export function chartAliases(): string;
 
     export function chartAppend(input: string): string;
 
     export function chartDiff(input: string): string;
+
+    export function chartMethods(): string;
 
     export function chartThemes(): string;
 
@@ -217,6 +221,8 @@ declare namespace wasm_bindgen {
     export function driftKs(input: string): string;
 
     export function exportHtmlFile(input: string): string;
+
+    export function list(): string;
 
     export function mlAdaboostClassifier(input: string): string;
 
@@ -327,6 +333,8 @@ declare namespace wasm_bindgen {
     export function trueRequiredParams(input: string): string;
 
     export function validateInput(input: string): string;
+
+    export function version(): string;
 
     export function wasm_adaptive_degrade_level(): any;
 
@@ -532,9 +540,11 @@ declare interface InitOutput {
     readonly buildWaterfall: (a: number, b: number) => [number, number];
     readonly buildWireframe3dChart: (a: number, b: number) => [number, number];
     readonly buildWordcloud: (a: number, b: number) => [number, number];
+    readonly call: (a: number, b: number, c: number, d: number) => [number, number];
     readonly chartAliases: () => [number, number];
     readonly chartAppend: (a: number, b: number) => [number, number];
     readonly chartDiff: (a: number, b: number) => [number, number];
+    readonly chartMethods: () => [number, number];
     readonly chartThemes: () => [number, number];
     readonly chartVariants: () => [number, number];
     readonly csvChunkRead: (a: number, b: number) => [number, number];
@@ -544,6 +554,7 @@ declare interface InitOutput {
     readonly downsampleLttb: (a: number, b: number) => [number, number];
     readonly driftKs: (a: number, b: number) => [number, number];
     readonly exportHtmlFile: (a: number, b: number) => [number, number];
+    readonly list: () => [number, number];
     readonly mlAdaboostClassifier: (a: number, b: number) => [number, number];
     readonly mlAdaboostRegressor: (a: number, b: number) => [number, number];
     readonly mlBernoulliNb: (a: number, b: number) => [number, number];
@@ -634,6 +645,7 @@ declare interface InitOutput {
     readonly themes: (a: number, b: number) => [number, number];
     readonly trueRequiredParams: (a: number, b: number) => [number, number];
     readonly validateInput: (a: number, b: number) => [number, number];
+    readonly version: () => [number, number];
     readonly wasm_adaptive_degrade_level: () => any;
     readonly wasm_apply_color_bindings_html: (a: number, b: number) => any;
     readonly wasm_chart_variants: () => any;
