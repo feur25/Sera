@@ -167,7 +167,7 @@ fn js_method_blocks(
         .iter()
         .map(|name| {
             quote! {
-                #[cfg(any(feature = "js", feature = "ffi"))]
+                #[cfg(any(feature = "js", feature = "ffi", feature = "python"))]
                 const _: () = {
                     inventory::submit! {
                         crate::bindings::method_registry::MethodEntry {
