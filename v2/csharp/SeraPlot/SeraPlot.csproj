@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <PackageId>SeraPlot</PackageId>
-    <Version>2.8.4</Version>
+    <Version>2.8.5</Version>
     <Authors>Quentin</Authors>
     <Description>Rust-native data visualization engine for .NET. Compiled straight to a native library and called through .NET's own P/Invoke -- no interpreter, no bridge, one hop from Rust to your C# code. 60+ chart families, 400+ variants, chainable styling, all discovered live from the same registry the engine ships with.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
