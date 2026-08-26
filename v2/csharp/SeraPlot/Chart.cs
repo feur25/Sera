@@ -1,10 +1,21 @@
 namespace SeraPlot;
 
-public sealed class Chart
+public sealed class Chart : IDisposable
 {
-    public string Html { get; private set; }
+    private string? _html;
+    private IntPtr _handle;
+    private bool _disposed;
 
-    public Chart(string html) => Html = html;
+    public Chart(string html) => _html = html;
+
+    public string Html
+    {
+        get
+        {
+            if (_handle != IntPtr.Zero) _html = Api.ChartHtml(_handle);
+            return _html ?? string.Empty;
+        }
+    }
 
     public void Save(string path) => File.WriteAllText(path, Html);
 
@@ -15,20 +26,35 @@ public sealed class Chart
     public Chart Call(string name, string argsJson = "{}")
     {
         var resolved = Api.ChartMethodNames.TryGetValue(name, out var canonical) ? canonical : name;
-        var handle = Api.ChartFromHtml(Html);
-        var updated = Api.ChartCall(handle, resolved, argsJson);
-        Api.ChartFree(handle);
+        if (_handle == IntPtr.Zero) _handle = Api.ChartFromHtml(_html ?? string.Empty);
+        var updated = Api.ChartCall(_handle, resolved, argsJson);
         if (updated == IntPtr.Zero) throw new InvalidOperationException($"Methode chart inconnue : {name}");
-        Html = Api.ChartHtml(updated);
-        Api.ChartFree(updated);
+        Api.ChartFree(_handle);
+        _handle = updated;
+        _html = null;
         return this;
     }
 
     public string ToSvg()
     {
-        var handle = Api.ChartFromHtml(Html);
+        var owned = _handle == IntPtr.Zero;
+        var handle = owned ? Api.ChartFromHtml(_html ?? string.Empty) : _handle;
         var svg = Api.ChartToSvg(handle);
-        Api.ChartFree(handle);
+        if (owned) Api.ChartFree(handle);
         return svg;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        if (_handle != IntPtr.Zero) Api.ChartFree(_handle);
+        _handle = IntPtr.Zero;
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
+
+    ~Chart()
+    {
+        if (_handle != IntPtr.Zero) Api.ChartFree(_handle);
     }
 }
