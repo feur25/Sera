@@ -16,6 +16,19 @@ Every registered chart builder is exposed the same way: `Api.<PascalName>(string
 returns an HTML/SVG string. `Chart` is a thin convenience wrapper (`.Html`, `.Save(path)`,
 implicit conversion to `string`).
 
+Everything reachable from Python is reachable here too, through the same underlying
+registry and the same alias-resolving dispatcher `sp._sera_call` uses:
+
+```csharp
+Api.List();                            // every registered function name, as JSON
+Api.CallByName("build_bar", json);      // call any of them dynamically, by name
+Api.AliasAdd("build_bar", "b");         // your own short names, shared with Python's sp.config.add(...)
+Api.CallByName("b", json);              // -- resolves through the alias, same as sp.b(...)
+Api.ChartVariants();                    // every family -> variant list, as JSON
+Api.Params("build_bar", null);          // accepted keyword arguments for a family
+Api.ChartThemes(); Api.Scenes3d(); Api.Docs();
+```
+
 Ships a `win-x64` native asset (`seraplot.dll`) alongside the managed
 `SeraPlot.Interop.dll` -- no separate native install step.
 
