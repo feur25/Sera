@@ -50,6 +50,108 @@
         legend_position: '"right"',
     };
 
+    var PROG_LANGS = {
+        py: { ext: 'py', monaco: 'python', icon: '🐍' },
+        cs: { ext: 'cs', monaco: 'csharp', icon: '🟣' },
+        cpp: { ext: 'cpp', monaco: 'cpp', icon: '🔵' },
+        js: { ext: 'js', monaco: 'javascript', icon: '🟡' }
+    };
+
+    function detectProgLang() {
+        var v = localStorage.getItem('seraplot_pglang');
+        return PROG_LANGS.hasOwnProperty(v) ? v : 'py';
+    }
+
+    function fileTabText(nameBase, variantItem) {
+        var cfg = PROG_LANGS[detectProgLang()];
+        var suffix = variantItem ? ('-' + variantLabel(variantItem)) : '';
+        return cfg.icon + ' ' + nameBase + suffix + '.' + cfg.ext;
+    }
+
+    function callInputFromParsed(parsed) {
+        var input = {};
+        if (parsed.args.length > 0 && typeof parsed.args[0] === 'string') input.title = parsed.args[0];
+        for (var key in parsed.kwargs) if (parsed.kwargs.hasOwnProperty(key)) input[key] = parsed.kwargs[key];
+        return input;
+    }
+
+    function emitCode(lang, call, variantName) {
+        var parsed = parsePyArgs(call.body);
+        var input = callInputFromParsed(parsed);
+        var vk = variantKey(variantName);
+        if (vk && vk !== 'default' && !input.variant) input.variant = vk;
+        var family = familyKey(call.fn);
+        var json = JSON.stringify(input, null, 2);
+        var chainOps = [];
+        var chain = call.chain || [];
+        for (var c = 0; c < chain.length; c++) {
+            var mParsed = parsePyArgs(chain[c].body);
+            var mInput = callInputFromParsed(mParsed);
+            chainOps.push({ fn: chain[c].fn, json: JSON.stringify(mInput) });
+        }
+        if (lang === 'cs') return emitCSharp(family, json, chainOps);
+        if (lang === 'cpp') return emitCpp(family, json, chainOps);
+        if (lang === 'js') return emitJs(family, json, chainOps);
+        return '';
+    }
+
+    function emitCSharp(family, json, chainOps) {
+        var lines = ['using SeraPlot;', '', 'var chart = Api.Call("' + family + '", """' + json + '""");'];
+        for (var i = 0; i < chainOps.length; i++) {
+            lines.push('chart.Call("' + chainOps[i].fn + '", """' + chainOps[i].json + '""");');
+        }
+        lines.push('chart.Save("' + family + '.html");');
+        return lines.join('\n');
+    }
+
+    function emitCpp(family, json, chainOps) {
+        var lines = ['#include "seraplot.g.h"', '#include "chart.hpp"', '', 'int main() {',
+            '    seraplot::Chart chart(seraplot::call_by_name("' + family + '", R"JSON(' + json + ')JSON"));'];
+        for (var i = 0; i < chainOps.length; i++) {
+            lines.push('    chart.call("' + chainOps[i].fn + '", R"JSON(' + chainOps[i].json + ')JSON");');
+        }
+        lines.push('    chart.save("' + family + '.html");', '    return 0;', '}');
+        return lines.join('\n');
+    }
+
+    function emitJs(family, json, chainOps) {
+        var lines = ["const seraplot = require('seraplot');", '',
+            "const chart = seraplot.call('" + family + "', `" + json + "`);"];
+        for (var i = 0; i < chainOps.length; i++) {
+            lines.push("chart.call('" + chainOps[i].fn + "', `" + chainOps[i].json + "`);");
+        }
+        lines.push("chart.save('" + family + ".html');");
+        return lines.join('\n');
+    }
+
+    var GENERIC_HEAD_RE = {
+        cs: /Api\.Call\(\s*"([^"]*)"\s*,\s*"""([\s\S]*?)"""\s*\)/g,
+        cpp: /seraplot::call_by_name\(\s*"([^"]*)"\s*,\s*R"JSON\(([\s\S]*?)\)JSON"\s*\)/g,
+        js: /seraplot\.call\(\s*'([^']*)'\s*,\s*`([\s\S]*?)`\s*\)/g
+    };
+    var GENERIC_CHAIN_RE = {
+        cs: /\.Call\(\s*"([^"]*)"\s*,\s*"""([\s\S]*?)"""\s*\)/g,
+        cpp: /\.call\(\s*"([^"]*)"\s*,\s*R"JSON\(([\s\S]*?)\)JSON"\s*\)/g,
+        js: /\.call\(\s*'([^']*)'\s*,\s*`([\s\S]*?)`\s*\)/g
+    };
+
+    function extractGenericCalls(code, lang) {
+        var head = GENERIC_HEAD_RE[lang];
+        var chainRe = GENERIC_CHAIN_RE[lang];
+        if (!head || !chainRe) return [];
+        head.lastIndex = 0;
+        var m = head.exec(code);
+        if (!m) return [];
+        var chain = [];
+        var tail = code.slice(head.lastIndex);
+        chainRe.lastIndex = 0;
+        var cm;
+        while ((cm = chainRe.exec(tail)) !== null) {
+            chain.push({ fn: cm[1], json: cm[2] });
+        }
+        return [{ fn: m[1], jsonRaw: m[2], chain: chain }];
+    }
+
     var state = {
         editor: null,
         iframe: null,
@@ -378,6 +480,20 @@
     }
 
     function buildCode(variantName) {
+        var pyCode = buildPythonCode(variantName);
+        var lang = detectProgLang();
+        if (lang === 'py') return pyCode;
+        try {
+            var calls = extractAllCalls(pyCode);
+            if (calls.length) {
+                var emitted = emitCode(lang, calls[0], variantName);
+                if (emitted) return emitted;
+            }
+        } catch (e) {}
+        return pyCode;
+    }
+
+    function buildPythonCode(variantName) {
         variantName = variantKey(variantName);
         var fn = state.baseFn || (state.slug ? state.slug.replace(/-/g, '_') : 'bar');
         if (isFullPagePlayground()) fn = state.baseFn || 'bar';
@@ -464,7 +580,6 @@
             '.sp-pg-ecol{width:50%;min-width:180px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid #1e293b;background:#0a0f1c}',
             '.sp-pg-ehdr{display:flex;align-items:center;padding:0;background:#0d1426;border-bottom:1px solid #1e293b;box-shadow:inset 0 3px 8px rgba(0,0,0,.4);font:11px/1 "Segoe UI",sans-serif;color:#94a3b8}',
             '.sp-pg-etab{padding:7px 14px;background:#0a0f1c;border:none;border-right:1px solid #1e293b;color:#e0e7ff;font-size:12px;font-weight:500;letter-spacing:.02em;display:flex;align-items:center;gap:8px;font-family:inherit}',
-            '.sp-pg-etab::before{content:"🐍";font-size:11px}',
             '.sp-pg-cm-wrap{flex:1;background:#0a0f1c;overflow:hidden;position:relative}',
             '.sp-pg-cm-wrap .monaco-editor{background:#0a0f1c!important}',
             '.sp-pg-cm-wrap .monaco-editor .margin{background:#0a0f1c!important}',
@@ -662,13 +777,48 @@
         return calls;
     }
 
+    function normalizedChainFromPy(rawChain) {
+        return (rawChain || []).map(function (mc) {
+            return { fn: mc.fn, input: callInputFromParsed(parsePyArgs(mc.body)) };
+        });
+    }
+
+    function normalizedChainFromGeneric(rawChain) {
+        return (rawChain || []).map(function (mc) {
+            var input = {};
+            try { input = JSON.parse(mc.json); } catch (e) {}
+            return { fn: mc.fn, input: input };
+        });
+    }
+
+    function extractCallsNormalized(code, lang) {
+        if (lang === 'py') {
+            return extractAllCalls(code).map(function (call) {
+                return {
+                    fn: call.fn,
+                    input: callInputFromParsed(parsePyArgs(call.body)),
+                    chain: normalizedChainFromPy(call.chain)
+                };
+            });
+        }
+        return extractGenericCalls(code, lang).map(function (call) {
+            var input = {};
+            try { input = JSON.parse(call.jsonRaw); } catch (e) {}
+            return { fn: call.fn, input: input, chain: normalizedChainFromGeneric(call.chain) };
+        });
+    }
+
     function runOnce(force) {
         if (!state.editor) return;
         var code = state.editor.getValue();
         if (!force && code === state.lastSent) return;
         state.lastSent = code;
-        var calls = extractAllCalls(code);
-        if (!calls.length) { showErr('No sp.<chart>(...) call detected'); return; }
+        var lang = detectProgLang();
+        var calls = extractCallsNormalized(code, lang);
+        if (!calls.length) {
+            showErr(lang === 'py' ? 'No sp.<chart>(...) call detected' : 'No recognizable chart call detected for the selected language');
+            return;
+        }
         var sp = window.SeraplotWASM;
         if (!sp || !sp.__ready) { showErr('WASM not ready'); return; }
         var lastHtml = '';
@@ -676,9 +826,8 @@
             var call = calls[c];
             try {
                 if (call.fn === 'theme') {
-                    var parsedTheme = parsePyArgs(call.body);
-                    var name = (parsedTheme.args[0] || parsedTheme.kwargs.name || '').toString();
-                    if (typeof sp.setTheme === 'function') sp.setTheme(name);
+                    var themeName = ((call.input && (call.input.title || call.input.name)) || '').toString();
+                    if (typeof sp.setTheme === 'function') sp.setTheme(themeName);
                     continue;
                 }
                 if (call.fn === 'reset_theme' || call.fn === 'resetTheme') {
@@ -686,25 +835,17 @@
                     continue;
                 }
                 var entry = resolveWasmFn(call.fn);
-                if (!entry) { showErr('No WASM entry for sp.' + call.fn + '() (tried: ' + fnCandidates(call.fn).join(', ') + ')'); hideLoader(); return; }
-                var parsed = parsePyArgs(call.body);
-                var input = {};
-                if (parsed.args.length > 0 && typeof parsed.args[0] === 'string') input.title = parsed.args[0];
-                for (var key in parsed.kwargs) if (parsed.kwargs.hasOwnProperty(key)) input[key] = parsed.kwargs[key];
-                state.lastInput = input;
+                if (!entry) { showErr('No WASM entry for ' + call.fn + '() (tried: ' + fnCandidates(call.fn).join(', ') + ')'); hideLoader(); return; }
+                state.lastInput = call.input;
                 state.lastFnName = entry.name;
-                lastHtml = entry.fn(JSON.stringify(input));
+                lastHtml = entry.fn(JSON.stringify(call.input));
                 if (lastHtml && call.chain && call.chain.length && typeof sp.applyChartMethod === 'function') {
                     for (var mIdx = 0; mIdx < call.chain.length; mIdx++) {
-                        var mCall = call.chain[mIdx];
-                        var mParsed = parsePyArgs(mCall.body);
-                        var mArgs = {};
-                        for (var mKey in mParsed.kwargs) if (mParsed.kwargs.hasOwnProperty(mKey)) mArgs[mKey] = mParsed.kwargs[mKey];
-                        lastHtml = sp.applyChartMethod(lastHtml, mCall.fn, JSON.stringify(mArgs));
+                        lastHtml = sp.applyChartMethod(lastHtml, call.chain[mIdx].fn, JSON.stringify(call.chain[mIdx].input));
                     }
                 }
             } catch (e) {
-                showErr('Render error in sp.' + call.fn + ': ' + (e && e.message ? e.message : String(e)));
+                showErr('Render error in ' + call.fn + ': ' + (e && e.message ? e.message : String(e)));
                 hideLoader();
                 return;
             }
@@ -775,10 +916,10 @@
                         state.baseFn = variantKey(variants[idx]);
                         state.currentVariant = 0;
                         for (var ti = 0; ti < tabs.length; ti++) tabs[ti].classList.toggle('sp-active', ti === idx);
-                        if (fileTab) fileTab.textContent = state.baseFn + '.py';
+                        if (fileTab) fileTab.textContent = fileTabText(state.baseFn, null);
                         if (state.editor) { state.editor.setValue(buildCode('basic')); runOnce(true); }
                     } else {
-                        if (fileTab) fileTab.textContent = slug + '-' + variantLabel(variants[idx]) + '.py';
+                        if (fileTab) fileTab.textContent = fileTabText(slug, variants[idx]);
                         selectVariant(idx);
                     }
                 });
@@ -869,7 +1010,7 @@
             (variants.length > 1 ? '<div class="sp-pg-tabs">' + tabsHtml + '</div>' : '') +
             '<div class="sp-pg-main">' +
                 '<div class="sp-pg-ecol">' +
-                    '<div class="sp-pg-ehdr"><div class="sp-pg-etab">' + slug + '-' + escAttr(variantLabel(variants[0])) + '.py</div></div>' +
+                    '<div class="sp-pg-ehdr"><div class="sp-pg-etab">' + escAttr(fileTabText(slug, variants[0])) + '</div></div>' +
                     '<div class="sp-pg-cm-wrap"><div class="sp-pg-monaco" style="position:absolute;inset:0"></div></div>' +
                 '</div>' +
                 '<div class="sp-pg-divider"></div>' +
@@ -906,12 +1047,27 @@
         var tabs = wrap.querySelectorAll('.sp-pg-tab');
         var fileTab = wrap.querySelector('.sp-pg-etab');
         wireTabs(tabs, variants, wrap, slug, fileTab);
+
+        function applyProgLang() {
+            if (!state.editor) return;
+            var full = isFullPagePlayground();
+            var nameBase = full ? state.baseFn : slug;
+            var item = full ? null : variants[state.currentVariant];
+            if (fileTab) fileTab.textContent = fileTabText(nameBase, item);
+            if (window.monaco && window.monaco.editor) {
+                window.monaco.editor.setModelLanguage(state.editor.getModel(), PROG_LANGS[detectProgLang()].monaco);
+            }
+            state.editor.setValue(buildCode(full ? 'basic' : variants[state.currentVariant]));
+            runOnce(true);
+        }
+        window.addEventListener('sp-pglang-change', applyProgLang);
+
         setStatus('loading', 'Loading editor');
         loadMonaco(function () {
             setStatus('loading', 'Loading WASM');
             state.editor = window.monaco.editor.create(monacoHost, {
                 value: buildCode(variants[0]),
-                language: 'python',
+                language: PROG_LANGS[detectProgLang()].monaco,
                 theme: 'vs-dark',
                 automaticLayout: true,
                 fontFamily: '"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
