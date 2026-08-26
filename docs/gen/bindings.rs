@@ -256,6 +256,8 @@ fn pascal_case(s: &str) -> String {
 fn gen_csharp() -> String {
     let mut s = String::new();
     s.push_str("#nullable enable\n");
+    s.push_str("using System;\n");
+    s.push_str("using System.Collections.Generic;\n");
     s.push_str("using System.Runtime.InteropServices;\n");
     s.push_str("namespace SeraPlot {\n");
     s.push_str("    public static partial class Api {\n");
@@ -341,6 +343,24 @@ fn gen_csharp_introspection() -> String {
     s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_load_json\", CallingConvention = CallingConvention.Cdecl)]\n");
     s.push_str("        [return: MarshalAs(UnmanagedType.U1)]\n");
     s.push_str("        public static extern bool AliasLoadJson([MarshalAs(UnmanagedType.LPUTF8Str)] string json);\n\n");
+    s.push_str("        private static string ToPascalCase(string snake) {\n");
+    s.push_str("            var sb = new System.Text.StringBuilder();\n");
+    s.push_str("            foreach (var part in snake.Split('_')) {\n");
+    s.push_str("                if (part.Length == 0) continue;\n");
+    s.push_str("                sb.Append(char.ToUpperInvariant(part[0]));\n");
+    s.push_str("                if (part.Length > 1) sb.Append(part.Substring(1));\n");
+    s.push_str("            }\n");
+    s.push_str("            return sb.ToString();\n");
+    s.push_str("        }\n\n");
+    s.push_str("        private static IReadOnlyDictionary<string, string> BuildNames() {\n");
+    s.push_str("            var map = new Dictionary<string, string>();\n");
+    s.push_str("            var registered = System.Text.Json.JsonSerializer.Deserialize<string[]>(List()) ?? System.Array.Empty<string>();\n");
+    s.push_str("            foreach (var name in registered) map[ToPascalCase(name)] = name;\n");
+    s.push_str("            return map;\n");
+    s.push_str("        }\n\n");
+    s.push_str("        private static readonly Lazy<IReadOnlyDictionary<string, string>> _names = new(BuildNames);\n");
+    s.push_str("        public static IReadOnlyDictionary<string, string> Names => _names.Value;\n\n");
+    s.push_str("        public static string Call(string name, string json) => CallByName(Names.TryGetValue(name, out var canonical) ? canonical : name, json);\n\n");
     s
 }
 
