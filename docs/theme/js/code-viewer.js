@@ -3,6 +3,21 @@
     return (localStorage.getItem("seraplot_lang") || "en").toLowerCase() !== "fr";
   }
 
+  var EXT_TO_HLJS_CLASS = {
+    py: "language-python",
+    cs: "language-csharp",
+    cpp: "language-cpp",
+    js: "language-javascript",
+    ts: "language-typescript",
+    rs: "language-rust"
+  };
+
+  function hljsClassForTitle(title) {
+    var m = /\.([a-zA-Z0-9]+)$/.exec(title || "");
+    var ext = m ? m[1].toLowerCase() : "py";
+    return EXT_TO_HLJS_CLASS.hasOwnProperty(ext) ? EXT_TO_HLJS_CLASS[ext] : "language-python";
+  }
+
   function onKeydown(e) {
     if (e.key === "Escape") closeViewer();
   }
@@ -55,7 +70,7 @@
       "margin:0 !important;padding:18px 20px !important;font-size:13px !important;line-height:1.6 !important;" +
       "background:#1e1e1e !important;color:#d4d4d4 !important;white-space:pre !important;border:none !important;box-shadow:none !important";
     var codeEl = document.createElement("code");
-    codeEl.className = "language-python";
+    codeEl.className = hljsClassForTitle(title);
     codeEl.textContent = code;
     codeEl.style.cssText = "background:#1e1e1e !important;color:#d4d4d4 !important;padding:0 !important";
     pre.appendChild(codeEl);
