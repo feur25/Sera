@@ -116,7 +116,7 @@ pub unsafe extern "C" fn sera_call(
     let target = crate::bindings::alias_registry::resolve_call_target(name);
     match crate::bindings::fn_registry::find(&target) {
         Some(entry) => {
-            let result = (entry.invoke)(json);
+            let result = crate::bindings::fn_registry::invoke(entry, json);
             CString::new(result).unwrap_or_default().into_raw()
         }
         None => std::ptr::null_mut(),
