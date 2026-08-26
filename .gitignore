@@ -11,3 +11,5 @@ v2/csharp/**/bin/
 v2/csharp/**/obj/
 v2/csharp/**/*.nupkg
 v2/cpp/build/
+v2/cpp/lib/
+v2/csharp/**/runtimes/
