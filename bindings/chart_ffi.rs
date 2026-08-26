@@ -258,3 +258,33 @@ pub unsafe extern "C" fn sera_demo_code(
     let result = crate::demo(name, variant).unwrap_or_default();
     CString::new(result).unwrap_or_default().into_raw()
 }
+
+#[no_mangle]
+pub extern "C" fn sera_chart_aliases_json() -> *mut c_char {
+    let s = serde_json::to_string(&crate::CHART_ALIAS_REGISTRY).unwrap_or_default();
+    CString::new(s).unwrap_or_default().into_raw()
+}
+
+fn opt_str<'a>(ptr: *const c_char) -> Option<&'a str> {
+    if ptr.is_null() {
+        None
+    } else {
+        let s = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap_or("");
+        if s.is_empty() { None } else { Some(s) }
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn sera_alias_save(path: *const c_char) -> *mut c_char {
+    let path = opt_str(path);
+    match crate::bindings::alias_registry::save_to_disk(path) {
+        Ok(p) => CString::new(p).unwrap_or_default().into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn sera_alias_load(path: *const c_char) -> bool {
+    let path = opt_str(path);
+    crate::bindings::alias_registry::load_from_disk(path).unwrap_or(false)
+}
