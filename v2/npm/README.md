@@ -3,7 +3,7 @@
 Rust-native data visualization, compiled to WebAssembly and called directly --
 no server, no interpreter, no bridge beyond the WASM boundary itself.
 
-<a href="https://ibb.co/5hq2v6vH"><img src="https://i.ibb.co/r2nvMmMr/image.png" alt="A mosaic of SeraPlot chart types -- sunburst, radar, box plot, violin, sankey, heatmap, dendrogram, candlestick, treemap, network graph, chord diagram, pie, area, bar, bubble, and more" border="0"></a>
+![A mosaic of SeraPlot chart types -- sunburst, radar, box plot, violin, sankey, heatmap, dendrogram, candlestick, treemap, network graph, chord diagram, pie, area, bar, bubble, and more](https://i.ibb.co/r2nvMmMr/image.png)
 
 60+ chart families, 400+ named variants, discovered live from the engine's own
 registry -- never a hand-maintained list drifting out of sync with what the
