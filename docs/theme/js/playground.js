@@ -95,10 +95,17 @@
         return '';
     }
 
+    function isEmptyJson(json) {
+        return json === '{}' || json.trim() === '{}';
+    }
+
     function emitCSharp(family, json, chainOps) {
         var lines = ['using SeraPlot;', '', 'var chart = Api.Call("' + family + '", """' + json + '""");'];
         for (var i = 0; i < chainOps.length; i++) {
-            lines.push('chart.Call("' + chainOps[i].fn + '", """' + chainOps[i].json + '""");');
+            var op = chainOps[i];
+            lines.push(isEmptyJson(op.json)
+                ? 'chart.Call("' + op.fn + '");'
+                : 'chart.Call("' + op.fn + '", """' + op.json + '""");');
         }
         lines.push('chart.Save("' + family + '.html");');
         return lines.join('\n');
@@ -108,7 +115,10 @@
         var lines = ['#include "seraplot.g.h"', '#include "chart.hpp"', '', 'int main() {',
             '    seraplot::Chart chart(seraplot::call_by_name("' + family + '", R"JSON(' + json + ')JSON"));'];
         for (var i = 0; i < chainOps.length; i++) {
-            lines.push('    chart.call("' + chainOps[i].fn + '", R"JSON(' + chainOps[i].json + ')JSON");');
+            var op = chainOps[i];
+            lines.push(isEmptyJson(op.json)
+                ? '    chart.call("' + op.fn + '");'
+                : '    chart.call("' + op.fn + '", R"JSON(' + op.json + ')JSON");');
         }
         lines.push('    chart.save("' + family + '.html");', '    return 0;', '}');
         return lines.join('\n');
@@ -118,21 +128,24 @@
         var lines = ["const seraplot = require('seraplot');", '',
             "const chart = seraplot.call('" + family + "', `" + json + "`);"];
         for (var i = 0; i < chainOps.length; i++) {
-            lines.push("chart.call('" + chainOps[i].fn + "', `" + chainOps[i].json + "`);");
+            var op = chainOps[i];
+            lines.push(isEmptyJson(op.json)
+                ? "chart.call('" + op.fn + "');"
+                : "chart.call('" + op.fn + "', `" + op.json + "`);");
         }
         lines.push("chart.save('" + family + ".html');");
         return lines.join('\n');
     }
 
     var GENERIC_HEAD_RE = {
-        cs: /Api\.Call\(\s*"([^"]*)"\s*,\s*"""([\s\S]*?)"""\s*\)/g,
-        cpp: /seraplot::call_by_name\(\s*"([^"]*)"\s*,\s*R"JSON\(([\s\S]*?)\)JSON"\s*\)/g,
-        js: /seraplot\.call\(\s*'([^']*)'\s*,\s*`([\s\S]*?)`\s*\)/g
+        cs: /Api\.Call\(\s*"([^"]*)"\s*(?:,\s*"""([\s\S]*?)""")?\s*\)/g,
+        cpp: /seraplot::call_by_name\(\s*"([^"]*)"\s*(?:,\s*R"JSON\(([\s\S]*?)\)JSON")?\s*\)/g,
+        js: /seraplot\.call\(\s*'([^']*)'\s*(?:,\s*`([\s\S]*?)`)?\s*\)/g
     };
     var GENERIC_CHAIN_RE = {
-        cs: /\.Call\(\s*"([^"]*)"\s*,\s*"""([\s\S]*?)"""\s*\)/g,
-        cpp: /\.call\(\s*"([^"]*)"\s*,\s*R"JSON\(([\s\S]*?)\)JSON"\s*\)/g,
-        js: /\.call\(\s*'([^']*)'\s*,\s*`([\s\S]*?)`\s*\)/g
+        cs: /\.Call\(\s*"([^"]*)"\s*(?:,\s*"""([\s\S]*?)""")?\s*\)/g,
+        cpp: /\.call\(\s*"([^"]*)"\s*(?:,\s*R"JSON\(([\s\S]*?)\)JSON")?\s*\)/g,
+        js: /\.call\(\s*'([^']*)'\s*(?:,\s*`([\s\S]*?)`)?\s*\)/g
     };
 
     function extractGenericCalls(code, lang) {
@@ -147,9 +160,9 @@
         chainRe.lastIndex = 0;
         var cm;
         while ((cm = chainRe.exec(tail)) !== null) {
-            chain.push({ fn: cm[1], json: cm[2] });
+            chain.push({ fn: cm[1], json: cm[2] === undefined ? '{}' : cm[2] });
         }
-        return [{ fn: m[1], jsonRaw: m[2], chain: chain }];
+        return [{ fn: m[1], jsonRaw: m[2] === undefined ? '{}' : m[2], chain: chain }];
     }
 
     var state = {
