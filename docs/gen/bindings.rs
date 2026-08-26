@@ -253,7 +253,6 @@ fn pascal_case(s: &str) -> String {
         .collect()
 }
 
-#[allow(dead_code)]
 fn gen_csharp(fns: &[FnSpec<'_>]) -> String {
     let mut s = String::new();
     s.push_str("using System.Runtime.InteropServices;\n");
@@ -320,7 +319,6 @@ fn gen_go(fns: &[FnSpec<'_>]) -> String {
     s
 }
 
-#[allow(dead_code)]
 fn gen_cpp_header(fns: &[FnSpec<'_>]) -> String {
     let mut s = String::new();
     s.push_str("#pragma once\n#include <string>\nextern \"C\" {\n");
@@ -671,7 +669,18 @@ pub(crate) fn write_all(
                 }),
         )
         .collect();
-    let _ = all_fns;
+
+    if let Some(v2_root) = manifest.parent() {
+        let csharp_dir = v2_root.join("csharp").join("SeraPlot");
+        let _ = fs::create_dir_all(&csharp_dir);
+        fs::write(csharp_dir.join("SeraPlot.g.cs"), gen_csharp(&all_fns))
+            .expect("write SeraPlot.g.cs");
+
+        let cpp_dir = v2_root.join("cpp").join("include");
+        let _ = fs::create_dir_all(&cpp_dir);
+        fs::write(cpp_dir.join("seraplot.g.h"), gen_cpp_header(&all_fns))
+            .expect("write seraplot.g.h");
+    }
 
     let chart_py_wrappers: Vec<String> = chart_fns
         .iter()
