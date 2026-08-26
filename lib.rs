@@ -179,7 +179,7 @@ pub use core::math::{self, mean, median, std_dev};
 pub use data::loader;
 pub use plot::canvas::Canvas;
 
-#[cfg(any(feature = "python", feature = "gui"))]
+#[cfg(feature = "gui")]
 pub use viewer::gui;
 
 #[cfg(feature = "python")]

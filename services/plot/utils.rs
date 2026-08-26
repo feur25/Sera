@@ -692,11 +692,11 @@ pub fn bench_chart_value(input: &str) -> String {
     bench_chart_value_inner(input).to_string()
 }
 
-#[cfg(any(feature = "python", feature = "gui"))]
+#[cfg(feature = "gui")]
 pub(crate) fn set_chart_kind_raw(kind: u8) {
     crate::viewer::chart::sera_set_current_chart_kind(kind);
 }
-#[cfg(not(any(feature = "python", feature = "gui")))]
+#[cfg(not(feature = "gui"))]
 pub(crate) fn set_chart_kind_raw(_kind: u8) {}
 
 #[crate::sera_register(custom)]
@@ -713,11 +713,11 @@ pub fn set_chart_kind(input: &str) -> String {
     "true".to_string()
 }
 
-#[cfg(any(feature = "python", feature = "gui"))]
+#[cfg(feature = "gui")]
 pub(crate) fn set_chart_orientation_raw(vertical: bool) {
     crate::viewer::chart::sera_set_chart_orientation(vertical);
 }
-#[cfg(not(any(feature = "python", feature = "gui")))]
+#[cfg(not(feature = "gui"))]
 pub(crate) fn set_chart_orientation_raw(_vertical: bool) {}
 
 #[crate::sera_register(custom)]
@@ -734,12 +734,12 @@ pub fn set_chart_orientation(input: &str) -> String {
     "true".to_string()
 }
 
-#[cfg(any(feature = "python", feature = "gui"))]
+#[cfg(feature = "gui")]
 pub(crate) fn show_chart_value_inner(s: &str) -> bool {
     let c = std::ffi::CString::new(s).unwrap_or_default();
     crate::viewer::chart::sera_show_chart_value(c.as_ptr())
 }
-#[cfg(not(any(feature = "python", feature = "gui")))]
+#[cfg(not(feature = "gui"))]
 pub(crate) fn show_chart_value_inner(_s: &str) -> bool {
     false
 }
