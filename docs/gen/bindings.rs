@@ -255,6 +255,7 @@ fn pascal_case(s: &str) -> String {
 
 fn gen_csharp(fns: &[FnSpec<'_>]) -> String {
     let mut s = String::new();
+    s.push_str("#nullable enable\n");
     s.push_str("using System.Runtime.InteropServices;\n");
     s.push_str("namespace SeraPlot {\n");
     s.push_str("    public static partial class Api {\n");
@@ -273,7 +274,82 @@ fn gen_csharp(fns: &[FnSpec<'_>]) -> String {
             p, f.name
         ));
     }
+    s.push_str(&gen_csharp_introspection());
     s.push_str("    }\n}\n");
+    s
+}
+
+fn gen_csharp_introspection() -> String {
+    let mut s = String::new();
+    s.push_str("\n        [DllImport(\"seraplot\", EntryPoint = \"sera_call\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _call_by_name([MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string json);\n");
+    s.push_str("        public static string CallByName(string name, string json) => Call(_call_by_name(name, json));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_list\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _list();\n");
+    s.push_str("        public static string List() => Call(_list());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_version\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _version();\n");
+    s.push_str("        public static string Version() => Call(_version());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_params_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _params_json([MarshalAs(UnmanagedType.LPUTF8Str)] string? chart, [MarshalAs(UnmanagedType.LPUTF8Str)] string? variant);\n");
+    s.push_str("        public static string Params(string? chart = null, string? variant = null) => Call(_params_json(chart, variant));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_required_params_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _required_params_json([MarshalAs(UnmanagedType.LPUTF8Str)] string? chart, [MarshalAs(UnmanagedType.LPUTF8Str)] string? variant);\n");
+    s.push_str("        public static string RequiredParams(string? chart = null, string? variant = null) => Call(_required_params_json(chart, variant));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_chart_variants_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _chart_variants_json();\n");
+    s.push_str("        public static string ChartVariants() => Call(_chart_variants_json());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_chart_themes_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _chart_themes_json();\n");
+    s.push_str("        public static string ChartThemes() => Call(_chart_themes_json());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_scenes3d_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _scenes3d_json();\n");
+    s.push_str("        public static string Scenes3d() => Call(_scenes3d_json());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_docs_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _docs_json();\n");
+    s.push_str("        public static string Docs() => Call(_docs_json());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_themes_list\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _themes_list();\n");
+    s.push_str("        public static string Themes() => Call(_themes_list());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_set_theme\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        public static extern void SetTheme([MarshalAs(UnmanagedType.LPUTF8Str)] string name);\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_set_bg\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        public static extern void SetBackground([MarshalAs(UnmanagedType.LPUTF8Str)] string color);\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_reset_bg\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        public static extern void ResetBackground();\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_demos_list\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _demos_list();\n");
+    s.push_str("        public static string Demos() => Call(_demos_list());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_demo_code\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _demo_code([MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string? variant);\n");
+    s.push_str("        public static string DemoCode(string name, string? variant = null) => Call(_demo_code(name, variant));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_chart_aliases_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _chart_aliases_json();\n");
+    s.push_str("        public static string ChartAliases() => Call(_chart_aliases_json());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_add\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        [return: MarshalAs(UnmanagedType.U1)]\n");
+    s.push_str("        public static extern bool AliasAdd([MarshalAs(UnmanagedType.LPUTF8Str)] string method, [MarshalAs(UnmanagedType.LPUTF8Str)] string alias);\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_remove\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        [return: MarshalAs(UnmanagedType.U1)]\n");
+    s.push_str("        public static extern bool AliasRemove([MarshalAs(UnmanagedType.LPUTF8Str)] string method, [MarshalAs(UnmanagedType.LPUTF8Str)] string alias);\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_reset\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        public static extern void AliasReset();\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_list\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _alias_list();\n");
+    s.push_str("        public static string AliasList() => Call(_alias_list());\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_resolve\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _alias_resolve([MarshalAs(UnmanagedType.LPUTF8Str)] string name);\n");
+    s.push_str("        public static string AliasResolve(string name) => Call(_alias_resolve(name));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_save\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        private static extern IntPtr _alias_save([MarshalAs(UnmanagedType.LPUTF8Str)] string? path);\n");
+    s.push_str("        public static string AliasSave(string? path = null) => Call(_alias_save(path));\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_load\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        [return: MarshalAs(UnmanagedType.U1)]\n");
+    s.push_str("        private static extern bool _alias_load([MarshalAs(UnmanagedType.LPUTF8Str)] string? path);\n");
+    s.push_str("        public static bool AliasLoad(string? path = null) => _alias_load(path);\n\n");
+    s.push_str("        [DllImport(\"seraplot\", EntryPoint = \"sera_alias_load_json\", CallingConvention = CallingConvention.Cdecl)]\n");
+    s.push_str("        [return: MarshalAs(UnmanagedType.U1)]\n");
+    s.push_str("        public static extern bool AliasLoadJson([MarshalAs(UnmanagedType.LPUTF8Str)] string json);\n\n");
     s
 }
 
@@ -326,6 +402,7 @@ fn gen_cpp_header(fns: &[FnSpec<'_>]) -> String {
     for f in fns {
         s.push_str(&format!("    char* sera_{}(const char* input);\n", f.name));
     }
+    s.push_str(CPP_INTROSPECTION_EXTERN_DECLS);
     s.push_str("}\nnamespace seraplot {\n");
     s.push_str("    inline void free_str(char* p) { seraplot_free(p); }\n");
     for f in fns {
@@ -340,9 +417,114 @@ fn gen_cpp_header(fns: &[FnSpec<'_>]) -> String {
         ));
         s.push_str("        std::string out(r); free_str(r); return out;\n    }\n");
     }
+    s.push_str(CPP_INTROSPECTION_WRAPPERS);
     s.push_str("}\n");
     s
 }
+
+const CPP_INTROSPECTION_EXTERN_DECLS: &str = "    char* sera_call(const char* name, const char* json);
+    char* sera_list();
+    char* sera_version();
+    char* sera_params_json(const char* chart, const char* variant);
+    char* sera_required_params_json(const char* chart, const char* variant);
+    char* sera_chart_variants_json();
+    char* sera_chart_themes_json();
+    char* sera_scenes3d_json();
+    char* sera_docs_json();
+    char* sera_themes_list();
+    void sera_set_theme(const char* name);
+    void sera_set_bg(const char* color);
+    void sera_reset_bg();
+    char* sera_demos_list();
+    char* sera_demo_code(const char* name, const char* variant);
+    char* sera_chart_aliases_json();
+    bool sera_alias_add(const char* method, const char* alias);
+    bool sera_alias_remove(const char* method, const char* alias);
+    void sera_alias_reset();
+    char* sera_alias_list();
+    char* sera_alias_resolve(const char* name);
+    char* sera_alias_save(const char* path);
+    bool sera_alias_load(const char* path);
+    bool sera_alias_load_json(const char* json);
+";
+
+const CPP_INTROSPECTION_WRAPPERS: &str = "    inline std::string call_by_name(const std::string& name, const std::string& json) {
+        char* r = sera_call(name.c_str(), json.c_str());
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string list() {
+        char* r = sera_list();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string version() {
+        char* r = sera_version();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string params(const char* chart = nullptr, const char* variant = nullptr) {
+        char* r = sera_params_json(chart, variant);
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string requiredParams(const char* chart = nullptr, const char* variant = nullptr) {
+        char* r = sera_required_params_json(chart, variant);
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string chartVariants() {
+        char* r = sera_chart_variants_json();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string chartThemes() {
+        char* r = sera_chart_themes_json();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string scenes3d() {
+        char* r = sera_scenes3d_json();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string docs() {
+        char* r = sera_docs_json();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string themes() {
+        char* r = sera_themes_list();
+        std::string out(r); free_str(r); return out;
+    }
+    inline void setTheme(const std::string& name) { sera_set_theme(name.c_str()); }
+    inline void setBackground(const std::string& color) { sera_set_bg(color.c_str()); }
+    inline void resetBackground() { sera_reset_bg(); }
+    inline std::string demos() {
+        char* r = sera_demos_list();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string demoCode(const std::string& name, const char* variant = nullptr) {
+        char* r = sera_demo_code(name.c_str(), variant);
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string chartAliases() {
+        char* r = sera_chart_aliases_json();
+        std::string out(r); free_str(r); return out;
+    }
+    inline bool aliasAdd(const std::string& method, const std::string& alias) {
+        return sera_alias_add(method.c_str(), alias.c_str());
+    }
+    inline bool aliasRemove(const std::string& method, const std::string& alias) {
+        return sera_alias_remove(method.c_str(), alias.c_str());
+    }
+    inline void aliasReset() { sera_alias_reset(); }
+    inline std::string aliasList() {
+        char* r = sera_alias_list();
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string aliasResolve(const std::string& name) {
+        char* r = sera_alias_resolve(name.c_str());
+        std::string out(r); free_str(r); return out;
+    }
+    inline std::string aliasSave(const char* path = nullptr) {
+        char* r = sera_alias_save(path);
+        std::string out(r ? r : \"\"); free_str(r); return out;
+    }
+    inline bool aliasLoad(const char* path = nullptr) { return sera_alias_load(path); }
+    inline bool aliasLoadJson(const std::string& json) { return sera_alias_load_json(json.c_str()); }
+";
 
 #[allow(dead_code)]
 fn read_file(path: &Path) -> String {
