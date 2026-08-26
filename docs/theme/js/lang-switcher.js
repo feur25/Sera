@@ -1,6 +1,43 @@
 ﻿(function () {
   var LANG_KEY = "seraplot_lang";
   var PTAB_KEY = "seraplot_ptab";
+  var PGLANG_KEY = "seraplot_pglang";
+  var PGLANG_EVENT = "sp-pglang-change";
+  var PGLANG_OPTIONS = [
+    ["py", "🐍 Python"],
+    ["cs", "🟣 C#"],
+    ["cpp", "🔵 C++"],
+    ["js", "🟡 JavaScript"]
+  ];
+
+  function getProgLang() { return localStorage.getItem(PGLANG_KEY) || "py"; }
+  function setProgLang(lang) {
+    localStorage.setItem(PGLANG_KEY, lang);
+    var sel = document.getElementById("pglang-select");
+    if (sel && sel.value !== lang) sel.value = lang;
+    window.dispatchEvent(new CustomEvent(PGLANG_EVENT, { detail: { lang: lang } }));
+  }
+
+  function injectProgLangDropdown() {
+    if (document.getElementById("pglang-select")) return;
+    var sel = document.createElement("select");
+    sel.id = "pglang-select";
+    sel.className = "lang-toggle-btn pglang-select";
+    sel.title = "Playground language";
+    for (var i = 0; i < PGLANG_OPTIONS.length; i++) {
+      var opt = document.createElement("option");
+      opt.value = PGLANG_OPTIONS[i][0];
+      opt.textContent = PGLANG_OPTIONS[i][1];
+      sel.appendChild(opt);
+    }
+    sel.value = getProgLang();
+    sel.addEventListener("change", function () { setProgLang(sel.value); });
+    var menu = document.querySelector(".right-buttons");
+    var langBtn = document.getElementById("lang-toggle-btn");
+    if (menu && langBtn) menu.insertBefore(sel, langBtn);
+    else if (menu) menu.insertBefore(sel, menu.firstChild);
+    else document.body.appendChild(sel);
+  }
 
   // Track the last-clicked code tab index per base group.
   // When language switches, the same index is replayed in the target section.
@@ -239,6 +276,7 @@
   function init() {
     purgeOldTabs();
     injectButton();
+    injectProgLangDropdown();
     buildPageTabs();
     applyLang(getLang());
     fixMathDisplay();
@@ -271,6 +309,7 @@
       observer.disconnect();
       purgeOldTabs();
       injectButton();
+      injectProgLangDropdown();
       buildPageTabs();
       applyLang(getLang());
       applyPageTab(getPageTab());
