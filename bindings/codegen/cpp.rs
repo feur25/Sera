@@ -34,6 +34,12 @@ const CPP_INTROSPECTION_EXTERN_DECLS: &str = "    char* sera_call(const char* na
     char* sera_alias_save(const char* path);
     bool sera_alias_load(const char* path);
     bool sera_alias_load_json(const char* json);
+    void* sera_chart_from_html(const char* html);
+    char* sera_chart_html(void* chart);
+    void sera_chart_free(void* chart);
+    void* sera_chart_call(void* chart, const char* method, const char* argsJson);
+    char* sera_chart_to_svg(void* chart);
+    char* sera_chart_methods_json();
 ";
 
 const CPP_INTROSPECTION_WRAPPERS: &str = "    inline std::string call_by_name(const std::string& name, const std::string& json) {
@@ -112,4 +118,8 @@ const CPP_INTROSPECTION_WRAPPERS: &str = "    inline std::string call_by_name(co
     }
     inline bool aliasLoad(const char* path = nullptr) { return sera_alias_load(path); }
     inline bool aliasLoadJson(const std::string& json) { return sera_alias_load_json(json.c_str()); }
+    inline std::string chartMethods() {
+        char* r = sera_chart_methods_json();
+        std::string out(r); free_str(r); return out;
+    }
 ";
