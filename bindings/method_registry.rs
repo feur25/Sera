@@ -105,4 +105,26 @@ mod alias_dispatch_tests {
         let out = super::apply_by_name(html, "show_grid", "{}").expect("apply_by_name(show_grid) must succeed");
         assert!(out.contains(".sp-gl{display:block"));
     }
+
+    #[test]
+    fn show_legend_embeds_the_universal_legend_builder_script_not_just_a_css_toggle() {
+        let html = "<html><head></head><body><svg><rect data-idx=\"0\" data-lbl=\"A\"/></svg></body></html>";
+        let out = super::apply_by_name(html, "show_legend", "{}").expect("apply_by_name(show_legend) must succeed");
+        assert!(out.contains("sp-leg-grp"), "show_legend must embed the runtime legend builder so charts with no pre-rendered g[data-legend] (plain bar/line/scatter) still get a legend");
+    }
+
+    #[test]
+    fn leg_alias_behaves_identically_to_show_legend() {
+        let html = "<html><head></head><body><svg><rect data-idx=\"0\" data-lbl=\"A\"/></svg></body></html>";
+        let via_canonical = super::apply_by_name(html, "show_legend", "{}").unwrap();
+        let via_alias = super::apply_by_name(html, "leg", "{}").unwrap();
+        assert_eq!(via_canonical, via_alias, "show_legend and its declared alias 'leg' must render identically");
+    }
+
+    #[test]
+    fn no_legend_hides_both_a_pre_rendered_group_and_a_js_built_one() {
+        let html = "<html><head></head><body></body></html>";
+        let out = super::apply_by_name(html, "no_legend", "{}").expect("apply_by_name(no_legend) must succeed");
+        assert!(out.contains("g[data-legend]") && out.contains("g.sp-leg-grp"), "no_legend must hide both the renderer-emitted group and the runtime-built one from show_legend/legend()");
+    }
 }
