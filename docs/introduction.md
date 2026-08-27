@@ -61,6 +61,18 @@ sp.bar("Revenue", labels, values, font_size=16)  # overrides just this one
 
 Not a claim — verified this way: `axe-core` runs against real Chromium for every chart family with zero serious/critical violations; text and non-text contrast is measured (relative luminance, not eyeballed) against WCAG AA; keyboard navigation (roving tabindex, arrow/Home/End) works on data points and legends; the whole catalog loads with zero console errors on real Chromium, Firefox, and WebKit engines, not just one.
 
+## See it in action
+
+<figure class="sp-video-embed">
+
+<video controls preload="metadata" poster="media/video/tuto_doc_poster.jpg" playsinline>
+<source src="media/video/tuto_doc.mp4" type="video/mp4">
+</video>
+
+<figcaption>A walkthrough of the SeraPlot documentation site</figcaption>
+
+</figure>
+
 ## Where to start
 
 - **[Installation](getting-started/installation.md)** — `pip install seraplot`
@@ -120,6 +132,18 @@ sp.bar("Revenu", labels, values, font_size=16)     # surcharge juste celui-ci
 ## Accessibilité et compatibilité navigateur, réellement vérifiées
 
 Pas une affirmation — vérifié ainsi : `axe-core` s'exécute contre un vrai Chromium pour chaque famille de graphique, zéro violation serious/critical ; le contraste texte et non-texte est mesuré (luminance relative, pas à l'œil) contre WCAG AA ; la navigation clavier (tabindex flottant, flèches/Home/End) fonctionne sur les points de données et les légendes ; tout le catalogue charge sans erreur console sur de vrais moteurs Chromium, Firefox et WebKit, pas un seul.
+
+## À voir en action
+
+<figure class="sp-video-embed">
+
+<video controls preload="metadata" poster="media/video/tuto_doc_poster.jpg" playsinline>
+<source src="media/video/tuto_doc.mp4" type="video/mp4">
+</video>
+
+<figcaption>Une visite guidée du site de documentation SeraPlot</figcaption>
+
+</figure>
 
 ## Par où commencer
 
