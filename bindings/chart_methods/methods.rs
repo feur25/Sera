@@ -1028,7 +1028,10 @@ impl Chart {
         fr = "Masque la légende du graphique."
     )]
     pub fn no_legend(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>g[data-legend]{display:none!important}</style></head>"))
+        self.propagate(crate::html::hover::inject_before_head(
+            &self.html,
+            "<style>g[data-legend],g.sp-leg-grp{display:none!important}</style></head>",
+        ))
     }
 
     #[sera_doc(
@@ -1184,7 +1187,11 @@ impl Chart {
         fr = "Force la légende du graphique à être visible même si elle était masquée."
     )]
     pub fn show_legend(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>g[data-legend]{display:block!important;visibility:visible!important}</style></head>"))
+        let built = self.legend("right");
+        built.propagate(crate::html::hover::inject_before_head(
+            &built.html,
+            "<style>g[data-legend],g.sp-leg-grp{display:block!important;visibility:visible!important}</style></head>",
+        ))
     }
 
     #[sera_doc(
