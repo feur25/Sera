@@ -57,6 +57,15 @@ inventory = "0.3"
 serde-wasm-bindgen = { version = "0.6", optional = true }
 pyo3 = { version = "0.21", optional = true, features = ["extension-module", "multiple-pymethods"] }
 numpy = { version = "0.21", optional = true }
+aes-gcm = { version = "0.10", optional = true }
+argon2 = { version = "0.5.3", optional = true }
+ed25519-dalek = { version = "3.0.0", optional = true }
+zeroize = { version = "1.9.0", optional = true }
+sha2 = { version = "0.11.0", optional = true }
+pdf-writer = { version = "0.12.1", optional = true }
+svg2pdf = { version = "0.13.0", optional = true }
+resvg = { version = "0.48.1", optional = true }
+docx-rs = { version = "0.4.22", optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 mimalloc = "0.1"
@@ -72,12 +81,24 @@ ffi = []
 telemetry-http = ["dep:reqwest", "dep:tokio"]
 webapp = ["dep:tokio"]
 sysmon = ["dep:sysinfo"]
-python = ["dep:pyo3", "dep:numpy"]
+python = ["dep:pyo3", "dep:numpy", "sera-pulse", "sera-secure", "sera-report"]
+sera-pulse = ["dep:ed25519-dalek", "dep:sha2", "dep:zeroize"]
+sera-secure = ["dep:aes-gcm", "dep:argon2", "dep:zeroize", "dep:sha2"]
+sera-report = ["dep:pdf-writer", "dep:svg2pdf", "dep:resvg", "dep:docx-rs"]
 gpu = ["dep:candle-core"]
 cuda = ["gpu", "candle-core/cuda"]
 metal = ["gpu", "candle-core/metal"]
 accelerate = ["gpu", "candle-core/accelerate"]
 mkl = ["gpu", "candle-core/mkl"]
+aes-gcm = ["dep:aes-gcm"]
+argon2 = ["dep:argon2"]
+ed25519-dalek = ["dep:ed25519-dalek"]
+zeroize = ["dep:zeroize"]
+sha2 = ["dep:sha2"]
+pdf-writer = ["dep:pdf-writer"]
+svg2pdf = ["dep:svg2pdf"]
+resvg = ["dep:resvg"]
+docx-rs = ["dep:docx-rs"]
 
 [profile.release]
 lto = "thin"
