@@ -124,6 +124,22 @@ pub unsafe extern "C" fn sera_call(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn sera_pulse_call(
+    html: *const c_char,
+    name: *const c_char,
+    json: *const c_char,
+) -> *mut c_char {
+    let html = unsafe { CStr::from_ptr(html) }.to_str().unwrap_or("");
+    let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
+    let json = unsafe { CStr::from_ptr(json) }.to_str().unwrap_or("{}");
+    let out = match crate::bindings::pulse_registry::invoke(html, name, json) {
+        Ok(result) => format!("{{\"ok\":true,\"result\":{result}}}"),
+        Err(e) => format!("{{\"ok\":false,\"error\":{}}}", serde_json::to_string(&e).unwrap_or_else(|_| "\"error\"".to_string())),
+    };
+    CString::new(out).unwrap_or_default().into_raw()
+}
+
+#[no_mangle]
 pub extern "C" fn sera_list() -> *mut c_char {
     let names: Vec<&str> = crate::bindings::fn_registry::iter_entries()
         .map(|e| e.name)

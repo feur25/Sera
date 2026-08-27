@@ -15,6 +15,7 @@ pub mod live_stream;
 pub mod method_registry;
 pub mod model_registry;
 pub mod name_norm;
+pub mod pulse_registry;
 pub mod unified_config;
 pub mod utils;
 
