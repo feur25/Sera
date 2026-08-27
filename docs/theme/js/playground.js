@@ -75,6 +75,30 @@
         return input;
     }
 
+    function methodParamNames(fn) {
+        var reg = window.SeraPlotMethodRegistry;
+        if (!reg || !reg.docs) return null;
+        for (var i = 0; i < reg.docs.length; i++) {
+            var d = reg.docs[i];
+            if (d.name !== fn && (!d.aliases || d.aliases.indexOf(fn) === -1)) continue;
+            if (!d.params || !d.params.length) return null;
+            return d.params.map(function (p) { return p.name; });
+        }
+        return null;
+    }
+
+    function chainInputFromParsed(fn, parsed) {
+        var names = methodParamNames(fn);
+        var input = {};
+        if (names) {
+            for (var i = 0; i < parsed.args.length && i < names.length; i++) input[names[i]] = parsed.args[i];
+        } else if (parsed.args.length > 0 && typeof parsed.args[0] === 'string') {
+            input.title = parsed.args[0];
+        }
+        for (var key in parsed.kwargs) if (parsed.kwargs.hasOwnProperty(key)) input[key] = parsed.kwargs[key];
+        return input;
+    }
+
     function emitCode(lang, call, variantName) {
         var parsed = parsePyArgs(call.body);
         var input = callInputFromParsed(parsed);
@@ -86,7 +110,7 @@
         var chain = call.chain || [];
         for (var c = 0; c < chain.length; c++) {
             var mParsed = parsePyArgs(chain[c].body);
-            var mInput = callInputFromParsed(mParsed);
+            var mInput = chainInputFromParsed(chain[c].fn, mParsed);
             chainOps.push({ fn: chain[c].fn, json: JSON.stringify(mInput) });
         }
         if (lang === 'cs') return emitCSharp(family, json, chainOps);
@@ -792,7 +816,7 @@
 
     function normalizedChainFromPy(rawChain) {
         return (rawChain || []).map(function (mc) {
-            return { fn: mc.fn, input: callInputFromParsed(parsePyArgs(mc.body)) };
+            return { fn: mc.fn, input: chainInputFromParsed(mc.fn, parsePyArgs(mc.body)) };
         });
     }
 
