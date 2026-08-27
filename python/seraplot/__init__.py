@@ -15,6 +15,7 @@ from .seraplot import (
     theme,
     config as _config_fn,
     _sera_call,
+    _sera_call_fast,
     _sera_list,
     _sera_aliases,
     _alias_add,
@@ -190,12 +191,34 @@ def _(first, kwargs):
     return merged
 
 
+_NATIVE_PUSH_BUILDERS = frozenset({
+    "build_bar",
+    "build_heatmap",
+    "build_candlestick",
+    "build_icicle",
+    "build_line",
+    "build_line_chart",
+    "build_area_chart",
+    "build_scatter_chart",
+    "build_bubble",
+})
+
+
 def _make_fn(name):
+    native = name in _NATIVE_PUSH_BUILDERS
+
     def _fn(*args, **kwargs):
         if args:
             kwargs = _coerce_call_args(args[0], kwargs)
         kwargs = {k: _json_ready(v) for k, v in kwargs.items()}
-        result = _sera_call(name, _json.dumps(kwargs))
+        if native:
+            title = kwargs.pop("title", "") or ""
+            labels = kwargs.pop("labels", None)
+            values = kwargs.pop("values", None)
+            theme = kwargs.pop("theme", None)
+            result = _sera_call_fast(name, title, labels, values, theme, **kwargs)
+        else:
+            result = _sera_call(name, _json.dumps(kwargs))
         stripped = result.lstrip()
         if stripped.startswith("{") or stripped.startswith("["):
             try:
