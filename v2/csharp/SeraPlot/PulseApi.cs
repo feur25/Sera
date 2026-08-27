@@ -61,4 +61,44 @@ public static class ChartPulseExtensions
         Api.PulseCall(chart.Html, "export_standalone", JsonSerializer.Serialize(new { html_path = htmlPath, spls_path = splsPath }));
         return chart;
     }
+
+    private static string MergeArgs(object baseArgs, string extraJson)
+    {
+        var merged = new Dictionary<string, JsonElement>();
+        using (var baseDoc = JsonDocument.Parse(JsonSerializer.Serialize(baseArgs)))
+        {
+            foreach (var prop in baseDoc.RootElement.EnumerateObject()) merged[prop.Name] = prop.Value.Clone();
+        }
+        if (!string.IsNullOrWhiteSpace(extraJson) && extraJson != "{}")
+        {
+            using var extraDoc = JsonDocument.Parse(extraJson);
+            foreach (var prop in extraDoc.RootElement.EnumerateObject()) merged[prop.Name] = prop.Value.Clone();
+        }
+        return JsonSerializer.Serialize(merged);
+    }
+
+    public static Chart ExportGif(this Chart chart, string gifPath, string splsPath, string optionsJson = "{}")
+    {
+        Api.PulseCall(chart.Html, "export_gif", MergeArgs(new { gif_path = gifPath, spls_path = splsPath }, optionsJson));
+        return chart;
+    }
+
+    public static int GifFrameCount(this Chart chart, string splsPath)
+    {
+        var result = Api.PulseCall(chart.Html, "gif_frame_count", JsonSerializer.Serialize(new { spls_path = splsPath }));
+        using var doc = JsonDocument.Parse(result);
+        return doc.RootElement.GetProperty("frame_count").GetInt32();
+    }
+
+    public static Chart GifPreviewFrame(this Chart chart, string splsPath, int frameIndex, string pngPath, string optionsJson = "{}")
+    {
+        Api.PulseCall(chart.Html, "gif_preview_frame", MergeArgs(new { spls_path = splsPath, frame_index = frameIndex, png_path = pngPath }, optionsJson));
+        return chart;
+    }
+
+    public static Chart ExportVideo(this Chart chart, string videoPath, string splsPath, string format = "mp4", int fps = 30, string optionsJson = "{}")
+    {
+        Api.PulseCall(chart.Html, "export_video", MergeArgs(new { video_path = videoPath, spls_path = splsPath, format, fps }, optionsJson));
+        return chart;
+    }
 }
