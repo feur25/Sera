@@ -50,6 +50,46 @@ try:
 except ImportError:
     App = None
 
+try:
+    from .seraplot import serve_board, export_board_html
+except ImportError:
+    serve_board = None
+    export_board_html = None
+
+try:
+    from .seraplot import (
+        pulse_activate,
+        pulse_status,
+        pulse_machine_id,
+        pulse_health,
+        pulse_serve_health,
+        pulse_serve_metrics,
+    )
+except ImportError:
+    pulse_activate = None
+    pulse_status = None
+    pulse_machine_id = None
+    pulse_health = None
+    pulse_serve_health = None
+    pulse_serve_metrics = None
+
+try:
+    from .seraplot import SecureDFrame, SecureDFrameBuilder, SeraKey
+except ImportError:
+    SecureDFrame = None
+    SecureDFrameBuilder = None
+    SeraKey = None
+
+try:
+    from .seraplot import export_pdf_report
+except ImportError:
+    export_pdf_report = None
+
+try:
+    from .seraplot import SeraDFrameGroupBy
+except ImportError:
+    SeraDFrameGroupBy = None
+
 import json as _json
 from functools import lru_cache, singledispatch, singledispatchmethod
 
