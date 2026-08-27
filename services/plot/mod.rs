@@ -14,13 +14,12 @@ pub mod family_macro;
 pub mod html;
 pub mod layout;
 pub mod map;
-#[cfg(all(feature = "python", feature = "sera-pulse"))]
+#[cfg(feature = "sera-pulse")]
 pub mod pulse;
+#[cfg(feature = "sera-pulse")]
+pub use pulse::{chart_source_registry, firehose_registry, license, now_ms, push_registry, record_registry};
 #[cfg(all(feature = "python", feature = "sera-pulse"))]
-pub use pulse::{
-    anomaly_registry, chart_source_registry, features as pulse_features, firehose_registry, license, now_ms, push_registry,
-    record_registry,
-};
+pub use pulse::{anomaly_registry, features as pulse_features};
 pub mod models;
 pub mod projection;
 pub mod renderers;
