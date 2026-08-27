@@ -73,19 +73,173 @@ fn method_args_for(key: &str, value: &serde_json::Value) -> Option<String> {
     }
 }
 
+fn json_f64_array(obj: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<Vec<f64>> {
+    obj.get(key)?.as_array().map(|a| a.iter().filter_map(|v| v.as_f64()).collect())
+}
+
+fn json_str_array(obj: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<Vec<String>> {
+    obj.get(key)?.as_array().map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+}
+
+fn json_i32(obj: &serde_json::Map<String, serde_json::Value>, key: &str, default: i32) -> i32 {
+    obj.get(key).and_then(|v| v.as_i64()).map(|n| n as i32).unwrap_or(default)
+}
+
+fn json_u32(obj: &serde_json::Map<String, serde_json::Value>, key: &str, default: u32) -> u32 {
+    obj.get(key).and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(default)
+}
+
+fn json_bool(obj: &serde_json::Map<String, serde_json::Value>, key: &str, default: bool) -> bool {
+    obj.get(key).and_then(|v| v.as_bool()).unwrap_or(default)
+}
+
+fn json_string(obj: &serde_json::Map<String, serde_json::Value>, key: &str, default: &str) -> String {
+    obj.get(key).and_then(|v| v.as_str()).map(str::to_string).unwrap_or_else(|| default.to_string())
+}
+
+struct RawNativeOpts {
+    width: i32,
+    height: i32,
+    color_hex: u32,
+    gridlines: bool,
+    x_label: String,
+    y_label: String,
+    show_regression: bool,
+    regression_type: String,
+    cols: i32,
+    categories: Vec<String>,
+    variant: String,
+}
+
+impl RawNativeOpts {
+    fn as_opts(&self) -> crate::plot::canvas_points::NativeChartOpts<'_> {
+        crate::plot::canvas_points::NativeChartOpts {
+            width: self.width,
+            height: self.height,
+            color_hex: self.color_hex,
+            gridlines: self.gridlines,
+            x_label: &self.x_label,
+            y_label: &self.y_label,
+            show_regression: self.show_regression,
+            regression_type: &self.regression_type,
+            cols: self.cols,
+            categories: &self.categories,
+            variant: &self.variant,
+        }
+    }
+}
+
+fn raw_native_opts(obj: &serde_json::Map<String, serde_json::Value>, default_w: i32, default_h: i32) -> RawNativeOpts {
+    RawNativeOpts {
+        width: json_i32(obj, "width", default_w),
+        height: json_i32(obj, "height", default_h),
+        color_hex: json_u32(obj, "color_hex", 0),
+        gridlines: json_bool(obj, "gridlines", true),
+        x_label: json_string(obj, "x_label", ""),
+        y_label: json_string(obj, "y_label", ""),
+        show_regression: json_bool(obj, "show_regression", false),
+        regression_type: json_string(obj, "regression_type", "linear"),
+        cols: obj.get("col_labels").and_then(|v| v.as_array()).map(|a| a.len() as i32).unwrap_or(0),
+        categories: json_str_array(obj, "categories").unwrap_or_default(),
+        variant: json_string(obj, "variant", ""),
+    }
+}
+
+#[allow(unused_variables)]
+fn try_native_fast_path(target: &str, obj: &serde_json::Map<String, serde_json::Value>) -> Option<String> {
+    for entry in inventory::iter::<crate::plot::canvas_points::NativeChartEntry>() {
+        if entry.name != target {
+            continue;
+        }
+        let y = json_f64_array(obj, "values").or_else(|| json_f64_array(obj, "y"))?;
+        if y.len() <= entry.threshold {
+            return None;
+        }
+        let x = json_f64_array(obj, "x").unwrap_or_else(|| (0..y.len()).map(|i| i as f64).collect());
+        let raw = raw_native_opts(obj, 900, 500);
+        let opts = raw.as_opts();
+        let (html, hid) = (entry.render)(&json_string(obj, "title", ""), &x, &y, &opts);
+        #[cfg(feature = "sera-pulse")]
+        {
+            let meta = crate::plot::push_registry::PushMeta::from_xy(&x, &y, opts.width, opts.height);
+            crate::plot::push_registry::register(hid, meta);
+            crate::plot::chart_source_registry::register(hid, entry.name, serde_json::Value::Object(obj.clone()).to_string());
+        }
+        let _ = hid;
+        return Some(html);
+    }
+    for entry in inventory::iter::<crate::plot::canvas_points::LabeledChartEntry>() {
+        if entry.name != target {
+            continue;
+        }
+        let values = json_f64_array(obj, "values")?;
+        if values.len() <= entry.threshold {
+            return None;
+        }
+        let labels = json_str_array(obj, "labels")?;
+        let raw = raw_native_opts(obj, 900, 500);
+        let opts = raw.as_opts();
+        let shape_ok = if opts.cols > 0 { (labels.len() as i64) * (opts.cols as i64) >= values.len() as i64 } else { labels.len() >= values.len() };
+        if !shape_ok {
+            return None;
+        }
+        let (html, hid) = (entry.render)(&json_string(obj, "title", ""), &labels, &values, &opts);
+        #[cfg(feature = "sera-pulse")]
+        {
+            let axis_px = if opts.cols > 0 { 1000 } else { crate::plot::default::bar::bar_plot_h(opts.height) };
+            let meta = crate::plot::push_registry::PushMeta::from_values(&values, axis_px);
+            crate::plot::push_registry::register(hid, meta);
+            crate::plot::chart_source_registry::register(hid, entry.name, serde_json::Value::Object(obj.clone()).to_string());
+        }
+        let _ = hid;
+        return Some(html);
+    }
+    for entry in inventory::iter::<crate::plot::canvas_points::OhlcChartEntry>() {
+        if entry.name != target {
+            continue;
+        }
+        let open = json_f64_array(obj, "open")?;
+        let high = json_f64_array(obj, "high")?;
+        let low = json_f64_array(obj, "low")?;
+        let close = json_f64_array(obj, "close")?;
+        if close.len() <= entry.threshold {
+            return None;
+        }
+        let labels = json_str_array(obj, "labels").unwrap_or_default();
+        let raw = raw_native_opts(obj, 1100, 500);
+        let opts = raw.as_opts();
+        let (html, hid) = (entry.render)(&json_string(obj, "title", ""), &labels, &open, &high, &low, &close, &opts);
+        #[cfg(feature = "sera-pulse")]
+        {
+            let plot_h = (opts.height - 36 - 48).max(10);
+            let meta = crate::plot::push_registry::PushMeta::from_vector_shared_scale(&[&open, &high, &low, &close], plot_h);
+            crate::plot::push_registry::register(hid, meta);
+            crate::plot::chart_source_registry::register(hid, entry.name, serde_json::Value::Object(obj.clone()).to_string());
+        }
+        let _ = hid;
+        return Some(html);
+    }
+    None
+}
+
 pub fn invoke(entry: &FnEntry, json: &str) -> String {
+    let parsed: serde_json::Value = match serde_json::from_str(json) {
+        Ok(v) => v,
+        Err(_) => return (entry.invoke)(json),
+    };
+    let obj = match parsed.as_object() {
+        Some(o) => o,
+        None => return (entry.invoke)(json),
+    };
+    if entry.input == InputKind::Json && entry.output == OutputKind::Html {
+        if let Some(native_html) = try_native_fast_path(entry.name, obj) {
+            return native_html;
+        }
+    }
     let html = (entry.invoke)(json);
     if entry.input != InputKind::Json || entry.output != OutputKind::Html {
         return html;
     }
-    let parsed: serde_json::Value = match serde_json::from_str(json) {
-        Ok(v) => v,
-        Err(_) => return html,
-    };
-    let obj = match parsed.as_object() {
-        Some(o) => o,
-        None => return html,
-    };
     let mut out = html;
     for (key, value) in obj {
         if crate::bindings::method_registry::find(key).is_none() {
@@ -100,6 +254,81 @@ pub fn invoke(entry: &FnEntry, json: &str) -> String {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod native_fast_path_tests {
+    use super::{find, invoke};
+
+    #[test]
+    fn a_small_bar_call_stays_on_the_plain_svg_builder() {
+        let entry = find("build_bar").expect("build_bar is registered");
+        let labels: Vec<String> = (0..5).map(|i| i.to_string()).collect();
+        let values: Vec<f64> = (0..5).map(|i| i as f64).collect();
+        let json = serde_json::json!({ "title": "t", "labels": labels, "values": values }).to_string();
+        let html = invoke(entry, &json);
+        assert!(html.contains("<svg"));
+        assert!(!html.contains("webgl2"));
+    }
+
+    #[test]
+    fn a_large_bar_call_switches_to_the_native_canvas_renderer_with_a_push_capable_marker() {
+        let entry = find("build_bar").expect("build_bar is registered");
+        let n = 600;
+        let labels: Vec<String> = (0..n).map(|i| i.to_string()).collect();
+        let values: Vec<f64> = (0..n).map(|i| (i % 30) as f64).collect();
+        let json = serde_json::json!({ "title": "t", "labels": labels, "values": values }).to_string();
+        let html = invoke(entry, &json);
+        assert!(html.contains("id=\"spbarsvg"));
+        assert!(html.contains("sp_apply_"));
+    }
+
+    #[test]
+    fn a_large_scatter_call_switches_to_the_native_canvas_renderer() {
+        let entry = find("build_scatter_chart").expect("build_scatter_chart is registered");
+        let n = 3200;
+        let x: Vec<f64> = (0..n).map(|i| i as f64).collect();
+        let y: Vec<f64> = (0..n).map(|i| (i as f64) * 1.1).collect();
+        let json = serde_json::json!({ "title": "t", "x": x, "y": y }).to_string();
+        let html = invoke(entry, &json);
+        assert!(html.contains("sp_apply_"));
+    }
+
+    #[test]
+    fn a_large_line_call_switches_to_the_native_canvas_renderer() {
+        let entry = find("build_line").expect("build_line is registered");
+        let n = 3200;
+        let x: Vec<f64> = (0..n).map(|i| i as f64).collect();
+        let y: Vec<f64> = (0..n).map(|i| (i as f64).sin()).collect();
+        let json = serde_json::json!({ "title": "t", "x": x, "y": y }).to_string();
+        let html = invoke(entry, &json);
+        assert!(html.contains("sp_apply_"));
+    }
+
+    #[test]
+    fn a_large_candlestick_call_switches_to_the_native_renderer() {
+        let entry = find("build_candlestick").expect("build_candlestick is registered");
+        let n = 600;
+        let o: Vec<f64> = (0..n).map(|i| 100.0 + i as f64 * 0.1).collect();
+        let h: Vec<f64> = o.iter().map(|v| v + 1.0).collect();
+        let l: Vec<f64> = o.iter().map(|v| v - 1.0).collect();
+        let c: Vec<f64> = o.iter().map(|v| v + 0.5).collect();
+        let labels: Vec<String> = (0..n).map(|i| i.to_string()).collect();
+        let json = serde_json::json!({ "title": "t", "labels": labels, "open": o, "high": h, "low": l, "close": c }).to_string();
+        let html = invoke(entry, &json);
+        assert!(html.contains("sp_apply_"));
+    }
+
+    #[test]
+    fn an_unrelated_function_name_never_takes_the_native_fast_path_even_with_a_big_values_array() {
+        let entry = find("build_heatmap3d_chart").expect("build_heatmap3d_chart is registered");
+        let n = 5000;
+        let labels: Vec<String> = (0..n).map(|i| i.to_string()).collect();
+        let values: Vec<f64> = (0..n).map(|i| i as f64).collect();
+        let json = serde_json::json!({ "title": "t", "labels": labels, "values": values }).to_string();
+        let html = invoke(entry, &json);
+        assert!(!html.contains("sp_apply_"));
+    }
 }
 
 #[cfg(test)]
