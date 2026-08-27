@@ -341,6 +341,18 @@ SeraPlot returns 21 KB of interactive HTML directly from RAM.
 
 ---
 
+## See it in action
+
+<figure class="sp-video-embed">
+
+<video controls preload="metadata" poster="../media/video/tuto_doc_poster.jpg" playsinline>
+<source src="../media/video/tuto_doc.mp4" type="video/mp4">
+</video>
+
+<figcaption>A walkthrough of the SeraPlot documentation site</figcaption>
+
+</figure>
+
 ## Navigation
 
 - **[Installation](installation.md)** — `pip install seraplot`
@@ -661,6 +673,18 @@ SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.
 - **Fonctionne partout** — Python ≥ 3.8, tout OS
 
 ---
+
+## À voir en action
+
+<figure class="sp-video-embed">
+
+<video controls preload="metadata" poster="../media/video/tuto_doc_poster.jpg" playsinline>
+<source src="../media/video/tuto_doc.mp4" type="video/mp4">
+</video>
+
+<figcaption>Une visite guidée du site de documentation SeraPlot</figcaption>
+
+</figure>
 
 ## Navigation
 
