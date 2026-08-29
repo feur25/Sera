@@ -48,7 +48,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('line-en','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Connected Scatter</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-en','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-en-basic">
@@ -161,6 +162,16 @@ Each segment is colored on a diverging scale by its own local slope, with a matc
 <iframe class="sp-preview-frame" data-src="../../previews/line-momentum.html"></iframe>
 </div>
 
+<div class="sp-variant" id="line-en-epoch">
+
+Auto-segments the series into narrative chapters at its own significant turning points, shades each by net direction, and captions it with a plain-language badge — the chart writes its own headline instead of asking the reader to compute one.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"epoch"</code></span><span><strong>Aliases</strong> <code>"epoch"</code> / <code>"chapters"</code> / <code>"regime_bands"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-epoch.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -204,7 +215,8 @@ Each segment is colored on a diverging scale by its own local slope, with a matc
 <button class="sp-cls-tab" onclick="spCls('line-fr','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Scatter Connecté</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-fr','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-fr-basic">
@@ -315,6 +327,16 @@ Chaque segment est coloré sur une échelle divergente selon sa propre pente loc
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/line-momentum.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-epoch">
+
+Segmente automatiquement la série en chapitres narratifs à ses propres points de retournement significatifs, teinte chacun selon sa direction nette, et le légende avec un badge en langage clair — le graphique écrit lui-même son titre au lieu de laisser le lecteur le calculer.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"epoch"</code></span><span><strong>Alias</strong> <code>"epoch"</code> / <code>"chapters"</code> / <code>"regime_bands"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-epoch.html"></iframe>
 </div>
 
 </div>
