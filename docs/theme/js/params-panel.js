@@ -1395,6 +1395,21 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
     return true;
   }
 
+  function renderRegistryRegions(el, lang) {
+    var raw = registryJson("mapRegions", null, null);
+    var regionList = raw && raw.regions ? raw.regions : [];
+    if (!regionList.length) return false;
+    var head = lang === "fr"
+      ? "<tr><th>Ensemble</th><th>Alias</th><th>Entrées</th><th>Groupes</th></tr>"
+      : "<tr><th>Region set</th><th>Aliases</th><th>Entries</th><th>Groups</th></tr>";
+    el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + regionList.map(function (r) {
+      var aliases = (r.aliases || []).slice();
+      var groups = (r.groups || []).join(", ");
+      return "<tr><td><code>" + escapeAttr(r.key) + "</code> " + escapeAttr(r.display_name || "") + "</td><td>" + codeList(aliases) + "</td><td>" + (r.count || 0) + "</td><td>" + escapeAttr(groups) + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    return true;
+  }
+
   function elemLang(el) {
     return el.closest && el.closest(".lang-fr") ? "fr" : "en";
   }
@@ -1409,6 +1424,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260825d";
       if (kind === "variants") ok = renderRegistryVariants(el, family, lang);
       else if (kind === "options") ok = renderRegistryOptions(el, family, lang);
       else if (kind === "themes") ok = renderRegistryThemes(el, lang);
+      else if (kind === "regions") ok = renderRegistryRegions(el, lang);
       if (!ok) el.innerHTML = "<p>Loading...</p>";
     });
   }
