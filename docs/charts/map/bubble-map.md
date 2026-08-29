@@ -10,6 +10,7 @@ sp.build_bubble_map(
     labels: list[str],
     values: list[float],
     *,
+    map: str = "world",
     latitudes: list[float] | None = None,
     longitudes: list[float] | None = None,
     iso_codes: list[str] | None = None,
@@ -34,6 +35,8 @@ Aliases: `sp.bubble_map`
 World map with proportional bubbles at geographic coordinates.
 Use `iso_codes` for country-level data (the library resolves centroids automatically), or pass explicit `latitudes` / `longitudes`.
 
+`map` selects which registered region set to draw: `"world"` (every country, the default) or `"usa_states"` (all 50 US states + DC — aliases `"usa"` / `"us"`). See [Region Sets](#region-sets).
+
 ---
 
 ## Parameters
@@ -43,6 +46,7 @@ Use `iso_codes` for country-level data (the library resolves centroids automatic
 | `title` | `str` | required | Chart title |
 | `labels` | `list[str]` | required | Location names |
 | `values` | `list[float]` | required | Bubble sizes |
+| `map` | `str` | `"world"` | Region set to draw — `"world"` or `"usa_states"` (aliases `usa`/`us`) |
 | `latitudes` | `list[float] \| None` | `None` | Manual latitudes |
 | `longitudes` | `list[float] \| None` | `None` | Manual longitudes |
 | `iso_codes` | `list[str] \| None` | `None` | ISO-3166 alpha-3 country codes |
@@ -54,6 +58,12 @@ Use `iso_codes` for country-level data (the library resolves centroids automatic
 | `min_bubble_size` | `float` | `5.0` | Minimum bubble radius in pixels |
 | `max_bubble_size` | `float` | `50.0` | Maximum bubble radius in pixels |
 | `hover_json` | `str \| None` | `None` | Custom hover JSON |
+
+---
+
+## Region Sets
+
+<div data-sp-registry-table="regions"></div>
 
 ---
 
@@ -119,6 +129,26 @@ chart = sp.build_bubble_map(
 )
 ```
 
+### US state-level bubble map
+
+```python
+import seraplot as sp
+
+chart = sp.build_bubble_map(
+    "Largest Metro Populations (millions)",
+    labels=["CA", "TX", "NY", "FL", "IL", "PA", "OH", "WA"],
+    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, 11.8, 7.8],
+    map="usa_states",
+)
+```
+
+<details>
+<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
+
+<iframe src="../../previews/bubble-map-usa-states.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+</details>
+
 ---
 
 </div>
@@ -133,6 +163,7 @@ sp.build_bubble_map(
     labels: list[str],
     values: list[float],
     *,
+    map: str = "world",
     latitudes: list[float] | None = None,
     longitudes: list[float] | None = None,
     iso_codes: list[str] | None = None,
@@ -156,6 +187,8 @@ Aliases: `sp.bubble_map`
 
 Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques. Utilisez `iso_codes` pour les données par pays (la bibliothèque résout les centroïdes automatiquement), ou passez des `latitudes` / `longitudes` explicites.
 
+`map` sélectionne l'ensemble de régions à dessiner : `"world"` (tous les pays, par défaut) ou `"usa_states"` (les 50 états américains + DC — alias `"usa"` / `"us"`). Voir [Ensembles de régions](#ensembles-de-regions).
+
 ---
 
 <h2>Paramètres</h2>
@@ -165,6 +198,7 @@ Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques.
 | `title` | `str` | requis | Titre du graphique |
 | `labels` | `list[str]` | requis | Noms des lieux |
 | `values` | `list[float]` | requis | Tailles des bulles |
+| `map` | `str` | `"world"` | Ensemble de régions à dessiner — `"world"` ou `"usa_states"` (alias `usa`/`us`) |
 | `latitudes` | `list[float] \| None` | `None` | Latitudes manuelles |
 | `longitudes` | `list[float] \| None` | `None` | Longitudes manuelles |
 | `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 des pays |
@@ -176,6 +210,12 @@ Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques.
 | `min_bubble_size` | `float` | `5.0` | Rayon minimal des bulles en pixels |
 | `max_bubble_size` | `float` | `50.0` | Rayon maximal des bulles en pixels |
 | `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+<h2 id="ensembles-de-regions">Ensembles de régions</h2>
+
+<div data-sp-registry-table="regions"></div>
 
 ---
 
@@ -208,6 +248,26 @@ chart = sp.build_bubble_map(
     longitudes=[2.35, 139.69, -74.01, 3.38],
 )
 ```
+
+### Carte à bulles par état américain
+
+```python
+import seraplot as sp
+
+chart = sp.build_bubble_map(
+    "Populations des grandes métropoles (millions)",
+    labels=["CA", "TX", "NY", "FL", "IL", "PA", "OH", "WA"],
+    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, 11.8, 7.8],
+    map="usa_states",
+)
+```
+
+<details>
+<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Aperçu</summary>
+
+<iframe src="../../previews/bubble-map-usa-states.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+</details>
 
 ---
 
