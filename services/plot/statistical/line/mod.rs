@@ -4,6 +4,7 @@ pub mod basic;
 pub mod config;
 pub mod connected_scatter;
 pub mod dashed;
+pub mod epoch;
 pub mod filled;
 pub mod gapped;
 pub mod momentum;
@@ -65,6 +66,7 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         Gapped => gapped::render(cfg),
         Band => band::render(cfg),
         Momentum => momentum::render(cfg),
+        Epoch => epoch::render(cfg),
     }
 }
 

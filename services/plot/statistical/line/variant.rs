@@ -11,5 +11,6 @@ crate::plot_family! {
         Gapped           => "gapped" | "gaps" | "missing",
         Band             => "band" | "confidence_band" | "forecast" | "range_band",
         Momentum         => "momentum" | "slope_glow" | "trend_pulse",
+        Epoch            => "epoch" | "chapters" | "regime_bands",
     }
 }
