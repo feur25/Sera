@@ -415,3 +415,47 @@ crate::declare_named_region_set! {
     display = "Iran (provinces)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    north_korea,
+    svg = "asia/north_korea_provinces",
+    width = 1000.00,
+    height = 822.15,
+    key = "north_korea_provinces",
+    aliases = &["north_korea", "kp", "dprk", "north_korean_provinces"],
+    display = "North Korea (provinces)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    bhutan,
+    svg = "asia/bhutan_districts",
+    width = 1000.00,
+    height = 494.91,
+    key = "bhutan_districts",
+    aliases = &["bhutan", "bt", "bhutanese_districts"],
+    display = "Bhutan (districts)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    maldives,
+    svg = "asia/maldives_atolls",
+    width = 137.04,
+    height = 1000.00,
+    key = "maldives_atolls",
+    aliases = &["maldives", "mv", "maldivian_atolls"],
+    display = "Maldives (atolls)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    brunei,
+    svg = "asia/brunei_districts",
+    width = 1000.00,
+    height = 763.99,
+    key = "brunei_districts",
+    aliases = &["brunei", "bn", "bruneian_districts"],
+    display = "Brunei (districts)",
+    groups = &[]
+}

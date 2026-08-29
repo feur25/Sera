@@ -107,3 +107,47 @@ crate::declare_named_region_set! {
     display = "Dominican Republic (provinces)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    jamaica,
+    svg = "north-america/jamaica_parishes",
+    width = 1000.00,
+    height = 375.87,
+    key = "jamaica_parishes",
+    aliases = &["jamaica", "jm", "jamaican_parishes"],
+    display = "Jamaica (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    haiti,
+    svg = "north-america/haiti_departments",
+    width = 1000.00,
+    height = 724.14,
+    key = "haiti_departments",
+    aliases = &["haiti", "ht", "haitian_departments"],
+    display = "Haiti (departments)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    belize,
+    svg = "north-america/belize_districts",
+    width = 556.64,
+    height = 1000.00,
+    key = "belize_districts",
+    aliases = &["belize", "bz", "belizean_districts"],
+    display = "Belize (districts)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    trinidad_and_tobago,
+    svg = "north-america/trinidad_and_tobago_regions",
+    width = 1000.00,
+    height = 930.60,
+    key = "trinidad_and_tobago_regions",
+    aliases = &["trinidad_and_tobago", "tt", "trinidad", "tobago"],
+    display = "Trinidad and Tobago (regions)",
+    groups = &[]
+}

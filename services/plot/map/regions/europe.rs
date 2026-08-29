@@ -382,3 +382,58 @@ crate::declare_named_region_set! {
     display = "Ukraine (oblasts)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    united_kingdom,
+    svg = "europe/united_kingdom_regions",
+    width = 1000.00,
+    height = 707.41,
+    key = "united_kingdom_regions",
+    aliases = &["united_kingdom", "uk", "gb", "great_britain", "britain", "england"],
+    display = "United Kingdom (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    andorra,
+    svg = "europe/andorra_parishes",
+    width = 1000.00,
+    height = 615.35,
+    key = "andorra_parishes",
+    aliases = &["andorra", "ad", "andorran_parishes"],
+    display = "Andorra (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    liechtenstein,
+    svg = "europe/liechtenstein_communes",
+    width = 664.62,
+    height = 1000.00,
+    key = "liechtenstein_communes",
+    aliases = &["liechtenstein", "li", "liechtenstein_communes"],
+    display = "Liechtenstein (communes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    san_marino,
+    svg = "europe/san_marino_municipalities",
+    width = 1000.00,
+    height = 847.77,
+    key = "san_marino_municipalities",
+    aliases = &["san_marino", "sm", "san_marino_municipalities"],
+    display = "San Marino (municipalities)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    malta,
+    svg = "europe/malta_councils",
+    width = 1000.00,
+    height = 715.36,
+    key = "malta_councils",
+    aliases = &["malta", "mt", "maltese_councils", "local_councils"],
+    display = "Malta (local councils)",
+    groups = &[]
+}

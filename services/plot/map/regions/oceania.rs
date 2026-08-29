@@ -19,3 +19,14 @@ crate::declare_named_region_set! {
     display = "New Zealand (regions)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    papua_new_guinea,
+    svg = "oceania/papua_new_guinea_provinces",
+    width = 1000.00,
+    height = 680.63,
+    key = "papua_new_guinea_provinces",
+    aliases = &["papua_new_guinea", "png", "papuan_provinces"],
+    display = "Papua New Guinea (provinces)",
+    groups = &[]
+}

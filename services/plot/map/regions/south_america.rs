@@ -96,3 +96,25 @@ crate::declare_named_region_set! {
     display = "Chile (regions)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    guyana,
+    svg = "south-america/guyana_regions",
+    width = 666.68,
+    height = 1000.00,
+    key = "guyana_regions",
+    aliases = &["guyana", "gy", "guyanese_regions"],
+    display = "Guyana (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    suriname,
+    svg = "south-america/suriname_districts",
+    width = 976.85,
+    height = 1000.00,
+    key = "suriname_districts",
+    aliases = &["suriname", "sr", "surinamese_districts"],
+    display = "Suriname (districts)",
+    groups = &[]
+}
