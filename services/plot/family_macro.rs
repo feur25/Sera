@@ -1,5 +1,6 @@
 pub struct ChartFamilyEntry {
     pub name: &'static str,
+    pub kind: &'static str,
     pub keys_and_aliases: fn() -> &'static [(&'static str, &'static [&'static str])],
     pub default_key: fn() -> &'static str,
 }
@@ -10,10 +11,27 @@ pub fn chart_families() -> impl Iterator<Item = &'static ChartFamilyEntry> {
     inventory::iter::<ChartFamilyEntry>()
 }
 
+pub fn family_kind(name: &str) -> &'static str {
+    chart_families()
+        .find(|e| e.name == name)
+        .map(|e| e.kind)
+        .unwrap_or("2d")
+}
+
+#[macro_export]
+macro_rules! plot_family_kind_or_default {
+    () => {
+        "2d"
+    };
+    ($k:literal) => {
+        $k
+    };
+}
+
 #[macro_export]
 macro_rules! plot_family {
     (
-        $vis:vis enum $name:ident default $default:ident $(family $family:literal)? {
+        $vis:vis enum $name:ident default $default:ident $(family $family:literal $(kind $kind:literal)?)? {
             $( $variant:ident => $key:literal $( | $alias:literal )* ),* $(,)?
         }
     ) => {
@@ -60,6 +78,7 @@ macro_rules! plot_family {
             inventory::submit! {
                 $crate::plot::family_macro::ChartFamilyEntry {
                     name: $family,
+                    kind: $crate::plot_family_kind_or_default!($($kind)?),
                     keys_and_aliases: $name::keys_and_aliases,
                     default_key: $name::default_key,
                 }
@@ -115,5 +134,15 @@ mod inventory_tests {
                  invocation still has a `family \"...\"` clause"
             );
         }
+    }
+
+    #[test]
+    fn a_family_registered_without_a_kind_clause_defaults_to_2d() {
+        assert_eq!(family_kind("line"), "2d");
+    }
+
+    #[test]
+    fn family_kind_returns_2d_for_an_unregistered_name_as_a_safe_default() {
+        assert_eq!(family_kind("not_a_real_family"), "2d");
     }
 }
