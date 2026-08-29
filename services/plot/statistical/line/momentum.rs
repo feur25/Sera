@@ -5,7 +5,7 @@ use crate::plot::statistical::common::{
 };
 
 #[crate::chart_demo(
-    "x_labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\"], values=[102,108,101,96,89,94,110,124,119,131,127,142,138,151], title=\"Momentum\", show_points=true"
+    "x_labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\",\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\"], values=[102,108,101,96,89,94,110,124,119,131,127,142,138,151], title=\"Momentum\", show_points=True"
 )]
 
 pub fn render(cfg: &LineConfig) -> String {
