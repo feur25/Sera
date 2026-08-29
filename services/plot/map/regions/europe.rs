@@ -448,3 +448,14 @@ crate::declare_named_region_set! {
     display = "Luxembourg (districts)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    montenegro,
+    svg = "europe/montenegro_municipalities",
+    width = 1000.00,
+    height = 882.33,
+    key = "montenegro_municipalities",
+    aliases = &["montenegro", "me", "montenegrin_municipalities"],
+    display = "Montenegro (municipalities)",
+    groups = &[]
+}

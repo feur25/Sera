@@ -514,3 +514,80 @@ crate::declare_named_region_set! {
     display = "Cape Verde (islands)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    burundi,
+    svg = "africa/burundi_provinces",
+    width = 855.01,
+    height = 1000.00,
+    key = "burundi_provinces",
+    aliases = &["burundi", "bi", "burundian_provinces"],
+    display = "Burundi (provinces)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    comoros,
+    svg = "africa/comoros_islands",
+    width = 1000.00,
+    height = 774.45,
+    key = "comoros_islands",
+    aliases = &["comoros", "km", "comorian_islands"],
+    display = "Comoros (islands)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    equatorial_guinea,
+    svg = "africa/equatorial_guinea_provinces",
+    width = 1000.00,
+    height = 916.80,
+    key = "equatorial_guinea_provinces",
+    aliases = &["equatorial_guinea", "gq", "equatoguinean_provinces"],
+    display = "Equatorial Guinea (provinces)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    madagascar,
+    svg = "africa/madagascar_regions",
+    width = 533.21,
+    height = 1000.00,
+    key = "madagascar_regions",
+    aliases = &["madagascar", "mg", "malagasy_regions"],
+    display = "Madagascar (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    mauritius,
+    svg = "africa/mauritius_districts",
+    width = 915.13,
+    height = 1000.00,
+    key = "mauritius_districts",
+    aliases = &["mauritius", "mu", "mauritian_districts"],
+    display = "Mauritius (districts)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    south_sudan,
+    svg = "africa/south_sudan_states",
+    width = 1000.00,
+    height = 739.53,
+    key = "south_sudan_states",
+    aliases = &["south_sudan", "ss", "south_sudanese_states"],
+    display = "South Sudan (states)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    seychelles,
+    svg = "africa/seychelles_districts",
+    width = 719.59,
+    height = 1000.00,
+    key = "seychelles_districts",
+    aliases = &["seychelles", "sc", "seychellois_districts"],
+    display = "Seychelles (districts)",
+    groups = &[]
+}

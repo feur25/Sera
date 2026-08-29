@@ -470,3 +470,47 @@ crate::declare_named_region_set! {
     display = "Timor-Leste (districts)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    bahrain,
+    svg = "asia/bahrain_governorates",
+    width = 620.94,
+    height = 1000.00,
+    key = "bahrain_governorates",
+    aliases = &["bahrain", "bh", "bahraini_governorates"],
+    display = "Bahrain (governorates)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    kyrgyzstan,
+    svg = "asia/kyrgyzstan_regions",
+    width = 1000.00,
+    height = 369.17,
+    key = "kyrgyzstan_regions",
+    aliases = &["kyrgyzstan", "kg", "kyrgyz_regions"],
+    display = "Kyrgyzstan (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    tajikistan,
+    svg = "asia/tajikistan_regions",
+    width = 1000.00,
+    height = 557.61,
+    key = "tajikistan_regions",
+    aliases = &["tajikistan", "tj", "tajik_regions"],
+    display = "Tajikistan (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    turkmenistan,
+    svg = "asia/turkmenistan_provinces",
+    width = 1000.00,
+    height = 538.46,
+    key = "turkmenistan_provinces",
+    aliases = &["turkmenistan", "tm", "turkmen_provinces"],
+    display = "Turkmenistan (provinces)",
+    groups = &[]
+}
