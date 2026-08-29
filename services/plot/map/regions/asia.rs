@@ -459,3 +459,14 @@ crate::declare_named_region_set! {
     display = "Brunei (districts)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    timor_leste,
+    svg = "asia/timor_leste_districts",
+    width = 1000.00,
+    height = 416.12,
+    key = "timor_leste_districts",
+    aliases = &["timor_leste", "tl", "east_timor", "east_timorese_districts"],
+    display = "Timor-Leste (districts)",
+    groups = &[]
+}

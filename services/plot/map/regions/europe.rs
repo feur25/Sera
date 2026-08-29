@@ -437,3 +437,14 @@ crate::declare_named_region_set! {
     display = "Malta (local councils)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    luxembourg,
+    svg = "europe/luxembourg_districts",
+    width = 1000.00,
+    height = 931.44,
+    key = "luxembourg_districts",
+    aliases = &["luxembourg", "lu", "luxembourgish_districts"],
+    display = "Luxembourg (districts)",
+    groups = &[]
+}

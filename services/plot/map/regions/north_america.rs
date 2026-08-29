@@ -151,3 +151,91 @@ crate::declare_named_region_set! {
     display = "Trinidad and Tobago (regions)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    bahamas,
+    svg = "north-america/bahamas_districts",
+    width = 1000.00,
+    height = 878.48,
+    key = "bahamas_districts",
+    aliases = &["bahamas", "bs", "the_bahamas", "bahamian_districts"],
+    display = "The Bahamas (districts)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    grenada,
+    svg = "north-america/grenada_parishes",
+    width = 700.13,
+    height = 1000.00,
+    key = "grenada_parishes",
+    aliases = &["grenada", "gd", "grenadian_parishes"],
+    display = "Grenada (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    saint_lucia,
+    svg = "north-america/saint_lucia_quarters",
+    width = 492.32,
+    height = 1000.00,
+    key = "saint_lucia_quarters",
+    aliases = &["saint_lucia", "st_lucia", "lc", "saint_lucian_quarters"],
+    display = "Saint Lucia (quarters)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    barbados,
+    svg = "north-america/barbados_parishes",
+    width = 774.76,
+    height = 1000.00,
+    key = "barbados_parishes",
+    aliases = &["barbados", "bb", "barbadian_parishes"],
+    display = "Barbados (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    saint_vincent_and_the_grenadines,
+    svg = "north-america/saint_vincent_and_the_grenadines_parishes",
+    width = 422.19,
+    height = 1000.00,
+    key = "saint_vincent_and_the_grenadines_parishes",
+    aliases = &["saint_vincent_and_the_grenadines", "st_vincent", "vc", "saint_vincent"],
+    display = "Saint Vincent and the Grenadines (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    antigua_and_barbuda,
+    svg = "north-america/antigua_and_barbuda_parishes",
+    width = 855.41,
+    height = 1000.00,
+    key = "antigua_and_barbuda_parishes",
+    aliases = &["antigua_and_barbuda", "ag", "antigua", "barbuda"],
+    display = "Antigua and Barbuda (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    dominica,
+    svg = "north-america/dominica_parishes",
+    width = 554.72,
+    height = 1000.00,
+    key = "dominica_parishes",
+    aliases = &["dominica", "dm", "dominican_parishes"],
+    display = "Dominica (parishes)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    saint_kitts_and_nevis,
+    svg = "north-america/saint_kitts_and_nevis_parishes",
+    width = 1000.00,
+    height = 972.27,
+    key = "saint_kitts_and_nevis_parishes",
+    aliases = &["saint_kitts_and_nevis", "st_kitts", "kn", "saint_kitts"],
+    display = "Saint Kitts and Nevis (parishes)",
+    groups = &[]
+}

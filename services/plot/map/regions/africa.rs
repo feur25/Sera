@@ -470,3 +470,47 @@ crate::declare_named_region_set! {
     display = "Gambia (divisions)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    republic_of_congo,
+    svg = "africa/republic_of_congo_regions",
+    width = 862.57,
+    height = 1000.00,
+    key = "republic_of_congo_regions",
+    aliases = &["republic_of_congo", "cg", "congo_brazzaville", "congo"],
+    display = "Republic of the Congo (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    guinea_bissau,
+    svg = "africa/guinea_bissau_regions",
+    width = 1000.00,
+    height = 571.04,
+    key = "guinea_bissau_regions",
+    aliases = &["guinea_bissau", "gw", "guinea_bissauan_regions"],
+    display = "Guinea-Bissau (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    sao_tome_and_principe,
+    svg = "africa/sao_tome_and_principe_regions",
+    width = 597.41,
+    height = 1000.00,
+    key = "sao_tome_and_principe_regions",
+    aliases = &["sao_tome_and_principe", "st", "sao_tome"],
+    display = "Sao Tome and Principe (regions)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    cape_verde,
+    svg = "africa/cape_verde_islands",
+    width = 1000.00,
+    height = 888.19,
+    key = "cape_verde_islands",
+    aliases = &["cape_verde", "cv", "cabo_verde", "cape_verdean_islands"],
+    display = "Cape Verde (islands)",
+    groups = &[]
+}
