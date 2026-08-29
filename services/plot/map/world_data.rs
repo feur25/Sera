@@ -120,6 +120,31 @@ const REGION_MAP: &[(&str, &[&str])] = &[
             "AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU",
         ],
     ),
+    (
+        "European Union",
+        &[
+            "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE",
+            "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
+        ],
+    ),
+    ("G7", &["CA", "FR", "DE", "IT", "JP", "GB", "US"]),
+    (
+        "G20",
+        &[
+            "AR", "AU", "BR", "CA", "CN", "FR", "DE", "IN", "ID", "IT", "JP", "KR", "MX", "RU",
+            "SA", "ZA", "TR", "GB", "US",
+        ],
+    ),
+    ("ASEAN", &["BN", "KH", "ID", "LA", "MY", "MM", "PH", "SG", "TH", "VN"]),
+    ("BRICS", &["BR", "RU", "IN", "CN", "ZA"]),
+    ("Nordic", &["DK", "FI", "IS", "NO", "SE"]),
+    (
+        "Middle East",
+        &[
+            "BH", "CY", "EG", "IR", "IQ", "IL", "JO", "KW", "LB", "OM", "PS", "QA", "SA", "SY",
+            "TR", "AE", "YE",
+        ],
+    ),
 ];
 
 pub fn region_groups() -> &'static [(&'static str, &'static [&'static str])] {
