@@ -55,7 +55,7 @@ pub fn visible_shapes(cfg: &BubbleMapConfig) -> Vec<&'static crate::plot::map::s
     regions::shapes_in_group(cfg.region, cfg.group)
 }
 
-pub fn to_html(cfg: &BubbleMapConfig, svg: String) -> String {
+pub fn to_html(cfg: &BubbleMapConfig, mut svg: String) -> String {
     use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = cfg.values.len().min(cfg.labels.len());
     let auto = cfg.hover.is_empty();
@@ -64,6 +64,9 @@ pub fn to_html(cfg: &BubbleMapConfig, svg: String) -> String {
         for i in 0..n {
             auto_slots.push(HoverSlot::new(cfg.labels[i].clone()).kv("Valeur", format!("{:.2}", cfg.values[i])));
         }
+    }
+    if !svg.ends_with("</svg>") {
+        svg.push_str("</svg>");
     }
     let svg = svg.replace("data-index=\"", "data-idx=\"");
     let slots = if auto { &auto_slots } else { cfg.hover };
