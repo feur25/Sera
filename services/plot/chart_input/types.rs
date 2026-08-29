@@ -75,6 +75,8 @@ pub struct ChartOpts {
     pub legend_position: Option<String>,
     pub scene: Option<String>,
     pub map: Option<String>,
+    pub region: Option<String>,
+    pub diverging_midpoint: Option<f64>,
     pub orientation3d: Option<String>,
     pub palette: Option<Vec<u32>>,
     pub background: Option<String>,
