@@ -679,6 +679,7 @@ pub fn draw_point_callout(buf: &mut Vec<u8>, x: i32, y: i32, label: &str, color:
     let hx = hex6(color);
     let leader = 34i32;
     let ly = if dir_up { y - leader } else { y + leader };
+    push_b(buf, b"<g class=\"sp-val\">");
     push_b(buf, b"<circle cx=\"");
     push_i(buf, x);
     push_b(buf, b"\" cy=\"");
@@ -707,6 +708,7 @@ pub fn draw_point_callout(buf: &mut Vec<u8>, x: i32, y: i32, label: &str, color:
     push_b(buf, b"\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
+    push_b(buf, b"</g>");
 }
 
 pub fn write_f2(buf: &mut Vec<u8>, v: f64) {
