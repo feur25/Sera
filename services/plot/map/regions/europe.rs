@@ -1,6 +1,6 @@
 crate::declare_named_region_set! {
     france,
-    svg = "../../../../asset/maps/europe/france_regions.svg",
+    svg = "europe/france_regions",
     width = 1000.00,
     height = 661.68,
     key = "france_regions",
@@ -11,7 +11,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     spain,
-    svg = "../../../../asset/maps/europe/spain_provinces.svg",
+    svg = "europe/spain_provinces",
     width = 1000.00,
     height = 717.69,
     key = "spain_provinces",
@@ -22,7 +22,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     italy,
-    svg = "../../../../asset/maps/europe/italy_provinces.svg",
+    svg = "europe/italy_provinces",
     width = 1000.00,
     height = 973.25,
     key = "italy_provinces",
@@ -33,7 +33,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     poland,
-    svg = "../../../../asset/maps/europe/poland_voivodeships.svg",
+    svg = "europe/poland_voivodeships",
     width = 1000.00,
     height = 583.31,
     key = "poland_voivodeships",
@@ -44,7 +44,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     netherlands,
-    svg = "../../../../asset/maps/europe/netherlands_provinces.svg",
+    svg = "europe/netherlands_provinces",
     width = 1000.00,
     height = 730.18,
     key = "netherlands_provinces",
@@ -55,7 +55,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     sweden,
-    svg = "../../../../asset/maps/europe/sweden_counties.svg",
+    svg = "europe/sweden_counties",
     width = 953.38,
     height = 1000.00,
     key = "sweden_counties",
@@ -66,7 +66,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     russia,
-    svg = "../../../../asset/maps/europe/russia_regions.svg",
+    svg = "europe/russia_regions",
     width = 1000.00,
     height = 112.96,
     key = "russia_regions",
@@ -77,7 +77,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     switzerland,
-    svg = "../../../../asset/maps/europe/switzerland_cantons.svg",
+    svg = "europe/switzerland_cantons",
     width = 1000.00,
     height = 438.95,
     key = "switzerland_cantons",
@@ -88,7 +88,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     austria,
-    svg = "../../../../asset/maps/europe/austria_states.svg",
+    svg = "europe/austria_states",
     width = 1000.00,
     height = 344.97,
     key = "austria_states",
@@ -99,7 +99,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     belgium,
-    svg = "../../../../asset/maps/europe/belgium_provinces.svg",
+    svg = "europe/belgium_provinces",
     width = 1000.00,
     height = 519.38,
     key = "belgium_provinces",
@@ -110,7 +110,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     portugal,
-    svg = "../../../../asset/maps/europe/portugal_districts.svg",
+    svg = "europe/portugal_districts",
     width = 634.48,
     height = 1000.00,
     key = "portugal_districts",
@@ -121,7 +121,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     greece,
-    svg = "../../../../asset/maps/europe/greece_regions.svg",
+    svg = "europe/greece_regions",
     width = 1000.00,
     height = 805.21,
     key = "greece_regions",
@@ -132,7 +132,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     norway,
-    svg = "../../../../asset/maps/europe/norway_counties.svg",
+    svg = "europe/norway_counties",
     width = 1000.00,
     height = 328.09,
     key = "norway_counties",
@@ -143,7 +143,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     finland,
-    svg = "../../../../asset/maps/europe/finland_regions.svg",
+    svg = "europe/finland_regions",
     width = 1000.00,
     height = 937.67,
     key = "finland_regions",
@@ -154,7 +154,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     denmark,
-    svg = "../../../../asset/maps/europe/denmark_regions.svg",
+    svg = "europe/denmark_regions",
     width = 1000.00,
     height = 450.96,
     key = "denmark_regions",
@@ -165,7 +165,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     ireland,
-    svg = "../../../../asset/maps/europe/ireland_counties.svg",
+    svg = "europe/ireland_counties",
     width = 1000.00,
     height = 878.70,
     key = "ireland_counties",
@@ -176,7 +176,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     iceland,
-    svg = "../../../../asset/maps/europe/iceland_regions.svg",
+    svg = "europe/iceland_regions",
     width = 1000.00,
     height = 286.98,
     key = "iceland_regions",
@@ -187,7 +187,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     slovakia,
-    svg = "../../../../asset/maps/europe/slovakia_regions.svg",
+    svg = "europe/slovakia_regions",
     width = 1000.00,
     height = 325.15,
     key = "slovakia_regions",
@@ -198,7 +198,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     hungary,
-    svg = "../../../../asset/maps/europe/hungary_counties.svg",
+    svg = "europe/hungary_counties",
     width = 1000.00,
     height = 416.87,
     key = "hungary_counties",
@@ -209,7 +209,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     romania,
-    svg = "../../../../asset/maps/europe/romania_counties.svg",
+    svg = "europe/romania_counties",
     width = 1000.00,
     height = 489.05,
     key = "romania_counties",
@@ -220,7 +220,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     bulgaria,
-    svg = "../../../../asset/maps/europe/bulgaria_provinces.svg",
+    svg = "europe/bulgaria_provinces",
     width = 1000.00,
     height = 477.80,
     key = "bulgaria_provinces",
@@ -231,7 +231,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     croatia,
-    svg = "../../../../asset/maps/europe/croatia_counties.svg",
+    svg = "europe/croatia_counties",
     width = 1000.00,
     height = 699.36,
     key = "croatia_counties",
@@ -242,7 +242,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     bosnia,
-    svg = "../../../../asset/maps/europe/bosnia_cantons.svg",
+    svg = "europe/bosnia_cantons",
     width = 1000.00,
     height = 698.29,
     key = "bosnia_cantons",
@@ -253,7 +253,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     albania,
-    svg = "../../../../asset/maps/europe/albania_counties.svg",
+    svg = "europe/albania_counties",
     width = 584.75,
     height = 1000.00,
     key = "albania_counties",
@@ -264,7 +264,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     lithuania,
-    svg = "../../../../asset/maps/europe/lithuania_counties.svg",
+    svg = "europe/lithuania_counties",
     width = 1000.00,
     height = 434.94,
     key = "lithuania_counties",
@@ -275,7 +275,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     latvia,
-    svg = "../../../../asset/maps/europe/latvia_municipalities.svg",
+    svg = "europe/latvia_municipalities",
     width = 1000.00,
     height = 332.22,
     key = "latvia_municipalities",
@@ -286,7 +286,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     estonia,
-    svg = "../../../../asset/maps/europe/estonia_counties.svg",
+    svg = "europe/estonia_counties",
     width = 1000.00,
     height = 339.16,
     key = "estonia_counties",
@@ -297,7 +297,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     belarus,
-    svg = "../../../../asset/maps/europe/belarus_regions.svg",
+    svg = "europe/belarus_regions",
     width = 1000.00,
     height = 515.15,
     key = "belarus_regions",
@@ -308,7 +308,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     moldova,
-    svg = "../../../../asset/maps/europe/moldova_districts.svg",
+    svg = "europe/moldova_districts",
     width = 1000.00,
     height = 860.71,
     key = "moldova_districts",
@@ -319,7 +319,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     cyprus,
-    svg = "../../../../asset/maps/europe/cyprus_districts.svg",
+    svg = "europe/cyprus_districts",
     width = 1000.00,
     height = 314.32,
     key = "cyprus_districts",
@@ -330,7 +330,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     czechia,
-    svg = "../../../../asset/maps/europe/czech_regions.svg",
+    svg = "europe/czech_regions",
     width = 1000.00,
     height = 367.10,
     key = "czech_regions",
@@ -341,7 +341,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     macedonia,
-    svg = "../../../../asset/maps/europe/macedonia_regions.svg",
+    svg = "europe/macedonia_regions",
     width = 1000.00,
     height = 468.93,
     key = "macedonia_regions",
@@ -352,7 +352,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     serbia,
-    svg = "../../../../asset/maps/europe/serbia_districts.svg",
+    svg = "europe/serbia_districts",
     width = 1000.00,
     height = 951.53,
     key = "serbia_districts",
@@ -363,7 +363,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     slovenia,
-    svg = "../../../../asset/maps/europe/slovenia_regions.svg",
+    svg = "europe/slovenia_regions",
     width = 1000.00,
     height = 457.24,
     key = "slovenia_regions",
@@ -374,7 +374,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     ukraine,
-    svg = "../../../../asset/maps/europe/ukraine_oblasts.svg",
+    svg = "europe/ukraine_oblasts",
     width = 1000.00,
     height = 396.93,
     key = "ukraine_oblasts",

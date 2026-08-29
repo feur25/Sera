@@ -36,8 +36,8 @@ fn state_name(code: &str) -> &'static str {
 
 fn get_states() -> &'static Vec<CountryShape> {
     STATES.get_or_init(|| {
-        let svg = include_str!("../../../../asset/maps/north-america/usa_states.svg");
-        parse_region_svg(svg, "class")
+        let svg = super::pack::map_asset("north-america/usa_states");
+        parse_region_svg(&svg, "class")
             .into_iter()
             .map(|shape| CountryShape {
                 name: state_name(&shape.id).to_string(),

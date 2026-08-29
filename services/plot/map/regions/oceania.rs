@@ -1,6 +1,6 @@
 crate::declare_named_region_set! {
     australia,
-    svg = "../../../../asset/maps/oceania/australia_states.svg",
+    svg = "oceania/australia_states",
     width = 1000.00,
     height = 985.35,
     key = "australia_states",
@@ -11,7 +11,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     new_zealand,
-    svg = "../../../../asset/maps/oceania/new_zealand_regions.svg",
+    svg = "oceania/new_zealand_regions",
     width = 939.42,
     height = 1000.00,
     key = "new_zealand_regions",

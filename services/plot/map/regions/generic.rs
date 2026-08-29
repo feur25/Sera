@@ -21,7 +21,10 @@ macro_rules! declare_named_region_set {
             static SHAPES: OnceLock<Vec<CountryShape>> = OnceLock::new();
 
             fn get_shapes() -> &'static Vec<CountryShape> {
-                SHAPES.get_or_init(|| parse_named_region_svg(include_str!($svg_file), "id"))
+                SHAPES.get_or_init(|| {
+                    let svg = $crate::plot::map::regions::pack::map_asset($svg_file);
+                    parse_named_region_svg(&svg, "id")
+                })
             }
 
             pub fn lookup(key: &str) -> Option<&'static CountryShape> {

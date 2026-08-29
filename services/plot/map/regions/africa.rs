@@ -1,6 +1,6 @@
 crate::declare_named_region_set! {
     south_africa,
-    svg = "../../../../asset/maps/africa/south_africa_provinces.svg",
+    svg = "africa/south_africa_provinces",
     width = 865.88,
     height = 1000.00,
     key = "south_africa_provinces",
@@ -11,7 +11,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     egypt,
-    svg = "../../../../asset/maps/africa/egypt_governorates.svg",
+    svg = "africa/egypt_governorates",
     width = 1000.00,
     height = 791.27,
     key = "egypt_governorates",
@@ -22,7 +22,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     nigeria,
-    svg = "../../../../asset/maps/africa/nigeria_states.svg",
+    svg = "africa/nigeria_states",
     width = 1000.00,
     height = 800.75,
     key = "nigeria_states",
@@ -33,7 +33,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     morocco,
-    svg = "../../../../asset/maps/africa/morocco_regions.svg",
+    svg = "africa/morocco_regions",
     width = 1000.00,
     height = 907.69,
     key = "morocco_regions",
@@ -44,7 +44,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     kenya,
-    svg = "../../../../asset/maps/africa/kenya_counties.svg",
+    svg = "africa/kenya_counties",
     width = 823.51,
     height = 1000.00,
     key = "kenya_counties",
@@ -55,7 +55,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     algeria,
-    svg = "../../../../asset/maps/africa/algeria_provinces.svg",
+    svg = "africa/algeria_provinces",
     width = 1000.00,
     height = 877.35,
     key = "algeria_provinces",
@@ -66,7 +66,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     tunisia,
-    svg = "../../../../asset/maps/africa/tunisia_governorates.svg",
+    svg = "africa/tunisia_governorates",
     width = 573.94,
     height = 1000.00,
     key = "tunisia_governorates",
@@ -77,7 +77,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     libya,
-    svg = "../../../../asset/maps/africa/libya_districts.svg",
+    svg = "africa/libya_districts",
     width = 1000.00,
     height = 862.34,
     key = "libya_districts",
@@ -88,7 +88,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     sudan,
-    svg = "../../../../asset/maps/africa/sudan_states.svg",
+    svg = "africa/sudan_states",
     width = 1000.00,
     height = 806.54,
     key = "sudan_states",
@@ -99,7 +99,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     ghana,
-    svg = "../../../../asset/maps/africa/ghana_regions.svg",
+    svg = "africa/ghana_regions",
     width = 692.59,
     height = 1000.00,
     key = "ghana_regions",
@@ -110,7 +110,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     senegal,
-    svg = "../../../../asset/maps/africa/senegal_regions.svg",
+    svg = "africa/senegal_regions",
     width = 1000.00,
     height = 712.18,
     key = "senegal_regions",
@@ -121,7 +121,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     zambia,
-    svg = "../../../../asset/maps/africa/zambia_provinces.svg",
+    svg = "africa/zambia_provinces",
     width = 1000.00,
     height = 844.44,
     key = "zambia_provinces",
@@ -132,7 +132,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     zimbabwe,
-    svg = "../../../../asset/maps/africa/zimbabwe_provinces.svg",
+    svg = "africa/zimbabwe_provinces",
     width = 1000.00,
     height = 866.95,
     key = "zimbabwe_provinces",
@@ -143,7 +143,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     angola,
-    svg = "../../../../asset/maps/africa/angola_provinces.svg",
+    svg = "africa/angola_provinces",
     width = 908.51,
     height = 1000.00,
     key = "angola_provinces",
@@ -154,7 +154,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     dr_congo,
-    svg = "../../../../asset/maps/africa/dr_congo_provinces.svg",
+    svg = "africa/dr_congo_provinces",
     width = 1000.00,
     height = 987.61,
     key = "dr_congo_provinces",
@@ -165,7 +165,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     cameroon,
-    svg = "../../../../asset/maps/africa/cameroon_regions.svg",
+    svg = "africa/cameroon_regions",
     width = 674.10,
     height = 1000.00,
     key = "cameroon_regions",
@@ -176,7 +176,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     mali,
-    svg = "../../../../asset/maps/africa/mali_regions.svg",
+    svg = "africa/mali_regions",
     width = 1000.00,
     height = 900.32,
     key = "mali_regions",
@@ -187,7 +187,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     niger,
-    svg = "../../../../asset/maps/africa/niger_regions.svg",
+    svg = "africa/niger_regions",
     width = 1000.00,
     height = 747.38,
     key = "niger_regions",
@@ -198,7 +198,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     tanzania,
-    svg = "../../../../asset/maps/africa/tanzania_regions.svg",
+    svg = "africa/tanzania_regions",
     width = 1000.00,
     height = 965.59,
     key = "tanzania_regions",
@@ -209,7 +209,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     ethiopia,
-    svg = "../../../../asset/maps/africa/ethiopia_regions.svg",
+    svg = "africa/ethiopia_regions",
     width = 1000.00,
     height = 765.62,
     key = "ethiopia_regions",

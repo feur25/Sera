@@ -1,6 +1,6 @@
 crate::declare_named_region_set! {
     argentina,
-    svg = "../../../../asset/maps/south-america/argentina_provinces.svg",
+    svg = "south-america/argentina_provinces",
     width = 598.56,
     height = 1000.00,
     key = "argentina_provinces",
@@ -11,7 +11,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     colombia,
-    svg = "../../../../asset/maps/south-america/colombia_departments.svg",
+    svg = "south-america/colombia_departments",
     width = 833.50,
     height = 1000.00,
     key = "colombia_departments",
@@ -22,7 +22,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     peru,
-    svg = "../../../../asset/maps/south-america/peru_regions.svg",
+    svg = "south-america/peru_regions",
     width = 691.11,
     height = 1000.00,
     key = "peru_regions",
@@ -33,7 +33,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     venezuela,
-    svg = "../../../../asset/maps/south-america/venezuela_states.svg",
+    svg = "south-america/venezuela_states",
     width = 901.81,
     height = 1000.00,
     key = "venezuela_states",
@@ -44,7 +44,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     ecuador,
-    svg = "../../../../asset/maps/south-america/ecuador_provinces.svg",
+    svg = "south-america/ecuador_provinces",
     width = 1000.00,
     height = 397.74,
     key = "ecuador_provinces",
@@ -55,7 +55,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     bolivia,
-    svg = "../../../../asset/maps/south-america/bolivia_departments.svg",
+    svg = "south-america/bolivia_departments",
     width = 923.09,
     height = 1000.00,
     key = "bolivia_departments",
@@ -66,7 +66,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     paraguay,
-    svg = "../../../../asset/maps/south-america/paraguay_departments.svg",
+    svg = "south-america/paraguay_departments",
     width = 1000.00,
     height = 987.51,
     key = "paraguay_departments",
@@ -77,7 +77,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     uruguay,
-    svg = "../../../../asset/maps/south-america/uruguay_departments.svg",
+    svg = "south-america/uruguay_departments",
     width = 1000.00,
     height = 915.18,
     key = "uruguay_departments",
@@ -88,7 +88,7 @@ crate::declare_named_region_set! {
 
 crate::declare_named_region_set! {
     chile,
-    svg = "../../../../asset/maps/south-america/chile_regions.svg",
+    svg = "south-america/chile_regions",
     width = 1000.00,
     height = 892.62,
     key = "chile_regions",

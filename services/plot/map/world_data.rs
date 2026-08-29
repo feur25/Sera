@@ -12,8 +12,8 @@ static COUNTRIES: OnceLock<Vec<CountryShape>> = OnceLock::new();
 
 fn get_countries() -> &'static Vec<CountryShape> {
     COUNTRIES.get_or_init(|| {
-        let svg = include_str!("../../../asset/maps/world/world.svg");
-        parse_world_svg(svg)
+        let svg = crate::plot::map::regions::pack::map_asset("world/world");
+        parse_world_svg(&svg)
     })
 }
 

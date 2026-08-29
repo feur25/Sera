@@ -6,6 +6,7 @@ pub mod generic;
 pub mod germany_states;
 pub mod north_america;
 pub mod oceania;
+pub mod pack;
 pub mod south_america;
 pub mod usa_states;
 
