@@ -570,6 +570,12 @@ fn _docs_json() -> String {
 }
 
 #[pyfunction]
+fn _chart_methods_json() -> String {
+    let names: Vec<&str> = crate::bindings::method_registry::iter_entries().map(|e| e.name).collect();
+    serde_json::to_string(&names).unwrap_or_default()
+}
+
+#[pyfunction]
 fn _alias_add(method: &str, alias: &str) -> bool {
     crate::bindings::alias_registry::add_alias(method, alias)
 }
@@ -887,6 +893,7 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_chart_themes_json, m)?)?;
     m.add_function(wrap_pyfunction!(_scenes3d_json, m)?)?;
     m.add_function(wrap_pyfunction!(_docs_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_chart_methods_json, m)?)?;
     m.add_function(wrap_pyfunction!(_alias_add, m)?)?;
     m.add_function(wrap_pyfunction!(_alias_remove, m)?)?;
     m.add_function(wrap_pyfunction!(_alias_reset, m)?)?;
