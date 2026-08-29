@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('line-en','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Connected Scatter</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-en-basic">
@@ -150,6 +151,16 @@ Line + confidence/forecast band fusion: pass `series` as low/high pairs (`[group
 <iframe class="sp-preview-frame" data-src="../../previews/line-band.html"></iframe>
 </div>
 
+<div class="sp-variant" id="line-en-momentum">
+
+Each segment is colored on a diverging scale by its own local slope, with a matching soft gradient fill beneath, automatic peak/trough callouts, and a glowing pulse on the latest point — momentum, read at a glance instead of computed by eye.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"momentum"</code></span><span><strong>Aliases</strong> <code>"momentum"</code> / <code>"slope_glow"</code> / <code>"trend_pulse"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-momentum.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -192,7 +203,8 @@ Line + confidence/forecast band fusion: pass `series` as low/high pairs (`[group
 <button class="sp-cls-tab" onclick="spCls('line-fr','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Tirets</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Scatter Connecté</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-fr-basic">
@@ -293,6 +305,16 @@ Fusion ligne + bande de confiance/prévision : passez `series` comme des paires 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/line-band.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-momentum">
+
+Chaque segment est coloré sur une échelle divergente selon sa propre pente locale, avec un remplissage en dégradé assorti en dessous, des annotations automatiques de pics/creux, et un pouls lumineux sur le dernier point — la dynamique, lisible en un coup d'œil plutôt que calculée à l'œil nu.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"momentum"</code></span><span><strong>Alias</strong> <code>"momentum"</code> / <code>"slope_glow"</code> / <code>"trend_pulse"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-momentum.html"></iframe>
 </div>
 
 </div>
