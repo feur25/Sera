@@ -55,6 +55,24 @@ pub fn visible_shapes(cfg: &BubbleMapConfig) -> Vec<&'static crate::plot::map::s
     regions::shapes_in_group(cfg.region, cfg.group)
 }
 
+pub fn push_projected_outlines(svg: &mut String, projected: &[(usize, Vec<Vec<[f32; 2]>>)]) {
+    for (_, polys) in projected {
+        for poly in polys {
+            if poly.len() < 3 {
+                continue;
+            }
+            svg.push_str("<path d=\"M");
+            for (j, pt) in poly.iter().enumerate() {
+                if j > 0 {
+                    svg.push_str(" L");
+                }
+                svg.push_str(&format!("{:.1},{:.1}", pt[0], pt[1]));
+            }
+            svg.push_str(" Z\" fill=\"#151b23\" stroke=\"#2a2a4a\" stroke-width=\"0.3\"/>");
+        }
+    }
+}
+
 pub fn to_html(cfg: &BubbleMapConfig, mut svg: String) -> String {
     use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = cfg.values.len().min(cfg.labels.len());

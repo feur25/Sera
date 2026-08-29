@@ -12,6 +12,8 @@ pub struct BubbleMapConfig<'a> {
     pub group: &'a str,
     pub min_bubble_size: f64,
     pub max_bubble_size: f64,
+    pub center_lat: Option<f64>,
+    pub center_lon: Option<f64>,
 }
 
 impl<'a> BubbleMapConfig<'a> {
@@ -28,6 +30,8 @@ impl<'a> BubbleMapConfig<'a> {
             group: "",
             min_bubble_size: 5.0,
             max_bubble_size: 42.0,
+            center_lat: None,
+            center_lon: None,
         }
     }
 }

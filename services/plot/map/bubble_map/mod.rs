@@ -1,6 +1,7 @@
 pub mod common;
 pub mod config;
 pub mod filled;
+pub mod globe;
 pub mod proportional;
 pub mod variant;
 
@@ -18,6 +19,7 @@ pub fn render_bubble_map_html(cfg: &BubbleMapConfig) -> String {
     match cfg.variant {
         Filled => filled::render(cfg),
         Proportional => proportional::render(cfg),
+        Globe => globe::render(cfg),
     }
 }
 
@@ -201,6 +203,8 @@ pub fn build_bubble_map(input: &str) -> String {
         group: o.region.as_deref().unwrap_or(""),
         min_bubble_size: o.min_size.unwrap_or(5.0),
         max_bubble_size: o.max_size.unwrap_or(42.0),
+        center_lat: o.center_lat,
+        center_lon: o.center_lon,
     };
     apply(render_bubble_map_html(&cfg), &o)
 }
