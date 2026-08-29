@@ -210,19 +210,33 @@ mod tests {
 
     #[test]
     fn build_choropleth_renders_every_newly_registered_country_region_set() {
-        let cases: &[(&str, &[&str])] = &[
-            ("germany_states", &["BY", "NW", "BW"]),
-            ("brazil_states", &["SP", "MG", "RJ"]),
-            ("canada_provinces", &["ON", "QC", "BC"]),
+        let maps = &[
+            "germany_states",
+            "brazil_states",
+            "france_regions",
+            "spain_provinces",
+            "italy_provinces",
+            "poland_voivodeships",
+            "netherlands_provinces",
+            "sweden_counties",
+            "india_states",
+            "japan_prefectures",
+            "china_provinces",
+            "australia_states",
+            "mexico_states",
         ];
-        for (map, labels) in cases {
+        for map in maps {
+            let region = crate::plot::map::regions::resolve(map).unwrap_or_else(|| panic!("{map} must be registered"));
+            let shapes = (region.all)();
+            let n = shapes.len().min(3);
+            let labels: Vec<&str> = shapes[..n].iter().map(|s| s.id.as_str()).collect();
             let input = format!(
                 r#"{{"title":"t","labels":{:?},"values":[1.0,2.0,3.0],"map":"{map}"}}"#,
                 labels
             );
             let out = build_choropleth(&input);
             assert!(out.contains("<svg"), "{map} must render a real svg: {out}");
-            for i in 0..labels.len() {
+            for i in 0..n {
                 let needle = format!("data-idx=\"{i}\"");
                 assert!(out.contains(&needle), "{map} must color region index {i}: {out}");
             }
@@ -280,6 +294,40 @@ mod tests {
             if stem == ChoroplethVariant::default_key() {
                 std::fs::write("docs/previews/choropleth.html", &html).unwrap();
             }
+        }
+    }
+
+    #[test]
+    #[ignore]
+    fn write_new_region_set_visual_checks() {
+        let maps = &[
+            "germany_states",
+            "brazil_states",
+            "france_regions",
+            "spain_provinces",
+            "italy_provinces",
+            "poland_voivodeships",
+            "netherlands_provinces",
+            "sweden_counties",
+            "india_states",
+            "japan_prefectures",
+            "china_provinces",
+            "australia_states",
+            "mexico_states",
+        ];
+        let out_dir = std::env::var("SP_VISUAL_CHECK_DIR").unwrap_or_else(|_| ".".to_string());
+        for map in maps {
+            let region = crate::plot::map::regions::resolve(map).unwrap_or_else(|| panic!("{map} must be registered"));
+            let shapes = (region.all)();
+            let labels: Vec<String> = shapes.iter().map(|s| s.id.clone()).collect();
+            let values: Vec<f64> = (0..labels.len()).map(|i| i as f64).collect();
+            let input = format!(
+                r#"{{"title":"{map}","labels":{:?},"values":{:?},"map":"{map}","variant":"binned"}}"#,
+                labels, values
+            );
+            let out = build_choropleth(&input);
+            assert!(out.contains("<svg"), "{map} must render a real svg");
+            std::fs::write(format!("{out_dir}/visual_{map}.html"), out).unwrap();
         }
     }
 }
