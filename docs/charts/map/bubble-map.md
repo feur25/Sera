@@ -1,126 +1,84 @@
-﻿# Bubble Map
+# Bubble Map
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:420px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
 ## Signature
 
-```python
-sp.build_bubble_map(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    map: str = "world",
-    latitudes: list[float] | None = None,
-    longitudes: list[float] | None = None,
-    iso_codes: list[str] | None = None,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    bubble_opacity: float = 0.6,
-    min_bubble_size: float = 5.0,
-    max_bubble_size: float = 50.0,
-) -> Chart
-```
+`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, **kwargs) -> Chart`
 
-Aliases: `sp.bubble_map`
-
----
+Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
 ## Description
 
-World map with proportional bubbles at geographic coordinates.
-Use `iso_codes` for country-level data (the library resolves centroids automatically), or pass explicit `latitudes` / `longitudes`.
+`sp.bubble_map()` marks matched regions on a map. `variant` selects whether the whole region gets filled by category or a proportionally-sized circle marks its centroid; `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set. All three are read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
 
-`map` selects which registered region set to draw: `"world"` (every country, the default) or `"usa_states"` (all 50 US states + DC — aliases `"usa"` / `"us"`). See [Region Sets](#region-sets).
+## Variants
 
----
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Location names |
-| `values` | `list[float]` | required | Bubble sizes |
-| `map` | `str` | `"world"` | Region set to draw — `"world"` or `"usa_states"` (aliases `usa`/`us`) |
-| `latitudes` | `list[float] \| None` | `None` | Manual latitudes |
-| `longitudes` | `list[float] \| None` | `None` | Manual longitudes |
-| `iso_codes` | `list[str] \| None` | `None` | ISO-3166 alpha-3 country codes |
-| `color_hex` | `int` | `0x6366F1` | Bubble color |
-| `palette` | `list[int] \| None` | `None` | Multi-group palette |
-| `width` | `int` | `1000` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `bubble_opacity` | `float` | `0.6` | Bubble transparency (0–1) |
-| `min_bubble_size` | `float` | `5.0` | Minimum bubble radius in pixels |
-| `max_bubble_size` | `float` | `50.0` | Maximum bubble radius in pixels |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
-
----
+<div data-sp-registry-table="variants" data-family="bubble_map"></div>
 
 ## Region Sets
 
 <div data-sp-registry-table="regions"></div>
 
+## Parameters
+
+<div data-sp-registry-table="options" data-family="bubble_map"></div>
+
 ---
 
 ## Returns
 
-`Chart`
+`Chart` — object with `.html` property and `.show()` method.
 
 ---
 
-## Examples
+<div class="sp-cls sp-open" id="bubblemap-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bubblemap-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
+</div>
+<div class="sp-cls-body">
 
-### GDP per country (ISO code lookup)
+<div class="sp-variant sp-von" id="bubblemap-en-filled">
 
-<style>
-.sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border)}
-.sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="bubble-map">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble-map','bubble-map-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-ts',this)">TypeScript</button></div>
-<div id="bubble-map-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.build_bubble_map(
-    "GDP by Country",
-    labels=["USA", "CHN", "DEU", "JPN", "FRA"],
-    values=[25500, 17700, 4400, 4200, 3100],
-)</code></pre></div>
-<div id="bubble-map-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.build_bubble_map("GDP by Country",
-["USA", "CHN", "DEU", "JPN", "FRA"],
-{
-    values: [25500, 17700, 4400, 4200, 3100]
-})</code></pre></div>
-<div id="bubble-map-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.build_bubble_map("GDP by Country",
-["USA", "CHN", "DEU", "JPN", "FRA"],
-{
-    values: [25500, 17700, 4400, 4200, 3100]
-})</code></pre></div>
+Each matched region filled solid with its own palette color and labeled at its centroid — reads as a categorical highlight map rather than true bubbles, useful when the regions themselves are what the reader should compare.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"regions"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
+<div class="sp-variant" id="bubblemap-en-proportional">
 
-<iframe src="../../previews/bubble-map.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+The real graduated-symbol map: the base is muted, and a circle sits on each matched region's centroid, its radius scaled by `sqrt(value)` so *area* — not radius — reads proportionally to magnitude. `min_bubble_size` / `max_bubble_size` set the radius range in pixels.
 
-</details>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code></span><span><strong>Aliases</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+</div>
+</div>
 
 ### Custom coordinates
 
 ```python
 import seraplot as sp
 
-chart = sp.build_bubble_map(
+chart = sp.bubble_map(
     "City Populations",
     labels=["Paris", "Tokyo", "New York", "Lagos"],
     values=[11, 37, 20, 15],
@@ -129,118 +87,94 @@ chart = sp.build_bubble_map(
 )
 ```
 
-### US state-level bubble map
+### Reading one region group
 
 ```python
 import seraplot as sp
 
-chart = sp.build_bubble_map(
-    "Largest Metro Populations (millions)",
-    labels=["CA", "TX", "NY", "FL", "IL", "PA", "OH", "WA"],
-    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, 11.8, 7.8],
+chart = sp.bubble_map(
+    "Northeast Metro Populations (millions)",
+    labels=["NY", "PA", "MA", "NJ", "CT"],
+    values=[19.6, 12.9, 7.0, 9.3, 3.6],
     map="usa_states",
+    region="Northeast",
+    variant="proportional",
 )
 ```
 
-<details>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
-<iframe src="../../previews/bubble-map-usa-states.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
+`region` accepts any group name a `map`'s own registered set exposes — continents for `"world"`, Census regions for `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
 
 </div>
 
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
-<h2>Signature</h2>
+## Signature
 
-```python
-sp.build_bubble_map(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    map: str = "world",
-    latitudes: list[float] | None = None,
-    longitudes: list[float] | None = None,
-    iso_codes: list[str] | None = None,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    bubble_opacity: float = 0.6,
-    min_bubble_size: float = 5.0,
-    max_bubble_size: float = 50.0,
-) -> Chart
-```
+`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, **kwargs) -> Chart`
 
-Aliases: `sp.bubble_map`
+Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
----
+## Description
 
-<h2>Description</h2>
+`sp.bubble_map()` repère les régions correspondantes sur une carte. `variant` sélectionne si la région entière est remplie par catégorie ou si un cercle de taille proportionnelle marque son centroïde ; `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble. Les trois sont lus en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
 
-Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques. Utilisez `iso_codes` pour les données par pays (la bibliothèque résout les centroïdes automatiquement), ou passez des `latitudes` / `longitudes` explicites.
+## Variantes
 
-`map` sélectionne l'ensemble de régions à dessiner : `"world"` (tous les pays, par défaut) ou `"usa_states"` (les 50 états américains + DC — alias `"usa"` / `"us"`). Voir [Ensembles de régions](#ensembles-de-regions).
+<div data-sp-registry-table="variants" data-family="bubble_map"></div>
 
----
-
-<h2>Paramètres</h2>
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Noms des lieux |
-| `values` | `list[float]` | requis | Tailles des bulles |
-| `map` | `str` | `"world"` | Ensemble de régions à dessiner — `"world"` ou `"usa_states"` (alias `usa`/`us`) |
-| `latitudes` | `list[float] \| None` | `None` | Latitudes manuelles |
-| `longitudes` | `list[float] \| None` | `None` | Longitudes manuelles |
-| `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 des pays |
-| `color_hex` | `int` | `0x6366F1` | Couleur des bulles |
-| `palette` | `list[int] \| None` | `None` | Palette multi-groupes |
-| `width` | `int` | `1000` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `bubble_opacity` | `float` | `0.6` | Transparence des bulles (0–1) |
-| `min_bubble_size` | `float` | `5.0` | Rayon minimal des bulles en pixels |
-| `max_bubble_size` | `float` | `50.0` | Rayon maximal des bulles en pixels |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
-
----
-
-<h2 id="ensembles-de-regions">Ensembles de régions</h2>
+## Ensembles de régions
 
 <div data-sp-registry-table="regions"></div>
 
----
+## Paramètres
 
-<h2>Retourne</h2>
-
-`Chart`
+<div data-sp-registry-table="options" data-family="bubble_map"></div>
 
 ---
 
-<h2>Exemples</h2>
+## Retourne
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="bubblemap-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bubblemap-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
+</div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="bubblemap-fr-filled">
+
+Chaque région correspondante remplie en aplat de sa propre couleur de palette et étiquetée à son centroïde — se lit comme une carte de mise en évidence catégorielle plutôt que de vraies bulles, utile quand ce sont les régions elles-mêmes que le lecteur doit comparer.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"regions"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-proportional">
+
+La vraie carte à symboles proportionnels : le fond est estompé, et un cercle se place sur le centroïde de chaque région correspondante, son rayon mis à l'échelle par `sqrt(valeur)` pour que ce soit l'*aire* — pas le rayon — qui soit proportionnelle à la magnitude. `min_bubble_size` / `max_bubble_size` règlent la plage de rayon en pixels.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code></span><span><strong>Alias</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+</div>
+</div>
+
+### Coordonnées personnalisées
 
 ```python
 import seraplot as sp
 
-chart = sp.build_bubble_map(
-    "PIB par pays",
-    labels=["USA", "CHN", "DEU", "JPN", "FRA"],
-    values=[25500, 17700, 4400, 4200, 3100],
-)
-```
-
-```python
-import seraplot as sp
-
-chart = sp.build_bubble_map(
+chart = sp.bubble_map(
     "Populations urbaines",
     labels=["Paris", "Tokyo", "New York", "Lagos"],
     values=[11, 37, 20, 15],
@@ -249,26 +183,21 @@ chart = sp.build_bubble_map(
 )
 ```
 
-### Carte à bulles par état américain
+### Lire un seul groupe de régions
 
 ```python
 import seraplot as sp
 
-chart = sp.build_bubble_map(
-    "Populations des grandes métropoles (millions)",
-    labels=["CA", "TX", "NY", "FL", "IL", "PA", "OH", "WA"],
-    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, 11.8, 7.8],
+chart = sp.bubble_map(
+    "Populations métropolitaines du Nord-Est (millions)",
+    labels=["NY", "PA", "MA", "NJ", "CT"],
+    values=[19.6, 12.9, 7.0, 9.3, 3.6],
     map="usa_states",
+    region="Northeast",
+    variant="proportional",
 )
 ```
 
-<details>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Aperçu</summary>
-
-<iframe src="../../previews/bubble-map-usa-states.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
+`region` accepte tout nom de groupe exposé par l'ensemble propre à `map` — les continents pour `"world"`, les régions de recensement pour `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
 
 </div>
