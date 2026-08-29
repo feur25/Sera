@@ -344,13 +344,9 @@ pub struct PlotDocData {
     pub alias_entries: Vec<(String, Vec<String>)>,
 }
 
-fn parse_plot_family(src: &str) -> Vec<(String, Vec<String>)> {
-    let Some(start) = src.find("plot_family!") else {
-        return Vec::new();
-    };
-    let Some(open_rel) = src[start..].find('{') else {
-        return Vec::new();
-    };
+fn locate_plot_family_block(src: &str) -> Option<&str> {
+    let start = src.find("plot_family!")?;
+    let open_rel = src[start..].find('{')?;
     let open = start + open_rel;
     let mut depth = 0i32;
     let mut close = src.len();
@@ -383,9 +379,34 @@ fn parse_plot_family(src: &str) -> Vec<(String, Vec<String>)> {
         }
     }
     if close <= open {
-        return Vec::new();
+        return None;
     }
-    let body = &src[open + 1..close];
+    Some(&src[open + 1..close])
+}
+
+fn parse_plot_family_kind(src: &str) -> String {
+    let default_kind = "2d".to_string();
+    let Some(body) = locate_plot_family_block(src) else {
+        return default_kind;
+    };
+    let header = body.split("=>").next().unwrap_or(body);
+    let Some(after_kw) = header.find("kind").map(|p| &header[p + 4..]) else {
+        return default_kind;
+    };
+    let Some(q1) = after_kw.find('"') else {
+        return default_kind;
+    };
+    let after_quote = &after_kw[q1 + 1..];
+    let Some(q2) = after_quote.find('"') else {
+        return default_kind;
+    };
+    after_quote[..q2].to_string()
+}
+
+fn parse_plot_family(src: &str) -> Vec<(String, Vec<String>)> {
+    let Some(body) = locate_plot_family_block(src) else {
+        return Vec::new();
+    };
     let mut out = Vec::new();
     for line in body.lines() {
         let Some(pos) = line.find("=>") else {
@@ -665,7 +686,7 @@ pub fn write_registry(
     let mut files = Vec::new();
     crate::build_common::walk(plot_root, &mut files);
     files.sort();
-    let mut families: Vec<(String, Vec<(String, Vec<String>)>)> = Vec::new();
+    let mut families: Vec<(String, Vec<(String, Vec<String>)>, String)> = Vec::new();
     let mut themes: Vec<(String, Vec<String>)> = Vec::new();
     for f in files {
         let Ok(src) = fs::read_to_string(&f) else {
@@ -685,13 +706,14 @@ pub fn write_registry(
                 .and_then(|p| p.file_name())
                 .and_then(|n| n.to_str())
             {
-                families.push((parent.to_string(), parsed));
+                let kind = parse_plot_family_kind(&src);
+                families.push((parent.to_string(), parsed, kind));
             }
         }
     }
     families.sort_by(|a, b| a.0.cmp(&b.0));
     let mut js = String::from("window.SeraPlotDocRegistry={variants:{");
-    for (fi, (family, variants)) in families.iter().enumerate() {
+    for (fi, (family, variants, kind)) in families.iter().enumerate() {
         if fi > 0 {
             js.push(',');
         }
@@ -719,7 +741,9 @@ pub fn write_registry(
             }
             js.push_str("]}");
         }
-        js.push_str("]}");
+        js.push_str("],kind:\"");
+        js.push_str(&crate::build_common::js_escape(kind));
+        js.push_str("\"}");
     }
     js.push_str("},params:{");
     for (i, (f, v, k)) in demo_entries.iter().enumerate() {

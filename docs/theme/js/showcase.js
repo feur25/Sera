@@ -5,7 +5,6 @@
     "candlestick3d", "dumbbell3d", "funnel3d", "sunburst3d",
     "stacked-bar3d", "globe3d",
   ];
-  var MAPS = ["bubble-map", "choropleth"];
 
   function slugify(key) {
     return key.replace(/_/g, "-");
@@ -120,19 +119,29 @@
     container.appendChild(sec);
   }
 
+  function familyKind(entry) {
+    return (entry && entry.kind) || "2d";
+  }
+
   function build(root, lang) {
     root.innerHTML = "";
     var reg = window.SeraPlotDocRegistry;
     var variants = (reg && reg.variants) || {};
+    var families = Object.keys(variants);
 
-    var twoD = Object.keys(variants)
-      .map(slugify)
-      .filter(function (s) { return THREE_D.indexOf(s) === -1 && MAPS.indexOf(s) === -1; })
-      .sort()
-      .map(function (s) { return { slug: s, title: titleCase(s) }; });
+    var byKind = function (kind) {
+      return families
+        .filter(function (name) { return familyKind(variants[name]) === kind; })
+        .map(slugify)
+        .sort()
+        .map(function (s) { return { slug: s, title: titleCase(s) }; });
+    };
 
-    var threeD = THREE_D.map(function (s) { return { slug: s, title: titleCase(s) }; });
-    var maps = MAPS.map(function (s) { return { slug: s, title: titleCase(s) }; });
+    var twoD = byKind("2d");
+    var maps = byKind("map");
+    var threeD = families.some(function (name) { return familyKind(variants[name]) === "3d"; })
+      ? byKind("3d")
+      : THREE_D.map(function (s) { return { slug: s, title: titleCase(s) }; });
 
     var titles = lang === "fr"
       ? { d2: "Graphiques 2D", d3: "Graphiques 3D", map: "Cartes", count: "familles enregistrées — lu depuis le registre SeraPlot" }
