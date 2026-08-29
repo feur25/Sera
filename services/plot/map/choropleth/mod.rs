@@ -249,7 +249,10 @@ mod tests {
                 continue;
             }
             let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
-            std::fs::write(format!("docs/previews/choropleth-{stem}.html"), html).unwrap();
+            std::fs::write(format!("docs/previews/choropleth-{stem}.html"), &html).unwrap();
+            if stem == ChoroplethVariant::default_key() {
+                std::fs::write("docs/previews/choropleth.html", &html).unwrap();
+            }
         }
     }
 }

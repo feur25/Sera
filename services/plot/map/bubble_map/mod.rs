@@ -259,7 +259,10 @@ mod tests {
                 continue;
             }
             let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
-            std::fs::write(format!("docs/previews/bubble-map-{stem}.html"), html).unwrap();
+            std::fs::write(format!("docs/previews/bubble-map-{stem}.html"), &html).unwrap();
+            if stem == BubbleMapVariant::default_key() {
+                std::fs::write("docs/previews/bubble-map.html", &html).unwrap();
+            }
         }
     }
 }
