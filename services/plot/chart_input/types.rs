@@ -74,6 +74,7 @@ pub struct ChartOpts {
     pub hover_json: Option<String>,
     pub legend_position: Option<String>,
     pub scene: Option<String>,
+    pub map: Option<String>,
     pub orientation3d: Option<String>,
     pub palette: Option<Vec<u32>>,
     pub background: Option<String>,
