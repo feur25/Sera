@@ -40,6 +40,30 @@ pub fn group_codes(region: &RegionSetEntry, group: &str) -> Option<&'static [&'s
         .map(|(_, codes)| *codes)
 }
 
+pub fn centroid_of(region: &RegionSetEntry, shape: &CountryShape) -> [f32; 2] {
+    let polys = (region.normalize)(shape);
+    let mut best: Option<&Vec<[f32; 2]>> = None;
+    let mut best_len = 0;
+    for poly in &polys {
+        if poly.len() > best_len {
+            best_len = poly.len();
+            best = Some(poly);
+        }
+    }
+    match best {
+        Some(poly) if !poly.is_empty() => {
+            let mut sx = 0.0f32;
+            let mut sy = 0.0f32;
+            for p in poly {
+                sx += p[0];
+                sy += p[1];
+            }
+            [sx / poly.len() as f32, sy / poly.len() as f32]
+        }
+        _ => [0.5, 0.5],
+    }
+}
+
 pub fn shapes_in_group(region: &RegionSetEntry, group: &str) -> Vec<&'static CountryShape> {
     match group_codes(region, group) {
         Some(codes) => (region.all)()

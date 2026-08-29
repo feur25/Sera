@@ -4,7 +4,7 @@ use crate::core::math::heat_color;
 use crate::plot::map::projections::Projection;
 
 #[crate::chart_demo(
-    "labels=[\"USA\",\"CAN\",\"RUS\",\"NOR\",\"SWE\",\"FIN\",\"ISL\",\"GRL\",\"CHN\",\"DEU\",\"FRA\",\"JPN\"], values=[12.4,9.1,5.2,3.8,2.9,2.1,0.7,0.1,1.0,4.0,3.5,1.5], title=\"Arctic Research Stations (count)\", center_lat=90, center_lon=0"
+    "labels=[\"US\",\"CA\",\"RU\",\"NO\",\"SE\",\"FI\",\"IS\",\"GL\",\"CN\",\"DE\",\"FR\",\"JP\"], values=[12.4,9.1,5.2,3.8,2.9,2.1,0.7,0.1,1.0,4.0,3.5,1.5], title=\"Arctic Research Stations (count)\", center_lat=90, center_lon=0"
 )]
 
 pub fn render(cfg: &ChoroplethConfig) -> String {

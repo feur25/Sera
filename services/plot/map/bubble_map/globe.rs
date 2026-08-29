@@ -3,7 +3,7 @@ use super::config::BubbleMapConfig;
 use crate::plot::map::projections::{self, Projection};
 
 #[crate::chart_demo(
-    "labels=[\"USA\",\"BRA\",\"CHN\",\"IND\",\"RUS\",\"AUS\",\"CAN\",\"ZAF\",\"EGY\",\"FRA\"], values=[331.9,213.3,1412.0,1380.0,144.1,25.7,38.2,59.9,104.3,67.8], title=\"Population by Country (millions)\", center_lat=15, center_lon=10"
+    "labels=[\"US\",\"BR\",\"CN\",\"IN\",\"RU\",\"AU\",\"CA\",\"ZA\",\"EG\",\"FR\"], values=[331.9,213.3,1412.0,1380.0,144.1,25.7,38.2,59.9,104.3,67.8], title=\"Population by Country (millions)\", center_lat=15, center_lon=10"
 )]
 
 pub fn render(cfg: &BubbleMapConfig) -> String {
