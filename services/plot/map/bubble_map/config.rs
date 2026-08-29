@@ -19,7 +19,7 @@ pub struct BubbleMapConfig<'a> {
 impl<'a> BubbleMapConfig<'a> {
     pub fn new(region: &'static RegionSetEntry) -> Self {
         Self {
-            variant: super::variant::BubbleMapVariant::Filled,
+            variant: super::variant::BubbleMapVariant::Proportional,
             title: "",
             labels: &[],
             values: &[],

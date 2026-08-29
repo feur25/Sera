@@ -14,13 +14,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
+`sp.bubble_map(title, labels=None, values=None, *, variant="proportional", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
 ## Description
 
-`sp.bubble_map()` marks matched regions on a map. `variant` selects whether the whole region gets filled by category or a proportionally-sized circle marks its centroid; `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set. All three are read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
+`sp.bubble_map()` marks matched regions on a map with a proportionally-sized circle at each centroid by default — real bubbles, not filled shapes; pick `variant="filled"` instead when it's the regions themselves the reader should compare, not a magnitude. `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set. All three are read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
 
 ## Variants
 
@@ -45,30 +45,30 @@ Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`
 <div class="sp-cls sp-open" id="bubblemap-en">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('bubblemap-en')" title="Collapse / expand">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 </div>
 <div class="sp-cls-body">
 
-<div class="sp-variant sp-von" id="bubblemap-en-filled">
+<div class="sp-variant sp-von" id="bubblemap-en-proportional">
 
-Each matched region filled solid with its own palette color and labeled at its centroid — reads as a categorical highlight map rather than true bubbles, useful when the regions themselves are what the reader should compare.
+The default, and the real graduated-symbol map: the base is muted, and a circle sits on each matched region's centroid, its radius scaled by `sqrt(value)` so *area* — not radius — reads proportionally to magnitude. `min_bubble_size` / `max_bubble_size` set the radius range in pixels.
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"regions"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
-</div>
-
-<div class="sp-variant" id="bubblemap-en-proportional">
-
-The real graduated-symbol map: the base is muted, and a circle sits on each matched region's centroid, its radius scaled by `sqrt(value)` so *area* — not radius — reads proportionally to magnitude. `min_bubble_size` / `max_bubble_size` set the radius range in pixels.
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code></span><span><strong>Aliases</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code></span><span><strong>Aliases</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code> / <code>"basic"</code> / <code>"default"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-filled">
+
+Not a bubble at all by design: each matched region filled solid with its own palette color and labeled at its centroid — a categorical highlight map, for when it's the regions themselves the reader should compare rather than a magnitude. Reach for `choropleth` instead if the fill color should encode a continuous value.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"regions"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubblemap-en-globe">
@@ -90,13 +90,13 @@ Proportional circles projected onto an orthographic sphere — every centroid is
 
 ## Signature
 
-`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
+`sp.bubble_map(title, labels=None, values=None, *, variant="proportional", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
 ## Description
 
-`sp.bubble_map()` repère les régions correspondantes sur une carte. `variant` sélectionne si la région entière est remplie par catégorie ou si un cercle de taille proportionnelle marque son centroïde ; `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble. Les trois sont lus en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
+`sp.bubble_map()` repère les régions correspondantes sur une carte avec, par défaut, un cercle de taille proportionnelle à son centroïde — de vraies bulles, pas des régions remplies ; prendre `variant="filled"` plutôt quand ce sont les régions elles-mêmes que le lecteur doit comparer, pas une magnitude. `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble. Les trois sont lus en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
 
 ## Variantes
 
@@ -121,30 +121,30 @@ Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`,
 <div class="sp-cls sp-open" id="bubblemap-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('bubblemap-fr')" title="Réduire / déplier">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 </div>
 <div class="sp-cls-body">
 
-<div class="sp-variant sp-von" id="bubblemap-fr-filled">
+<div class="sp-variant sp-von" id="bubblemap-fr-proportional">
 
-Chaque région correspondante remplie en aplat de sa propre couleur de palette et étiquetée à son centroïde — se lit comme une carte de mise en évidence catégorielle plutôt que de vraies bulles, utile quand ce sont les régions elles-mêmes que le lecteur doit comparer.
+Le défaut, et la vraie carte à symboles proportionnels : le fond est estompé, et un cercle se place sur le centroïde de chaque région correspondante, son rayon mis à l'échelle par `sqrt(valeur)` pour que ce soit l'*aire* — pas le rayon — qui soit proportionnelle à la magnitude. `min_bubble_size` / `max_bubble_size` règlent la plage de rayon en pixels.
 
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"regions"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
-</div>
-
-<div class="sp-variant" id="bubblemap-fr-proportional">
-
-La vraie carte à symboles proportionnels : le fond est estompé, et un cercle se place sur le centroïde de chaque région correspondante, son rayon mis à l'échelle par `sqrt(valeur)` pour que ce soit l'*aire* — pas le rayon — qui soit proportionnelle à la magnitude. `min_bubble_size` / `max_bubble_size` règlent la plage de rayon en pixels.
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code></span><span><strong>Alias</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code></span><span><strong>Alias</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code> / <code>"basic"</code> / <code>"default"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-filled">
+
+Pas du tout des bulles, volontairement : chaque région correspondante remplie en aplat de sa propre couleur de palette et étiquetée à son centroïde — une carte de mise en évidence catégorielle, pour quand ce sont les régions elles-mêmes que le lecteur doit comparer plutôt qu'une magnitude. Utiliser plutôt `choropleth` si la couleur de remplissage doit encoder une valeur continue.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"regions"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="bubblemap-fr-globe">

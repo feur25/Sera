@@ -1,7 +1,7 @@
 crate::plot_family! {
-    pub enum BubbleMapVariant default Filled family "bubble_map" kind "map" {
-        Filled       => "filled" | "basic" | "default" | "regions",
-        Proportional => "proportional" | "bubble" | "graduated" | "sized",
+    pub enum BubbleMapVariant default Proportional family "bubble_map" kind "map" {
+        Proportional => "proportional" | "bubble" | "graduated" | "sized" | "basic" | "default",
+        Filled       => "filled" | "regions",
         Globe        => "globe" | "orthographic" | "sphere" | "space",
     }
 }

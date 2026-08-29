@@ -190,7 +190,7 @@ pub fn build_bubble_map(input: &str) -> String {
     let region = regions::resolve(o.map.as_deref().unwrap_or(""))
         .or_else(regions::default_region_set)
         .expect("world region set must be registered");
-    let variant = BubbleMapVariant::from_str(o.variant.as_deref().unwrap_or("filled"));
+    let variant = BubbleMapVariant::from_str(o.variant.as_deref().unwrap_or("proportional"));
     let cfg = BubbleMapConfig {
         variant,
         title,
@@ -223,6 +223,12 @@ mod tests {
     fn build_bubble_map_switches_to_usa_states_via_the_map_option() {
         let out = build_bubble_map(r#"{"title":"t","labels":["CA","TX"],"values":[10.0,20.0],"map":"usa_states"}"#);
         assert!(out.contains("<svg"), "expected a real svg for the usa_states map: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_draws_real_circles_with_no_variant_given() {
+        let out = build_bubble_map(r#"{"title":"t","labels":["CA","TX"],"values":[10.0,20.0],"map":"usa_states"}"#);
+        assert!(out.contains("<circle"), "a bubble map with no variant given must default to real bubbles, not filled regions: {out}");
     }
 
     #[test]
