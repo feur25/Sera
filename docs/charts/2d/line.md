@@ -164,7 +164,7 @@ Each segment is colored on a diverging scale by its own local slope, with a matc
 
 <div class="sp-variant" id="line-en-epoch">
 
-Auto-segments the series into narrative chapters at its own significant turning points, shades each by net direction, and captions it with a plain-language badge — the chart writes its own headline instead of asking the reader to compute one.
+Auto-segments the series into narrative chapters at its own significant turning points, shades each by net direction, and captions it with a plain-language badge — the chart writes its own headline instead of asking the reader to compute one. `epoch_pos_color` / `epoch_neg_color` / `epoch_flat_color` (hex ints) recolor the rising/falling/flat chapters.
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"epoch"</code></span><span><strong>Aliases</strong> <code>"epoch"</code> / <code>"chapters"</code> / <code>"regime_bands"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -331,7 +331,7 @@ Chaque segment est coloré sur une échelle divergente selon sa propre pente loc
 
 <div class="sp-variant" id="line-fr-epoch">
 
-Segmente automatiquement la série en chapitres narratifs à ses propres points de retournement significatifs, teinte chacun selon sa direction nette, et le légende avec un badge en langage clair — le graphique écrit lui-même son titre au lieu de laisser le lecteur le calculer.
+Segmente automatiquement la série en chapitres narratifs à ses propres points de retournement significatifs, teinte chacun selon sa direction nette, et le légende avec un badge en langage clair — le graphique écrit lui-même son titre au lieu de laisser le lecteur le calculer. `epoch_pos_color` / `epoch_neg_color` / `epoch_flat_color` (entiers hexadécimaux) recolorent les chapitres en hausse/baisse/stable.
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"epoch"</code></span><span><strong>Alias</strong> <code>"epoch"</code> / <code>"chapters"</code> / <code>"regime_bands"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
