@@ -49,11 +49,7 @@ fn get_states() -> &'static Vec<CountryShape> {
 }
 
 pub fn lookup_state(key: &str) -> Option<&'static CountryShape> {
-    let states = get_states();
-    let key_upper = key.to_uppercase();
-    states
-        .iter()
-        .find(|s| s.id == key_upper || s.name.eq_ignore_ascii_case(key))
+    super::find_by_id_or_name(get_states(), key)
 }
 
 pub fn all_states() -> &'static [CountryShape] {
@@ -68,11 +64,7 @@ const SVG_WIDTH: f32 = 959.0;
 const SVG_HEIGHT: f32 = 593.0;
 
 pub fn normalized_polygons(shape: &CountryShape) -> Vec<Vec<[f32; 2]>> {
-    shape
-        .polygons
-        .iter()
-        .map(|poly| poly.iter().map(|[x, y]| [x / SVG_WIDTH, y / SVG_HEIGHT]).collect())
-        .collect()
+    super::normalize_with(shape, SVG_WIDTH, SVG_HEIGHT)
 }
 
 inventory::submit! {

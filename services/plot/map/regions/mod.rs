@@ -50,6 +50,14 @@ pub fn group_codes(region: &RegionSetEntry, group: &str) -> Option<&'static [&'s
         .map(|(_, codes)| *codes)
 }
 
+pub fn find_by_id_or_name<'a>(shapes: &'a [CountryShape], key: &str) -> Option<&'a CountryShape> {
+    shapes.iter().find(|s| s.id.eq_ignore_ascii_case(key) || s.name.eq_ignore_ascii_case(key))
+}
+
+pub fn normalize_with(shape: &CountryShape, width: f32, height: f32) -> Vec<Vec<[f32; 2]>> {
+    shape.polygons.iter().map(|poly| poly.iter().map(|[x, y]| [x / width, y / height]).collect()).collect()
+}
+
 pub fn centroid_of(region: &RegionSetEntry, shape: &CountryShape) -> [f32; 2] {
     let polys = (region.normalize)(shape);
     let mut best: Option<&Vec<[f32; 2]>> = None;

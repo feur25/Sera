@@ -28,9 +28,7 @@ macro_rules! declare_named_region_set {
             }
 
             pub fn lookup(key: &str) -> Option<&'static CountryShape> {
-                get_shapes()
-                    .iter()
-                    .find(|s| s.id.eq_ignore_ascii_case(key) || s.name.eq_ignore_ascii_case(key))
+                $crate::plot::map::regions::find_by_id_or_name(get_shapes(), key)
             }
 
             pub fn all() -> &'static [CountryShape] {
@@ -42,11 +40,7 @@ macro_rules! declare_named_region_set {
             }
 
             pub fn normalized_polygons(shape: &CountryShape) -> Vec<Vec<[f32; 2]>> {
-                shape
-                    .polygons
-                    .iter()
-                    .map(|poly| poly.iter().map(|[x, y]| [x / SVG_WIDTH, y / SVG_HEIGHT]).collect())
-                    .collect()
+                $crate::plot::map::regions::normalize_with(shape, SVG_WIDTH, SVG_HEIGHT)
             }
 
             inventory::submit! {
