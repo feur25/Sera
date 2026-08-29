@@ -210,23 +210,8 @@ mod tests {
 
     #[test]
     fn build_choropleth_renders_every_newly_registered_country_region_set() {
-        let maps = &[
-            "germany_states",
-            "brazil_states",
-            "france_regions",
-            "spain_provinces",
-            "italy_provinces",
-            "poland_voivodeships",
-            "netherlands_provinces",
-            "sweden_counties",
-            "india_states",
-            "japan_prefectures",
-            "china_provinces",
-            "australia_states",
-            "mexico_states",
-        ];
-        for map in maps {
-            let region = crate::plot::map::regions::resolve(map).unwrap_or_else(|| panic!("{map} must be registered"));
+        for region in crate::plot::map::regions::all_region_sets() {
+            let map = region.key;
             let shapes = (region.all)();
             let n = shapes.len().min(3);
             let labels: Vec<&str> = shapes[..n].iter().map(|s| s.id.as_str()).collect();
@@ -300,24 +285,9 @@ mod tests {
     #[test]
     #[ignore]
     fn write_new_region_set_visual_checks() {
-        let maps = &[
-            "germany_states",
-            "brazil_states",
-            "france_regions",
-            "spain_provinces",
-            "italy_provinces",
-            "poland_voivodeships",
-            "netherlands_provinces",
-            "sweden_counties",
-            "india_states",
-            "japan_prefectures",
-            "china_provinces",
-            "australia_states",
-            "mexico_states",
-        ];
         let out_dir = std::env::var("SP_VISUAL_CHECK_DIR").unwrap_or_else(|_| ".".to_string());
-        for map in maps {
-            let region = crate::plot::map::regions::resolve(map).unwrap_or_else(|| panic!("{map} must be registered"));
+        for region in crate::plot::map::regions::all_region_sets() {
+            let map = region.key;
             let shapes = (region.all)();
             let labels: Vec<String> = shapes.iter().map(|s| s.id.clone()).collect();
             let values: Vec<f64> = (0..labels.len()).map(|i| i as f64).collect();
