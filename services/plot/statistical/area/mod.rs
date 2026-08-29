@@ -3,6 +3,7 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod gradient;
+pub mod leader;
 pub mod percent;
 pub mod ribbon;
 pub mod spline;
@@ -45,6 +46,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         Gradient => gradient::render(cfg),
         Ribbon => ribbon::render(cfg),
         Wave => wave::render(cfg),
+        Leader => leader::render(cfg),
     }
 }
 

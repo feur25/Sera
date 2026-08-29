@@ -8,5 +8,6 @@ crate::plot_family! {
         Gradient => "gradient" | "glow" | "fade",
         Ribbon   => "ribbon" | "outlined" | "bordered" | "ggplot",
         Wave     => "wave" | "signed" | "oscillating" | "stackplot",
+        Leader   => "leader" | "leaderboard" | "frontrunner" | "lead_race",
     }
 }
