@@ -6,6 +6,7 @@ pub mod connected_scatter;
 pub mod dashed;
 pub mod filled;
 pub mod gapped;
+pub mod momentum;
 pub mod multi;
 pub mod sparkline;
 pub mod spline;
@@ -63,6 +64,7 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         ConnectedScatter => connected_scatter::render(cfg),
         Gapped => gapped::render(cfg),
         Band => band::render(cfg),
+        Momentum => momentum::render(cfg),
     }
 }
 
