@@ -10,6 +10,8 @@ pub struct RegionSetEntry {
     pub all: fn() -> &'static [CountryShape],
     pub groups: fn() -> &'static [(&'static str, &'static [&'static str])],
     pub normalize: fn(&CountryShape) -> Vec<Vec<[f32; 2]>>,
+    pub svg_width: f32,
+    pub svg_height: f32,
 }
 
 inventory::collect!(RegionSetEntry);
@@ -43,6 +45,8 @@ inventory::submit! {
         all: crate::plot::map::world_data::all_countries,
         groups: world_groups,
         normalize: crate::plot::map::world_data::normalized_polygons,
+        svg_width: 1009.6727,
+        svg_height: 665.96301,
     }
 }
 

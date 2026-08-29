@@ -83,6 +83,8 @@ inventory::submit! {
         all: all_states,
         groups: census_regions,
         normalize: normalized_polygons,
+        svg_width: SVG_WIDTH,
+        svg_height: SVG_HEIGHT,
     }
 }
 
