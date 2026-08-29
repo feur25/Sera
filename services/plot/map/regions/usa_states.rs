@@ -85,6 +85,7 @@ inventory::submit! {
         normalize: normalized_polygons,
         svg_width: SVG_WIDTH,
         svg_height: SVG_HEIGHT,
+        to_latlon: None,
     }
 }
 

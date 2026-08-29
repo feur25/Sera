@@ -2,6 +2,7 @@ pub mod _3d;
 pub mod bubble_map;
 pub mod chart;
 pub mod choropleth;
+pub mod projections;
 pub mod regions;
 pub mod svg_parser;
 pub mod world_data;

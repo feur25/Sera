@@ -12,6 +12,7 @@ pub struct RegionSetEntry {
     pub normalize: fn(&CountryShape) -> Vec<Vec<[f32; 2]>>,
     pub svg_width: f32,
     pub svg_height: f32,
+    pub to_latlon: Option<fn(f32, f32) -> (f64, f64)>,
 }
 
 inventory::collect!(RegionSetEntry);
@@ -68,6 +69,7 @@ inventory::submit! {
         normalize: crate::plot::map::world_data::normalized_polygons,
         svg_width: 1009.6727,
         svg_height: 665.96301,
+        to_latlon: Some(crate::plot::map::world_data::svg_to_latlon),
     }
 }
 
