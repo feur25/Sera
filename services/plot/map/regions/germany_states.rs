@@ -45,7 +45,7 @@ fn get_states() -> &'static Vec<CountryShape> {
                     .map(|(_, code, name)| CountryShape {
                         id: code.to_string(),
                         name: name.to_string(),
-                        polygons: shape.polygons,
+                        ..shape
                     })
             })
             .collect()

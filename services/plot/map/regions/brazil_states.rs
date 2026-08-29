@@ -60,7 +60,7 @@ fn get_states() -> &'static Vec<CountryShape> {
                 if name.is_empty() {
                     return None;
                 }
-                Some(CountryShape { id: code, name, polygons: shape.polygons })
+                Some(CountryShape { id: code, name, ..shape })
             })
             .collect()
     })

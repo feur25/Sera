@@ -1,3 +1,4 @@
+use super::RegionSetEntry;
 use crate::plot::map::svg_parser::{parse_region_svg, CountryShape};
 use std::sync::OnceLock;
 
@@ -75,7 +76,7 @@ pub fn normalized_polygons(shape: &CountryShape) -> Vec<Vec<[f32; 2]>> {
 }
 
 inventory::submit! {
-    super::RegionSetEntry {
+    RegionSetEntry {
         key: "usa_states",
         aliases: &["usa", "us", "us_states", "united_states", "states"],
         display_name: "United States (states)",
