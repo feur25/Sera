@@ -109,6 +109,7 @@ export const downsampleLttb: (a: number, b: number) => [number, number];
 export const driftKs: (a: number, b: number) => [number, number];
 export const exportHtmlFile: (a: number, b: number) => [number, number];
 export const list: () => [number, number];
+export const mapRegions: () => [number, number];
 export const mlAdaboostClassifier: (a: number, b: number) => [number, number];
 export const mlAdaboostRegressor: (a: number, b: number) => [number, number];
 export const mlBernoulliNb: (a: number, b: number) => [number, number];

@@ -224,6 +224,8 @@ declare namespace wasm_bindgen {
 
     export function list(): string;
 
+    export function mapRegions(): string;
+
     export function mlAdaboostClassifier(input: string): string;
 
     export function mlAdaboostRegressor(input: string): string;
@@ -555,6 +557,7 @@ declare interface InitOutput {
     readonly driftKs: (a: number, b: number) => [number, number];
     readonly exportHtmlFile: (a: number, b: number) => [number, number];
     readonly list: () => [number, number];
+    readonly mapRegions: () => [number, number];
     readonly mlAdaboostClassifier: (a: number, b: number) => [number, number];
     readonly mlAdaboostRegressor: (a: number, b: number) => [number, number];
     readonly mlBernoulliNb: (a: number, b: number) => [number, number];
