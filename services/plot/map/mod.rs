@@ -9,7 +9,10 @@ pub mod world_data;
 pub use _3d::register_map_3d_types;
 pub use _3d::*;
 pub use bubble_map::build_bubble_map;
-pub use bubble_map::{render_bubble_map, render_bubble_map_fast, render_bubble_map_html};
+pub use bubble_map::{
+    render_bubble_map, render_bubble_map_fast, render_bubble_map_fast_for, render_bubble_map_html,
+    render_bubble_map_html_for,
+};
 pub use chart::register_map_types;
 pub use choropleth::build_choropleth;
 pub use choropleth::{

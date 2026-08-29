@@ -1,3 +1,4 @@
+use super::regions::{self, RegionSetEntry};
 use super::world_data;
 use crate::plot::default::PlotRenderContext;
 use crate::plot::{apply, parse_all};
@@ -23,6 +24,16 @@ pub fn render_bubble_map_fast(
     width: i32,
     height: i32,
 ) -> String {
+    render_bubble_map_fast_for(values, labels, width, height, regions::default_region_set().expect("world region set must be registered"))
+}
+
+pub fn render_bubble_map_fast_for(
+    values: &[f64],
+    labels: &[String],
+    width: i32,
+    height: i32,
+    region: &RegionSetEntry,
+) -> String {
     let n = values.len().min(labels.len());
     if n == 0 {
         return String::new();
@@ -42,8 +53,8 @@ pub fn render_bubble_map_fast(
     svg.push_str(&height.to_string());
     svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0d1117\"/>");
 
-    for shape in world_data::all_countries() {
-        let polys = world_data::normalized_polygons(shape);
+    for shape in (region.all)() {
+        let polys = (region.normalize)(shape);
         for poly in &polys {
             if poly.len() < 3 {
                 continue;
@@ -62,9 +73,9 @@ pub fn render_bubble_map_fast(
     }
 
     for i in 0..n {
-        if let Some(shape) = world_data::lookup_country(&labels[i]) {
+        if let Some(shape) = (region.lookup)(&labels[i]) {
             let (r, g, b) = PALETTE[i % PALETTE.len()];
-            let polys = world_data::normalized_polygons(shape);
+            let polys = (region.normalize)(shape);
             for poly in &polys {
                 if poly.len() < 3 {
                     continue;
@@ -82,8 +93,8 @@ pub fn render_bubble_map_fast(
             }
 
             let centroid = world_data::shape_centroid(shape);
-            let cx = centroid[0] / 1009.6727 * width as f32;
-            let cy = centroid[1] / 665.963 * height as f32;
+            let cx = centroid[0] / region.svg_width * width as f32;
+            let cy = centroid[1] / region.svg_height * height as f32;
             svg.push_str(&format!(
                 "<text x=\"{:.0}\" y=\"{:.0}\" fill=\"white\" font-size=\"8\" text-anchor=\"middle\" dominant-baseline=\"middle\">{}</text>",
                 cx, cy, shape.id
@@ -253,6 +264,19 @@ pub fn render_bubble_map_html(
     height: i32,
     hover: &[crate::html::hover::HoverSlot],
 ) -> String {
+    render_bubble_map_html_for(title, labels, values, width, height, hover, regions::default_region_set().expect("world region set must be registered"))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_bubble_map_html_for(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    width: i32,
+    height: i32,
+    hover: &[crate::html::hover::HoverSlot],
+    region: &RegionSetEntry,
+) -> String {
     use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = values.len().min(labels.len());
     if n == 0 {
@@ -270,7 +294,7 @@ pub fn render_bubble_map_html(
                 .push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i])));
         }
     }
-    let mut svg = render_bubble_map_fast(values, labels, width, height);
+    let mut svg = render_bubble_map_fast_for(values, labels, width, height, region);
     svg = svg.replace("data-index=\"", "data-idx=\"");
     let slots = if auto { &auto_slots } else { hover };
     build_chart_html(title, &svg, &slots_to_json(slots))
@@ -284,19 +308,62 @@ pub fn render_bubble_map_html(
     "geo_bubble_map"
 )]
 #[crate::sera_builder]
+#[crate::chart_demo(
+    "labels=[\"CA\",\"TX\",\"NY\",\"FL\",\"IL\",\"PA\",\"OH\",\"WA\"], values=[38.9,30.5,19.6,22.6,12.6,12.9,11.8,7.8], title=\"Largest Metro Populations (millions)\", map=\"usa_states\""
+)]
 pub fn build_bubble_map(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let hover = o.hj();
-    let html = crate::plot::map::render_bubble_map_html(
+    let region = regions::resolve(o.map.as_deref().unwrap_or(""))
+        .or_else(regions::default_region_set)
+        .expect("world region set must be registered");
+    let html = crate::plot::map::render_bubble_map_html_for(
         title,
         &labels,
         &values,
         o.w(1200),
         o.h(600),
         &hover,
+        region,
     );
     apply(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_bubble_map_defaults_to_world_and_still_matches_iso_country_codes() {
+        let out = build_bubble_map(r#"{"title":"t","labels":["FRA","DEU"],"values":[1.0,2.0]}"#);
+        assert!(out.contains("<svg"), "expected a real svg for the default world map: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_switches_to_usa_states_via_the_map_option() {
+        let out = build_bubble_map(r#"{"title":"t","labels":["CA","TX"],"values":[10.0,20.0],"map":"usa_states"}"#);
+        assert!(out.contains("<svg"), "expected a real svg for the usa_states map: {out}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_bubble_map_renders_non_empty_html() {
+        let entry = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("map/bubble_map.rs"))
+            .expect("bubble_map must have a chart_demo entry");
+        let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+        assert!(html.contains("<svg"), "bubble_map's own chart_demo must render a real svg: {html}");
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_asset() {
+        let entry = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("map/bubble_map.rs"))
+            .expect("bubble_map must have a chart_demo entry");
+        let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+        std::fs::write("docs/previews/bubble-map-usa-states.html", html).unwrap();
+    }
 }
