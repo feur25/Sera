@@ -40,6 +40,7 @@ from .seraplot import (
     _chart_themes_json,
     _scenes3d_json,
     _docs_json,
+    _chart_methods_json,
     chart_info,
     bind_colors,
     clear_color_bindings,
@@ -130,6 +131,11 @@ def _docs_json_cached():
     return _docs_json()
 
 
+@lru_cache(maxsize=1)
+def _chart_methods_json_cached():
+    return _chart_methods_json()
+
+
 def params(chart=None, variant=None):
     return _json.loads(_params_json_cached(chart, variant))
 
@@ -156,6 +162,10 @@ def scenes3d():
 
 def docs():
     return _json.loads(_docs_json_cached())
+
+
+def chart_methods():
+    return _json.loads(_chart_methods_json_cached())
 
 
 def _json_ready(value):
