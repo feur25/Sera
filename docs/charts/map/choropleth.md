@@ -106,22 +106,6 @@ Azimuthal equidistant, centered on a pole by default (`center_lat=90, center_lon
 </div>
 </div>
 
-### Reading one region group
-
-```python
-import seraplot as sp
-
-chart = sp.choropleth(
-    "Western US Population (millions)",
-    labels=["CA", "TX", "NY", "WA", "OR", "NV"],
-    values=[38.9, 30.5, 19.6, 7.8, 4.2, 3.2],
-    map="usa_states",
-    region="West",
-)
-```
-
-`region` accepts any group name a `map`'s own registered set exposes — continents for `"world"` (`Africa`, `Europe`, `Asia`, `Americas`, `Oceania`), Census regions for `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`). Everything outside the named group is still drawn as a muted outline for context, just never colored.
-
 </div>
 
 <div class="lang-fr" style="display:none">
@@ -219,21 +203,5 @@ Azimutale équidistante, centrée par défaut sur un pôle (`center_lat=90, cent
 
 </div>
 </div>
-
-### Lire un seul groupe de régions
-
-```python
-import seraplot as sp
-
-chart = sp.choropleth(
-    "Population de l'Ouest américain (millions)",
-    labels=["CA", "TX", "NY", "WA", "OR", "NV"],
-    values=[38.9, 30.5, 19.6, 7.8, 4.2, 3.2],
-    map="usa_states",
-    region="West",
-)
-```
-
-`region` accepte tout nom de groupe exposé par l'ensemble propre à `map` — les continents pour `"world"` (`Africa`, `Europe`, `Asia`, `Americas`, `Oceania`), les régions de recensement pour `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`). Tout ce qui est hors du groupe nommé reste dessiné en contour discret pour le contexte, simplement jamais colorié.
 
 </div>

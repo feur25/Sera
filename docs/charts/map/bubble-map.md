@@ -84,37 +84,6 @@ Proportional circles projected onto an orthographic sphere — every centroid is
 </div>
 </div>
 
-### Custom coordinates
-
-```python
-import seraplot as sp
-
-chart = sp.bubble_map(
-    "City Populations",
-    labels=["Paris", "Tokyo", "New York", "Lagos"],
-    values=[11, 37, 20, 15],
-    latitudes=[48.85, 35.68, 40.71, 6.52],
-    longitudes=[2.35, 139.69, -74.01, 3.38],
-)
-```
-
-### Reading one region group
-
-```python
-import seraplot as sp
-
-chart = sp.bubble_map(
-    "Northeast Metro Populations (millions)",
-    labels=["NY", "PA", "MA", "NJ", "CT"],
-    values=[19.6, 12.9, 7.0, 9.3, 3.6],
-    map="usa_states",
-    region="Northeast",
-    variant="proportional",
-)
-```
-
-`region` accepts any group name a `map`'s own registered set exposes — continents for `"world"`, Census regions for `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
-
 </div>
 
 <div class="lang-fr" style="display:none">
@@ -190,36 +159,5 @@ Cercles proportionnels projetés sur une sphère orthographique — chaque centr
 
 </div>
 </div>
-
-### Coordonnées personnalisées
-
-```python
-import seraplot as sp
-
-chart = sp.bubble_map(
-    "Populations urbaines",
-    labels=["Paris", "Tokyo", "New York", "Lagos"],
-    values=[11, 37, 20, 15],
-    latitudes=[48.85, 35.68, 40.71, 6.52],
-    longitudes=[2.35, 139.69, -74.01, 3.38],
-)
-```
-
-### Lire un seul groupe de régions
-
-```python
-import seraplot as sp
-
-chart = sp.bubble_map(
-    "Populations métropolitaines du Nord-Est (millions)",
-    labels=["NY", "PA", "MA", "NJ", "CT"],
-    values=[19.6, 12.9, 7.0, 9.3, 3.6],
-    map="usa_states",
-    region="Northeast",
-    variant="proportional",
-)
-```
-
-`region` accepte tout nom de groupe exposé par l'ensemble propre à `map` — les continents pour `"world"`, les régions de recensement pour `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
 
 </div>

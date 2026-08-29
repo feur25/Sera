@@ -73,23 +73,6 @@ The direct-line reading: origin and destination joined by a plain segment, width
 </div>
 </div>
 
-### Reading one region group
-
-```python
-import seraplot as sp
-
-chart = sp.flow_map(
-    "Interstate Migration",
-    labels=["CA", "TX", "NY", "FL", "WA"],
-    edges_i=[0, 1, 2],
-    edges_j=[1, 3, 4],
-    edges_w=[18.2, 9.4, 5.1],
-    map="usa_states",
-)
-```
-
-`region` accepts any group name a `map`'s own registered set exposes — continents or blocs (`European Union`, `G7`, `G20`, `ASEAN`, `BRICS`, `Nordic`, `Middle East`) for `"world"`, Census regions for `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
-
 </div>
 
 <div class="lang-fr" style="display:none">
@@ -154,22 +137,5 @@ La lecture en ligne directe : origine et destination reliées par un segment sim
 
 </div>
 </div>
-
-### Lire un seul groupe de régions
-
-```python
-import seraplot as sp
-
-chart = sp.flow_map(
-    "Migration Interétatique",
-    labels=["CA", "TX", "NY", "FL", "WA"],
-    edges_i=[0, 1, 2],
-    edges_j=[1, 3, 4],
-    edges_w=[18.2, 9.4, 5.1],
-    map="usa_states",
-)
-```
-
-`region` accepte tout nom de groupe exposé par l'ensemble propre à `map` — continents ou blocs (`European Union`, `G7`, `G20`, `ASEAN`, `BRICS`, `Nordic`, `Middle East`) pour `"world"`, régions de recensement pour `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
 
 </div>
