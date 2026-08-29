@@ -134,6 +134,7 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
     let mut cy: f64 = 0.0;
     let mut subpath_sx: f64 = 0.0;
     let mut subpath_sy: f64 = 0.0;
+    let mut line_absolute = false;
 
     let tokens = tokenize_path(d);
     let mut i = 0;
@@ -146,6 +147,7 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
                 } else {
                     current.clear();
                 }
+                line_absolute = true;
                 i += 1;
                 if i + 1 < tokens.len() {
                     if let (Token::Num(x), Token::Num(y)) = (tokens[i], tokens[i + 1]) {
@@ -164,6 +166,7 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
                 } else {
                     current.clear();
                 }
+                line_absolute = false;
                 i += 1;
                 if i + 1 < tokens.len() {
                     if let (Token::Num(dx), Token::Num(dy)) = (tokens[i], tokens[i + 1]) {
@@ -177,9 +180,11 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
                 }
             }
             Token::LAbs => {
+                line_absolute = true;
                 i += 1;
             }
             Token::LRel => {
+                line_absolute = false;
                 i += 1;
             }
             Token::VAbs => {
@@ -243,8 +248,13 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
             Token::Num(val) => {
                 if i + 1 < tokens.len() {
                     if let Token::Num(val2) = tokens[i + 1] {
-                        cx += val;
-                        cy += val2;
+                        if line_absolute {
+                            cx = val;
+                            cy = val2;
+                        } else {
+                            cx += val;
+                            cy += val2;
+                        }
                         current.push([cx as f32, cy as f32]);
                         i += 2;
                         continue;
@@ -364,6 +374,30 @@ fn tokenize_path(d: &str) -> Vec<Token> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parse_path_d_treats_repeated_explicit_absolute_lineto_as_absolute_not_relative() {
+        let polys = parse_path_d("M10,10 L20,10 L20,20 L10,20 Z");
+        assert_eq!(polys.len(), 1);
+        assert_eq!(polys[0], vec![[10.0, 10.0], [20.0, 10.0], [20.0, 20.0], [10.0, 20.0]]);
+    }
+
+    #[test]
+    fn parse_path_d_keeps_relative_lineto_accumulating_as_before() {
+        let polys = parse_path_d("m10,10 l10,0 l0,10 l-10,0 z");
+        assert_eq!(polys.len(), 1);
+        assert_eq!(polys[0], vec![[10.0, 10.0], [20.0, 10.0], [20.0, 20.0], [10.0, 20.0]]);
+    }
+
+    #[test]
+    fn parse_path_d_does_not_drift_over_a_long_absolute_polygon() {
+        let d = "M0,0 L100,0 L100,100 L0,100 L0,0 L50,50 L60,50 L60,60 L50,60 Z";
+        let polys = parse_path_d(d);
+        assert_eq!(polys.len(), 1);
+        for pt in &polys[0] {
+            assert!(pt[0] <= 100.0 && pt[1] <= 100.0, "point drifted out of bounds: {pt:?}");
+        }
+    }
 
     #[test]
     fn parse_world_svg_keeps_extracting_uppercase_id_attributes() {
