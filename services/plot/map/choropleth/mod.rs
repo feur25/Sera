@@ -209,6 +209,27 @@ mod tests {
     }
 
     #[test]
+    fn build_choropleth_renders_every_newly_registered_country_region_set() {
+        let cases: &[(&str, &[&str])] = &[
+            ("germany_states", &["BY", "NW", "BW"]),
+            ("brazil_states", &["SP", "MG", "RJ"]),
+            ("canada_provinces", &["ON", "QC", "BC"]),
+        ];
+        for (map, labels) in cases {
+            let input = format!(
+                r#"{{"title":"t","labels":{:?},"values":[1.0,2.0,3.0],"map":"{map}"}}"#,
+                labels
+            );
+            let out = build_choropleth(&input);
+            assert!(out.contains("<svg"), "{map} must render a real svg: {out}");
+            for i in 0..labels.len() {
+                let needle = format!("data-idx=\"{i}\"");
+                assert!(out.contains(&needle), "{map} must color region index {i}: {out}");
+            }
+        }
+    }
+
+    #[test]
     fn build_choropleth_falls_back_to_world_for_an_unknown_map_key() {
         let world = build_choropleth(r#"{"title":"t","labels":["FRA"],"values":[1.0]}"#);
         let unknown = build_choropleth(r#"{"title":"t","labels":["FRA"],"values":[1.0],"map":"atlantis"}"#);
