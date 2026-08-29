@@ -12,5 +12,6 @@ crate::plot_family! {
         Band             => "band" | "confidence_band" | "forecast" | "range_band",
         Momentum         => "momentum" | "slope_glow" | "trend_pulse",
         Epoch            => "epoch" | "chapters" | "regime_bands",
+        Pace             => "pace" | "pacing" | "glidepath" | "runway",
     }
 }

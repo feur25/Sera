@@ -39,6 +39,10 @@ pub struct LineConfig<'a> {
     pub epoch_pos_color: u32,
     pub epoch_neg_color: u32,
     pub epoch_flat_color: u32,
+
+    pub pace_target: Option<f64>,
+    pub pace_ahead_color: u32,
+    pub pace_behind_color: u32,
 }
 
 impl<'a> Default for LineConfig<'a> {
@@ -76,6 +80,10 @@ impl<'a> Default for LineConfig<'a> {
             epoch_pos_color: 0xB91C1C,
             epoch_neg_color: 0x1D4ED8,
             epoch_flat_color: 0x64748B,
+
+            pace_target: None,
+            pace_ahead_color: 0x16A34A,
+            pace_behind_color: 0xDC2626,
         }
     }
 }

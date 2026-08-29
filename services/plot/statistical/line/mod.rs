@@ -9,6 +9,7 @@ pub mod filled;
 pub mod gapped;
 pub mod momentum;
 pub mod multi;
+pub mod pace;
 pub mod sparkline;
 pub mod spline;
 pub mod stepped;
@@ -67,6 +68,7 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         Band => band::render(cfg),
         Momentum => momentum::render(cfg),
         Epoch => epoch::render(cfg),
+        Pace => pace::render(cfg),
     }
 }
 
@@ -169,6 +171,9 @@ pub fn build(input: &str) -> String {
         epoch_pos_color: o.epoch_pos_color.unwrap_or(0xB91C1C),
         epoch_neg_color: o.epoch_neg_color.unwrap_or(0x1D4ED8),
         epoch_flat_color: o.epoch_flat_color.unwrap_or(0x64748B),
+        pace_target: o.pace_target,
+        pace_ahead_color: o.pace_ahead_color.unwrap_or(0x16A34A),
+        pace_behind_color: o.pace_behind_color.unwrap_or(0xDC2626),
     };
     let html = render_line_html(&cfg);
     apply(html, &o)
