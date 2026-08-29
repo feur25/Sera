@@ -1,120 +1,13 @@
 crate::declare_named_region_set! {
-    argentina,
-    svg = "south-america/argentina_provinces",
-    width = 598.56,
-    height = 1000.00,
-    key = "argentina_provinces",
-    aliases = &["argentina", "ar", "argentine_provinces"],
-    display = "Argentina (provinces)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    colombia,
-    svg = "south-america/colombia_departments",
-    width = 833.50,
-    height = 1000.00,
-    key = "colombia_departments",
-    aliases = &["colombia", "co", "colombian_departments"],
-    display = "Colombia (departments)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    peru,
-    svg = "south-america/peru_regions",
-    width = 691.11,
-    height = 1000.00,
-    key = "peru_regions",
-    aliases = &["peru", "pe", "peruvian_regions"],
-    display = "Peru (regions)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    venezuela,
-    svg = "south-america/venezuela_states",
-    width = 901.81,
-    height = 1000.00,
-    key = "venezuela_states",
-    aliases = &["venezuela", "ve", "venezuelan_states"],
-    display = "Venezuela (states)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    ecuador,
-    svg = "south-america/ecuador_provinces",
-    width = 1000.00,
-    height = 397.74,
-    key = "ecuador_provinces",
-    aliases = &["ecuador", "ec", "ecuadorian_provinces"],
-    display = "Ecuador (provinces)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    bolivia,
-    svg = "south-america/bolivia_departments",
-    width = 923.09,
-    height = 1000.00,
-    key = "bolivia_departments",
-    aliases = &["bolivia", "bo", "bolivian_departments"],
-    display = "Bolivia (departments)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    paraguay,
-    svg = "south-america/paraguay_departments",
-    width = 1000.00,
-    height = 987.51,
-    key = "paraguay_departments",
-    aliases = &["paraguay", "py", "paraguayan_departments"],
-    display = "Paraguay (departments)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    uruguay,
-    svg = "south-america/uruguay_departments",
-    width = 1000.00,
-    height = 915.18,
-    key = "uruguay_departments",
-    aliases = &["uruguay", "uy", "uruguayan_departments"],
-    display = "Uruguay (departments)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    chile,
-    svg = "south-america/chile_regions",
-    width = 1000.00,
-    height = 892.62,
-    key = "chile_regions",
-    aliases = &["chile", "cl", "chilean_regions"],
-    display = "Chile (regions)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    guyana,
-    svg = "south-america/guyana_regions",
-    width = 666.68,
-    height = 1000.00,
-    key = "guyana_regions",
-    aliases = &["guyana", "gy", "guyanese_regions"],
-    display = "Guyana (regions)",
-    groups = &[]
-}
-
-crate::declare_named_region_set! {
-    suriname,
-    svg = "south-america/suriname_districts",
-    width = 976.85,
-    height = 1000.00,
-    key = "suriname_districts",
-    aliases = &["suriname", "sr", "surinamese_districts"],
-    display = "Suriname (districts)",
-    groups = &[]
+    (argentina, "south-america/argentina_provinces", 598.56, 1000.00, "argentina_provinces", &["argentina", "ar", "argentine_provinces"], "Argentina (provinces)", &[]),
+    (colombia, "south-america/colombia_departments", 833.50, 1000.00, "colombia_departments", &["colombia", "co", "colombian_departments"], "Colombia (departments)", &[]),
+    (peru, "south-america/peru_regions", 691.11, 1000.00, "peru_regions", &["peru", "pe", "peruvian_regions"], "Peru (regions)", &[]),
+    (venezuela, "south-america/venezuela_states", 901.81, 1000.00, "venezuela_states", &["venezuela", "ve", "venezuelan_states"], "Venezuela (states)", &[]),
+    (ecuador, "south-america/ecuador_provinces", 1000.00, 397.74, "ecuador_provinces", &["ecuador", "ec", "ecuadorian_provinces"], "Ecuador (provinces)", &[]),
+    (bolivia, "south-america/bolivia_departments", 923.09, 1000.00, "bolivia_departments", &["bolivia", "bo", "bolivian_departments"], "Bolivia (departments)", &[]),
+    (paraguay, "south-america/paraguay_departments", 1000.00, 987.51, "paraguay_departments", &["paraguay", "py", "paraguayan_departments"], "Paraguay (departments)", &[]),
+    (uruguay, "south-america/uruguay_departments", 1000.00, 915.18, "uruguay_departments", &["uruguay", "uy", "uruguayan_departments"], "Uruguay (departments)", &[]),
+    (chile, "south-america/chile_regions", 1000.00, 892.62, "chile_regions", &["chile", "cl", "chilean_regions"], "Chile (regions)", &[]),
+    (guyana, "south-america/guyana_regions", 666.68, 1000.00, "guyana_regions", &["guyana", "gy", "guyanese_regions"], "Guyana (regions)", &[]),
+    (suriname, "south-america/suriname_districts", 976.85, 1000.00, "suriname_districts", &["suriname", "sr", "surinamese_districts"], "Suriname (districts)", &[]),
 }
