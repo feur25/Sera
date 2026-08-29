@@ -281,6 +281,18 @@ mod tests {
     }
 
     #[test]
+    fn momentum_chart_peak_trough_callouts_disappear_after_no_value_is_chained() {
+        let input = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("line/momentum.rs"))
+            .and_then(crate::plot::chart_demo_registry::demo_payload)
+            .expect("momentum demo payload");
+        let html = crate::bindings::fn_registry::iter_entries().find(|f| f.name == input.builder).map(|f| (f.invoke)(&input.json)).unwrap();
+        assert!(html.contains("class=\"sp-val\""), "momentum's peak/trough callouts must be wrapped in the shared sp-val group so no_value() can find them: {html}");
+        let hidden = crate::bindings::method_registry::apply_by_name(&html, "no_value", "{}").expect("no_value() must apply cleanly to a momentum chart");
+        assert!(hidden.contains(".sp-val{display:none!important}"), "no_value() must inject the shared sp-val hiding rule: {hidden}");
+    }
+
+    #[test]
     fn momentum_chart_still_accepts_universal_chainable_methods_after_variant_specific_rendering() {
         let input = crate::plot::chart_demo_registry::iter_entries()
             .find(|e| e.file.replace('\\', "/").ends_with("line/momentum.rs"))
