@@ -78,6 +78,8 @@ declare namespace wasm_bindgen {
 
     export function buildFirehoseChart(input: string): string;
 
+    export function buildFlowMap(input: string): string;
+
     export function buildFunnel(input: string): string;
 
     export function buildFunnel3dChart(input: string): string;
@@ -310,6 +312,8 @@ declare namespace wasm_bindgen {
 
     export function params(input: string): string;
 
+    export function regionLabels(input: string): string;
+
     export function render_line_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
 
     export function render_scatter_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
@@ -484,6 +488,7 @@ declare interface InitOutput {
     readonly buildEventplot: (a: number, b: number) => [number, number];
     readonly buildFacet: (a: number, b: number) => [number, number];
     readonly buildFirehoseChart: (a: number, b: number) => [number, number];
+    readonly buildFlowMap: (a: number, b: number) => [number, number];
     readonly buildFunnel: (a: number, b: number) => [number, number];
     readonly buildFunnel3dChart: (a: number, b: number) => [number, number];
     readonly buildGantt: (a: number, b: number) => [number, number];
@@ -600,6 +605,7 @@ declare interface InitOutput {
     readonly mlStandardScaler: (a: number, b: number) => [number, number];
     readonly mlTruncatedSvd: (a: number, b: number) => [number, number];
     readonly params: (a: number, b: number) => [number, number];
+    readonly regionLabels: (a: number, b: number) => [number, number];
     readonly render_line_wasm: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number) => [number, number];
     readonly render_scatter_wasm: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number) => [number, number];
     readonly requiredParams: (a: number, b: number) => [number, number];
