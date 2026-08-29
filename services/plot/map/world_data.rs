@@ -78,53 +78,57 @@ pub fn shape_centroid(shape: &CountryShape) -> [f32; 2] {
     }
 }
 
-pub fn countries_in_region(region: &str) -> Vec<&'static str> {
-    let region_map: &[(&str, &[&str])] = &[
-        (
-            "Africa",
-            &[
-                "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD", "CI",
-                "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR",
-                "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN",
-                "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW",
-            ],
-        ),
-        (
-            "Europe",
-            &[
-                "AL", "AD", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
-                "DE", "GR", "HU", "IS", "IE", "IT", "XK", "LV", "LI", "LT", "LU", "MT", "MD", "MC",
-                "ME", "NL", "MK", "NO", "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SE",
-                "CH", "UA", "GB", "VA",
-            ],
-        ),
-        (
-            "Asia",
-            &[
-                "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "GE", "IN", "ID", "IR", "IQ",
-                "IL", "JP", "JO", "KZ", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "KP",
-                "OM", "PK", "PS", "PH", "QA", "SA", "SG", "KR", "LK", "SY", "TW", "TJ", "TH", "TL",
-                "TR", "TM", "AE", "UZ", "VN", "YE",
-            ],
-        ),
-        (
-            "Americas",
-            &[
-                "AG", "AR", "BS", "BB", "BZ", "BO", "BR", "CA", "CL", "CO", "CR", "CU", "DM", "DO",
-                "EC", "SV", "GD", "GT", "GY", "HT", "HN", "JM", "MX", "NI", "PA", "PY", "PE", "KN",
-                "LC", "VC", "SR", "TT", "US", "UY", "VE",
-            ],
-        ),
-        (
-            "Oceania",
-            &[
-                "AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU",
-            ],
-        ),
-    ];
+const REGION_MAP: &[(&str, &[&str])] = &[
+    (
+        "Africa",
+        &[
+            "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD", "CI",
+            "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR",
+            "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN",
+            "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW",
+        ],
+    ),
+    (
+        "Europe",
+        &[
+            "AL", "AD", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+            "DE", "GR", "HU", "IS", "IE", "IT", "XK", "LV", "LI", "LT", "LU", "MT", "MD", "MC",
+            "ME", "NL", "MK", "NO", "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SE",
+            "CH", "UA", "GB", "VA",
+        ],
+    ),
+    (
+        "Asia",
+        &[
+            "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "GE", "IN", "ID", "IR", "IQ",
+            "IL", "JP", "JO", "KZ", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "KP",
+            "OM", "PK", "PS", "PH", "QA", "SA", "SG", "KR", "LK", "SY", "TW", "TJ", "TH", "TL",
+            "TR", "TM", "AE", "UZ", "VN", "YE",
+        ],
+    ),
+    (
+        "Americas",
+        &[
+            "AG", "AR", "BS", "BB", "BZ", "BO", "BR", "CA", "CL", "CO", "CR", "CU", "DM", "DO",
+            "EC", "SV", "GD", "GT", "GY", "HT", "HN", "JM", "MX", "NI", "PA", "PY", "PE", "KN",
+            "LC", "VC", "SR", "TT", "US", "UY", "VE",
+        ],
+    ),
+    (
+        "Oceania",
+        &[
+            "AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU",
+        ],
+    ),
+];
 
+pub fn region_groups() -> &'static [(&'static str, &'static [&'static str])] {
+    REGION_MAP
+}
+
+pub fn countries_in_region(region: &str) -> Vec<&'static str> {
     let r = region.to_lowercase();
-    for (name, codes) in region_map {
+    for (name, codes) in REGION_MAP {
         if name.to_lowercase() == r {
             return codes.iter().map(|s| *s).collect();
         }
