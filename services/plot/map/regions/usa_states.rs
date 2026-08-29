@@ -63,6 +63,17 @@ pub fn census_regions() -> &'static [(&'static str, &'static [&'static str])] {
     CENSUS_REGIONS
 }
 
+const SVG_WIDTH: f32 = 959.0;
+const SVG_HEIGHT: f32 = 593.0;
+
+pub fn normalized_polygons(shape: &CountryShape) -> Vec<Vec<[f32; 2]>> {
+    shape
+        .polygons
+        .iter()
+        .map(|poly| poly.iter().map(|[x, y]| [x / SVG_WIDTH, y / SVG_HEIGHT]).collect())
+        .collect()
+}
+
 inventory::submit! {
     super::RegionSetEntry {
         key: "usa_states",
@@ -71,6 +82,7 @@ inventory::submit! {
         lookup: lookup_state,
         all: all_states,
         groups: census_regions,
+        normalize: normalized_polygons,
     }
 }
 

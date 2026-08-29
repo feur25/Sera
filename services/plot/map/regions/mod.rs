@@ -9,6 +9,7 @@ pub struct RegionSetEntry {
     pub lookup: fn(&str) -> Option<&'static CountryShape>,
     pub all: fn() -> &'static [CountryShape],
     pub groups: fn() -> &'static [(&'static str, &'static [&'static str])],
+    pub normalize: fn(&CountryShape) -> Vec<Vec<[f32; 2]>>,
 }
 
 inventory::collect!(RegionSetEntry);
@@ -41,6 +42,7 @@ inventory::submit! {
         lookup: crate::plot::map::world_data::lookup_country,
         all: crate::plot::map::world_data::all_countries,
         groups: world_groups,
+        normalize: crate::plot::map::world_data::normalized_polygons,
     }
 }
 
