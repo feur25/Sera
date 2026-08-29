@@ -54,16 +54,77 @@ pub fn parse_region_svg(svg: &str, code_attr: &str) -> Vec<CountryShape> {
     shapes
 }
 
+pub fn parse_named_region_svg(svg: &str, code_attr: &str) -> Vec<CountryShape> {
+    let mut shapes = Vec::with_capacity(64);
+
+    let mut pos = 0;
+    let len = svg.len();
+
+    while pos < len {
+        if let Some(p) = find_substr(svg, pos, "<path") {
+            pos = p + 5;
+            let end = match find_substr(svg, pos, ">") {
+                Some(e) => e,
+                None => break,
+            };
+            let tag = &svg[pos..end];
+
+            let id = match extract_attr(tag, code_attr) {
+                Some(v)
+                    if !v.is_empty()
+                        && v.chars().count() <= 64
+                        && v.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_') =>
+                {
+                    v
+                }
+                _ => {
+                    pos = end + 1;
+                    continue;
+                }
+            };
+            let name = extract_attr(tag, "title").unwrap_or_default();
+            let d = match extract_attr(tag, "d") {
+                Some(v) => v,
+                None => {
+                    pos = end + 1;
+                    continue;
+                }
+            };
+
+            let polygons = parse_path_d(&d);
+            if !polygons.is_empty() {
+                shapes.push(CountryShape { id, name, polygons });
+            }
+            pos = end + 1;
+        } else {
+            break;
+        }
+    }
+
+    shapes
+}
+
 fn find_substr(s: &str, start: usize, needle: &str) -> Option<usize> {
     s[start..].find(needle).map(|i| start + i)
 }
 
 fn extract_attr(tag: &str, attr: &str) -> Option<String> {
     let pattern = format!("{}=\"", attr);
-    let start = tag.find(&pattern)?;
-    let val_start = start + pattern.len();
-    let val_end = tag[val_start..].find('"')? + val_start;
-    Some(tag[val_start..val_end].to_string())
+    let mut search_from = 0usize;
+    loop {
+        let rel = tag[search_from..].find(&pattern)?;
+        let abs = search_from + rel;
+        let at_boundary = abs == 0 || matches!(tag.as_bytes()[abs - 1], b' ' | b'\t' | b'\n' | b'\r');
+        if at_boundary {
+            let val_start = abs + pattern.len();
+            let val_end = tag[val_start..].find('"')? + val_start;
+            return Some(tag[val_start..val_end].to_string());
+        }
+        search_from = abs + 1;
+        if search_from >= tag.len() {
+            return None;
+        }
+    }
 }
 
 fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
@@ -311,6 +372,38 @@ mod tests {
         assert_eq!(shapes.len(), 1);
         assert_eq!(shapes[0].id, "TL");
         assert_eq!(shapes[0].name, "Testland");
+    }
+
+    #[test]
+    fn extract_attr_does_not_confuse_the_tail_of_id_with_the_d_attribute() {
+        let svg = r#"<path id="Thueringen" d="m 0,0 10,0 0,10 z">"#;
+        let shapes = parse_named_region_svg(svg, "id");
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].id, "Thueringen");
+        assert_eq!(shapes[0].polygons[0].len(), 3);
+    }
+
+    #[test]
+    fn parse_named_region_svg_keeps_a_long_raw_identifier_verbatim() {
+        let svg = r#"<path id="state-ac" d="m 0,0 10,0 0,10 z">"#;
+        let shapes = parse_named_region_svg(svg, "id");
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].id, "state-ac");
+    }
+
+    #[test]
+    fn parse_named_region_svg_accepts_unicode_letters_in_the_identifier() {
+        let svg = r#"<path id="Thüringen" d="m 0,0 10,0 0,10 z">"#;
+        let shapes = parse_named_region_svg(svg, "id");
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].id, "Thüringen");
+    }
+
+    #[test]
+    fn parse_named_region_svg_skips_a_path_with_no_matching_attribute() {
+        let svg = r#"<path d="m 0,0 10,0 0,10 z">"#;
+        let shapes = parse_named_region_svg(svg, "id");
+        assert!(shapes.is_empty());
     }
 
     #[test]
