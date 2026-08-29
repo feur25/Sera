@@ -35,6 +35,10 @@ pub struct LineConfig<'a> {
     pub spark_cols: usize,
     pub spark_cell_h: i32,
     pub spark_cell_w: i32,
+
+    pub epoch_pos_color: u32,
+    pub epoch_neg_color: u32,
+    pub epoch_flat_color: u32,
 }
 
 impl<'a> Default for LineConfig<'a> {
@@ -68,6 +72,10 @@ impl<'a> Default for LineConfig<'a> {
             spark_cols: 3,
             spark_cell_h: 60,
             spark_cell_w: 220,
+
+            epoch_pos_color: 0xB91C1C,
+            epoch_neg_color: 0x1D4ED8,
+            epoch_flat_color: 0x64748B,
         }
     }
 }

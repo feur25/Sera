@@ -166,6 +166,9 @@ pub fn build(input: &str) -> String {
         spark_cols: o.spark_cols.unwrap_or(3),
         spark_cell_h: o.spark_cell_h.unwrap_or(60),
         spark_cell_w: o.spark_cell_w.unwrap_or(220),
+        epoch_pos_color: o.epoch_pos_color.unwrap_or(0xB91C1C),
+        epoch_neg_color: o.epoch_neg_color.unwrap_or(0x1D4ED8),
+        epoch_flat_color: o.epoch_flat_color.unwrap_or(0x64748B),
     };
     let html = render_line_html(&cfg);
     apply(html, &o)

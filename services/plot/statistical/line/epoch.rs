@@ -26,9 +26,9 @@ pub fn render(cfg: &LineConfig) -> String {
 
     let bounds = chapter_boundaries(values, n);
     let line_color: u32 = 0x0F172A;
-    let rise_color: u32 = 0xB91C1C;
-    let fall_color: u32 = 0x1D4ED8;
-    let flat_color: u32 = 0x64748B;
+    let rise_color: u32 = cfg.epoch_pos_color;
+    let fall_color: u32 = cfg.epoch_neg_color;
+    let flat_color: u32 = cfg.epoch_flat_color;
 
     let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 64, 54, 26, n * 160 + 4096);
     f.open(cfg.title, true);
@@ -268,6 +268,21 @@ mod tests {
         let labels: Vec<String> = (0..values.len()).map(|i| i.to_string()).collect();
         let out = render(&cfg_with(&values, &labels));
         assert_eq!(out.matches("data-idx=\"0\"").count(), 1, "epoch draws exactly one continuous polyline, not per-segment strokes: {out}");
+    }
+
+    #[test]
+    fn epoch_chart_honors_custom_pos_and_neg_colors_through_the_real_builder() {
+        let input = serde_json::json!({
+            "title": "t",
+            "x_labels": ["a","b","c","d","e","f"],
+            "values": [10.0, 20.0, 35.0, 20.0, 10.0, 5.0],
+            "variant": "epoch",
+            "epoch_pos_color": 65280,
+            "epoch_neg_color": 255
+        }).to_string();
+        let html = crate::plot::statistical::build_line(&input);
+        assert!(html.contains("#00ff00"), "custom epoch_pos_color (0x00FF00) must reach the rendered chapter bands/badges: {html}");
+        assert!(html.contains("#0000ff"), "custom epoch_neg_color (0x0000FF) must reach the rendered chapter bands/badges: {html}");
     }
 
     #[test]

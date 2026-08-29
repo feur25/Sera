@@ -106,6 +106,9 @@ pub struct ChartOpts {
     pub overlay_color_hex: Option<u32>,
     #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_values: Option<bool>,
+    pub epoch_pos_color: Option<u32>,
+    pub epoch_neg_color: Option<u32>,
+    pub epoch_flat_color: Option<u32>,
     pub color_low: Option<u32>,
     pub color_mid: Option<u32>,
     pub color_high: Option<u32>,
