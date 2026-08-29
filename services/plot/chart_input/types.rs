@@ -43,6 +43,24 @@ where
     })
 }
 
+fn deser_opt_bool<'de, D>(d: D) -> Result<Option<bool>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let v: serde_json::Value = serde_json::Value::deserialize(d)?;
+    Ok(match &v {
+        serde_json::Value::Null => None,
+        serde_json::Value::Bool(b) => Some(*b),
+        serde_json::Value::Number(n) => n.as_f64().map(|f| f != 0.0),
+        serde_json::Value::String(s) => match s.trim().to_ascii_lowercase().as_str() {
+            "true" | "1" | "yes" | "on" => Some(true),
+            "false" | "0" | "no" | "off" | "" => Some(false),
+            _ => None,
+        },
+        _ => None,
+    })
+}
+
 #[derive(Deserialize, Default)]
 pub struct ChartOpts {
     pub width: Option<i32>,
@@ -50,6 +68,7 @@ pub struct ChartOpts {
     pub x_label: Option<String>,
     pub y_label: Option<String>,
     pub z_label: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub gridlines: Option<bool>,
     pub sort_order: Option<String>,
     pub hover_json: Option<String>,
@@ -59,14 +78,19 @@ pub struct ChartOpts {
     pub palette: Option<Vec<u32>>,
     pub background: Option<String>,
     pub bg_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub no_x_axis: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub no_y_axis: Option<bool>,
     pub color_hex: Option<u32>,
     pub orientation: Option<String>,
     pub orientation_option: Option<u8>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_text: Option<bool>,
     pub color_groups: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_points: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_regression: Option<bool>,
     pub regression_type: Option<String>,
     pub bins: Option<i32>,
@@ -77,18 +101,23 @@ pub struct ChartOpts {
     pub tube_radius: Option<f64>,
     pub n_steps: Option<usize>,
     pub iso_level: Option<f64>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_counts: Option<bool>,
     pub overlay_color_hex: Option<u32>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_values: Option<bool>,
     pub color_low: Option<u32>,
     pub color_mid: Option<u32>,
     pub color_high: Option<u32>,
     pub col_labels: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_pct: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub labeled: Option<bool>,
     pub inner_radius_ratio: Option<f64>,
     pub left_label: Option<String>,
     pub right_label: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub stacked: Option<bool>,
     pub series_names: Option<Vec<String>>,
     pub targets: Option<Vec<f64>>,
@@ -98,6 +127,7 @@ pub struct ChartOpts {
     pub comparison: Option<f64>,
     pub color_values: Option<Vec<f64>>,
     pub color_labels: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub filled: Option<bool>,
     #[serde(default, deserialize_with = "deser_opt_fill_opacity")]
     pub fill_opacity: Option<i32>,
@@ -121,6 +151,7 @@ pub struct ChartOpts {
     pub min_samples: Option<usize>,
     pub k: Option<usize>,
     pub max_iter: Option<usize>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub normalize: Option<bool>,
     pub images: Option<Vec<Option<String>>>,
     pub descriptions: Option<Vec<Vec<Vec<String>>>>,
@@ -148,6 +179,7 @@ pub struct ChartOpts {
     pub spark_cols: Option<usize>,
     pub spark_cell_w: Option<i32>,
     pub spark_cell_h: Option<i32>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub stack_fill: Option<bool>,
     pub fill_opacity_f: Option<f64>,
     pub min_size: Option<f64>,
@@ -158,6 +190,7 @@ pub struct ChartOpts {
     pub pull: Option<Vec<f64>>,
     pub subplot_titles: Option<Vec<String>>,
     pub subplot_cols: Option<usize>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub proportional: Option<bool>,
     pub min_label_frac: Option<f64>,
     pub center_text: Option<String>,
@@ -168,16 +201,21 @@ pub struct ChartOpts {
     pub cell_shape: Option<String>,
     pub cell_shape2: Option<String>,
     pub layout: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub notch: Option<bool>,
     pub jitter: Option<f64>,
     pub boxen_depth: Option<usize>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub violin_overlay: Option<bool>,
     pub fill_opacity_real: Option<f64>,
     pub box_stroke_width: Option<f64>,
     pub colorscale: Option<String>,
     pub colorbar_position: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub origin_lower: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_box: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub show_mean: Option<bool>,
     pub highlight_index: Option<i32>,
     pub color_axis: Option<i32>,
@@ -194,7 +232,9 @@ pub struct ChartOpts {
     pub edges_j: Option<Vec<i32>>,
     pub edges_w: Option<Vec<f64>>,
     pub theme: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub despine: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub no_value: Option<bool>,
     pub watermark_text: Option<String>,
     pub watermark_opacity: Option<f64>,
@@ -217,11 +257,13 @@ pub struct ChartOpts {
     pub text_info: Option<String>,
     pub outline_color: Option<String>,
     pub outline_width: Option<f64>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub value_labels: Option<bool>,
     pub value_labels_decimals: Option<i32>,
     pub value_labels_color: Option<String>,
     pub error_bars_margin: Option<f64>,
     pub error_bars_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub delta_labels: Option<bool>,
     pub delta_labels_pos_color: Option<String>,
     pub delta_labels_neg_color: Option<String>,
@@ -229,7 +271,9 @@ pub struct ChartOpts {
     pub rank_badges_top_n: Option<usize>,
     pub rank_badges_color: Option<String>,
     pub title_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub export_button: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub log_scale: Option<bool>,
     pub moving_average_window: Option<usize>,
     pub moving_average_color: Option<String>,
@@ -238,6 +282,7 @@ pub struct ChartOpts {
     pub fill_between_color: Option<String>,
     pub fill_between_opacity: Option<f64>,
     pub box_annotate_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub pct_of_total: Option<bool>,
     pub pct_of_total_decimals: Option<i32>,
     pub pct_of_total_color: Option<String>,
@@ -249,9 +294,11 @@ pub struct ChartOpts {
     pub iqr_band_color: Option<String>,
     pub iqr_band_opacity: Option<f64>,
     pub growth_badge_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub zscore_heat: Option<bool>,
     pub pareto_marker_threshold: Option<f64>,
     pub pareto_marker_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub diff_from_mean: Option<bool>,
     pub diff_from_mean_pos_color: Option<String>,
     pub diff_from_mean_neg_color: Option<String>,
@@ -404,6 +451,7 @@ pub struct Annotation {
     pub color: Option<String>,
     pub stroke_width: Option<f64>,
     pub dash: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_bool")]
     pub frac: Option<bool>,
     pub font_size: Option<f64>,
     pub fill: Option<String>,

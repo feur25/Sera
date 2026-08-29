@@ -136,4 +136,20 @@ mod sanitize_tests {
         assert_eq!(values, vec![1.0, 0.0, 3.0]);
         assert_eq!(args.labels.unwrap().len(), 3);
     }
+
+    #[test]
+    fn parse_all_tolerates_a_stringly_typed_boolean_option_instead_of_nuking_the_whole_payload() {
+        let input = r#"{"title":"t","labels":["A","B"],"values":[1.0,2.0],"show_points":"true"}"#;
+        let (title, args, opts) = parse_all(input);
+        assert_eq!(title, "t", "a mistyped boolean must not wipe out an otherwise-valid title");
+        assert_eq!(args.values, Some(vec![1.0, 2.0]), "a mistyped boolean must not wipe out otherwise-valid values");
+        assert_eq!(opts.show_points, Some(true), "the stringly-typed \"true\" must still coerce to the real boolean");
+    }
+
+    #[test]
+    fn parse_all_treats_a_stringly_typed_false_boolean_option_as_false_not_as_a_parse_failure() {
+        let input = r#"{"title":"t","labels":["A","B"],"values":[1.0,2.0],"gridlines":"False"}"#;
+        let (_title, _args, opts) = parse_all(input);
+        assert_eq!(opts.gridlines, Some(false));
+    }
 }
