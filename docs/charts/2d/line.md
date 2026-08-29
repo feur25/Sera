@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-en','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','pace',this)"><span class="sp-cic">◈</span><span class="sp-clb">Pace</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-en-basic">
@@ -172,6 +173,16 @@ Auto-segments the series into narrative chapters at its own significant turning 
 <iframe class="sp-preview-frame" data-src="../../previews/line-epoch.html"></iframe>
 </div>
 
+<div class="sp-variant" id="line-en-pace">
+
+Compares the series against its own ideal glidepath to a `pace_target`, shading ahead-of-pace and behind-of-pace stretches in different colors, then extrapolates the recent trend past the last real point to project whether it clears the target. `pace_ahead_color` / `pace_behind_color` recolor the comparison.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pace"</code></span><span><strong>Aliases</strong> <code>"pace"</code> / <code>"pacing"</code> / <code>"glidepath"</code> / <code>"runway"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-pace.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -216,7 +227,8 @@ Auto-segments the series into narrative chapters at its own significant turning 
 <button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','momentum',this)"><span class="sp-cic">◉</span><span class="sp-clb">Momentum</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-fr','epoch',this)"><span class="sp-cic">◧</span><span class="sp-clb">Epoch</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','pace',this)"><span class="sp-cic">◈</span><span class="sp-clb">Pace</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-fr-basic">
@@ -337,6 +349,16 @@ Segmente automatiquement la série en chapitres narratifs à ses propres points 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/line-epoch.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-pace">
+
+Compare la série à sa propre trajectoire idéale vers un `pace_target`, teinte différemment les tronçons en avance et en retard sur ce rythme, puis extrapole la tendance récente au-delà du dernier point réel pour projeter si elle atteint la cible. `pace_ahead_color` / `pace_behind_color` recolorent la comparaison.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pace"</code></span><span><strong>Alias</strong> <code>"pace"</code> / <code>"pacing"</code> / <code>"glidepath"</code> / <code>"runway"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/line-pace.html"></iframe>
 </div>
 
 </div>
