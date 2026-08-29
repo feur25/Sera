@@ -1071,12 +1071,14 @@ pub fn chart_variants() -> serde_json::Value {
     fn build(
         keys: &'static [(&'static str, &'static [&'static str])],
         default_key: &'static str,
+        kind: &'static str,
     ) -> Value {
         let mut outer = Map::new();
         outer.insert(
             "default".to_string(),
             Value::String(default_key.to_string()),
         );
+        outer.insert("kind".to_string(), Value::String(kind.to_string()));
         let arr: Vec<Value> = keys
             .iter()
             .map(|(k, aliases)| {
@@ -1102,7 +1104,7 @@ pub fn chart_variants() -> serde_json::Value {
     for entry in crate::plot::family_macro::chart_families() {
         out.insert(
             entry.name.to_string(),
-            build((entry.keys_and_aliases)(), (entry.default_key)()),
+            build((entry.keys_and_aliases)(), (entry.default_key)(), entry.kind),
         );
     }
     use crate::plot::scene3d::Scene3DVariant;
@@ -1123,10 +1125,10 @@ pub fn chart_variants() -> serde_json::Value {
         "violin3d",
         "plot_3d_types",
     ] {
-        out.insert(family.to_string(), build(scene_keys, scene_default));
+        out.insert(family.to_string(), build(scene_keys, scene_default, "3d"));
     }
     for family in ["radar3d", "funnel3d", "pie3d", "sunburst3d", "globe"] {
-        out.insert(family.to_string(), build(default_only, "default"));
+        out.insert(family.to_string(), build(default_only, "default", "3d"));
     }
     Value::Object(out)
 }
