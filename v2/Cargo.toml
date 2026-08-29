@@ -45,6 +45,7 @@ image = "0.24"
 reqwest = { version = "0.11", default-features = false, features = ["stream", "blocking", "json", "rustls-tls"], optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
 base64 = "0.22"
+miniz_oxide = "0.7"
 wasm-bindgen = { version = "0.2", optional = true }
 js-sys = { version = "0.3", optional = true }
 getrandom = { version = "0.2", features = ["js"], optional = true }
@@ -56,6 +57,16 @@ seraplot-macros = { path = "seraplot-macros" }
 inventory = "0.3"
 serde-wasm-bindgen = { version = "0.6", optional = true }
 pyo3 = { version = "0.21", optional = true, features = ["extension-module", "multiple-pymethods"] }
+numpy = { version = "0.21", optional = true }
+aes-gcm = { version = "0.10", optional = true }
+zeroize = { version = "1", optional = true, features = ["derive"] }
+argon2 = { version = "0.5", optional = true }
+ed25519-dalek = { version = "2", optional = true }
+sha2 = { version = "0.10", optional = true }
+svg2pdf = { version = "0.12", optional = true }
+pdf-writer = { version = "0.12", optional = true }
+resvg = { version = "0.43", optional = true, default-features = false, features = ["text", "raster-images"] }
+docx-rs = { version = "0.4", optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 mimalloc = "0.1"
@@ -71,12 +82,15 @@ ffi = []
 telemetry-http = ["dep:reqwest", "dep:tokio"]
 webapp = ["dep:tokio"]
 sysmon = ["dep:sysinfo"]
-python = ["dep:pyo3"]
+python = ["dep:pyo3", "dep:numpy"]
 gpu = ["dep:candle-core"]
 cuda = ["gpu", "candle-core/cuda"]
 metal = ["gpu", "candle-core/metal"]
 accelerate = ["gpu", "candle-core/accelerate"]
 mkl = ["gpu", "candle-core/mkl"]
+sera-secure = ["dep:aes-gcm", "dep:zeroize", "dep:argon2", "sera-pulse", "python"]
+sera-pulse = ["dep:ed25519-dalek", "dep:reqwest", "dep:sha2"]
+sera-report = ["dep:svg2pdf", "dep:pdf-writer", "dep:resvg", "dep:docx-rs", "sera-pulse", "python"]
 
 [profile.release]
 lto = "thin"
