@@ -32,6 +32,61 @@ crate::declare_named_region_set! {
 }
 
 crate::declare_named_region_set! {
+    venezuela,
+    svg = "../../../../asset/maps/south-america/venezuela_states.svg",
+    width = 901.81,
+    height = 1000.00,
+    key = "venezuela_states",
+    aliases = &["venezuela", "ve", "venezuelan_states"],
+    display = "Venezuela (states)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    ecuador,
+    svg = "../../../../asset/maps/south-america/ecuador_provinces.svg",
+    width = 1000.00,
+    height = 397.74,
+    key = "ecuador_provinces",
+    aliases = &["ecuador", "ec", "ecuadorian_provinces"],
+    display = "Ecuador (provinces)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    bolivia,
+    svg = "../../../../asset/maps/south-america/bolivia_departments.svg",
+    width = 923.09,
+    height = 1000.00,
+    key = "bolivia_departments",
+    aliases = &["bolivia", "bo", "bolivian_departments"],
+    display = "Bolivia (departments)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    paraguay,
+    svg = "../../../../asset/maps/south-america/paraguay_departments.svg",
+    width = 1000.00,
+    height = 987.51,
+    key = "paraguay_departments",
+    aliases = &["paraguay", "py", "paraguayan_departments"],
+    display = "Paraguay (departments)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
+    uruguay,
+    svg = "../../../../asset/maps/south-america/uruguay_departments.svg",
+    width = 1000.00,
+    height = 915.18,
+    key = "uruguay_departments",
+    aliases = &["uruguay", "uy", "uruguayan_departments"],
+    display = "Uruguay (departments)",
+    groups = &[]
+}
+
+crate::declare_named_region_set! {
     chile,
     svg = "../../../../asset/maps/south-america/chile_regions.svg",
     width = 1000.00,
