@@ -1,3 +1,4 @@
+use super::regions::{self, RegionSetEntry};
 use super::world_data;
 use crate::core::math::heat_color;
 use crate::plot::default::PlotRenderContext;
@@ -8,6 +9,16 @@ pub fn render_choropleth_fast(
     labels: &[String],
     width: i32,
     height: i32,
+) -> String {
+    render_choropleth_fast_for(values, labels, width, height, regions::default_region_set().expect("world region set must be registered"))
+}
+
+pub fn render_choropleth_fast_for(
+    values: &[f64],
+    labels: &[String],
+    width: i32,
+    height: i32,
+    region: &RegionSetEntry,
 ) -> String {
     let n = values.len().min(labels.len());
     if n == 0 {
@@ -28,12 +39,12 @@ pub fn render_choropleth_fast(
     svg.push_str(&height.to_string());
     svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0f0f1e\"/>");
 
-    render_svg_country_outlines(&mut svg, width, height);
+    render_svg_country_outlines(&mut svg, width, height, region);
 
     for i in 0..n {
-        if let Some(shape) = world_data::lookup_country(&labels[i]) {
+        if let Some(shape) = (region.lookup)(&labels[i]) {
             let (r, g, b) = heat_color(values[i], max_val);
-            let polys = world_data::normalized_polygons(shape);
+            let polys = (region.normalize)(shape);
             for poly in &polys {
                 svg.push_str("<path d=\"M");
                 for (j, pt) in poly.iter().enumerate() {
@@ -61,9 +72,9 @@ pub fn render_choropleth_fast(
     svg
 }
 
-fn render_svg_country_outlines(svg: &mut String, width: i32, height: i32) {
-    for shape in world_data::all_countries() {
-        let polys = world_data::normalized_polygons(shape);
+fn render_svg_country_outlines(svg: &mut String, width: i32, height: i32, region: &RegionSetEntry) {
+    for shape in (region.all)() {
+        let polys = (region.normalize)(shape);
         for poly in &polys {
             if poly.len() < 3 {
                 continue;
@@ -221,6 +232,19 @@ pub fn render_choropleth_html(
     height: i32,
     hover: &[crate::html::hover::HoverSlot],
 ) -> String {
+    render_choropleth_html_for(title, labels, values, width, height, hover, regions::default_region_set().expect("world region set must be registered"))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_choropleth_html_for(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    width: i32,
+    height: i32,
+    hover: &[crate::html::hover::HoverSlot],
+    region: &RegionSetEntry,
+) -> String {
     use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = values.len().min(labels.len());
     if n == 0 {
@@ -238,7 +262,7 @@ pub fn render_choropleth_html(
                 .push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i])));
         }
     }
-    let mut svg = render_choropleth_fast(values, labels, width, height);
+    let mut svg = render_choropleth_fast_for(values, labels, width, height, region);
     svg = svg.replace("data-index=\"", "data-idx=\"");
     let slots = if auto { &auto_slots } else { hover };
     build_chart_html(title, &svg, &slots_to_json(slots))
@@ -252,19 +276,76 @@ pub fn render_choropleth_html(
     "geo_map"
 )]
 #[crate::sera_builder]
+#[crate::chart_demo(
+    "labels=[\"CA\",\"TX\",\"NY\",\"FL\",\"WA\",\"CO\",\"IL\",\"OH\",\"GA\",\"AZ\",\"NV\",\"UT\",\"OR\",\"NC\",\"MA\"], values=[38.9,30.5,19.6,22.6,7.8,5.9,12.6,11.8,11.0,7.4,3.2,3.4,4.2,10.8,7.0], title=\"Population by State (millions)\", map=\"usa_states\""
+)]
 pub fn build_choropleth(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let hover = o.hj();
-    let html = crate::plot::map::render_choropleth_html(
+    let region = regions::resolve(o.map.as_deref().unwrap_or(""))
+        .or_else(regions::default_region_set)
+        .expect("world region set must be registered");
+    let html = crate::plot::map::render_choropleth_html_for(
         title,
         &labels,
         &values,
         o.w(1200),
         o.h(600),
         &hover,
+        region,
     );
     apply(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_choropleth_defaults_to_world_and_still_matches_iso_country_codes() {
+        let out = build_choropleth(r#"{"title":"t","labels":["FRA","DEU"],"values":[1.0,2.0]}"#);
+        assert!(out.contains("<svg"), "expected a real svg for the default world map: {out}");
+    }
+
+    #[test]
+    fn build_choropleth_switches_to_usa_states_via_the_map_option() {
+        let out = build_choropleth(r#"{"title":"t","labels":["CA","TX"],"values":[10.0,20.0],"map":"usa_states"}"#);
+        assert!(out.contains("<svg"), "expected a real svg for the usa_states map: {out}");
+    }
+
+    #[test]
+    fn build_choropleth_falls_back_to_world_for_an_unknown_map_key() {
+        let world = build_choropleth(r#"{"title":"t","labels":["FRA"],"values":[1.0]}"#);
+        let unknown = build_choropleth(r#"{"title":"t","labels":["FRA"],"values":[1.0],"map":"atlantis"}"#);
+        assert_eq!(world.len(), unknown.len(), "an unrecognized map key must silently fall back to world, not fail: got different output sizes");
+    }
+
+    #[test]
+    fn render_choropleth_fast_for_usa_states_colors_a_real_state_path_not_zero_shapes() {
+        let region = regions::resolve("usa_states").expect("usa_states must be registered");
+        let svg = render_choropleth_fast_for(&[42.0], &["CA".to_string()], 900, 500, region);
+        assert!(svg.contains("data-index=\"0\""), "expected California's path to be colored and tagged with data-index: {svg}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_choropleth_renders_non_empty_html() {
+        let entry = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("map/choropleth.rs"))
+            .expect("choropleth must have a chart_demo entry");
+        let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+        assert!(html.contains("<svg"), "choropleth's own chart_demo must render a real svg: {html}");
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_asset() {
+        let entry = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("map/choropleth.rs"))
+            .expect("choropleth must have a chart_demo entry");
+        let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+        std::fs::write("docs/previews/choropleth-usa-states.html", html).unwrap();
+    }
 }
