@@ -1,5 +1,4 @@
 pub mod brazil_states;
-pub mod canada_provinces;
 pub mod germany_states;
 pub mod usa_states;
 

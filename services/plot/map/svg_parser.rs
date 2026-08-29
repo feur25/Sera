@@ -443,7 +443,7 @@ mod tests {
 
     #[test]
     fn parse_region_svg_on_the_real_usa_states_asset_finds_every_state_and_dc() {
-        let svg = include_str!("../../../asset/usa_states.svg");
+        let svg = include_str!("../../../asset/maps/north-america/usa_states.svg");
         let shapes = parse_region_svg(svg, "class");
         let ids: std::collections::HashSet<&str> = shapes.iter().map(|s| s.id.as_str()).collect();
         assert!(ids.len() >= 51, "expected at least 50 states + DC, found {}: {ids:?}", ids.len());

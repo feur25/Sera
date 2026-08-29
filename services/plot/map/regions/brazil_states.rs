@@ -47,7 +47,7 @@ static STATES: OnceLock<Vec<CountryShape>> = OnceLock::new();
 
 fn get_states() -> &'static Vec<CountryShape> {
     STATES.get_or_init(|| {
-        let svg = include_str!("../../../../asset/maps/dl/brazil_states.svg");
+        let svg = include_str!("../../../../asset/maps/south-america/brazil_states.svg");
         let raw = parse_named_region_svg(svg, "id");
         raw.into_iter()
             .filter_map(|shape| {
