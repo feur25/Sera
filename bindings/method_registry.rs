@@ -127,4 +127,14 @@ mod alias_dispatch_tests {
         let out = super::apply_by_name(html, "no_legend", "{}").expect("apply_by_name(no_legend) must succeed");
         assert!(out.contains("g[data-legend]") && out.contains("g.sp-leg-grp"), "no_legend must hide both the renderer-emitted group and the runtime-built one from show_legend/legend()");
     }
+
+    #[test]
+    fn legends_click_to_toggle_rescale_only_repositions_gridlines_that_were_already_horizontal() {
+        let html = "<html><head></head><body></body></html>";
+        let out = super::apply_by_name(html, "show_legend", "{}").expect("apply_by_name(show_legend) must succeed");
+        assert!(
+            out.contains("filter.call(glsAll,function(l){return l.getAttribute('y1')===l.getAttribute('y2');})"),
+            "the legend's click-to-toggle rescale must filter .sp-gl to horizontal lines (y1===y2) before repositioning them, or it collapses vertical gridlines (x1===x2) onto the same evenly-distributed y-scale, destroying them"
+        );
+    }
 }
