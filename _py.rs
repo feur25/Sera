@@ -570,6 +570,12 @@ fn _map_regions_json() -> String {
 }
 
 #[pyfunction]
+#[pyo3(signature = (map = None, group = None))]
+fn _region_labels_json(map: Option<&str>, group: Option<&str>) -> String {
+    serde_json::to_string(&crate::region_labels(map, group)).unwrap_or_default()
+}
+
+#[pyfunction]
 fn _docs_json() -> String {
     serde_json::to_string(&crate::doc_registry::all_docs()).unwrap_or_default()
 }
@@ -897,6 +903,7 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_chart_variants_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_themes_json, m)?)?;
     m.add_function(wrap_pyfunction!(_map_regions_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_region_labels_json, m)?)?;
     m.add_function(wrap_pyfunction!(_scenes3d_json, m)?)?;
     m.add_function(wrap_pyfunction!(_docs_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_methods_json, m)?)?;

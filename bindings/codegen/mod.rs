@@ -280,6 +280,12 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("pub fn wasm_map_regions_json() -> String {\n");
     wasm_body.push_str("    serde_json::to_string(&crate::map_regions()).unwrap_or_default()\n");
     wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"regionLabels\")]\n");
+    wasm_body.push_str("pub fn wasm_region_labels_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { map: Option<String>, group: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::region_labels(i.map.as_deref(), i.group.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"scenes3d\")]\n");
     wasm_body.push_str("pub fn wasm_scenes3d_json() -> String {\n");
     wasm_body.push_str("    serde_json::to_string(&crate::scenes3d()).unwrap_or_default()\n");

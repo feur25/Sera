@@ -39,6 +39,7 @@ from .seraplot import (
     _chart_variants_json,
     _chart_themes_json,
     _map_regions_json,
+    _region_labels_json,
     _scenes3d_json,
     _docs_json,
     _chart_methods_json,
@@ -127,6 +128,11 @@ def _map_regions_json_cached():
     return _map_regions_json()
 
 
+@lru_cache(maxsize=None)
+def _region_labels_json_cached(map, group):
+    return _region_labels_json(map, group)
+
+
 @lru_cache(maxsize=1)
 def _scenes3d_json_cached():
     return _scenes3d_json()
@@ -164,6 +170,10 @@ def chart_themes():
 
 def map_regions():
     return _json.loads(_map_regions_json_cached())
+
+
+def region_labels(map=None, group=None):
+    return _json.loads(_region_labels_json_cached(map, group))
 
 
 def scenes3d():

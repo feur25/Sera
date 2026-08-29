@@ -1206,6 +1206,49 @@ pub fn map_regions() -> serde_json::Value {
     Value::Object(out)
 }
 
+pub fn region_labels(map: Option<&str>, group: Option<&str>) -> serde_json::Value {
+    use serde_json::Value;
+
+    let Some(region) = crate::plot::map::regions::resolve(map.unwrap_or(""))
+        .or_else(crate::plot::map::regions::default_region_set)
+    else {
+        return Value::Array(Vec::new());
+    };
+    let shapes = match group {
+        Some(g) if !g.trim().is_empty() => crate::plot::map::regions::shapes_in_group(region, g),
+        _ => (region.all)().iter().collect(),
+    };
+    Value::Array(shapes.iter().map(|s| Value::String(s.id.clone())).collect())
+}
+
+#[cfg(test)]
+mod region_labels_tests {
+    use super::region_labels;
+
+    #[test]
+    fn returns_every_country_when_no_group_is_given() {
+        let out = region_labels(None, None);
+        let arr = out.as_array().expect("must be a json array");
+        assert!(arr.len() > 200, "world has 200+ countries, got {}", arr.len());
+    }
+
+    #[test]
+    fn restricts_to_a_named_group_for_a_sub_national_map() {
+        let out = region_labels(Some("usa_states"), Some("West"));
+        let arr = out.as_array().expect("must be a json array");
+        assert_eq!(arr.len(), 13);
+        assert!(arr.iter().any(|v| v.as_str() == Some("CA")));
+        assert!(!arr.iter().any(|v| v.as_str() == Some("NY")));
+    }
+
+    #[test]
+    fn falls_back_to_world_for_an_unknown_map_key() {
+        let out = region_labels(Some("atlantis"), None);
+        let arr = out.as_array().expect("must be a json array");
+        assert!(arr.len() > 200);
+    }
+}
+
 pub fn scenes3d() -> serde_json::Value {
     use crate::plot::scene3d::{iter_entries, Scene3DVariant};
     use serde_json::{Map, Value};
