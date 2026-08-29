@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, **kwargs) -> Chart`
+`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Aliases: `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_chart`, `sp.geo_map`, `sp.build_choropleth`
 
@@ -48,6 +48,8 @@ Aliases: `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_
 <button class="sp-cls-tab sp-cact" onclick="spCls('choropleth-en','sequential',this)"><span class="sp-cic">▧</span><span class="sp-clb">Sequential</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','binned',this)"><span class="sp-cic">▤</span><span class="sp-clb">Binned</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Diverging</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographic</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -81,6 +83,26 @@ Red–white–blue diverging scale centered on `diverging_midpoint` (default `0`
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-diverging.html"></iframe>
 </div>
 
+<div class="sp-variant" id="choropleth-en-orthographic">
+
+The globe, seen from space: every polygon vertex is converted from map pixels to real latitude/longitude and re-projected with actual orthographic sphere math, then clipped to the visible hemisphere. `center_lat` / `center_lon` aim the view (default `15, 10`). Only region sets that expose a coordinate inversion support this — today, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"orthographic"</code></span><span><strong>Aliases</strong> <code>"orthographic"</code> / <code>"globe"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-orthographic.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-polar">
+
+Azimuthal equidistant, centered on a pole by default (`center_lat=90, center_lon=0`) — the classic polar-projection read, where distance from the center is true distance from the chosen point.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar"</code></span><span><strong>Aliases</strong> <code>"polar"</code> / <code>"azimuthal"</code> / <code>"pole"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -106,7 +128,7 @@ chart = sp.choropleth(
 
 ## Signature
 
-`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, **kwargs) -> Chart`
+`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Alias : `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_chart`, `sp.geo_map`, `sp.build_choropleth`
 
@@ -140,6 +162,8 @@ Alias : `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_c
 <button class="sp-cls-tab sp-cact" onclick="spCls('choropleth-fr','sequential',this)"><span class="sp-cic">▧</span><span class="sp-clb">Séquentiel</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','binned',this)"><span class="sp-cic">▤</span><span class="sp-clb">Par classes</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Divergent</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographique</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -171,6 +195,26 @@ Répartit les valeurs en `bins` classes de quantiles discrètes (effectifs égau
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-diverging.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-orthographic">
+
+Le globe, vu depuis l'espace : chaque sommet de polygone est converti des pixels de la carte vers une vraie latitude/longitude puis reprojeté avec une véritable trigonométrie orthographique de sphère, puis découpé à l'hémisphère visible. `center_lat` / `center_lon` orientent la vue (par défaut `15, 10`). Seuls les ensembles de régions exposant une inversion de coordonnées supportent ceci — aujourd'hui, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"orthographic"</code></span><span><strong>Alias</strong> <code>"orthographic"</code> / <code>"globe"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-orthographic.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-polar">
+
+Azimutale équidistante, centrée par défaut sur un pôle (`center_lat=90, center_lon=0`) — la lecture classique en projection polaire, où la distance au centre est la vraie distance au point choisi.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code></span><span><strong>Alias</strong> <code>"polar"</code> / <code>"azimuthal"</code> / <code>"pole"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
 </div>
 
 </div>

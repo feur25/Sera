@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, **kwargs) -> Chart`
+`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
@@ -47,6 +47,7 @@ Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`
 <button class="sp-cls-toggle" onclick="spClsTog('bubblemap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -68,6 +69,16 @@ The real graduated-symbol map: the base is muted, and a circle sits on each matc
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-globe">
+
+Proportional circles projected onto an orthographic sphere — every centroid is converted to real latitude/longitude and re-projected with actual globe math, so bubbles on the far side simply aren't drawn. `center_lat` / `center_lon` aim the view (default `15, 10`). Only region sets that expose a coordinate inversion support this — today, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"globe"</code></span><span><strong>Aliases</strong> <code>"globe"</code> / <code>"orthographic"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
 </div>
 
 </div>
@@ -110,7 +121,7 @@ chart = sp.bubble_map(
 
 ## Signature
 
-`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, **kwargs) -> Chart`
+`sp.bubble_map(title, labels=None, values=None, *, variant="filled", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
 Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
@@ -143,6 +154,7 @@ Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`,
 <button class="sp-cls-toggle" onclick="spClsTog('bubblemap-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -164,6 +176,16 @@ La vraie carte à symboles proportionnels : le fond est estompé, et un cercle s
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-globe">
+
+Cercles proportionnels projetés sur une sphère orthographique — chaque centroïde est converti en vraie latitude/longitude puis reprojeté avec une véritable trigonométrie de globe, si bien que les bulles de la face cachée ne sont tout simplement pas dessinées. `center_lat` / `center_lon` orientent la vue (par défaut `15, 10`). Seuls les ensembles de régions exposant une inversion de coordonnées supportent ceci — aujourd'hui, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"globe"</code></span><span><strong>Alias</strong> <code>"globe"</code> / <code>"orthographic"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
 </div>
 
 </div>

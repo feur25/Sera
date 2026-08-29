@@ -1,0 +1,175 @@
+# Flow Map
+
+<div class="lang-en">
+
+<style>
+.sp-preview-frame{width:100%;height:420px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
+## Signature
+
+`sp.flow_map(title, labels=None, *, edges_i=None, edges_j=None, edges_w=None, variant="arc", map="world", region=None, **kwargs) -> Chart`
+
+Aliases: `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.connection_map`, `sp.great_circle_map`
+
+## Description
+
+`sp.flow_map()` draws origin → destination flows between matched regions. `labels` names every node; `edges_i` / `edges_j` are index pairs into `labels` for each flow's origin and destination (the same edge-list shape `sankey()` uses); `edges_w` is each flow's magnitude, which sets line width. `variant` selects the curve style; `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set. All of this is read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
+
+## Variants
+
+<div data-sp-registry-table="variants" data-family="flow_map"></div>
+
+## Region Sets
+
+<div data-sp-registry-table="regions"></div>
+
+## Parameters
+
+<div data-sp-registry-table="options" data-family="flow_map"></div>
+
+---
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
+
+---
+
+<div class="sp-cls sp-open" id="flowmap-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('flowmap-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('flowmap-en','arc',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-en','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Straight</span></button>
+</div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="flowmap-en-arc">
+
+Each flow bows outward along a quadratic curve, the classic "flight path" look — reads cleanly even when several flows share an endpoint, since they fan out instead of stacking on the same line.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"arc"</code></span><span><strong>Aliases</strong> <code>"arc"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"curved"</code> / <code>"great_circle"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-arc.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-en-straight">
+
+The direct-line reading: origin and destination joined by a plain segment, width still scaled to each flow's magnitude.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"straight"</code></span><span><strong>Aliases</strong> <code>"straight"</code> / <code>"line"</code> / <code>"direct"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-straight.html"></iframe>
+</div>
+
+</div>
+</div>
+
+### Reading one region group
+
+```python
+import seraplot as sp
+
+chart = sp.flow_map(
+    "Interstate Migration",
+    labels=["CA", "TX", "NY", "FL", "WA"],
+    edges_i=[0, 1, 2],
+    edges_j=[1, 3, 4],
+    edges_w=[18.2, 9.4, 5.1],
+    map="usa_states",
+)
+```
+
+`region` accepts any group name a `map`'s own registered set exposes — continents or blocs (`European Union`, `G7`, `G20`, `ASEAN`, `BRICS`, `Nordic`, `Middle East`) for `"world"`, Census regions for `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
+
+</div>
+
+<div class="lang-fr" style="display:none">
+
+## Signature
+
+`sp.flow_map(title, labels=None, *, edges_i=None, edges_j=None, edges_w=None, variant="arc", map="world", region=None, **kwargs) -> Chart`
+
+Alias : `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.connection_map`, `sp.great_circle_map`
+
+## Description
+
+`sp.flow_map()` dessine des flux origine → destination entre régions correspondantes. `labels` nomme chaque nœud ; `edges_i` / `edges_j` sont des paires d'indices dans `labels` pour l'origine et la destination de chaque flux (la même forme de liste d'arêtes que `sankey()`) ; `edges_w` est la magnitude de chaque flux, qui règle l'épaisseur du trait. `variant` sélectionne le style de courbe ; `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble. Tout ceci est lu en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
+
+## Variantes
+
+<div data-sp-registry-table="variants" data-family="flow_map"></div>
+
+## Ensembles de régions
+
+<div data-sp-registry-table="regions"></div>
+
+## Paramètres
+
+<div data-sp-registry-table="options" data-family="flow_map"></div>
+
+---
+
+## Retourne
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="flowmap-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('flowmap-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('flowmap-fr','arc',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-fr','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Droite</span></button>
+</div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="flowmap-fr-arc">
+
+Chaque flux s'arque le long d'une courbe quadratique, l'allure classique « trajet de vol » — reste lisible même quand plusieurs flux partagent une extrémité, puisqu'ils s'éventent au lieu de s'empiler sur la même ligne.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"arc"</code></span><span><strong>Alias</strong> <code>"arc"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"curved"</code> / <code>"great_circle"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-arc.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-fr-straight">
+
+La lecture en ligne directe : origine et destination reliées par un segment simple, l'épaisseur restant mise à l'échelle de la magnitude de chaque flux.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"straight"</code></span><span><strong>Alias</strong> <code>"straight"</code> / <code>"line"</code> / <code>"direct"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-straight.html"></iframe>
+</div>
+
+</div>
+</div>
+
+### Lire un seul groupe de régions
+
+```python
+import seraplot as sp
+
+chart = sp.flow_map(
+    "Migration Interétatique",
+    labels=["CA", "TX", "NY", "FL", "WA"],
+    edges_i=[0, 1, 2],
+    edges_j=[1, 3, 4],
+    edges_w=[18.2, 9.4, 5.1],
+    map="usa_states",
+)
+```
+
+`region` accepte tout nom de groupe exposé par l'ensemble propre à `map` — continents ou blocs (`European Union`, `G7`, `G20`, `ASEAN`, `BRICS`, `Nordic`, `Middle East`) pour `"world"`, régions de recensement pour `"usa_states"` (`Northeast`, `Midwest`, `South`, `West`).
+
+</div>
