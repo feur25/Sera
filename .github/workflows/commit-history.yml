@@ -27,7 +27,16 @@ jobs:
           pip install seraplot playwright
           playwright install --with-deps chromium
 
+      - name: Locate seraplot native extension
+        id: sera_ext
+        run: |
+          SITE=$(python -c "import site; print(site.getsitepackages()[0])")
+          SO=$(find "$SITE/seraplot" -maxdepth 1 -name "*.so" | head -n1)
+          echo "path=$SO" >> "$GITHUB_OUTPUT"
+
       - name: Generate graph
+        env:
+          LD_PRELOAD: ${{ steps.sera_ext.outputs.path }}
         run: python tools/commit_history.py
 
       - name: Commit and push if changed
