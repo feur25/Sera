@@ -8,3 +8,14 @@ crate::declare_named_region_set! {
     display = "Mexico (states)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    canada,
+    svg = "../../../../asset/maps/north-america/canada_provinces.svg",
+    width = 1000.00,
+    height = 468.92,
+    key = "canada_provinces",
+    aliases = &["canada", "ca", "canadian_provinces", "provinces"],
+    display = "Canada (provinces & territories)",
+    groups = &[]
+}

@@ -1,3 +1,4 @@
+pub mod africa;
 pub mod asia;
 pub mod brazil_states;
 pub mod europe;
@@ -5,6 +6,7 @@ pub mod generic;
 pub mod germany_states;
 pub mod north_america;
 pub mod oceania;
+pub mod south_america;
 pub mod usa_states;
 
 use crate::plot::map::svg_parser::CountryShape;

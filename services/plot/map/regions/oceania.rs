@@ -8,3 +8,14 @@ crate::declare_named_region_set! {
     display = "Australia (states & territories)",
     groups = &[]
 }
+
+crate::declare_named_region_set! {
+    new_zealand,
+    svg = "../../../../asset/maps/oceania/new_zealand_regions.svg",
+    width = 939.42,
+    height = 1000.00,
+    key = "new_zealand_regions",
+    aliases = &["new_zealand", "nz", "aotearoa", "kiwi", "new_zealand_regions"],
+    display = "New Zealand (regions)",
+    groups = &[]
+}
