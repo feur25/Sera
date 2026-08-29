@@ -49,6 +49,7 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <button class="sp-cls-tab" onclick="spCls('area-en','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Wave</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-en','leader',this)"><span class="sp-cic">♛</span><span class="sp-clb">Leader</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -108,6 +109,13 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <iframe class="sp-preview-frame" data-src="../../previews/area-wave.html"></iframe>
 </div>
 
+<div class="sp-variant" id="area-en-leader">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"leader"</code></span><span><strong>Aliases</strong> <code>leader / leaderboard / frontrunner / lead_race</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Overlays every series translucently, then traces a bold highlighted line through whichever series is highest at each point - a "crown trace" that jumps from series to series as the lead changes, with a marker and name badge at every handoff. Answers "who's winning, and when did it change" at a glance instead of asking the reader to compare curves.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/area-leader.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -152,6 +160,7 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <button class="sp-cls-tab" onclick="spCls('area-fr','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Vague</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-fr','leader',this)"><span class="sp-cic">♛</span><span class="sp-clb">Leader</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -209,6 +218,13 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Empilement signé véritable - contrairement à <code>stacked</code>, les valeurs négatives ne sont jamais ramenées à zéro, si bien que des séries oscillantes (type sinus/cosinus traversant la ligne de base) s'empilent correctement des deux côtés de zéro. Reproduit le comportement de <code>stackplot()</code> de matplotlib pour des données signées.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/area-wave.html"></iframe>
+</div>
+
+<div class="sp-variant" id="area-fr-leader">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"leader"</code></span><span><strong>Alias</strong> <code>leader / leaderboard / frontrunner / lead_race</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Superpose chaque série en transparence, puis trace une ligne en surbrillance à travers celle qui est la plus haute à chaque point - une « ligne de couronne » qui saute de série en série à chaque changement de tête, avec un repère et un badge du nom à chaque passation. Répond à « qui est en tête, et quand ça a changé » d'un coup d'œil au lieu de faire comparer les courbes au lecteur.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/area-leader.html"></iframe>
 </div>
 
 </div>
