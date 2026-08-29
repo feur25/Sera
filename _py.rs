@@ -565,6 +565,11 @@ fn _scenes3d_json() -> String {
 }
 
 #[pyfunction]
+fn _map_regions_json() -> String {
+    serde_json::to_string(&crate::map_regions()).unwrap_or_default()
+}
+
+#[pyfunction]
 fn _docs_json() -> String {
     serde_json::to_string(&crate::doc_registry::all_docs()).unwrap_or_default()
 }
@@ -891,6 +896,7 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_true_required_params_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_variants_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_themes_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_map_regions_json, m)?)?;
     m.add_function(wrap_pyfunction!(_scenes3d_json, m)?)?;
     m.add_function(wrap_pyfunction!(_docs_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_methods_json, m)?)?;

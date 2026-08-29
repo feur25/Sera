@@ -38,6 +38,7 @@ from .seraplot import (
     _true_required_params_json,
     _chart_variants_json,
     _chart_themes_json,
+    _map_regions_json,
     _scenes3d_json,
     _docs_json,
     _chart_methods_json,
@@ -122,6 +123,11 @@ def _chart_themes_json_cached():
 
 
 @lru_cache(maxsize=1)
+def _map_regions_json_cached():
+    return _map_regions_json()
+
+
+@lru_cache(maxsize=1)
 def _scenes3d_json_cached():
     return _scenes3d_json()
 
@@ -154,6 +160,10 @@ def chart_variants():
 
 def chart_themes():
     return _json.loads(_chart_themes_json_cached())
+
+
+def map_regions():
+    return _json.loads(_map_regions_json_cached())
 
 
 def scenes3d():
