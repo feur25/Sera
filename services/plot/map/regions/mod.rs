@@ -28,6 +28,27 @@ pub fn all_region_sets() -> impl Iterator<Item = &'static RegionSetEntry> {
     inventory::iter::<RegionSetEntry>()
 }
 
+pub fn group_codes(region: &RegionSetEntry, group: &str) -> Option<&'static [&'static str]> {
+    let g = group.trim().to_lowercase();
+    if g.is_empty() {
+        return None;
+    }
+    (region.groups)()
+        .iter()
+        .find(|(name, _)| name.to_lowercase() == g)
+        .map(|(_, codes)| *codes)
+}
+
+pub fn shapes_in_group(region: &RegionSetEntry, group: &str) -> Vec<&'static CountryShape> {
+    match group_codes(region, group) {
+        Some(codes) => (region.all)()
+            .iter()
+            .filter(|shape| codes.contains(&shape.id.as_str()))
+            .collect(),
+        None => (region.all)().iter().collect(),
+    }
+}
+
 pub fn default_region_set() -> Option<&'static RegionSetEntry> {
     inventory::iter::<RegionSetEntry>().find(|e| e.key == "world")
 }
@@ -64,6 +85,27 @@ mod tests {
     #[test]
     fn resolve_returns_none_for_an_unknown_region_set() {
         assert!(resolve("narnia").is_none());
+    }
+
+    #[test]
+    fn shapes_in_group_restricts_usa_states_to_the_west_census_region() {
+        let usa = resolve("usa_states").expect("usa_states must be registered");
+        let west = shapes_in_group(usa, "West");
+        assert_eq!(west.len(), 13);
+        assert!(west.iter().any(|s| s.id == "CA"));
+        assert!(!west.iter().any(|s| s.id == "NY"));
+    }
+
+    #[test]
+    fn shapes_in_group_is_case_insensitive() {
+        let usa = resolve("usa_states").expect("usa_states must be registered");
+        assert_eq!(shapes_in_group(usa, "west").len(), shapes_in_group(usa, "WEST").len());
+    }
+
+    #[test]
+    fn shapes_in_group_returns_everything_for_an_unknown_group_name() {
+        let usa = resolve("usa_states").expect("usa_states must be registered");
+        assert_eq!(shapes_in_group(usa, "atlantis").len(), (usa.all)().len());
     }
 
     #[test]
