@@ -18,7 +18,13 @@ mod tests {
     use std::path::PathBuf;
 
     fn maps_root() -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src").join("asset").join("maps")
+        let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let direct = manifest.join("asset").join("maps");
+        if direct.is_dir() {
+            direct
+        } else {
+            manifest.join("src").join("asset").join("maps")
+        }
     }
 
     fn walk(dir: &std::path::Path, out: &mut Vec<PathBuf>) {
@@ -99,7 +105,7 @@ mod tests {
             builder = builder.add(&key, &raw);
         }
         let bytes = builder.build();
-        let out = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src").join("asset").join("maps.spak");
+        let out = root.parent().expect("maps_root must have a parent").join("maps.spak");
         std::fs::write(&out, &bytes).unwrap_or_else(|e| panic!("cannot write {out:?}: {e}"));
         println!("packed {} svg assets into {:?} ({} bytes)", files.len(), out, bytes.len());
     }
