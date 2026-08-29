@@ -2,6 +2,8 @@ pub mod binned;
 pub mod common;
 pub mod config;
 pub mod diverging;
+pub mod orthographic;
+pub mod polar;
 pub mod sequential;
 pub mod variant;
 
@@ -18,6 +20,8 @@ pub fn render_choropleth_html(cfg: &ChoroplethConfig) -> String {
         Sequential => sequential::render(cfg),
         Binned => binned::render(cfg),
         Diverging => diverging::render(cfg),
+        Orthographic => orthographic::render(cfg),
+        Polar => polar::render(cfg),
     }
 }
 
@@ -182,6 +186,8 @@ pub fn build_choropleth(input: &str) -> String {
         group: o.region.as_deref().unwrap_or(""),
         bins: o.bins.map(|b| b as usize).unwrap_or(5),
         diverging_midpoint: o.diverging_midpoint.unwrap_or(0.0),
+        center_lat: o.center_lat,
+        center_lon: o.center_lon,
     };
     apply(render_choropleth_html(&cfg), &o)
 }

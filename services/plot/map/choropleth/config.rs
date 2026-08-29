@@ -12,6 +12,8 @@ pub struct ChoroplethConfig<'a> {
     pub group: &'a str,
     pub bins: usize,
     pub diverging_midpoint: f64,
+    pub center_lat: Option<f64>,
+    pub center_lon: Option<f64>,
 }
 
 impl<'a> ChoroplethConfig<'a> {
@@ -28,6 +30,8 @@ impl<'a> ChoroplethConfig<'a> {
             group: "",
             bins: 5,
             diverging_midpoint: 0.0,
+            center_lat: None,
+            center_lon: None,
         }
     }
 }
