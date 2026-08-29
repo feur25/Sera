@@ -1161,6 +1161,49 @@ pub fn chart_themes() -> serde_json::Value {
     Value::Object(out)
 }
 
+pub fn map_regions() -> serde_json::Value {
+    use serde_json::{Map, Value};
+
+    let mut out = Map::new();
+    out.insert("default".to_string(), Value::String("world".to_string()));
+    let arr: Vec<Value> = crate::plot::map::regions::all_region_sets()
+        .map(|entry| {
+            let mut item = Map::new();
+            item.insert("key".to_string(), Value::String(entry.key.to_string()));
+            item.insert(
+                "display_name".to_string(),
+                Value::String(entry.display_name.to_string()),
+            );
+            item.insert(
+                "aliases".to_string(),
+                Value::Array(
+                    entry
+                        .aliases
+                        .iter()
+                        .map(|a| Value::String((*a).to_string()))
+                        .collect(),
+                ),
+            );
+            item.insert(
+                "count".to_string(),
+                Value::Number(((entry.all)().len() as u64).into()),
+            );
+            item.insert(
+                "groups".to_string(),
+                Value::Array(
+                    (entry.groups)()
+                        .iter()
+                        .map(|(name, _)| Value::String((*name).to_string()))
+                        .collect(),
+                ),
+            );
+            Value::Object(item)
+        })
+        .collect();
+    out.insert("regions".to_string(), Value::Array(arr));
+    Value::Object(out)
+}
+
 pub fn scenes3d() -> serde_json::Value {
     use crate::plot::scene3d::{iter_entries, Scene3DVariant};
     use serde_json::{Map, Value};

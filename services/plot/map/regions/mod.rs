@@ -84,6 +84,16 @@ mod tests {
     }
 
     #[test]
+    fn map_regions_json_lists_every_registered_region_set_with_its_own_shape_count() {
+        let json = crate::map_regions();
+        let regions = json["regions"].as_array().expect("regions must be an array");
+        assert_eq!(regions.len(), all_region_sets().count());
+        let usa = regions.iter().find(|r| r["key"] == "usa_states").expect("usa_states must be listed");
+        assert_eq!(usa["count"].as_u64(), Some(51));
+        assert!(usa["groups"].as_array().unwrap().contains(&serde_json::Value::String("West".to_string())));
+    }
+
+    #[test]
     fn no_two_region_sets_share_the_same_key() {
         let keys: Vec<&str> = all_region_sets().map(|e| e.key).collect();
         let unique: std::collections::HashSet<&str> = keys.iter().copied().collect();
