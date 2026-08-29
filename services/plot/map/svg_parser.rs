@@ -5,25 +5,30 @@ pub struct CountryShape {
 }
 
 pub fn parse_world_svg(svg: &str) -> Vec<CountryShape> {
-    let mut countries = Vec::with_capacity(260);
+    parse_region_svg(svg, "id")
+}
+
+pub fn parse_region_svg(svg: &str, code_attr: &str) -> Vec<CountryShape> {
+    let mut shapes = Vec::with_capacity(260);
 
     let mut pos = 0;
-    let bytes = svg.as_bytes();
-    let len = bytes.len();
+    let len = svg.len();
 
     while pos < len {
         if let Some(p) = find_substr(svg, pos, "<path") {
             pos = p + 5;
-            let end = match find_substr(svg, pos, "/>") {
+            let end = match find_substr(svg, pos, ">") {
                 Some(e) => e,
                 None => break,
             };
             let tag = &svg[pos..end];
 
-            let id = match extract_attr(tag, "id") {
-                Some(v) if v.len() == 2 && v.chars().all(|c| c.is_ascii_uppercase()) => v,
+            let id = match extract_attr(tag, code_attr) {
+                Some(v) if v.len() == 2 && v.chars().all(|c| c.is_ascii_alphabetic()) => {
+                    v.to_ascii_uppercase()
+                }
                 _ => {
-                    pos = end + 2;
+                    pos = end + 1;
                     continue;
                 }
             };
@@ -31,22 +36,22 @@ pub fn parse_world_svg(svg: &str) -> Vec<CountryShape> {
             let d = match extract_attr(tag, "d") {
                 Some(v) => v,
                 None => {
-                    pos = end + 2;
+                    pos = end + 1;
                     continue;
                 }
             };
 
             let polygons = parse_path_d(&d);
             if !polygons.is_empty() {
-                countries.push(CountryShape { id, name, polygons });
+                shapes.push(CountryShape { id, name, polygons });
             }
-            pos = end + 2;
+            pos = end + 1;
         } else {
             break;
         }
     }
 
-    countries
+    shapes
 }
 
 fn find_substr(s: &str, start: usize, needle: &str) -> Option<usize> {
@@ -116,6 +121,54 @@ fn parse_path_d(d: &str) -> Vec<Vec<[f32; 2]>> {
             Token::LRel => {
                 i += 1;
             }
+            Token::VAbs => {
+                i += 1;
+                while i < tokens.len() {
+                    if let Token::Num(y) = tokens[i] {
+                        cy = y;
+                        current.push([cx as f32, cy as f32]);
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            Token::VRel => {
+                i += 1;
+                while i < tokens.len() {
+                    if let Token::Num(dy) = tokens[i] {
+                        cy += dy;
+                        current.push([cx as f32, cy as f32]);
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            Token::HAbs => {
+                i += 1;
+                while i < tokens.len() {
+                    if let Token::Num(x) = tokens[i] {
+                        cx = x;
+                        current.push([cx as f32, cy as f32]);
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            Token::HRel => {
+                i += 1;
+                while i < tokens.len() {
+                    if let Token::Num(dx) = tokens[i] {
+                        cx += dx;
+                        current.push([cx as f32, cy as f32]);
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
             Token::Z => {
                 if current.len() >= 3 {
                     polygons.push(std::mem::take(&mut current));
@@ -154,6 +207,10 @@ enum Token {
     MRel,
     LAbs,
     LRel,
+    VAbs,
+    VRel,
+    HAbs,
+    HRel,
     Z,
     Num(f64),
 }
@@ -181,6 +238,22 @@ fn tokenize_path(d: &str) -> Vec<Token> {
             }
             b'l' => {
                 tokens.push(Token::LRel);
+                i += 1;
+            }
+            b'V' => {
+                tokens.push(Token::VAbs);
+                i += 1;
+            }
+            b'v' => {
+                tokens.push(Token::VRel);
+                i += 1;
+            }
+            b'H' => {
+                tokens.push(Token::HAbs);
+                i += 1;
+            }
+            b'h' => {
+                tokens.push(Token::HRel);
                 i += 1;
             }
             b'z' | b'Z' => {
@@ -225,4 +298,68 @@ fn tokenize_path(d: &str) -> Vec<Token> {
     }
 
     tokens
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_world_svg_keeps_extracting_uppercase_id_attributes() {
+        let svg = r#"<path d="m 0,0 10,0 0,10 z" title="Testland" id="TL" />"#;
+        let shapes = parse_world_svg(svg);
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].id, "TL");
+        assert_eq!(shapes[0].name, "Testland");
+    }
+
+    #[test]
+    fn parse_region_svg_reads_a_lowercase_class_as_the_code_and_uppercases_it() {
+        let svg = r#"<path class="tl" d="m 0,0 10,0 0,10 z">"#;
+        let shapes = parse_region_svg(svg, "class");
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].id, "TL");
+    }
+
+    #[test]
+    fn parse_region_svg_handles_a_plain_closing_bracket_without_a_self_closing_slash() {
+        let svg = r#"<path class="ny" d="m 5,5 h 10 v 10 h -10 z">"#;
+        let shapes = parse_region_svg(svg, "class");
+        assert_eq!(shapes.len(), 1);
+        assert_eq!(shapes[0].polygons[0].len(), 4);
+    }
+
+    #[test]
+    fn parse_path_d_handles_horizontal_and_vertical_relative_lineto() {
+        let polys = parse_path_d("m 0,0 h 10 v 5 h -10 z");
+        assert_eq!(polys.len(), 1);
+        assert_eq!(polys[0], vec![[0.0, 0.0], [10.0, 0.0], [10.0, 5.0], [0.0, 5.0]]);
+    }
+
+    #[test]
+    fn parse_path_d_handles_repeated_implicit_h_and_v_coordinates() {
+        let polys = parse_path_d("m 0,0 h 5 5 v 2 3 z");
+        assert_eq!(polys[0], vec![[0.0, 0.0], [5.0, 0.0], [10.0, 0.0], [10.0, 2.0], [10.0, 5.0]]);
+    }
+
+    #[test]
+    fn parse_path_d_handles_absolute_horizontal_and_vertical_lineto() {
+        let polys = parse_path_d("m 3,3 H 9 V 1 z");
+        assert_eq!(polys[0], vec![[3.0, 3.0], [9.0, 3.0], [9.0, 1.0]]);
+    }
+
+    #[test]
+    fn parse_region_svg_on_the_real_usa_states_asset_finds_every_state_and_dc() {
+        let svg = include_str!("../../../asset/usa_states.svg");
+        let shapes = parse_region_svg(svg, "class");
+        let ids: std::collections::HashSet<&str> = shapes.iter().map(|s| s.id.as_str()).collect();
+        assert!(ids.len() >= 51, "expected at least 50 states + DC, found {}: {ids:?}", ids.len());
+        for expect in ["CA", "NY", "TX", "AK", "HI", "DC"] {
+            assert!(ids.contains(expect), "missing {expect} in parsed usa_states.svg: {ids:?}");
+        }
+        for shape in &shapes {
+            assert!(!shape.polygons.is_empty(), "{} parsed with zero polygons", shape.id);
+            assert!(shape.polygons.iter().all(|p| p.len() >= 3), "{} has a degenerate polygon", shape.id);
+        }
+    }
 }
