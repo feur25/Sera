@@ -35,9 +35,7 @@ jobs:
           echo "path=$SO" >> "$GITHUB_OUTPUT"
 
       - name: Generate graph
-        env:
-          LD_PRELOAD: ${{ steps.sera_ext.outputs.path }}
-        run: python tools/commit_history.py
+        run: LD_PRELOAD="${{ steps.sera_ext.outputs.path }}" python tools/commit_history.py
 
       - name: Commit and push if changed
         run: |
