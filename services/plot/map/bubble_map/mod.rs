@@ -49,7 +49,7 @@ pub fn render_bubble_map(ctx: PlotRenderContext) {
     }
 
     let border_stroke =
-        egui::Stroke::new(0.3, egui::Color32::from_rgba_premultiplied(42, 42, 74, 100));
+        egui::Stroke::new(0.3_f32, egui::Color32::from_rgba_premultiplied(42, 42, 74, 100));
     let base_fill = egui::Color32::from_rgb(21, 27, 35);
 
     for shape in world_data::all_countries() {
@@ -64,13 +64,13 @@ pub fn render_bubble_map(ctx: PlotRenderContext) {
             if is_hov {
                 (
                     egui::Color32::from_rgb(255, 220, 50),
-                    egui::Stroke::new(1.5, egui::Color32::WHITE),
+                    egui::Stroke::new(1.5_f32, egui::Color32::WHITE),
                     true,
                 )
             } else {
                 (
                     egui::Color32::from_rgba_premultiplied(pal.0, pal.1, pal.2, 180),
-                    egui::Stroke::new(0.8, egui::Color32::from_rgb(pal.0, pal.1, pal.2)),
+                    egui::Stroke::new(0.8_f32, egui::Color32::from_rgb(pal.0, pal.1, pal.2)),
                     true,
                 )
             }

@@ -52,7 +52,7 @@ pub fn render_choropleth(ctx: PlotRenderContext) {
     }
 
     let border_stroke =
-        egui::Stroke::new(0.4, egui::Color32::from_rgba_premultiplied(50, 50, 80, 100));
+        egui::Stroke::new(0.4_f32, egui::Color32::from_rgba_premultiplied(50, 50, 80, 100));
     let base_fill = egui::Color32::from_rgb(26, 26, 46);
 
     for shape in world_data::all_countries() {
@@ -66,7 +66,7 @@ pub fn render_choropleth(ctx: PlotRenderContext) {
             if is_hov {
                 (
                     egui::Color32::from_rgb(255, 220, 50),
-                    egui::Stroke::new(1.5, egui::Color32::WHITE),
+                    egui::Stroke::new(1.5_f32, egui::Color32::WHITE),
                     true,
                 )
             } else {
@@ -74,7 +74,7 @@ pub fn render_choropleth(ctx: PlotRenderContext) {
                 (
                     egui::Color32::from_rgb(r, g, b),
                     egui::Stroke::new(
-                        0.6,
+                        0.6_f32,
                         egui::Color32::from_rgba_premultiplied(255, 255, 255, 60),
                     ),
                     true,

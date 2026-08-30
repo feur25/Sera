@@ -65,20 +65,20 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
             if is_hov {
                 (
                     egui::Color32::from_rgb(255, 220, 50),
-                    egui::Stroke::new(1.5, egui::Color32::WHITE),
+                    egui::Stroke::new(1.5_f32, egui::Color32::WHITE),
                 )
             } else {
                 let (r, g, b) = heat_color(value, max_val);
                 (
                     egui::Color32::from_rgb(r, g, b),
                     egui::Stroke::new(
-                        0.5,
+                        0.5_f32,
                         egui::Color32::from_rgba_premultiplied(255, 255, 255, 60),
                     ),
                 )
             }
         } else {
-            (base_fill, egui::Stroke::new(0.3, border_color))
+            (base_fill, egui::Stroke::new(0.3_f32, border_color))
         };
 
         for poly in &shape.polygons {

@@ -43,7 +43,7 @@ pub fn render_pie_native(ctx: PlotRenderContext) {
         ctx.painter.add(egui::Shape::convex_polygon(
             points,
             display_color,
-            egui::Stroke::new(1.0, egui::Color32::WHITE),
+            egui::Stroke::new(1.0_f32, egui::Color32::WHITE),
         ));
 
         let mid_angle = start_angle + sweep * 0.5;

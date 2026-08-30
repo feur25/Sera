@@ -92,7 +92,7 @@ pub fn render_lines(ctx: super::PlotRenderContext) {
         let color = ctx.colors[actual_idx % ctx.colors.len()];
         if let Some(p) = prev_pos {
             ctx.painter
-                .line_segment([p, pos], egui::Stroke::new(2.0, color));
+                .line_segment([p, pos], egui::Stroke::new(2.0_f32, color));
         }
 
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
