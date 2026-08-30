@@ -9,8 +9,10 @@ pub mod variant;
 pub use config::FlowMapConfig;
 pub use variant::FlowMapVariant;
 
-use crate::plot::map::{regions, world_data};
+use crate::plot::map::regions;
 use crate::plot::{apply, parse_all};
+#[cfg(test)]
+use crate::plot::map::world_data;
 
 pub fn render_flow_map_html(cfg: &FlowMapConfig) -> String {
     use FlowMapVariant::*;

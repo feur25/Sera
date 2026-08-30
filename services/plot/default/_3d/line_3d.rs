@@ -68,7 +68,7 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
 
         if i > 0 {
             let (prev_screen, _, _, _) = line_points[i - 1];
-            let line_width = if is_hovered { 4.5 } else { 3.5 };
+            let line_width = if is_hovered { 4.5_f32 } else { 3.5_f32 };
             ctx.painter.line_segment(
                 [prev_screen, screen],
                 egui::Stroke::new(line_width, display_color),

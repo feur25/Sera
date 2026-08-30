@@ -161,7 +161,7 @@ fn render_grid_3d(
     let half_height = plot_rect.height() / 2.0;
     let grid_divisions = 5;
     let grid_color = egui::Color32::from_rgba_unmultiplied(120, 120, 140, 100);
-    let grid_stroke = egui::Stroke::new(1.0, grid_color);
+    let grid_stroke = egui::Stroke::new(1.0_f32, grid_color);
 
     for i in 0..=grid_divisions {
         let t = i as f32 / grid_divisions as f32;
@@ -233,9 +233,9 @@ fn render_grid_3d(
     }
 
     let axis_length = 0.15;
-    let axis_stroke_x = egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0));
-    let axis_stroke_y = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 255, 0));
-    let axis_stroke_z = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 0, 255));
+    let axis_stroke_x = egui::Stroke::new(2.0_f32, egui::Color32::from_rgb(255, 0, 0));
+    let axis_stroke_y = egui::Stroke::new(2.0_f32, egui::Color32::from_rgb(0, 255, 0));
+    let axis_stroke_z = egui::Stroke::new(2.0_f32, egui::Color32::from_rgb(0, 0, 255));
 
     let origin = cube.center;
     if let Some(proj_origin) = camera_controller.camera.project(origin) {

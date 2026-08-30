@@ -79,7 +79,7 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
             color
         };
 
-        let stroke_width = if is_hovered { 8.0 } else { 5.5 };
+        let stroke_width = if is_hovered { 8.0_f32 } else { 5.5_f32 };
         ctx.painter.line_segment(
             [screen_base, screen_top],
             egui::Stroke::new(stroke_width, display_color),
@@ -97,12 +97,12 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
             ctx.painter.circle_stroke(
                 screen_top,
                 top_radius + 2.0,
-                egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 200, 0)),
+                egui::Stroke::new(2.0_f32, egui::Color32::from_rgb(255, 200, 0)),
             );
             ctx.painter.circle_stroke(
                 screen_base,
                 base_radius + 2.0,
-                egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 200, 0)),
+                egui::Stroke::new(2.0_f32, egui::Color32::from_rgb(255, 200, 0)),
             );
         }
     }

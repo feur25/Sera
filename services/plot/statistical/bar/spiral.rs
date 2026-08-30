@@ -1,5 +1,6 @@
 use super::config::BarConfig;
 use super::spiral_common::render as render_spiral;
+#[cfg(test)]
 use crate::plot::statistical::common::hex6;
 
 #[crate::chart_demo(

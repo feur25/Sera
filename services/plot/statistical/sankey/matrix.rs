@@ -174,7 +174,7 @@ pub fn render(cfg: &SankeyConfig) -> String {
     }
     push_b(&mut buf, b"</g>");
 
-    for (i, &li) in source_idx.iter().enumerate() {
+    for &li in source_idx.iter() {
         let e0 = (0..e).find(|&k| cfg.sources[k] as usize == li);
         let (w, t) = match e0 {
             Some(k) => (cfg.weights[k], cfg.targets[k] as usize),

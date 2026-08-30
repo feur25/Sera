@@ -137,7 +137,6 @@ pub fn render(cfg: &CircosConfig) -> String {
     let mut ring_cursor = r;
 
     let degree_band = 14.0;
-    let r_degree_out = ring_cursor;
     let r_degree_in = ring_cursor - degree_band;
     ring_cursor = r_degree_in - 4.0;
 

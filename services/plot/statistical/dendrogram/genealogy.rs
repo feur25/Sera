@@ -1,8 +1,10 @@
-use super::common::{node_color, ordered_leaves, svg_header, tree_for, write_radial_link, TreeNode};
+use super::common::{ordered_leaves, svg_header, tree_for, write_radial_link, TreeNode};
 use super::config::DendrogramConfig;
 use crate::html::hover::{html_id, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 use std::f64::consts::PI;
+#[cfg(test)]
+use super::common::node_color;
 
 fn assign_positions_spiral(
     nodes: &mut Vec<TreeNode>,

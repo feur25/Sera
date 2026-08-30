@@ -1,6 +1,6 @@
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
-    escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, svg_open_rescalable, svg_title, truncate,
+    escape_xml, hex6, lerp_color, push_b, push_f2, push_i, svg_open_rescalable, svg_title, truncate,
 };
 use std::f64::consts::{FRAC_PI_2, TAU};
 
