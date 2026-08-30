@@ -1,10 +1,14 @@
 import datetime
 import math
+import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 import seraplot as sp
+
+os.environ.pop("LD_PRELOAD", None)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_HTML = REPO_ROOT / "docs" / "commit-history.html"
@@ -45,10 +49,15 @@ def resolve_author(name, email):
 
 def load_commits():
     fmt = "@@%H\x1f%ad\x1f%an\x1f%ae\x1f%s"
-    raw = subprocess.run(
+    proc = subprocess.run(
         ["git", "log", "--reverse", "--date=short", "--shortstat", f"--pretty=format:{fmt}"],
         cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
-    ).stdout
+    )
+    if proc.returncode != 0:
+        sys.exit(f"git log failed with code {proc.returncode}: {proc.stderr.strip()}")
+    raw = proc.stdout
+    if not raw.strip():
+        sys.exit("git log produced no output -- is this a full, unshallow checkout?")
     commits = []
     cur = None
     for line in raw.split("\n"):
