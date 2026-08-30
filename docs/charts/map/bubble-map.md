@@ -48,6 +48,8 @@ Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Ring</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulse</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -79,6 +81,26 @@ Proportional circles projected onto an orthographic sphere — every centroid is
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-ring">
+
+A hollow circle instead of a filled one — `stroke-width` carries the magnitude, not just radius, so a thin ring reads small and a thick ring reads large even where two circles overlap and one would otherwise hide behind the other.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ring"</code></span><span><strong>Aliases</strong> <code>"ring"</code> / <code>"donut"</code> / <code>"outline"</code> / <code>"hollow"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-ring.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-pulse">
+
+Two faint concentric rings behind the solid marker, fading out with distance — a static radar-ping look, well suited to data that reads as an alert or a hotspot rather than a plain quantity.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pulse"</code></span><span><strong>Aliases</strong> <code>"pulse"</code> / <code>"ripple"</code> / <code>"radar"</code> / <code>"ping"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
 </div>
 
 </div>
@@ -124,6 +146,8 @@ Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`,
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Anneau</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulsation</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -155,6 +179,26 @@ Cercles proportionnels projetés sur une sphère orthographique — chaque centr
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-ring">
+
+Un cercle creux plutôt que rempli — c'est `stroke-width` qui porte la magnitude, pas seulement le rayon, si bien qu'un anneau fin se lit petit et un anneau épais se lit grand même quand deux cercles se chevauchent et que l'un masquerait sinon l'autre.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ring"</code></span><span><strong>Alias</strong> <code>"ring"</code> / <code>"donut"</code> / <code>"outline"</code> / <code>"hollow"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-ring.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-pulse">
+
+Deux anneaux concentriques discrets derrière le marqueur plein, qui s'estompent avec la distance — une allure de ping radar statique, bien adaptée aux données qui se lisent comme une alerte ou un point chaud plutôt qu'une simple quantité.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pulse"</code></span><span><strong>Alias</strong> <code>"pulse"</code> / <code>"ripple"</code> / <code>"radar"</code> / <code>"ping"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
 </div>
 
 </div>

@@ -47,6 +47,8 @@ Aliases: `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.co
 <button class="sp-cls-toggle" onclick="spClsTog('flowmap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('flowmap-en','arc',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Straight</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-en','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animated</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-en','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -68,6 +70,26 @@ The direct-line reading: origin and destination joined by a plain segment, width
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-straight.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-en-animated">
+
+The arc plus real motion: a thin white dashed stroke rides on top of every flow, driven by a `stroke-dashoffset` `@keyframes` animation embedded right in the svg, so direction reads as travel instead of a static line (falls back to still when the viewer has `prefers-reduced-motion` on).
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"animated"</code></span><span><strong>Aliases</strong> <code>"animated"</code> / <code>"dashed"</code> / <code>"moving"</code> / <code>"flow_dash"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-animated.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-en-ribbon">
+
+Every flow becomes a real tapered band instead of a stroked line — wide at the origin, narrowing toward the destination, sampled along the same curve the arc variant bows through and offset perpendicular to it at each point. Reads like a river or a Sankey band laid over the map.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>"ribbon"</code> / <code>"tapered"</code> / <code>"band"</code> / <code>"river"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-ribbon.html"></iframe>
 </div>
 
 </div>
@@ -112,6 +134,8 @@ Alias : `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.con
 <button class="sp-cls-toggle" onclick="spClsTog('flowmap-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('flowmap-fr','arc',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Droite</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-fr','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animé</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-fr','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ruban</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -133,6 +157,26 @@ La lecture en ligne directe : origine et destination reliées par un segment sim
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-straight.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-fr-animated">
+
+L'arc plus un vrai mouvement : un fin trait blanc en pointillés chevauche chaque flux, piloté par une animation `@keyframes` sur `stroke-dashoffset` intégrée directement dans le svg, si bien que la direction se lit comme un déplacement plutôt qu'une ligne statique (revient à l'immobile si le lecteur a activé `prefers-reduced-motion`).
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"animated"</code></span><span><strong>Alias</strong> <code>"animated"</code> / <code>"dashed"</code> / <code>"moving"</code> / <code>"flow_dash"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-animated.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-fr-ribbon">
+
+Chaque flux devient une vraie bande effilée plutôt qu'un trait — large à l'origine, se resserrant vers la destination, échantillonnée le long de la même courbe que la variante arc et décalée perpendiculairement à celle-ci à chaque point. Se lit comme une rivière ou une bande Sankey posée sur la carte.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>"ribbon"</code> / <code>"tapered"</code> / <code>"band"</code> / <code>"river"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-ribbon.html"></iframe>
 </div>
 
 </div>

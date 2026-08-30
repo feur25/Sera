@@ -50,6 +50,8 @@ Aliases: `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Diverging</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographic</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivariate</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Dot density</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -103,6 +105,26 @@ Azimuthal equidistant, centered on a pole by default (`center_lat=90, center_lon
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
 </div>
 
+<div class="sp-variant" id="choropleth-en-bivariate">
+
+Two value series at once instead of one: `values` and `secondary_values` each split into three bins, looked up in a 3×3 color grid instead of a single ramp, so a single glance separates "high on both", "high on one, low on the other", and "low on both" — a technique real cartographers use and almost no charting library ships.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bivariate"</code></span><span><strong>Aliases</strong> <code>"bivariate"</code> / <code>"two_variable"</code> / <code>"cross"</code> / <code>"dual"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-bivariate.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-dot_density">
+
+One dot per fixed unit of value, scattered at random inside the real region outline (rejection-sampled against the actual polygon, not just its bounding box) instead of one flat fill color — texture and density carry the magnitude the way an old-school population map does.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dot_density"</code></span><span><strong>Aliases</strong> <code>"dot_density"</code> / <code>"dots"</code> / <code>"stipple"</code> / <code>"scatter_fill"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -148,6 +170,8 @@ Alias : `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_c
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Divergent</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographique</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivarié</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Densité de points</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -199,6 +223,26 @@ Azimutale équidistante, centrée par défaut sur un pôle (`center_lat=90, cent
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-bivariate">
+
+Deux séries de valeurs à la fois plutôt qu'une seule : `values` et `secondary_values`, chacune répartie en trois classes, recherchées dans une grille de couleurs 3×3 plutôt qu'une seule rampe — un coup d'œil suffit à distinguer "haut sur les deux", "haut sur l'une, bas sur l'autre" et "bas sur les deux", une technique que les vrais cartographes utilisent et que presque aucune librairie de graphiques ne propose.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bivariate"</code></span><span><strong>Alias</strong> <code>"bivariate"</code> / <code>"two_variable"</code> / <code>"cross"</code> / <code>"dual"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-bivariate.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-dot_density">
+
+Un point par unité fixe de valeur, dispersé aléatoirement à l'intérieur du vrai contour de la région (échantillonnage par rejet contre le polygone réel, pas juste sa boîte englobante) plutôt qu'une seule couleur de remplissage plate — la texture et la densité portent la magnitude, comme sur une vieille carte de population.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dot_density"</code></span><span><strong>Alias</strong> <code>"dot_density"</code> / <code>"dots"</code> / <code>"stipple"</code> / <code>"scatter_fill"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
 </div>
 
 </div>
