@@ -1,7 +1,9 @@
 pub mod binned;
+pub mod bivariate;
 pub mod common;
 pub mod config;
 pub mod diverging;
+pub mod dot_density;
 pub mod orthographic;
 pub mod polar;
 pub mod sequential;
@@ -22,6 +24,8 @@ pub fn render_choropleth_html(cfg: &ChoroplethConfig) -> String {
         Diverging => diverging::render(cfg),
         Orthographic => orthographic::render(cfg),
         Polar => polar::render(cfg),
+        Bivariate => bivariate::render(cfg),
+        DotDensity => dot_density::render(cfg),
     }
 }
 
@@ -169,6 +173,7 @@ pub fn build_choropleth(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
+    let secondary_values = o.secondary_values.clone().unwrap_or_default();
     let hover = o.hj();
     let region = regions::resolve(o.map.as_deref().unwrap_or(""))
         .or_else(regions::default_region_set)
@@ -179,6 +184,7 @@ pub fn build_choropleth(input: &str) -> String {
         title,
         labels: &labels,
         values: &values,
+        secondary_values: &secondary_values,
         width: o.w(1200),
         height: o.h(600),
         hover: &hover,

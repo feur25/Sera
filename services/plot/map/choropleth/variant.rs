@@ -5,5 +5,7 @@ crate::plot_family! {
         Diverging    => "diverging" | "delta" | "change" | "rdbu",
         Orthographic => "orthographic" | "globe" | "sphere" | "space",
         Polar        => "polar" | "azimuthal" | "pole",
+        Bivariate    => "bivariate" | "two_variable" | "cross" | "dual",
+        DotDensity   => "dot_density" | "dots" | "stipple" | "scatter_fill",
     }
 }
