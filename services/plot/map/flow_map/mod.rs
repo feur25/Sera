@@ -1,6 +1,8 @@
+pub mod animated;
 pub mod arc;
 pub mod common;
 pub mod config;
+pub mod ribbon;
 pub mod straight;
 pub mod variant;
 
@@ -15,6 +17,8 @@ pub fn render_flow_map_html(cfg: &FlowMapConfig) -> String {
     match cfg.variant {
         Arc => arc::render(cfg),
         Straight => straight::render(cfg),
+        Animated => animated::render(cfg),
+        Ribbon => ribbon::render(cfg),
     }
 }
 

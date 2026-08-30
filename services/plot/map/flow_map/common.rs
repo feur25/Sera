@@ -10,16 +10,16 @@ pub const PALETTE: &[(u8, u8, u8)] = &[
     (6, 182, 212),
 ];
 
-struct Edge {
-    x1: f32,
-    y1: f32,
-    x2: f32,
-    y2: f32,
-    weight: f64,
-    color: (u8, u8, u8),
+pub(super) struct Edge {
+    pub x1: f32,
+    pub y1: f32,
+    pub x2: f32,
+    pub y2: f32,
+    pub weight: f64,
+    pub color: (u8, u8, u8),
 }
 
-fn resolve_edges(cfg: &FlowMapConfig) -> Vec<Edge> {
+pub(super) fn resolve_edges(cfg: &FlowMapConfig) -> Vec<Edge> {
     let n = cfg.sources.len().min(cfg.targets.len());
     let n = n.min(cfg.weights.len());
     let mut out = Vec::with_capacity(n);
