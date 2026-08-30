@@ -3,5 +3,7 @@ crate::plot_family! {
         Proportional => "proportional" | "bubble" | "graduated" | "sized" | "basic" | "default",
         Filled       => "filled" | "regions",
         Globe        => "globe" | "orthographic" | "sphere" | "space",
+        Ring         => "ring" | "donut" | "outline" | "hollow",
+        Pulse        => "pulse" | "ripple" | "radar" | "ping",
     }
 }

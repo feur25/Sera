@@ -3,6 +3,8 @@ pub mod config;
 pub mod filled;
 pub mod globe;
 pub mod proportional;
+pub mod pulse;
+pub mod ring;
 pub mod variant;
 
 pub use config::BubbleMapConfig;
@@ -20,6 +22,8 @@ pub fn render_bubble_map_html(cfg: &BubbleMapConfig) -> String {
         Filled => filled::render(cfg),
         Proportional => proportional::render(cfg),
         Globe => globe::render(cfg),
+        Ring => ring::render(cfg),
+        Pulse => pulse::render(cfg),
     }
 }
 
