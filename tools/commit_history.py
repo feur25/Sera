@@ -1,5 +1,4 @@
 import datetime
-import inspect
 import math
 import os
 import re
@@ -30,13 +29,6 @@ TYPE_MAP = {
     "perf": "perf", "test": "test",
 }
 PREFIX_RE = re.compile(r"^([a-zA-Z]+)(\([a-zA-Z0-9_./-]+\))?!?:")
-
-
-def supports(fn, param):
-    try:
-        return param in inspect.signature(fn).parameters
-    except (TypeError, ValueError):
-        return False
 
 
 def commit_type(subject):
@@ -314,9 +306,6 @@ for i, (ax, ay, r) in enumerate(anchors):
     cv.text(weeks[i][5:], ax, ay + r + 34.0, size=14.0, color="#475569", weight="600", anchor="middle")
 
 idx = 0
-has_tooltip = hasattr(cv, "tooltip")
-polygon_hover = supports(cv.polygon, "hover_group")
-circle_hover = supports(cv.circle, "hover_group")
 for wi, wk in enumerate(weeks):
     entries = by_week.get(wk, [])
     if not entries:
@@ -348,15 +337,15 @@ for wi, wk in enumerate(weeks):
                 [cx + r * math.cos(math.pi / 3 * s - math.pi / 2), cy + r * math.sin(math.pi / 3 * s - math.pi / 2)]
                 for s in range(6)
             ]
-            poly_kwargs = dict(fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.22, 0.6), opacity=0.95, name=name)
-            if polygon_hover:
-                poly_kwargs["hover_group"] = c["author_key"]
-            cv.polygon(pts, **poly_kwargs)
+            cv.polygon(
+                pts, fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.22, 0.6), opacity=0.95,
+                hover_group=c["author_key"], name=name,
+            )
         else:
-            circle_kwargs = dict(fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.32, 0.7), opacity=0.95, name=name)
-            if circle_hover:
-                circle_kwargs["hover_group"] = c["author_key"]
-            cv.circle(cx, cy, r, **circle_kwargs)
+            cv.circle(
+                cx, cy, r, fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.32, 0.7), opacity=0.95,
+                hover_group=c["author_key"], name=name,
+            )
         files_label = f"{c['files']} file changed" if c["files"] == 1 else f"{c['files']} files changed"
         kv = [
             ("Date", f"committed on {fmt_date(c['date'])}"),
@@ -365,8 +354,7 @@ for wi, wk in enumerate(weeks):
             ("Deletions", f"-{c['del']}"),
             ("Hash", c["hash"]),
         ]
-        if has_tooltip:
-            cv.tooltip(name, c["display_name"], kv, avatar=c["avatar"], subtitle=c["subject"])
+        cv.tooltip(name, c["display_name"], kv, avatar=c["avatar"], subtitle=c["subject"])
 
 
 def flatten_chart(chart):

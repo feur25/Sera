@@ -23,9 +23,14 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Build seraplot wheel from source
+        uses: PyO3/maturin-action@v1
+        with:
+          args: --release --out dist --no-default-features
+
       - name: Install dependencies
         run: |
-          pip install seraplot playwright
+          pip install dist/*.whl playwright
           playwright install --with-deps chromium
 
       - name: Locate seraplot native extension
