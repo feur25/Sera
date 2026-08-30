@@ -315,8 +315,6 @@ for i, (ax, ay, r) in enumerate(anchors):
 
 idx = 0
 has_tooltip = hasattr(cv, "tooltip")
-polygon_hover = supports(cv.polygon, "hover_group")
-circle_hover = supports(cv.circle, "hover_group")
 for wi, wk in enumerate(weeks):
     entries = by_week.get(wk, [])
     if not entries:
@@ -348,15 +346,9 @@ for wi, wk in enumerate(weeks):
                 [cx + r * math.cos(math.pi / 3 * s - math.pi / 2), cy + r * math.sin(math.pi / 3 * s - math.pi / 2)]
                 for s in range(6)
             ]
-            poly_kwargs = dict(fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.22, 0.6), opacity=0.95, name=name)
-            if polygon_hover:
-                poly_kwargs["hover_group"] = c["author_key"]
-            cv.polygon(pts, **poly_kwargs)
+            cv.polygon(pts, fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.22, 0.6), opacity=0.95, name=name)
         else:
-            circle_kwargs = dict(fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.32, 0.7), opacity=0.95, name=name)
-            if circle_hover:
-                circle_kwargs["hover_group"] = c["author_key"]
-            cv.circle(cx, cy, r, **circle_kwargs)
+            cv.circle(cx, cy, r, fill=ring_col, stroke="#ffffff", stroke_width=max(r * 0.32, 0.7), opacity=0.95, name=name)
         files_label = f"{c['files']} file changed" if c["files"] == 1 else f"{c['files']} files changed"
         kv = [
             ("Date", f"committed on {fmt_date(c['date'])}"),
@@ -369,12 +361,20 @@ for wi, wk in enumerate(weeks):
             cv.tooltip(name, c["display_name"], kv, avatar=c["avatar"], subtitle=c["subject"])
 
 
-def flatten_chart(chart):
+def flatten_chart(chart, size=None, fallback_fill=None):
     html = chart.html.replace(".sp-bg{fill:#ffffff}", f".sp-bg{{fill:{BG}}}")
     html = html.replace(
         "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)",
         "overflow:hidden",
     )
+    rules = []
+    if size is not None:
+        w, h = size
+        rules.append(f"svg{{width:{w}px!important;height:{h}px!important}}")
+    if fallback_fill is not None:
+        rules.append(f'rect[fill=""]{{fill:{fallback_fill}!important}}')
+    if rules:
+        html = html.replace("</head>", f"<style>{''.join(rules)}</style></head>")
     return sp.Chart(html)
 
 
@@ -388,39 +388,27 @@ right_w = W - right_x - 60.0
 right_y = Y0 - CELL_R - 10.0
 right_h = (ROWS - 1) * CELL + 2.0 * CELL_R + 20.0
 
-author_counts = {}
-for c in commits:
-    author_counts[c["author_key"]] = author_counts.get(c["author_key"], 0) + 1
-author_order = sorted(author_counts, key=lambda a: -author_counts[a])
-
 NO_PULSE = "animation:none!important;transform:none!important;filter:none!important;"
 
 
-def place_margin(values_top, values_right, group, name_suffix):
+def place_margin(values_top, values_right):
     a_top = flatten_chart(sp.bar(
         "", labels=week_short, values=values_top, variant="basic",
         color_hex=ins_color, theme="none", show_values=False,
         width=int(top_w), height=int(top_h),
-    ).hide_grid().segment_bars().no_select())
+    ).hide_grid().segment_bars().no_select(), size=(int(top_w), int(top_h)), fallback_fill=RATIO_COLOR["ins"])
     a_right = flatten_chart(sp.bar(
         "", labels=week_short, values=values_right, variant="diverging",
         color_hex=del_color, color_low=del_color, color_high=ins_color, theme="none", show_values=False,
         width=int(right_w), height=int(right_h),
-    ).hide_grid().segment_bars().no_select())
-    top_name = f"margin-top-{name_suffix}"
-    right_name = f"margin-right-{name_suffix}"
-    cv.place(a_top, top_x, top_y, top_w, top_h, group=group, name=top_name)
-    cv.place(a_right, right_x, right_y, right_w, right_h, group=group, name=right_name)
-    cv.style(top_name, NO_PULSE)
-    cv.style(right_name, NO_PULSE)
+    ).hide_grid().segment_bars().no_select(), size=(int(right_w), int(right_h)))
+    cv.place(a_top, top_x, top_y, top_w, top_h, name="margin-top")
+    cv.place(a_right, right_x, right_y, right_w, right_h, name="margin-right")
+    cv.style("margin-top", NO_PULSE)
+    cv.style("margin-right", NO_PULSE)
 
 
-for author in author_order:
-    a_ins = [sum(c["ins"] for c in by_week.get(wk, []) if c["author_key"] == author) for wk in weeks]
-    a_del = [sum(c["del"] for c in by_week.get(wk, []) if c["author_key"] == author) for wk in weeks]
-    place_margin(a_ins, a_del, author, re.sub(r"[^a-zA-Z0-9]", "-", author))
-
-place_margin(weekly_ins, weekly_del, "__combined__", "all")
+place_margin(weekly_ins, weekly_del)
 
 TYPES_ALL = ["feat", "fix", "docs", "refactor", "perf", "test", "style", "chore", "other"]
 type_counts_all = {}
@@ -477,7 +465,7 @@ cv.text("A hexagon is an automated commit", leg_x + 26, leg_y + 5, size=13.0, co
 leg_y += 38
 
 cv.text(
-    "hover a commit for its details, or an author's mark to rescale the margins to their own activity",
+    "hover a commit for its details",
     leg_x, leg_y + 5, size=13.0, color=FAINT,
 )
 cv.text(
