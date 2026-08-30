@@ -7,7 +7,7 @@ pub mod variant;
 pub use config::FlowMapConfig;
 pub use variant::FlowMapVariant;
 
-use crate::plot::map::regions;
+use crate::plot::map::{regions, world_data};
 use crate::plot::{apply, parse_all};
 
 pub fn render_flow_map_html(cfg: &FlowMapConfig) -> String {
@@ -77,6 +77,43 @@ mod tests {
     fn build_flow_map_switches_to_usa_states_via_the_map_option() {
         let out = build_flow_map(r#"{"title":"t","labels":["CA","TX","NY"],"edges_i":[0,1],"edges_j":[1,2],"edges_w":[5.0,3.0],"map":"usa_states"}"#);
         assert!(out.contains("<svg"), "expected a real svg for usa_states: {out}");
+    }
+
+    #[test]
+    fn build_flow_map_stays_fast_with_hundreds_of_edges() {
+        let labels: Vec<String> = world_data::all_countries().iter().map(|c| c.id.clone()).collect();
+        let n = labels.len();
+        let edge_count = 500usize.min(n * n / 4).max(1);
+        let mut edges_i = Vec::with_capacity(edge_count);
+        let mut edges_j = Vec::with_capacity(edge_count);
+        let mut edges_w = Vec::with_capacity(edge_count);
+        for k in 0..edge_count {
+            edges_i.push((k * 7) % n);
+            edges_j.push((k * 13 + 3) % n);
+            edges_w.push(((k % 50) + 1) as f64);
+        }
+        let input = format!(
+            r#"{{"title":"t","labels":{:?},"edges_i":{:?},"edges_j":{:?},"edges_w":{:?}}}"#,
+            labels, edges_i, edges_j, edges_w
+        );
+        let start = std::time::Instant::now();
+        let out = build_flow_map(&input);
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_millis() < 800, "flow map with {edge_count} edges took too long: {elapsed:?}");
+        assert!(out.contains("<svg"), "expected a real svg for {edge_count} edges: {out}");
+    }
+
+    #[test]
+    fn flow_map_still_accepts_grid_then_show_legend_after_variant_specific_rendering() {
+        let input = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("flow_map/arc.rs"))
+            .and_then(crate::plot::chart_demo_registry::demo_payload)
+            .expect("flow_map arc demo payload");
+        let html = crate::bindings::fn_registry::iter_entries().find(|f| f.name == input.builder).map(|f| (f.invoke)(&input.json)).unwrap();
+        let html = crate::bindings::method_registry::apply_by_name(&html, "grid", "{}").expect("grid() must apply cleanly to a flow map");
+        let html = crate::bindings::method_registry::apply_by_name(&html, "show_legend", "{}").expect("show_legend() must apply cleanly after grid()");
+        assert!(html.contains("<svg"), "the map itself must survive both chained calls: {html}");
+        assert!(html.contains("g[data-legend],g.sp-leg-grp{display:block"), "show_legend()'s forced-visibility rule must survive chaining after grid(): {html}");
     }
 
     #[test]

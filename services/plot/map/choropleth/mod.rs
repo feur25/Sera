@@ -252,6 +252,31 @@ mod tests {
     }
 
     #[test]
+    fn build_choropleth_stays_fast_with_every_world_country_populated() {
+        let labels: Vec<String> = world_data::all_countries().iter().map(|c| c.id.clone()).collect();
+        let values: Vec<f64> = (0..labels.len()).map(|i| ((i as f64 * 37.0) % 100.0) + 1.0).collect();
+        let input = format!(r#"{{"title":"t","labels":{:?},"values":{:?}}}"#, labels, values);
+        let start = std::time::Instant::now();
+        let out = build_choropleth(&input);
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_millis() < 800, "choropleth over the full world country set took too long: {elapsed:?}");
+        assert!(out.contains("<svg"), "expected a real svg for the full world country set: {out}");
+    }
+
+    #[test]
+    fn choropleth_still_accepts_grid_then_show_legend_after_variant_specific_rendering() {
+        let input = crate::plot::chart_demo_registry::iter_entries()
+            .find(|e| e.file.replace('\\', "/").ends_with("choropleth/sequential.rs"))
+            .and_then(crate::plot::chart_demo_registry::demo_payload)
+            .expect("choropleth sequential demo payload");
+        let html = crate::bindings::fn_registry::iter_entries().find(|f| f.name == input.builder).map(|f| (f.invoke)(&input.json)).unwrap();
+        let html = crate::bindings::method_registry::apply_by_name(&html, "grid", "{}").expect("grid() must apply cleanly to a choropleth");
+        let html = crate::bindings::method_registry::apply_by_name(&html, "show_legend", "{}").expect("show_legend() must apply cleanly after grid()");
+        assert!(html.contains("<svg"), "the map itself must survive both chained calls: {html}");
+        assert!(html.contains("g[data-legend],g.sp-leg-grp{display:block"), "show_legend()'s forced-visibility rule must survive chaining after grid(): {html}");
+    }
+
+    #[test]
     fn every_registered_chart_demo_for_choropleth_renders_non_empty_html() {
         for entry in crate::plot::chart_demo_registry::iter_entries() {
             if !entry.file.replace('\\', "/").contains("map/choropleth/") {
