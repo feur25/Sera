@@ -38,7 +38,7 @@ pub fn render_svg(cfg: &ChoroplethConfig, color_for: impl Fn(f64, f64, f64) -> (
     svg.push_str(&width.to_string());
     svg.push(' ');
     svg.push_str(&height.to_string());
-    svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0f0f1e\"/>");
+    svg.push_str("\"><rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>");
 
     for shape in &visible {
         let polys = (cfg.region.normalize)(shape);
@@ -139,7 +139,7 @@ pub fn render_svg_projected(
     svg.push_str(&width.to_string());
     svg.push(' ');
     svg.push_str(&height.to_string());
-    svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0f0f1e\"/>");
+    svg.push_str("\"><rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>");
 
     if projection.draws_disc() {
         svg.push_str(&format!(

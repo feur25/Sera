@@ -116,7 +116,7 @@ pub fn render(cfg: &CartogramConfig, glyph: Glyph) -> String {
     svg.push_str(&cfg.width.to_string());
     svg.push(' ');
     svg.push_str(&cfg.height.to_string());
-    svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0d1117\"/>");
+    svg.push_str("\"><rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>");
 
     for shape in regions::shapes_in_group(cfg.region, cfg.group) {
         for poly in (cfg.region.normalize)(shape) {

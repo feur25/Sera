@@ -25,7 +25,7 @@ pub fn render(cfg: &ChoroplethConfig) -> String {
     svg.push_str(&width.to_string());
     svg.push(' ');
     svg.push_str(&height.to_string());
-    svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0a1a2e\"/>");
+    svg.push_str("\"><rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>");
 
     for shape in world_data::all_countries() {
         for poly in world_data::normalized_polygons(shape) {

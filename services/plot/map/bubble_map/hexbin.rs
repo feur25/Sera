@@ -78,7 +78,7 @@ pub fn render(cfg: &BubbleMapConfig) -> String {
     svg.push_str(&cfg.width.to_string());
     svg.push(' ');
     svg.push_str(&cfg.height.to_string());
-    svg.push_str("\"><rect width=\"100%\" height=\"100%\" fill=\"#0d1117\"/>");
+    svg.push_str("\"><rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>");
 
     for shape in world_data::all_countries() {
         for poly in world_data::normalized_polygons(shape) {

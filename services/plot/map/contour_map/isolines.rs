@@ -13,7 +13,7 @@ fn edge_crossing(v0: f64, v1: f64, p0: (f32, f32), p1: (f32, f32), t: f64) -> Op
 }
 
 #[crate::chart_demo(
-    "lats=[65,55,35,55,32,-28,-28,-30,55,2,2,0,-57,-57,-57,40,50,35,-25,40,-5,55], lons=[-20,-165,-25,90,-140,-105,-5,70,-100,20,-60,110,-60,90,170,15,-35,140,135,-95,25,-10], field=[-12,-10,11,15,9,10,8,9,6,-3,-4,-5,-9,-8,-7,3,-2,2,7,1,-2,-4], title=\"Idealized Global Sea-Level Pressure Anomaly (hPa)\", variant=\"isolines\", levels=7"
+    "lats=[65,55,35,55,32,-28,-28,-30,55,2,2,0,-57,-57,-57,40,50,35,-25,40,-5,55], lons=[-20,-165,-25,90,-140,-105,-5,70,-100,20,-60,110,-60,90,170,15,-35,140,135,-95,25,-10], field=[-12,-10,11,15,9,10,8,9,6,-3,-4,-5,-9,-8,-7,3,-2,2,7,1,-2,-4], title=\"Idealized Global Sea-Level Pressure Anomaly (hPa)\", variant=\"isolines\", bins=7"
 )]
 pub fn render(cfg: &ContourMapConfig) -> String {
     let n = cfg.lats.len().min(cfg.lons.len()).min(cfg.field.len());

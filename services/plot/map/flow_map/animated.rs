@@ -31,7 +31,7 @@ pub fn render(cfg: &FlowMapConfig) -> String {
         "\"><defs><style>.sp-flow-dash{stroke-dasharray:2 7;animation:sp-flow-run 1.4s linear infinite}\
 @keyframes sp-flow-run{to{stroke-dashoffset:-18}}\
 @media (prefers-reduced-motion: reduce){.sp-flow-dash{animation:none}}</style></defs>\
-<rect width=\"100%\" height=\"100%\" fill=\"#0b0e18\"/>",
+<rect width=\"100%\" height=\"100%\" class=\"sp-bg\"/>",
     );
 
     for shape in &visible {
