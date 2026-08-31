@@ -50,6 +50,7 @@ Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Ring</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulse</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -103,6 +104,16 @@ Two faint concentric rings behind the solid marker, fading out with distance —
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bubblemap-en-hexbin">
+
+A density map, not a values map: pass raw `lats`/`lons` samples instead of `labels`/`values` and each point is binned into a hexagonal grid — real axial hex-coordinate binning with cube-coordinate rounding, the same technique a proper geographic hexbin uses, not a nearest-center search. Each hexagon is sized and colored by how many samples landed inside it, with the count itself labeled once a cell holds more than one.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"hexbin"</code></span><span><strong>Aliases</strong> <code>"hexbin"</code> / <code>"hex"</code> / <code>"density"</code> / <code>"honeycomb"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -148,6 +159,7 @@ Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`,
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Anneau</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulsation</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -199,6 +211,16 @@ Deux anneaux concentriques discrets derrière le marqueur plein, qui s'estompent
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-hexbin">
+
+Une carte de densité, pas une carte de valeurs : passez des échantillons bruts `lats`/`lons` plutôt que `labels`/`values`, et chaque point est regroupé dans une grille hexagonale — un vrai binning en coordonnées hexagonales axiales avec arrondi en coordonnées cubiques, la même technique qu'un hexbin géographique correct, pas une recherche du centre le plus proche. Chaque hexagone est dimensionné et coloré selon le nombre d'échantillons tombés à l'intérieur, avec le compte lui-même affiché dès qu'une cellule contient plus d'un point.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"hexbin"</code></span><span><strong>Alias</strong> <code>"hexbin"</code> / <code>"hex"</code> / <code>"density"</code> / <code>"honeycomb"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
 </div>
 
 </div>

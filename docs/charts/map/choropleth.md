@@ -52,6 +52,7 @@ Aliases: `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivariate</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-en','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Dot density</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','daynight',this)"><span class="sp-cic">◑</span><span class="sp-clb">Day / Night</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -125,6 +126,16 @@ One dot per fixed unit of value, scattered at random inside the real region outl
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
 </div>
 
+<div class="sp-variant" id="choropleth-en-daynight">
+
+Not data-driven at all — the real day/night terminator, solved from the spherical law of cosines for where the sun sits exactly on the horizon, not a cosmetic gradient band. `center_lat`/`center_lon` are read as the current subsolar point (the latitude tracks the season, the longitude the time of day); the correct pole is shaded by comparing which one the sun's declination actually leaves in darkness, and a sun glyph marks the subsolar point itself. `labels`/`values` are ignored entirely for this variant.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"daynight"</code></span><span><strong>Aliases</strong> <code>"daynight"</code> / <code>"day_night"</code> / <code>"terminator"</code> / <code>"solar"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-daynight.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -172,6 +183,7 @@ Alias : `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_c
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivarié</span></button>
 <button class="sp-cls-tab" onclick="spCls('choropleth-fr','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Densité de points</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','daynight',this)"><span class="sp-cic">◑</span><span class="sp-clb">Jour / Nuit</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -243,6 +255,16 @@ Un point par unité fixe de valeur, dispersé aléatoirement à l'intérieur du 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-daynight">
+
+Pas du tout piloté par des données — le vrai terminateur jour/nuit, résolu depuis la loi des cosinus sphérique pour trouver où le soleil est exactement à l'horizon, pas une bande de dégradé cosmétique. `center_lat`/`center_lon` sont lus comme le point sub-solaire actuel (la latitude suit la saison, la longitude l'heure de la journée) ; le bon pôle est ombré en comparant lequel des deux la déclinaison solaire laisse réellement dans l'obscurité, et un symbole solaire marque le point sub-solaire lui-même. `labels`/`values` sont entièrement ignorés pour cette variante.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"daynight"</code></span><span><strong>Alias</strong> <code>"daynight"</code> / <code>"day_night"</code> / <code>"terminator"</code> / <code>"solar"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-daynight.html"></iframe>
 </div>
 
 </div>

@@ -101,6 +101,8 @@
   - [Bubble Map](charts/map/bubble-map.md)
   - [Choropleth](charts/map/choropleth.md)
   - [Flow Map](charts/map/flow-map.md)
+  - [Contour Map](charts/map/contour-map.md)
+  - [Vector Field Map](charts/map/vector-field-map.md)
 - [Canvas Composition](canvas/composition.md)
 - [Web App (sp.App)](canvas/webapp.md)
 - [Sera Pulse — Pricing & Activation](seraplot/pulse-pricing.md)

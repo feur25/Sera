@@ -49,6 +49,7 @@ Aliases: `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.co
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Straight</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animated</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ribbon</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-en','track',this)"><span class="sp-cic">➤</span><span class="sp-clb">Track</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -90,6 +91,16 @@ Every flow becomes a real tapered band instead of a stroked line — wide at the
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-ribbon.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-en-track">
+
+Not pairwise connections at all — a single ordered path through `lats`/`lons`, storm-track style, with `field` as the intensity at each point (wind speed, category, whatever the reader should read off the color). Every point gets its own marker on a low/mid/high color tier, and the most recent leg ends in a direction arrowhead. `labels`/`edges_i`/`edges_j`/`edges_w` are ignored for this variant.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"track"</code></span><span><strong>Aliases</strong> <code>"track"</code> / <code>"storm_track"</code> / <code>"path_track"</code> / <code>"hurricane"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-track.html"></iframe>
 </div>
 
 </div>
@@ -136,6 +147,7 @@ Alias : `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.con
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','straight',this)"><span class="sp-cic">╱</span><span class="sp-clb">Droite</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animé</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ruban</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-fr','track',this)"><span class="sp-cic">➤</span><span class="sp-clb">Trajectoire</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -177,6 +189,16 @@ Chaque flux devient une vraie bande effilée plutôt qu'un trait — large à l'
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-ribbon.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-fr-track">
+
+Pas du tout des connexions par paires — un unique chemin ordonné à travers `lats`/`lons`, façon trajectoire de tempête, avec `field` comme intensité à chaque point (vitesse du vent, catégorie, tout ce que la couleur doit faire lire). Chaque point reçoit son propre marqueur sur un palier de couleur bas/moyen/haut, et le dernier segment se termine par une flèche de direction. `labels`/`edges_i`/`edges_j`/`edges_w` sont ignorés pour cette variante.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"track"</code></span><span><strong>Alias</strong> <code>"track"</code> / <code>"storm_track"</code> / <code>"path_track"</code> / <code>"hurricane"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-track.html"></iframe>
 </div>
 
 </div>
