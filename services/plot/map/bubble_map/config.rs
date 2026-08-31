@@ -18,6 +18,7 @@ pub struct BubbleMapConfig<'a> {
     pub lons: &'a [f64],
     pub series: &'a [Vec<f64>],
     pub categories: &'a [String],
+    pub sub_variant: &'a str,
 }
 
 impl<'a> BubbleMapConfig<'a> {
@@ -40,6 +41,7 @@ impl<'a> BubbleMapConfig<'a> {
             lons: &[],
             series: &[],
             categories: &[],
+            sub_variant: "",
         }
     }
 }

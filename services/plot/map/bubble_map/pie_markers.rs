@@ -1,6 +1,8 @@
 use super::common::{svg_open, PALETTE};
 use super::config::BubbleMapConfig;
+use super::pie_glyph::{push_donut, push_exploded, push_nightingale, push_semi, push_waffle};
 use crate::plot::map::world_data;
+use crate::plot::statistical::pie::variant::PieVariant;
 use std::f64::consts::PI;
 
 fn push_pie(svg: &mut String, cx: f64, cy: f64, r: f64, series: &[f64], point_idx: usize) {
@@ -66,6 +68,8 @@ pub fn render(cfg: &BubbleMapConfig) -> String {
 
     let totals: Vec<f64> = cfg.series[..n].iter().map(|s| s.iter().sum()).collect();
     let max_total = totals.iter().cloned().fold(1e-9_f64, f64::max);
+    let glyph = PieVariant::from_str(cfg.sub_variant);
+    let cat_labels: Vec<String> = cfg.categories.to_vec();
 
     let mut svg = svg_open(cfg.width, cfg.height);
     for shape in world_data::all_countries() {
@@ -95,7 +99,15 @@ pub fn render(cfg: &BubbleMapConfig) -> String {
         let cy = ny as f64 * cfg.height as f64;
         let t = (totals[i] / max_total).sqrt();
         let radius = cfg.min_bubble_size + t * (cfg.max_bubble_size - cfg.min_bubble_size);
-        push_pie(&mut svg, cx, cy, radius, &cfg.series[i], i);
+        let values = &cfg.series[i];
+        match glyph {
+            PieVariant::Donut | PieVariant::Kpi => push_donut(&mut svg, cx, cy, radius, &cat_labels, values),
+            PieVariant::Semi => push_semi(&mut svg, cx, cy, radius, &cat_labels, values),
+            PieVariant::Exploded => push_exploded(&mut svg, cx, cy, radius, &cat_labels, values),
+            PieVariant::Nightingale => push_nightingale(&mut svg, cx, cy, radius, PALETTE, values),
+            PieVariant::Waffle => push_waffle(&mut svg, cx, cy, radius, PALETTE, values),
+            _ => push_pie(&mut svg, cx, cy, radius, values, i),
+        }
     }
 
     push_legend(&mut svg, cfg.categories, cfg.width);

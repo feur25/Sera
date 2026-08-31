@@ -80,6 +80,7 @@ pub struct ChartOpts {
     pub center_lat: Option<f64>,
     pub center_lon: Option<f64>,
     pub step: Option<f64>,
+    pub sub_variant: Option<String>,
     pub orientation3d: Option<String>,
     pub palette: Option<Vec<u32>>,
     pub background: Option<String>,

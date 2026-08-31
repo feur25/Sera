@@ -3,6 +3,7 @@ pub mod config;
 pub mod filled;
 pub mod globe;
 pub mod hexbin;
+pub mod pie_glyph;
 pub mod pie_markers;
 pub mod proportional;
 pub mod pulse;
@@ -203,6 +204,7 @@ pub fn build_bubble_map(input: &str) -> String {
     let lons = a.lons.unwrap_or_default();
     let series = a.series.unwrap_or_default();
     let categories = a.categories.unwrap_or_default();
+    let sub_variant = o.sub_variant.clone().unwrap_or_default();
     let cfg = BubbleMapConfig {
         variant,
         title,
@@ -221,6 +223,7 @@ pub fn build_bubble_map(input: &str) -> String {
         lons: &lons,
         series: &series,
         categories: &categories,
+        sub_variant: &sub_variant,
     };
     apply(render_bubble_map_html(&cfg), &o)
 }
@@ -330,6 +333,62 @@ mod tests {
         );
         assert!(out.contains("<svg"), "expected a real svg: {out}");
         assert!(out.matches("data-cat=").count() >= 6, "expected at least 3 slices per point across 2 points: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_sub_variant_donut_leaves_a_hollow_center() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"donut","lats":[51.5,48.85],"lons":[-0.12,2.35],"series":[[40.0,25.0,35.0],[55.0,15.0,30.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("<path") && out.contains(" A"), "donut glyphs must draw ring-arc paths: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_sub_variant_semi_spans_a_half_circle() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"semi","lats":[51.5],"lons":[-0.12],"series":[[40.0,25.0,35.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("<path"), "semi glyphs must draw arc paths: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_sub_variant_exploded_pulls_the_largest_slice() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"exploded","lats":[51.5],"lons":[-0.12],"series":[[70.0,15.0,15.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("<path"), "exploded glyphs must draw slice paths: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_sub_variant_nightingale_draws_variable_radius_wedges() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"nightingale","lats":[51.5],"lons":[-0.12],"series":[[70.0,15.0,45.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert_eq!(out.matches("data-cat=").count(), 3, "nightingale must draw one wedge per category: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_sub_variant_waffle_draws_a_cell_grid() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"waffle","lats":[51.5],"lons":[-0.12],"series":[[70.0,15.0,15.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert_eq!(out.matches("data-cat=").count(), 9, "waffle must draw a 3x3 = 9 cell grid: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_defaults_to_basic_glyph_with_no_sub_variant() {
+        let with = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","lats":[51.5],"lons":[-0.12],"series":[[40.0,25.0,35.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        let explicit = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","sub_variant":"basic","lats":[51.5],"lons":[-0.12],"series":[[40.0,25.0,35.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert_eq!(with.matches("data-cat=").count(), explicit.matches("data-cat=").count());
     }
 
     #[test]
