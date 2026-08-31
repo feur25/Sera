@@ -94,6 +94,8 @@ declare namespace wasm_bindgen {
 
     export function buildGlobe3dChart(input: string): string;
 
+    export function buildGraticuleMap(input: string): string;
+
     export function buildGroupedBar(input: string): string;
 
     export function buildHbar(input: string): string;
@@ -502,6 +504,7 @@ declare interface InitOutput {
     readonly buildGantt: (a: number, b: number) => [number, number];
     readonly buildGauge: (a: number, b: number) => [number, number];
     readonly buildGlobe3dChart: (a: number, b: number) => [number, number];
+    readonly buildGraticuleMap: (a: number, b: number) => [number, number];
     readonly buildGroupedBar: (a: number, b: number) => [number, number];
     readonly buildHbar: (a: number, b: number) => [number, number];
     readonly buildHeatmap: (a: number, b: number) => [number, number];

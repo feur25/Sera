@@ -44,6 +44,7 @@ export const buildFunnel3dChart: (a: number, b: number) => [number, number];
 export const buildGantt: (a: number, b: number) => [number, number];
 export const buildGauge: (a: number, b: number) => [number, number];
 export const buildGlobe3dChart: (a: number, b: number) => [number, number];
+export const buildGraticuleMap: (a: number, b: number) => [number, number];
 export const buildGroupedBar: (a: number, b: number) => [number, number];
 export const buildHbar: (a: number, b: number) => [number, number];
 export const buildHeatmap: (a: number, b: number) => [number, number];
