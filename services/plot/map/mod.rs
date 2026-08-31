@@ -1,5 +1,6 @@
 pub mod _3d;
 pub mod bubble_map;
+pub mod cartogram;
 pub mod chart;
 pub mod choropleth;
 pub mod contour_map;
@@ -14,6 +15,8 @@ pub use _3d::register_map_3d_types;
 pub use _3d::*;
 pub use bubble_map::build_bubble_map;
 pub use bubble_map::{render_bubble_map, render_bubble_map_html};
+pub use cartogram::build_cartogram;
+pub use cartogram::render_cartogram_html;
 pub use chart::register_map_types;
 pub use choropleth::build_choropleth;
 pub use choropleth::{render_choropleth, render_choropleth_html};
