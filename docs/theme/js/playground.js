@@ -48,6 +48,15 @@
         color_values: '[10,25,40,55,70,85,100,115]',
         sort_order: '"none"',
         legend_position: '"right"',
+        lats: '[40.7,51.5,35.7,-23.5,-33.9,30.0]',
+        lons: '[-74.0,-0.12,139.7,-46.6,18.4,31.2]',
+        u: '[5,-8,10,-4,7,-12]',
+        v: '[3,6,-5,9,-3,8]',
+        field: '[22,18,27,15,24,19]',
+        edges_i: '[0,1,2,0]',
+        edges_j: '[1,2,3,3]',
+        edges_w: '[10,6,8,4]',
+        categories: '["Alpha","Beta","Gamma"]',
     };
 
     var PROG_LANGS = {
@@ -1139,6 +1148,10 @@
                         tabs = wrap.querySelectorAll('.sp-pg-tab');
                         wireTabs(tabs, variants, wrap, slug, fileTab);
                     }
+                }
+                if (state.editor) {
+                    var current = isFullPagePlayground() ? 'basic' : variants[state.currentVariant];
+                    state.editor.setValue(buildCode(current));
                 }
                 setStatus('ready', 'Live · in-browser');
                 runOnce(true);
