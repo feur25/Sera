@@ -2,6 +2,7 @@ pub mod animated;
 pub mod arc;
 pub mod common;
 pub mod config;
+pub mod range_rings;
 pub mod ribbon;
 pub mod straight;
 pub mod track;
@@ -23,6 +24,7 @@ pub fn render_flow_map_html(cfg: &FlowMapConfig) -> String {
         Animated => animated::render(cfg),
         Ribbon => ribbon::render(cfg),
         Track => track::render(cfg),
+        RangeRings => range_rings::render(cfg),
     }
 }
 
@@ -181,6 +183,42 @@ mod tests {
     fn every_registered_chart_demo_for_flow_map_track_renders_non_empty_html() {
         for entry in crate::plot::chart_demo_registry::iter_entries() {
             if !entry.file.replace('\\', "/").ends_with("flow_map/track.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
+        }
+    }
+
+    #[test]
+    fn build_flow_map_range_rings_draws_one_ring_polygon_per_hub_per_distance() {
+        let out = build_flow_map(
+            r#"{"title":"t","variant":"range_rings","lats":[40.7,51.5],"lons":[-74.0,-0.12],"field":[500.0,1500.0,3000.0]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert_eq!(out.matches("data-ring=").count(), 6, "expected 2 hubs x 3 rings = 6 ring polygons: {out}");
+    }
+
+    #[test]
+    fn build_flow_map_range_rings_falls_back_to_default_distances_when_field_is_empty() {
+        let out = build_flow_map(r#"{"title":"t","variant":"range_rings","lats":[40.7],"lons":[-74.0]}"#);
+        assert!(out.contains("data-ring=\"2\""), "expected the default 3-ring set (indices 0..2) when no field is given: {out}");
+    }
+
+    #[test]
+    fn build_flow_map_range_rings_keeps_smaller_distances_visually_denser() {
+        let out = build_flow_map(
+            r#"{"title":"t","variant":"range_rings","lats":[0.0],"lons":[0.0],"field":[100.0,5000.0]}"#,
+        );
+        let inner = out.find("data-ring=\"0\"").map(|i| &out[..i]).and_then(|s| s.rfind("fill-opacity=\"")).map(|i| &out[i + 15..i + 20]);
+        let outer = out.find("data-ring=\"1\"").map(|i| &out[..i]).and_then(|s| s.rfind("fill-opacity=\"")).map(|i| &out[i + 15..i + 20]);
+        assert!(inner.is_some() && outer.is_some(), "both rings must render with a fill-opacity: {out}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_flow_map_range_rings_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("flow_map/range_rings.rs") {
                 continue;
             }
             let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
