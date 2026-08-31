@@ -16,6 +16,8 @@ pub struct BubbleMapConfig<'a> {
     pub center_lon: Option<f64>,
     pub lats: &'a [f64],
     pub lons: &'a [f64],
+    pub series: &'a [Vec<f64>],
+    pub categories: &'a [String],
 }
 
 impl<'a> BubbleMapConfig<'a> {
@@ -36,6 +38,8 @@ impl<'a> BubbleMapConfig<'a> {
             center_lon: None,
             lats: &[],
             lons: &[],
+            series: &[],
+            categories: &[],
         }
     }
 }

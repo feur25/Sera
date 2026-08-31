@@ -3,6 +3,7 @@ pub mod config;
 pub mod filled;
 pub mod globe;
 pub mod hexbin;
+pub mod pie_markers;
 pub mod proportional;
 pub mod pulse;
 pub mod ring;
@@ -26,6 +27,7 @@ pub fn render_bubble_map_html(cfg: &BubbleMapConfig) -> String {
         Ring => ring::render(cfg),
         Pulse => pulse::render(cfg),
         Hexbin => hexbin::render(cfg),
+        PieMarkers => pie_markers::render(cfg),
     }
 }
 
@@ -199,6 +201,8 @@ pub fn build_bubble_map(input: &str) -> String {
     let variant = BubbleMapVariant::from_str(o.variant.as_deref().unwrap_or("proportional"));
     let lats = a.lats.unwrap_or_default();
     let lons = a.lons.unwrap_or_default();
+    let series = a.series.unwrap_or_default();
+    let categories = a.categories.unwrap_or_default();
     let cfg = BubbleMapConfig {
         variant,
         title,
@@ -215,6 +219,8 @@ pub fn build_bubble_map(input: &str) -> String {
         center_lon: o.center_lon,
         lats: &lats,
         lons: &lons,
+        series: &series,
+        categories: &categories,
     };
     apply(render_bubble_map_html(&cfg), &o)
 }
@@ -310,6 +316,32 @@ mod tests {
     fn every_registered_chart_demo_for_bubble_map_hexbin_renders_non_empty_html() {
         for entry in crate::plot::chart_demo_registry::iter_entries() {
             if !entry.file.replace('\\', "/").ends_with("bubble_map/hexbin.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
+        }
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_draws_a_pie_slice_path_per_category() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"pie_markers","lats":[51.5,48.85],"lons":[-0.12,2.35],"series":[[40.0,25.0,35.0],[55.0,15.0,30.0]],"categories":["Wind","Solar","Hydro"]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.matches("data-cat=").count() >= 6, "expected at least 3 slices per point across 2 points: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_pie_markers_handles_empty_series_without_panicking() {
+        let out = build_bubble_map(r#"{"title":"t","variant":"pie_markers"}"#);
+        assert!(out.is_empty() || out.contains("<svg"));
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_bubble_map_pie_markers_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("bubble_map/pie_markers.rs") {
                 continue;
             }
             let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");

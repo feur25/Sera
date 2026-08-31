@@ -6,5 +6,6 @@ crate::plot_family! {
         Ring         => "ring" | "donut" | "outline" | "hollow",
         Pulse        => "pulse" | "ripple" | "radar" | "ping",
         Hexbin       => "hexbin" | "hex" | "density" | "honeycomb",
+        PieMarkers   => "pie_markers" | "pie_map" | "mini_pie" | "category_pie",
     }
 }
