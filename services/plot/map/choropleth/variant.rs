@@ -7,5 +7,6 @@ crate::plot_family! {
         Polar        => "polar" | "azimuthal" | "pole",
         Bivariate    => "bivariate" | "two_variable" | "cross" | "dual",
         DotDensity   => "dot_density" | "dots" | "stipple" | "scatter_fill",
+        DayNight     => "daynight" | "day_night" | "terminator" | "solar",
     }
 }

@@ -14,6 +14,9 @@ pub struct FlowMapConfig<'a> {
     pub group: &'a str,
     pub min_width: f64,
     pub max_width: f64,
+    pub lats: &'a [f64],
+    pub lons: &'a [f64],
+    pub track_values: &'a [f64],
 }
 
 impl<'a> FlowMapConfig<'a> {
@@ -32,6 +35,9 @@ impl<'a> FlowMapConfig<'a> {
             group: "",
             min_width: 1.0,
             max_width: 7.0,
+            lats: &[],
+            lons: &[],
+            track_values: &[],
         }
     }
 }

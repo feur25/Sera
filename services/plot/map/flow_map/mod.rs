@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod ribbon;
 pub mod straight;
+pub mod track;
 pub mod variant;
 
 pub use config::FlowMapConfig;
@@ -21,6 +22,7 @@ pub fn render_flow_map_html(cfg: &FlowMapConfig) -> String {
         Straight => straight::render(cfg),
         Animated => animated::render(cfg),
         Ribbon => ribbon::render(cfg),
+        Track => track::render(cfg),
     }
 }
 
@@ -33,6 +35,9 @@ pub fn build_flow_map(input: &str) -> String {
     let sources = o.edges_i.clone().unwrap_or_default();
     let targets = o.edges_j.clone().unwrap_or_default();
     let weights = o.edges_w.clone().unwrap_or_default();
+    let lats = a.lats.unwrap_or_default();
+    let lons = a.lons.unwrap_or_default();
+    let track_values = a.field.unwrap_or_default();
     let hover = o.hj();
     let region = regions::resolve(o.map.as_deref().unwrap_or(""))
         .or_else(regions::default_region_set)
@@ -52,6 +57,9 @@ pub fn build_flow_map(input: &str) -> String {
         group: o.region.as_deref().unwrap_or(""),
         min_width: o.min_size.unwrap_or(1.0),
         max_width: o.max_size.unwrap_or(7.0),
+        lats: &lats,
+        lons: &lons,
+        track_values: &track_values,
     };
     apply(render_flow_map_html(&cfg), &o)
 }
@@ -150,6 +158,33 @@ mod tests {
             if stem == FlowMapVariant::default_key() {
                 std::fs::write("docs/previews/flow-map.html", &html).unwrap();
             }
+        }
+    }
+
+    #[test]
+    fn build_flow_map_track_draws_a_connected_path_with_a_direction_arrowhead() {
+        let out = build_flow_map(
+            r#"{"title":"t","variant":"track","lats":[12.0,14.0,17.0],"lons":[-45.0,-49.0,-53.0],"field":[35.0,60.0,90.0]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("<path d=\"M"), "track must draw a connected path: {out}");
+        assert!(out.contains("<polygon"), "track must draw a direction arrowhead at the end: {out}");
+    }
+
+    #[test]
+    fn build_flow_map_track_requires_at_least_two_points() {
+        let out = build_flow_map(r#"{"title":"t","variant":"track","lats":[12.0],"lons":[-45.0]}"#);
+        assert!(out.is_empty(), "a single point cannot form a track: {out}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_flow_map_track_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("flow_map/track.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
         }
     }
 }

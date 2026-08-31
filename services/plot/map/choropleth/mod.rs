@@ -2,6 +2,7 @@ pub mod binned;
 pub mod bivariate;
 pub mod common;
 pub mod config;
+pub mod daynight;
 pub mod diverging;
 pub mod dot_density;
 pub mod orthographic;
@@ -26,6 +27,7 @@ pub fn render_choropleth_html(cfg: &ChoroplethConfig) -> String {
         Polar => polar::render(cfg),
         Bivariate => bivariate::render(cfg),
         DotDensity => dot_density::render(cfg),
+        DayNight => daynight::render(cfg),
     }
 }
 
@@ -329,6 +331,31 @@ mod tests {
             let out = build_choropleth(&input);
             assert!(out.contains("<svg"), "{map} must render a real svg");
             std::fs::write(format!("{out_dir}/visual_{map}.html"), out).unwrap();
+        }
+    }
+
+    #[test]
+    fn build_choropleth_daynight_draws_the_terminator_and_a_sun_marker() {
+        let out = build_choropleth(r#"{"title":"t","variant":"daynight","center_lat":15.0,"center_lon":-40.0}"#);
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("fill-opacity=\"0.62\""), "must draw the night-side shading: {out}");
+        assert!(out.contains("#facc15"), "must draw a sun marker at the subsolar point: {out}");
+    }
+
+    #[test]
+    fn build_choropleth_daynight_works_with_no_center_given() {
+        let out = build_choropleth(r#"{"title":"t","variant":"daynight"}"#);
+        assert!(out.contains("<svg"), "must default center_lat/lon rather than panic: {out}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_choropleth_daynight_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("choropleth/daynight.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
         }
     }
 }

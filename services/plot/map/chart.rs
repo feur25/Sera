@@ -10,6 +10,7 @@ inventory::submit! {
         color: 0xF43F5E,
     }
 }
+
 inventory::submit! {
     ChartTypeEntry {
         group: "map",

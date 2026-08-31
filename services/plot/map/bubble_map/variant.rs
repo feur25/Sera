@@ -5,5 +5,6 @@ crate::plot_family! {
         Globe        => "globe" | "orthographic" | "sphere" | "space",
         Ring         => "ring" | "donut" | "outline" | "hollow",
         Pulse        => "pulse" | "ripple" | "radar" | "ping",
+        Hexbin       => "hexbin" | "hex" | "density" | "honeycomb",
     }
 }

@@ -2,6 +2,7 @@ pub mod common;
 pub mod config;
 pub mod filled;
 pub mod globe;
+pub mod hexbin;
 pub mod proportional;
 pub mod pulse;
 pub mod ring;
@@ -24,6 +25,7 @@ pub fn render_bubble_map_html(cfg: &BubbleMapConfig) -> String {
         Globe => globe::render(cfg),
         Ring => ring::render(cfg),
         Pulse => pulse::render(cfg),
+        Hexbin => hexbin::render(cfg),
     }
 }
 
@@ -195,6 +197,8 @@ pub fn build_bubble_map(input: &str) -> String {
         .or_else(regions::default_region_set)
         .expect("world region set must be registered");
     let variant = BubbleMapVariant::from_str(o.variant.as_deref().unwrap_or("proportional"));
+    let lats = a.lats.unwrap_or_default();
+    let lons = a.lons.unwrap_or_default();
     let cfg = BubbleMapConfig {
         variant,
         title,
@@ -209,6 +213,8 @@ pub fn build_bubble_map(input: &str) -> String {
         max_bubble_size: o.max_size.unwrap_or(42.0),
         center_lat: o.center_lat,
         center_lon: o.center_lon,
+        lats: &lats,
+        lons: &lons,
     };
     apply(render_bubble_map_html(&cfg), &o)
 }
@@ -278,6 +284,32 @@ mod tests {
     fn every_registered_chart_demo_for_bubble_map_renders_non_empty_html() {
         for entry in crate::plot::chart_demo_registry::iter_entries() {
             if !entry.file.replace('\\', "/").contains("map/bubble_map/") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
+        }
+    }
+
+    #[test]
+    fn build_bubble_map_hexbin_bins_clustered_points_into_hexagons() {
+        let out = build_bubble_map(
+            r#"{"title":"t","variant":"hexbin","lats":[40.7,40.75,40.72,34.0,34.05],"lons":[-74.0,-73.95,-74.05,-118.2,-118.25]}"#,
+        );
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.contains("<polygon"), "hexbin must draw hexagon polygons: {out}");
+    }
+
+    #[test]
+    fn build_bubble_map_hexbin_handles_empty_points_without_panicking() {
+        let out = build_bubble_map(r#"{"title":"t","variant":"hexbin"}"#);
+        assert!(out.is_empty() || out.contains("<svg"));
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_bubble_map_hexbin_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("bubble_map/hexbin.rs") {
                 continue;
             }
             let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
