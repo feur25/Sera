@@ -2,7 +2,7 @@ use super::config::FlowMapConfig;
 use crate::plot::map::world_data;
 
 #[crate::chart_demo(
-    "lats=[12.1,13.4,15.2,17.8,20.5,23.1,26.0,29.4], lons=[-45.2,-48.6,-52.1,-56.0,-60.4,-65.2,-70.8,-76.5], field=[35,45,60,75,95,110,90,60], title=\"Sampled Storm Track\", variant=\"track\""
+    "lats=[10.5,12.1,13.8,15.9,18.2,20.8,23.5,26.3,28.9,31.2,33.0], lons=[-38.5,-45.2,-50.1,-54.6,-58.9,-63.5,-68.2,-72.8,-77.5,-80.1,-81.5], field=[25,35,45,60,75,95,115,125,110,80,50], title=\"Sampled Storm Track, Full Lifecycle\", variant=\"track\""
 )]
 pub fn render(cfg: &FlowMapConfig) -> String {
     let n = cfg.lats.len().min(cfg.lons.len());
