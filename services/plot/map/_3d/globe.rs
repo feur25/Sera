@@ -227,7 +227,9 @@ fn index_to_globe_latlon(idx: usize) -> (f64, f64) {
     let lon = -180.0 + (idx as f64 * 7.3) % 360.0;
     (lat, lon)
 }
-#[crate::chart_demo("lats=[10,20,-10], lons=[5,15,-20], values=[100,200,150]")]
+#[crate::chart_demo(
+    "lats=[40.7,51.5,35.7,-23.5,-33.9,30.0,55.7,19.4,1.3,-37.8,64.1,28.6,52.5,39.9,-6.2], lons=[-74.0,-0.12,139.7,-46.6,18.4,31.2,37.6,-99.1,103.8,144.9,-21.9,77.2,13.4,116.4,106.8], values=[840,895,1396,1210,442,995,1250,995,585,502,120,1650,375,2154,1056], title=\"Global City Network\""
+)]
 #[crate::params(paramsList["title","lats","lons","values","project","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_builder]
 #[crate::sera_alias("globe3d", "globe_3d", "globe3d_chart", "globe")]
