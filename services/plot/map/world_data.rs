@@ -49,6 +49,12 @@ pub fn svg_to_latlon(sx: f32, sy: f32) -> (f64, f64) {
     (lat, lon)
 }
 
+pub fn latlon_to_normalized(lat: f64, lon: f64) -> (f32, f32) {
+    let nx = (lon - GEO_MIN_LON) / (GEO_MAX_LON - GEO_MIN_LON);
+    let ny = (GEO_MAX_LAT - lat) / (GEO_MAX_LAT - GEO_MIN_LAT);
+    (nx as f32, ny as f32)
+}
+
 pub fn polygon_centroid(poly: &[[f32; 2]]) -> [f32; 2] {
     if poly.is_empty() {
         return [0.0, 0.0];
