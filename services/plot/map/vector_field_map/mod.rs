@@ -96,4 +96,24 @@ mod tests {
             assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
         }
     }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            let path = entry.file.replace('\\', "/");
+            if !path.contains("map/vector_field_map/") {
+                continue;
+            }
+            let stem = path.rsplit('/').next().unwrap().trim_end_matches(".rs");
+            if stem == "mod" {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            std::fs::write(format!("docs/previews/vector-field-map-{stem}.html"), &html).unwrap();
+            if stem == VectorFieldMapVariant::default_key() {
+                std::fs::write("docs/previews/vector-field-map.html", &html).unwrap();
+            }
+        }
+    }
 }

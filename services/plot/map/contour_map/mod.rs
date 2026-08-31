@@ -94,4 +94,24 @@ mod tests {
             assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
         }
     }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            let path = entry.file.replace('\\', "/");
+            if !path.contains("map/contour_map/") {
+                continue;
+            }
+            let stem = path.rsplit('/').next().unwrap().trim_end_matches(".rs");
+            if stem == "mod" {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            std::fs::write(format!("docs/previews/contour-map-{stem}.html"), &html).unwrap();
+            if stem == ContourMapVariant::default_key() {
+                std::fs::write("docs/previews/contour-map.html", &html).unwrap();
+            }
+        }
+    }
 }
