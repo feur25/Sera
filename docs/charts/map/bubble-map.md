@@ -119,6 +119,8 @@ A density map, not a values map: pass raw `lats`/`lons` samples instead of `labe
 
 A proportional symbol map where the symbol is a real pie, not a circle: pass a `series` of per-point category breakdowns plus shared `categories` names instead of a flat `values` array, and each point draws its own mini pie sized by its category total (`sqrt`-scaled, same convention as `proportional`) with genuine arc-path slices — not a bubble with a label. Category colors stay fixed across every point so two pies stay comparable at a glance, with a legend rendered top-right.
 
+`sub_variant` picks the glyph itself from `sp.pie()`'s own variant vocabulary — `"donut"`, `"semi"`, `"exploded"`, `"nightingale"`, `"waffle"` render each map point with that exact 2D pie style, scaled down. `donut`/`semi`/`exploded` call the identical shared renderer a standalone `sp.pie(variant=...)` uses, just aimed at a small per-marker area; `nightingale` and `waffle` reimplement the same polar-area and largest-remainder-apportionment math at marker scale, since their 2D renderers build a full standalone document rather than a reusable sub-area piece. Any other `sub_variant` (or none) falls back to a plain pie.
+
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pie_markers"</code></span><span><strong>Aliases</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -238,6 +240,8 @@ Une carte de densité, pas une carte de valeurs : passez des échantillons bruts
 <div class="sp-variant" id="bubblemap-fr-pie_markers">
 
 Une carte à symboles proportionnels où le symbole est un vrai camembert, pas un cercle : passez un `series` de répartitions par catégorie pour chaque point, plus des `categories` nommées partagées, au lieu d'un tableau `values` plat, et chaque point dessine son propre mini-camembert dimensionné selon son total de catégories (mise à l'échelle en `sqrt`, même convention que `proportional`) avec de vraies parts en arc-path — pas une bulle avec une étiquette. Les couleurs de catégorie restent fixes sur tous les points pour que deux camemberts restent comparables d'un coup d'œil, avec une légende en haut à droite.
+
+`sub_variant` choisit le glyphe lui-même parmi le vocabulaire de variantes de `sp.pie()` — `"donut"`, `"semi"`, `"exploded"`, `"nightingale"`, `"waffle"` dessinent chaque point avec exactement ce style de camembert 2D, réduit à l'échelle d'un marqueur. `donut`/`semi`/`exploded` appellent le même moteur de rendu partagé qu'utilise un `sp.pie(variant=...)` autonome, juste visé sur une petite zone par marqueur ; `nightingale` et `waffle` réimplémentent les mêmes mathématiques (aire polaire à rayon variable, apportionnement par plus grand reste) à l'échelle d'un marqueur, puisque leurs moteurs 2D construisent un document autonome complet plutôt qu'une pièce réutilisable sur une sous-zone. Tout autre `sub_variant` (ou son absence) retombe sur un camembert simple.
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"pie_markers"</code></span><span><strong>Alias</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
