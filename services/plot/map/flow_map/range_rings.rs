@@ -25,7 +25,7 @@ fn ring_polygon(lat0_deg: f64, lon0_deg: f64, dist_km: f64, width: i32, height: 
 }
 
 #[crate::chart_demo(
-    "lats=[40.7,51.5,1.35,-33.9], lons=[-74.0,-0.12,103.8,151.2], field=[500,1500,3000], title=\"Coverage Range Rings\", variant=\"range_rings\""
+    "lats=[40.7,51.5,1.35,-33.9,-23.5,-33.9], lons=[-74.0,-0.12,103.8,151.2,-46.6,18.4], field=[500,1500,3000], title=\"Coverage Range Rings\", variant=\"range_rings\""
 )]
 pub fn render(cfg: &FlowMapConfig) -> String {
     let n = cfg.lats.len().min(cfg.lons.len());
