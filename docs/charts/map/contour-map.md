@@ -43,6 +43,7 @@ Aliases: `sp.contour_map`, `sp.contourmap`, `sp.contour_map_chart`, `sp.geo_cont
 <button class="sp-cls-toggle" onclick="spClsTog('contourmap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('contourmap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('contourmap-en','isolines',this)"><span class="sp-cic">◠</span><span class="sp-clb">Isolines</span></button>
+<button class="sp-cls-tab" onclick="spCls('contourmap-en','extrema',this)"><span class="sp-cic">H</span><span class="sp-clb">Extrema</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -64,6 +65,16 @@ Real contour lines, not an approximation: genuine marching squares over the same
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/contour-map-isolines.html"></iframe>
+</div>
+
+<div class="sp-variant" id="contourmap-en-extrema">
+
+The real synoptic-chart convention: scans the interpolated grid for local maxima and minima within a sliding window, then marks each surviving peak with a bold **H** and each trough with a bold **L** plus its value — red for high, blue for low, exactly how a real weather map marks pressure centers. A lighter isoline layer stays underneath for context.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"extrema"</code></span><span><strong>Aliases</strong> <code>"extrema"</code> / <code>"highs_lows"</code> / <code>"hl"</code> / <code>"pressure_centers"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/contour-map-extrema.html"></iframe>
 </div>
 
 </div>
@@ -104,6 +115,7 @@ Alias : `sp.contour_map`, `sp.contourmap`, `sp.contour_map_chart`, `sp.geo_conto
 <button class="sp-cls-toggle" onclick="spClsTog('contourmap-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('contourmap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
 <button class="sp-cls-tab" onclick="spCls('contourmap-fr','isolines',this)"><span class="sp-cic">◠</span><span class="sp-clb">Isolignes</span></button>
+<button class="sp-cls-tab" onclick="spCls('contourmap-fr','extrema',this)"><span class="sp-cic">H</span><span class="sp-clb">Extrêmes</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -125,6 +137,16 @@ De vraies lignes de contour, pas une approximation : un authentique algorithme d
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/contour-map-isolines.html"></iframe>
+</div>
+
+<div class="sp-variant" id="contourmap-fr-extrema">
+
+La vraie convention des cartes synoptiques : balaie la grille interpolée à la recherche de maxima et minima locaux dans une fenêtre glissante, puis marque chaque sommet retenu d'un **H** en gras et chaque creux d'un **L** en gras avec sa valeur — rouge pour un anticyclone, bleu pour une dépression, exactement comme une vraie carte météo repère les centres de pression. Une couche d'isolignes plus discrète reste en dessous pour le contexte.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"extrema"</code></span><span><strong>Alias</strong> <code>"extrema"</code> / <code>"highs_lows"</code> / <code>"hl"</code> / <code>"pressure_centers"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/contour-map-extrema.html"></iframe>
 </div>
 
 </div>

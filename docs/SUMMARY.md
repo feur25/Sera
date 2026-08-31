@@ -104,6 +104,7 @@
   - [Contour Map](charts/map/contour-map.md)
   - [Vector Field Map](charts/map/vector-field-map.md)
   - [Cartogram](charts/map/cartogram.md)
+  - [Graticule Map](charts/map/graticule-map.md)
 - [Canvas Composition](canvas/composition.md)
 - [Web App (sp.App)](canvas/webapp.md)
 - [Sera Pulse — Pricing & Activation](seraplot/pulse-pricing.md)
