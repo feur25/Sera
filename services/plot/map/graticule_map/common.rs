@@ -30,7 +30,7 @@ pub fn push_base_outlines(svg: &mut String, width: i32, height: i32) {
                 }
                 svg.push_str(&format!("{:.1},{:.1}", px, py));
             }
-            svg.push_str(" Z\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.5\" opacity=\"0.55\"/>");
+            svg.push_str(" Z\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"0.5\" opacity=\"0.6\"/>");
         }
     }
 }

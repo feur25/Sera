@@ -4,7 +4,7 @@ use crate::plot::map::world_data::{self, GEO_MAX_LAT, GEO_MAX_LON, GEO_MIN_LAT, 
 
 fn push_line(svg: &mut String, a: (f32, f32), b: (f32, f32), width: f32, opacity: f64) {
     svg.push_str(&format!(
-        "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#f8fafc\" stroke-width=\"{width}\" opacity=\"{opacity:.2}\"/>",
+        "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#3b82f6\" stroke-width=\"{width}\" opacity=\"{opacity:.2}\"/>",
         a.0, a.1, b.0, b.1
     ));
 }
@@ -25,7 +25,7 @@ pub fn render(cfg: &GraticuleMapConfig) -> String {
         push_line(&mut svg, (top.0 * w, top.1 * h), (bottom.0 * w, bottom.1 * h), if emphasize { 1.4 } else { 0.5 }, if emphasize { 0.55 } else { 0.22 });
         let label_y = top.1 * h + 12.0;
         svg.push_str(&format!(
-            "<text x=\"{:.1}\" y=\"{label_y:.1}\" fill=\"#94a3b8\" font-size=\"9\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\">{:.0}°</text>",
+            "<text x=\"{:.1}\" y=\"{label_y:.1}\" fill=\"#64748b\" font-size=\"9\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\">{:.0}°</text>",
             top.0 * w, lon,
         ));
     }
@@ -36,7 +36,7 @@ pub fn render(cfg: &GraticuleMapConfig) -> String {
         let emphasize = lat.abs() < 1e-6;
         push_line(&mut svg, (left.0 * w, left.1 * h), (right.0 * w, right.1 * h), if emphasize { 1.4 } else { 0.5 }, if emphasize { 0.55 } else { 0.22 });
         svg.push_str(&format!(
-            "<text x=\"4\" y=\"{:.1}\" fill=\"#94a3b8\" font-size=\"9\" font-family=\"Arial,sans-serif\">{:.0}°</text>",
+            "<text x=\"4\" y=\"{:.1}\" fill=\"#64748b\" font-size=\"9\" font-family=\"Arial,sans-serif\">{:.0}°</text>",
             left.1 * h - 3.0, lat,
         ));
     }
