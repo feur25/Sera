@@ -3,10 +3,10 @@ use std::sync::OnceLock;
 
 const SVG_WIDTH: f32 = 1009.6727;
 const SVG_HEIGHT: f32 = 665.96301;
-const GEO_MIN_LON: f64 = -169.110266;
-const GEO_MAX_LAT: f64 = 83.600842;
-const GEO_MAX_LON: f64 = 190.486279;
-const GEO_MIN_LAT: f64 = -58.508473;
+pub const GEO_MIN_LON: f64 = -169.110266;
+pub const GEO_MAX_LAT: f64 = 83.600842;
+pub const GEO_MAX_LON: f64 = 190.486279;
+pub const GEO_MIN_LAT: f64 = -58.508473;
 
 static COUNTRIES: OnceLock<Vec<CountryShape>> = OnceLock::new();
 
