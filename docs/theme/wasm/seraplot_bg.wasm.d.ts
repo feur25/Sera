@@ -21,6 +21,7 @@ export const buildBubbleMap: (a: number, b: number) => [number, number];
 export const buildBullet: (a: number, b: number) => [number, number];
 export const buildCandlestick: (a: number, b: number) => [number, number];
 export const buildCandlestick3dChart: (a: number, b: number) => [number, number];
+export const buildCartogram: (a: number, b: number) => [number, number];
 export const buildChord: (a: number, b: number) => [number, number];
 export const buildChoropleth: (a: number, b: number) => [number, number];
 export const buildCirclePack: (a: number, b: number) => [number, number];

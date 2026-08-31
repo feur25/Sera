@@ -48,6 +48,8 @@ declare namespace wasm_bindgen {
 
     export function buildCandlestick3dChart(input: string): string;
 
+    export function buildCartogram(input: string): string;
+
     export function buildChord(input: string): string;
 
     export function buildChoropleth(input: string): string;
@@ -477,6 +479,7 @@ declare interface InitOutput {
     readonly buildBullet: (a: number, b: number) => [number, number];
     readonly buildCandlestick: (a: number, b: number) => [number, number];
     readonly buildCandlestick3dChart: (a: number, b: number) => [number, number];
+    readonly buildCartogram: (a: number, b: number) => [number, number];
     readonly buildChord: (a: number, b: number) => [number, number];
     readonly buildChoropleth: (a: number, b: number) => [number, number];
     readonly buildCirclePack: (a: number, b: number) => [number, number];
