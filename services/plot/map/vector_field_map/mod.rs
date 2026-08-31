@@ -3,6 +3,7 @@ pub mod common;
 pub mod config;
 pub mod streamlines;
 pub mod variant;
+pub mod wind_barbs;
 
 pub use config::VectorFieldMapConfig;
 pub use variant::VectorFieldMapVariant;
@@ -14,6 +15,7 @@ pub fn render_vector_field_map_html(cfg: &VectorFieldMapConfig) -> String {
     match cfg.variant {
         Arrows => arrows::render(cfg),
         Streamlines => streamlines::render(cfg),
+        WindBarbs => wind_barbs::render(cfg),
     }
 }
 
@@ -78,6 +80,40 @@ mod tests {
     fn build_vector_field_map_defaults_to_arrows_variant() {
         let out = build_vector_field_map(r#"{"title":"t","lats":[1.0,2.0],"lons":[3.0,4.0],"u":[5.0,6.0],"v":[7.0,8.0]}"#);
         assert!(out.contains("<polygon"), "no variant given must default to arrows: {out}");
+    }
+
+    #[test]
+    fn build_vector_field_map_wind_barbs_draws_shafts_at_every_station() {
+        let out = build_vector_field_map(&sample_input("wind_barbs"));
+        assert!(out.contains("<svg"), "expected a real svg: {out}");
+        assert!(out.matches("<line").count() >= 3, "wind barbs must draw at least one shaft per station: {out}");
+    }
+
+    #[test]
+    fn build_vector_field_map_wind_barbs_draws_a_calm_circle_for_near_zero_speed() {
+        let out = build_vector_field_map(
+            r#"{"title":"t","lats":[40.0],"lons":[-75.0],"u":[0.01],"v":[0.01],"variant":"wind_barbs"}"#,
+        );
+        assert!(out.contains("<circle") && out.contains("fill=\"none\""), "near-zero wind must draw the calm symbol, not a shaft: {out}");
+    }
+
+    #[test]
+    fn build_vector_field_map_wind_barbs_draws_a_pennant_for_high_speed() {
+        let out = build_vector_field_map(
+            r#"{"title":"t","lats":[40.0],"lons":[-75.0],"u":[60.0],"v":[0.0],"variant":"wind_barbs"}"#,
+        );
+        assert!(out.contains("<polygon"), "60kt wind must draw at least one 50kt pennant flag: {out}");
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_vector_field_map_wind_barbs_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("vector_field_map/wind_barbs.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
+        }
     }
 
     #[test]
