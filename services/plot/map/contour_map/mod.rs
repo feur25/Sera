@@ -1,5 +1,6 @@
 pub mod common;
 pub mod config;
+pub mod extrema;
 pub mod filled;
 pub mod isolines;
 pub mod variant;
@@ -14,6 +15,7 @@ pub fn render_contour_map_html(cfg: &ContourMapConfig) -> String {
     match cfg.variant {
         Filled => filled::render(cfg),
         Isolines => isolines::render(cfg),
+        Extrema => extrema::render(cfg),
     }
 }
 
@@ -76,6 +78,32 @@ mod tests {
     fn build_contour_map_defaults_to_filled_variant() {
         let out = build_contour_map(r#"{"title":"t","lats":[1.0,2.0],"lons":[3.0,4.0],"field":[5.0,6.0]}"#);
         assert!(out.matches("<rect").count() > 10, "no variant given must default to filled: {out}");
+    }
+
+    #[test]
+    fn build_contour_map_extrema_labels_at_least_one_high_and_one_low() {
+        let out = build_contour_map(
+            r#"{"title":"t","variant":"extrema","lats":[65,55,35,55,32,-28,-28,-30,55,2,2,0,-57,-57,-57,40,50,35,-25,40,-5,55],"lons":[-20,-165,-25,90,-140,-105,-5,70,-100,20,-60,110,-60,90,170,15,-35,140,135,-95,25,-10],"field":[-12.0,-10.0,11.0,15.0,9.0,10.0,8.0,9.0,6.0,-3.0,-4.0,-5.0,-9.0,-8.0,-7.0,3.0,-2.0,2.0,7.0,1.0,-2.0,-4.0]}"#,
+        );
+        assert!(out.contains(">H<"), "expected at least one high pressure label: {out}");
+        assert!(out.contains(">L<"), "expected at least one low pressure label: {out}");
+    }
+
+    #[test]
+    fn build_contour_map_extrema_handles_empty_input_without_panicking() {
+        let out = build_contour_map(r#"{"title":"t","variant":"extrema"}"#);
+        assert!(out.is_empty() || out.contains("<svg"));
+    }
+
+    #[test]
+    fn every_registered_chart_demo_for_contour_map_extrema_renders_non_empty_html() {
+        for entry in crate::plot::chart_demo_registry::iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("contour_map/extrema.rs") {
+                continue;
+            }
+            let html = crate::plot::chart_demo_registry::render_demo_html(entry).expect("demo html");
+            assert!(html.contains("<svg"), "{} must render a real svg: {html}", entry.file);
+        }
     }
 
     #[test]

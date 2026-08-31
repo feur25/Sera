@@ -116,6 +116,129 @@ pub fn grid_to_pixel(cfg: &ContourMapConfig, bounds: &FieldBounds, col: usize, c
     (nx * cfg.width as f32, ny * cfg.height as f32)
 }
 
+pub fn edge_crossing(v0: f64, v1: f64, p0: (f32, f32), p1: (f32, f32), t: f64) -> Option<(f32, f32)> {
+    if (v0 - t) * (v1 - t) > 0.0 {
+        return None;
+    }
+    if (v1 - v0).abs() < 1e-12 {
+        return None;
+    }
+    let frac = ((t - v0) / (v1 - v0)) as f32;
+    Some((p0.0 + (p1.0 - p0.0) * frac, p0.1 + (p1.1 - p0.1) * frac))
+}
+
+pub fn draw_isoline_paths(
+    svg: &mut String,
+    grid: &[Vec<f64>],
+    pixels: &[Vec<(f32, f32)>],
+    bounds: &FieldBounds,
+    levels: usize,
+    color_low: u32,
+    color_high: u32,
+    stroke_width: f64,
+) {
+    let span = (bounds.max_val - bounds.min_val).max(1e-9);
+    let rows = grid.len();
+    let cols = if rows > 0 { grid[0].len() } else { 0 };
+    let levels = levels.max(2);
+    for level_idx in 1..levels {
+        let t = bounds.min_val + span * (level_idx as f64 / levels as f64);
+        let band_t = (t - bounds.min_val) / span;
+        let (r, g, b) = lerp_rgb(color_low, color_high, band_t);
+        let mut path = String::new();
+
+        for row in 0..rows.saturating_sub(1) {
+            for col in 0..cols.saturating_sub(1) {
+                let tl = grid[row][col];
+                let tr = grid[row][col + 1];
+                let br = grid[row + 1][col + 1];
+                let bl = grid[row + 1][col];
+                let p_tl = pixels[row][col];
+                let p_tr = pixels[row][col + 1];
+                let p_br = pixels[row + 1][col + 1];
+                let p_bl = pixels[row + 1][col];
+
+                let top = edge_crossing(tl, tr, p_tl, p_tr, t);
+                let right = edge_crossing(tr, br, p_tr, p_br, t);
+                let bottom = edge_crossing(bl, br, p_bl, p_br, t);
+                let left = edge_crossing(tl, bl, p_tl, p_bl, t);
+                let found: Vec<(f32, f32)> = [top, right, bottom, left].into_iter().flatten().collect();
+
+                let mut push_seg = |a: (f32, f32), c: (f32, f32)| {
+                    path.push_str(&format!("M{:.1},{:.1} L{:.1},{:.1} ", a.0, a.1, c.0, c.1));
+                };
+                match found.len() {
+                    2 => push_seg(found[0], found[1]),
+                    4 => {
+                        let center = (tl + tr + br + bl) / 4.0;
+                        if center >= t {
+                            push_seg(top.unwrap(), right.unwrap());
+                            push_seg(bottom.unwrap(), left.unwrap());
+                        } else {
+                            push_seg(top.unwrap(), left.unwrap());
+                            push_seg(right.unwrap(), bottom.unwrap());
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        if !path.is_empty() {
+            svg.push_str(&format!(
+                "<path d=\"{path}\" fill=\"none\" stroke=\"rgb({r},{g},{b})\" stroke-width=\"{stroke_width}\" opacity=\"0.9\"/>"
+            ));
+        }
+    }
+}
+
+pub fn find_extrema(grid: &[Vec<f64>], window: usize) -> Vec<(usize, usize, bool)> {
+    let rows = grid.len();
+    let cols = if rows > 0 { grid[0].len() } else { 0 };
+    let half = window / 2;
+    let mut candidates: Vec<(usize, usize, bool, f64)> = Vec::new();
+    for r in 0..rows {
+        for c in 0..cols {
+            let v = grid[r][c];
+            let r0 = r.saturating_sub(half);
+            let r1 = (r + half).min(rows.saturating_sub(1));
+            let c0 = c.saturating_sub(half);
+            let c1 = (c + half).min(cols.saturating_sub(1));
+            let mut is_max = true;
+            let mut is_min = true;
+            for rr in r0..=r1 {
+                for cc in c0..=c1 {
+                    if rr == r && cc == c {
+                        continue;
+                    }
+                    if grid[rr][cc] > v {
+                        is_max = false;
+                    }
+                    if grid[rr][cc] < v {
+                        is_min = false;
+                    }
+                }
+            }
+            if is_max {
+                candidates.push((r, c, true, v));
+            } else if is_min {
+                candidates.push((r, c, false, v));
+            }
+        }
+    }
+
+    let mut out: Vec<(usize, usize, bool)> = Vec::new();
+    for &(r, c, is_high, _) in &candidates {
+        let too_close = out.iter().any(|&(or, oc, oh)| {
+            oh == is_high && (or as isize - r as isize).abs() < window as isize && (oc as isize - c as isize).abs() < window as isize
+        });
+        if !too_close {
+            out.push((r, c, is_high));
+        }
+    }
+    out
+}
+
 pub fn to_html(cfg: &ContourMapConfig, mut svg: String) -> String {
     use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = cfg.lats.len().min(cfg.lons.len()).min(cfg.field.len());
