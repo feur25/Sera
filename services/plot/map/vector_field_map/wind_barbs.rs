@@ -96,7 +96,7 @@ fn push_barb_glyph(svg: &mut String, station: (f64, f64), from_dir: (f64, f64), 
 }
 
 #[crate::chart_demo(
-    "lats=[50,45,40,35,50,45,40,35,50,45,40,35], lons=[-10,-5,0,5,-10,-5,0,5,-10,-5,0,5], u=[8,25,-3,-45,4,55,2,-30,-2,-60,6,15], v=[3,-30,8,-2,-45,1,-35,5,6,-3,-4,40], title=\"Station Wind Barbs\", variant=\"wind_barbs\""
+    "lats=[40.7,51.5,35.7,-33.9,-33.9,-22.9], lons=[-74.0,-0.12,139.7,151.2,18.4,-43.2], u=[8,45,0.01,-15,20,-35], v=[3,-30,0.01,8,20,25], title=\"Station Wind Barbs\", variant=\"wind_barbs\""
 )]
 pub fn render(cfg: &VectorFieldMapConfig) -> String {
     let n = cfg.lats.len().min(cfg.lons.len()).min(cfg.u.len()).min(cfg.v.len());

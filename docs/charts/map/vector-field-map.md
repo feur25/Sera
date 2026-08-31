@@ -43,6 +43,7 @@ Aliases: `sp.vector_field_map`, `sp.vectorfieldmap`, `sp.vector_field_map_chart`
 <button class="sp-cls-toggle" onclick="spClsTog('vectorfieldmap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('vectorfieldmap-en','arrows',this)"><span class="sp-cic">➤</span><span class="sp-clb">Arrows</span></button>
 <button class="sp-cls-tab" onclick="spCls('vectorfieldmap-en','streamlines',this)"><span class="sp-cic">〰</span><span class="sp-clb">Streamlines</span></button>
+<button class="sp-cls-tab" onclick="spCls('vectorfieldmap-en','wind_barbs',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Wind Barbs</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -64,6 +65,16 @@ True flow integration, not a static hint field: a grid of seed points is traced 
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" data-src="../../previews/vector-field-map-streamlines.html"></iframe>
+</div>
+
+<div class="sp-variant" id="vectorfieldmap-en-wind_barbs">
+
+Real WMO station-model glyphs, not decorated arrows: the shaft points in the direction the wind blows *from*, and speed is read off by counting symbols stacked along it — a triangular pennant for every 50 knots, a full barb for every 10, a half barb for the last 5, rounded to the nearest 5kt exactly like a real synoptic chart. A calm station (under 2.5kt) draws the standard open-circle calm symbol instead of a shaft. Meteorology's own encoding, applied directly to `u`/`v`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"wind_barbs"</code></span><span><strong>Aliases</strong> <code>"wind_barbs"</code> / <code>"barbs"</code> / <code>"meteorological"</code> / <code>"station_model"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/vector-field-map-wind_barbs.html"></iframe>
 </div>
 
 </div>
@@ -104,6 +115,7 @@ Alias : `sp.vector_field_map`, `sp.vectorfieldmap`, `sp.vector_field_map_chart`,
 <button class="sp-cls-toggle" onclick="spClsTog('vectorfieldmap-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('vectorfieldmap-fr','arrows',this)"><span class="sp-cic">➤</span><span class="sp-clb">Flèches</span></button>
 <button class="sp-cls-tab" onclick="spCls('vectorfieldmap-fr','streamlines',this)"><span class="sp-cic">〰</span><span class="sp-clb">Lignes de courant</span></button>
+<button class="sp-cls-tab" onclick="spCls('vectorfieldmap-fr','wind_barbs',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Barbules de vent</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -125,6 +137,16 @@ Une vraie intégration de flux, pas un champ d'indices statique : une grille de 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/vector-field-map-streamlines.html"></iframe>
+</div>
+
+<div class="sp-variant" id="vectorfieldmap-fr-wind_barbs">
+
+De vrais glyphes de modèle-station OMM, pas des flèches décorées : la tige pointe dans la direction d'où souffle le vent, et la vitesse se lit en comptant les symboles empilés le long d'elle — un fanion triangulaire par tranche de 50 nœuds, une barbule pleine par tranche de 10, une demi-barbule pour les 5 restants, arrondi au multiple de 5 nœuds le plus proche exactement comme sur une vraie carte synoptique. Une station calme (moins de 2,5 nœuds) dessine le symbole standard de calme (cercle vide) plutôt qu'une tige. Le codage propre à la météorologie, appliqué directement à `u`/`v`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"wind_barbs"</code></span><span><strong>Alias</strong> <code>"wind_barbs"</code> / <code>"barbs"</code> / <code>"meteorological"</code> / <code>"station_model"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/vector-field-map-wind_barbs.html"></iframe>
 </div>
 
 </div>

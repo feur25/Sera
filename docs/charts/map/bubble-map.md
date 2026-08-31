@@ -51,6 +51,7 @@ Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Ring</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulse</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-en','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','pie_markers',this)"><span class="sp-cic">◕</span><span class="sp-clb">Pie Markers</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -114,6 +115,16 @@ A density map, not a values map: pass raw `lats`/`lons` samples instead of `labe
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bubblemap-en-pie_markers">
+
+A proportional symbol map where the symbol is a real pie, not a circle: pass a `series` of per-point category breakdowns plus shared `categories` names instead of a flat `values` array, and each point draws its own mini pie sized by its category total (`sqrt`-scaled, same convention as `proportional`) with genuine arc-path slices — not a bubble with a label. Category colors stay fixed across every point so two pies stay comparable at a glance, with a legend rendered top-right.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pie_markers"</code></span><span><strong>Aliases</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pie_markers.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -160,6 +171,7 @@ Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`,
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Anneau</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulsation</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubblemap-fr','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pie_markers',this)"><span class="sp-cic">◕</span><span class="sp-clb">Marqueurs camembert</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -221,6 +233,16 @@ Une carte de densité, pas une carte de valeurs : passez des échantillons bruts
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-pie_markers">
+
+Une carte à symboles proportionnels où le symbole est un vrai camembert, pas un cercle : passez un `series` de répartitions par catégorie pour chaque point, plus des `categories` nommées partagées, au lieu d'un tableau `values` plat, et chaque point dessine son propre mini-camembert dimensionné selon son total de catégories (mise à l'échelle en `sqrt`, même convention que `proportional`) avec de vraies parts en arc-path — pas une bulle avec une étiquette. Les couleurs de catégorie restent fixes sur tous les points pour que deux camemberts restent comparables d'un coup d'œil, avec une légende en haut à droite.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pie_markers"</code></span><span><strong>Alias</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pie_markers.html"></iframe>
 </div>
 
 </div>

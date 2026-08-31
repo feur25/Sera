@@ -103,6 +103,7 @@
   - [Flow Map](charts/map/flow-map.md)
   - [Contour Map](charts/map/contour-map.md)
   - [Vector Field Map](charts/map/vector-field-map.md)
+  - [Cartogram](charts/map/cartogram.md)
 - [Canvas Composition](canvas/composition.md)
 - [Web App (sp.App)](canvas/webapp.md)
 - [Sera Pulse — Pricing & Activation](seraplot/pulse-pricing.md)

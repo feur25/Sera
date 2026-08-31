@@ -11,8 +11,9 @@ SeraPlot provides geographic chart types for visualizing spatial data on any reg
 | [Flow Map](flow-map.md) | `flow_map()` |
 | [Contour Map](contour-map.md) | `contour_map()` |
 | [Vector Field Map](vector-field-map.md) | `vector_field_map()` |
+| [Cartogram](cartogram.md) | `cartogram()` |
 
-Choropleth and Bubble Map both include a real orthographic ("globe from space") and polar (azimuthal, pole-centered) projection, computed from an actual pixel-to-latitude/longitude inversion of the world map — not a cosmetic re-skin. Contour Map and Vector Field Map take raw `lats`/`lons` samples directly rather than named regions — for continuous scalar fields (temperature, pressure, precipitation) and vector fields (wind, currents) that don't line up with any political boundary.
+Choropleth and Bubble Map both include a real orthographic ("globe from space") and polar (azimuthal, pole-centered) projection, computed from an actual pixel-to-latitude/longitude inversion of the world map — not a cosmetic re-skin. Contour Map and Vector Field Map take raw `lats`/`lons` samples directly rather than named regions — for continuous scalar fields (temperature, pressure, precipitation) and vector fields (wind, currents) that don't line up with any political boundary. Cartogram distorts position itself, relaxing each region's glyph away from overlap while a real physics-style pull keeps it anchored near where it truly sits.
 
 ## Any country, any region
 
@@ -45,8 +46,9 @@ SeraPlot propose des types de graphiques géographiques pour visualiser des donn
 | [Carte de flux](flow-map.md) | `flow_map()` |
 | [Carte de contours](contour-map.md) | `contour_map()` |
 | [Carte de champ vectoriel](vector-field-map.md) | `vector_field_map()` |
+| [Cartogramme](cartogram.md) | `cartogram()` |
 
-Choropleth et Bubble Map incluent tous deux une vraie projection orthographique (« globe vu de l'espace ») et polaire (azimutale, centrée sur un pôle), calculée à partir d'une véritable inversion pixel vers latitude/longitude de la carte du monde — pas un simple habillage cosmétique. Carte de contours et Carte de champ vectoriel prennent directement des échantillons bruts `lats`/`lons` plutôt que des régions nommées — pour des champs scalaires continus (température, pression, précipitations) et des champs vectoriels (vent, courants) qui ne s'alignent sur aucune frontière politique.
+Choropleth et Bubble Map incluent tous deux une vraie projection orthographique (« globe vu de l'espace ») et polaire (azimutale, centrée sur un pôle), calculée à partir d'une véritable inversion pixel vers latitude/longitude de la carte du monde — pas un simple habillage cosmétique. Carte de contours et Carte de champ vectoriel prennent directement des échantillons bruts `lats`/`lons` plutôt que des régions nommées — pour des champs scalaires continus (température, pression, précipitations) et des champs vectoriels (vent, courants) qui ne s'alignent sur aucune frontière politique. Cartogramme distord la position elle-même, relaxant le glyphe de chaque région pour éviter le chevauchement tandis qu'une vraie attraction façon physique le maintient ancré près de sa position réelle.
 
 ## N'importe quel pays, n'importe quelle région
 

@@ -56,7 +56,7 @@ fn push_legend(svg: &mut String, categories: &[String], width: i32) {
 }
 
 #[crate::chart_demo(
-    "lats=[51.5,48.85,52.5,41.9,40.4], lons=[-0.12,2.35,13.4,12.5,-3.7], series=[[40,25,35],[55,15,30],[30,45,25],[60,10,30],[35,35,30]], categories=[\"Wind\",\"Solar\",\"Hydro\"], title=\"Energy Mix by Capital\", variant=\"pie_markers\""
+    "lats=[40.7,51.5,35.7,-23.5,-33.9,30.0], lons=[-74.0,-0.12,139.7,-46.6,18.4,31.2], series=[[40,25,35],[55,15,30],[30,45,25],[60,10,30],[35,35,30],[20,55,25]], categories=[\"Wind\",\"Solar\",\"Hydro\"], title=\"Energy Mix by City\", variant=\"pie_markers\""
 )]
 pub fn render(cfg: &BubbleMapConfig) -> String {
     let n = cfg.lats.len().min(cfg.lons.len()).min(cfg.series.len());

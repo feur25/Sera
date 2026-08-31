@@ -50,6 +50,7 @@ Aliases: `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.co
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animated</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-en','track',this)"><span class="sp-cic">➤</span><span class="sp-clb">Track</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-en','range_rings',this)"><span class="sp-cic">◎</span><span class="sp-clb">Range Rings</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -103,6 +104,16 @@ Not pairwise connections at all — a single ordered path through `lats`/`lons`,
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-track.html"></iframe>
 </div>
 
+<div class="sp-variant" id="flowmap-en-range_rings">
+
+Not a connection at all — concentric coverage rings around each `lats`/`lons` hub, one per distance in `field` (kilometers), shared across every hub and defaulting to a 500/1500/3000km set when omitted. Each ring is a genuine spherical destination-point curve swept through 360° of bearing at a fixed great-circle distance, so it distorts exactly the way a real radar-range or service-area circle should on a flat projection — not a flat-plane circle that would quietly lie about distance away from the equator. Inner rings render more opaque, outer ones fainter, radar-display style. `labels`/`edges_i`/`edges_j`/`edges_w` are ignored for this variant.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"range_rings"</code></span><span><strong>Aliases</strong> <code>"range_rings"</code> / <code>"distance_rings"</code> / <code>"radar_rings"</code> / <code>"buffer_rings"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-range_rings.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -148,6 +159,7 @@ Alias : `sp.flow_map`, `sp.flowmap`, `sp.flow_map_chart`, `sp.geo_flow`, `sp.con
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','animated',this)"><span class="sp-cic">┄</span><span class="sp-clb">Animé</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','ribbon',this)"><span class="sp-cic">〰</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('flowmap-fr','track',this)"><span class="sp-cic">➤</span><span class="sp-clb">Trajectoire</span></button>
+<button class="sp-cls-tab" onclick="spCls('flowmap-fr','range_rings',this)"><span class="sp-cic">◎</span><span class="sp-clb">Anneaux de portée</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -199,6 +211,16 @@ Pas du tout des connexions par paires — un unique chemin ordonné à travers `
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" data-src="../../previews/flow-map-track.html"></iframe>
+</div>
+
+<div class="sp-variant" id="flowmap-fr-range_rings">
+
+Pas une connexion du tout — des anneaux de couverture concentriques autour de chaque hub `lats`/`lons`, un par distance dans `field` (en kilomètres), partagés par tous les hubs et retombant sur un jeu 500/1500/3000km par défaut si omis. Chaque anneau est une vraie courbe de point de destination sphérique, balayée sur 360° de relèvement à distance orthodromique fixe, si bien qu'il se déforme exactement comme un vrai cercle de portée radar ou de zone de service devrait le faire sur une projection plane — pas un cercle plan qui mentirait silencieusement sur la distance loin de l'équateur. Les anneaux intérieurs sont plus opaques, les extérieurs plus estompés, dans le style d'un affichage radar. `labels`/`edges_i`/`edges_j`/`edges_w` sont ignorés pour cette variante.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"range_rings"</code></span><span><strong>Alias</strong> <code>"range_rings"</code> / <code>"distance_rings"</code> / <code>"radar_rings"</code> / <code>"buffer_rings"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/flow-map-range_rings.html"></iframe>
 </div>
 
 </div>
