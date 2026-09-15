@@ -1,6 +1,23 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, svg_open_rescalable, svg_title};
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n = cfg.labels.len().min(cfg.values.len());
+    if n == 0 {
+        return Vec::new();
+    }
+    let r = 3.0;
+    (0..n)
+        .map(|i| {
+            let theta = std::f64::consts::TAU * i as f64 / n as f64;
+            let v = cfg.values[i];
+            let (z0, z1) = if v >= 0.0 { (0.0, v) } else { (v, 0.0) };
+            Bar3DBlock::new(r * theta.cos(), r * theta.sin(), z0, z1, 0.2, 0.2, i)
+        })
+        .collect()
+}
 
 #[crate::chart_demo(
     "labels=[\"Chico to Seattle\",\"Fresno to Portland\",\"Reno to Denver\",\"Modesto to Austin\",\"Bakersfield to Sacramento\",\"Chico to Sacramento\",\"Stockton to Boise\",\"Fresno to Denver\",\"Reno to Portland\",\"Modesto to Sacramento\",\"Chico to Portland\",\"Bakersfield to Boise\",\"Stockton to Sacramento\",\"Fresno to Boise\",\"Reno to Sacramento\",\"Modesto to Boise\",\"Chico to Denver\",\"Bakersfield to Denver\",\"Stockton to Denver\",\"Fresno to Sacramento\",\"New York to San Juan\",\"New York to Memphis\",\"New York to Jackson\",\"New York to Shreveport\",\"New York to Mobile\",\"New York to Fresno\",\"New York to Bakersfield\",\"New York to Stockton\",\"New York to Modesto\",\"New York to Reno\",\"Los Angeles to Memphis\",\"Los Angeles to Jackson\",\"Los Angeles to Shreveport\",\"Los Angeles to Mobile\",\"Los Angeles to San Juan\",\"Seattle to Memphis\",\"Seattle to Jackson\",\"Seattle to Fresno\",\"Seattle to Bakersfield\",\"Portland to Memphis\",\"Portland to Jackson\",\"Portland to Fresno\",\"Denver to Memphis\",\"Denver to Jackson\",\"Denver to Fresno\",\"Sacramento to Memphis\",\"Sacramento to Jackson\",\"Boise to Memphis\",\"Boise to Jackson\",\"Austin to Memphis\",\"Austin to Jackson\"], values=[9.0,6.0,4.0,3.0,2.0,7.0,5.0,3.5,2.5,1.5,5.5,4.5,3.0,2.0,6.5,1.0,4.0,2.5,1.5,0.5,-42.0,-38.0,-36.0,-35.0,-33.0,-30.0,-28.0,-27.0,-26.0,-24.0,-31.0,-29.0,-27.0,-25.0,-23.0,-22.0,-20.0,-19.0,-18.0,-21.0,-19.0,-17.0,-16.0,-15.0,-14.0,-13.0,-12.0,-11.0,-10.0,-9.0,-8.0], variant=\"hedgehog\", width=700, height=380"
