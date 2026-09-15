@@ -1,6 +1,45 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open_rescalable, svg_title, truncate};
 use std::collections::HashMap;
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n = cfg.labels.len().min(cfg.values.len());
+    if n == 0 {
+        return Vec::new();
+    }
+    let mut groups: Vec<&str> = Vec::new();
+    for i in 0..n {
+        let g = cfg.super_categories.get(i).map(|s| s.as_str()).unwrap_or("");
+        if !groups.contains(&g) {
+            groups.push(g);
+        }
+    }
+    let n_groups = groups.len().max(1);
+    let gap = if n_groups > 1 {
+        std::f64::consts::TAU * 0.025
+    } else {
+        0.0
+    };
+    let usable = std::f64::consts::TAU - gap * n_groups as f64;
+    let r = 3.4;
+    let mut out = Vec::with_capacity(n);
+    let mut cursor = -std::f64::consts::FRAC_PI_2;
+    for (gi, g) in groups.iter().enumerate() {
+        let idxs: Vec<usize> = (0..n)
+            .filter(|&i| cfg.super_categories.get(i).map(|s| s.as_str()).unwrap_or("") == *g)
+            .collect();
+        let count = idxs.len().max(1);
+        let group_angle = usable / n_groups as f64;
+        let slot = group_angle / count as f64;
+        for (k, &i) in idxs.iter().enumerate() {
+            let theta = cursor + slot * (k as f64 + 0.5);
+            out.push(Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, cfg.values[i], 0.22, 0.22, gi));
+        }
+        cursor += group_angle + gap;
+    }
+    out
+}
 
 #[allow(clippy::too_many_arguments)]
 fn ray_bar(buf: &mut Vec<u8>, cx: f64, cy: f64, a: f64, r0: f64, r1: f64, half_w: f64, color: u32, data_idx: i32, value: f64, label: &str) {
