@@ -1,4 +1,7 @@
 use crate::html::js_3d::render_3d_html_impl;
+use crate::plot::statistical::_3d::generic::{radial_band_columns, radial_columns, radial_stacked_columns};
+use crate::plot::statistical::_3d::render_blocks3d_html;
+use crate::plot::statistical::RadarVariant;
 use crate::plot::{apply_bg3d, parse_all};
 
 const RING_GAP_CONTROL_JS: &str = "(function(){var wrap=document.getElementById(cid);if(!wrap)return;var outer=document.createElement('div');outer.style.cssText='display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%';wrap.parentElement.insertBefore(outer,wrap);outer.appendChild(wrap);var ctrl=document.createElement('div');ctrl.style.cssText='width:'+W+'px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;font:11px -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;color:#cbd5e1;background:rgba(15,23,42,.6);padding:7px 12px;border-radius:9px';var lbl=document.createElement('span');lbl.textContent='ring gap';lbl.style.cssText='white-space:nowrap;opacity:.75';var sl=document.createElement('input');sl.type='range';sl.min='0';sl.max='200';sl.step='1';sl.value=String(Math.round(RG*200));sl.style.cssText='flex:1;cursor:pointer';var val=document.createElement('span');val.textContent=RG.toFixed(2);val.style.cssText='width:32px;text-align:right;font-weight:700;color:#f1f5f9';sl.addEventListener('input',function(){RG=parseInt(sl.value,10)/200;val.textContent=RG.toFixed(2);R();});ctrl.appendChild(lbl);ctrl.appendChild(sl);ctrl.appendChild(val);outer.appendChild(ctrl);})();";
@@ -61,39 +64,66 @@ pub fn build_radar3d_chart(input: &str) -> String {
         .clone()
         .unwrap_or_else(|| (0..series_flat.len()).map(|_| String::new()).collect());
     let n_series = names.len().min(series_flat.len());
-    let ring_gap = o.ring_gap.unwrap_or(1.0).clamp(0.0, 1.0);
-    let mut xv = Vec::new();
-    let mut yv = Vec::new();
-    let mut zv = Vec::new();
-    let mut cv = Vec::new();
-    for si in 0..n_series {
-        let vals = &series_flat[si];
-        let max_val = vals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
-        for ai in 0..n_axes.min(vals.len()) {
-            let angle = std::f64::consts::TAU * ai as f64 / n_axes as f64;
-            let r = vals[ai] / max_val;
-            xv.push(angle.cos() * r);
-            yv.push(si as f64);
-            zv.push(angle.sin() * r);
-            cv.push(si as f64);
-        }
-    }
+    let series: Vec<(String, Vec<f64>)> = names.iter().cloned().zip(series_flat.iter().cloned()).collect();
+    let variant = RadarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let bg_str = o.bg_str();
+    let w = o.w(900);
+    let h = o.h(560);
+
+    use RadarVariant::*;
     apply_bg3d(
-        crate::plot::statistical::_3d::render_radar3d_html(
-            title,
-            &xv,
-            &yv,
-            &zv,
-            (&o.xl(), &o.yl(), &o.zl()),
-            &cv,
-            &names,
-            o.w(900),
-            o.h(560),
-            bg_str.as_deref(),
-            &o.scene3d(),
-            ring_gap,
-        ),
+        match variant {
+            PolarBar | Petal => {
+                let hw = if matches!(variant, Petal) { 0.32 } else { 0.18 };
+                let mut blocks = Vec::new();
+                for (si, (_, vals)) in series.iter().enumerate() {
+                    let radius = 2.4 + si as f64 * 0.9;
+                    blocks.extend(radial_columns(&vals[..n_axes.min(vals.len())], radius, hw, hw));
+                }
+                render_blocks3d_html(title, &blocks, (&o.xl(), &o.yl(), &o.zl()), &names, w, h, bg_str.as_deref(), &o.scene3d())
+            }
+            Band if series.len() >= 2 => {
+                let blocks = radial_band_columns(&series[0].1, &series[1].1, 2.6, 0.3, 0.3);
+                render_blocks3d_html(title, &blocks, (&o.xl(), &o.yl(), &o.zl()), &names, w, h, bg_str.as_deref(), &o.scene3d())
+            }
+            Stacked => {
+                let blocks = radial_stacked_columns(&series, n_axes, 2.6, 0.26, 0.26);
+                render_blocks3d_html(title, &blocks, (&o.xl(), &o.yl(), &o.zl()), &names, w, h, bg_str.as_deref(), &o.scene3d())
+            }
+            _ => {
+                let ring_gap = o.ring_gap.unwrap_or(1.0).clamp(0.0, 1.0);
+                let mut xv = Vec::new();
+                let mut yv = Vec::new();
+                let mut zv = Vec::new();
+                let mut cv = Vec::new();
+                for si in 0..n_series {
+                    let vals = &series_flat[si];
+                    let max_val = vals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
+                    for ai in 0..n_axes.min(vals.len()) {
+                        let angle = std::f64::consts::TAU * ai as f64 / n_axes as f64;
+                        let r = vals[ai] / max_val;
+                        xv.push(angle.cos() * r);
+                        yv.push(si as f64);
+                        zv.push(angle.sin() * r);
+                        cv.push(si as f64);
+                    }
+                }
+                crate::plot::statistical::_3d::render_radar3d_html(
+                    title,
+                    &xv,
+                    &yv,
+                    &zv,
+                    (&o.xl(), &o.yl(), &o.zl()),
+                    &cv,
+                    &names,
+                    w,
+                    h,
+                    bg_str.as_deref(),
+                    &o.scene3d(),
+                    ring_gap,
+                )
+            }
+        },
         &o,
     )
 }
