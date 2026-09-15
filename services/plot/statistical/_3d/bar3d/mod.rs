@@ -1,4 +1,4 @@
-use crate::plot::statistical::bar::{layout_3d, BarConfig};
+use crate::plot::statistical::bar::{layout_3d, Bar3DBlock, BarConfig};
 
 pub fn render_bar3d_blocks_html(
     title: &str,
@@ -10,7 +10,19 @@ pub fn render_bar3d_blocks_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    let blocks = layout_3d(cfg);
+    render_blocks3d_html(title, &layout_3d(cfg), axis_labels, color_labels, w, h, bg_color, scene)
+}
+
+pub fn render_blocks3d_html(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    axis_labels: (&str, &str, &str),
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+) -> String {
     let mut extra_js = String::with_capacity(blocks.len() * 48 + 32);
     extra_js.push_str("var BN=");
     extra_js.push_str(&blocks.len().to_string());
