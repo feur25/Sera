@@ -1,8 +1,25 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open_rescalable, svg_title,
     truncate,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    if n_cats == 0 || cfg.series.len() < 2 {
+        return Vec::new();
+    }
+    let mut out = Vec::with_capacity(n_cats * 2);
+    for (si, row_offset) in [(0usize, -0.42_f64), (1usize, 0.42_f64)] {
+        let vals = &cfg.series[si].1;
+        for ci in 0..n_cats {
+            let v = vals.get(ci).copied().unwrap_or(0.0).abs();
+            out.push(Bar3DBlock::new(ci as f64, row_offset, 0.0, v, 0.32, 0.32, si));
+        }
+    }
+    out
+}
 
 #[crate::chart_demo(
     "labels=[\"0-9\",\"10-19\",\"20-29\",\"30-39\",\"40-49\",\"50-59\",\"60-69\",\"70+\"], series=[[12,18,24,22,17,13,9,5],[11,17,25,23,18,14,10,6]], series_names=[\"Male\",\"Female\"], variant=\"population_pyramid\""
