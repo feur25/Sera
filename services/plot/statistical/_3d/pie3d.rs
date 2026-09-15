@@ -1,4 +1,7 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::generic::radial_columns;
+use crate::plot::statistical::_3d::render_blocks3d_html;
+use crate::plot::statistical::PieVariant;
 use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_pie3d_html(
@@ -43,24 +46,20 @@ pub fn build_pie3d_chart(input: &str) -> String {
     let srt = o.srt();
     let (labels, values) = apply_sort(&labels, &values, &srt);
     let n = labels.len().min(values.len());
-    let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-    let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let variant = PieVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let bg_str = o.bg_str();
-    let html = crate::plot::statistical::_3d::render_pie3d_html(
-        title,
-        &xv,
-        &yv,
-        &values[..n],
-        ("", "", ""),
-        &cv,
-        &labels[..n].to_vec(),
-        o.w(700),
-        o.h(560),
-        bg_str.as_deref(),
-        &o.scene3d(),
-    );
-    apply_bg3d(html, &o)
+    let w = o.w(700);
+    let h = o.h(560);
+
+    let mut blocks = radial_columns(&values[..n], 3.0, 0.28, 0.28);
+    if matches!(variant, PieVariant::Nested) {
+        let secondary_values = o.secondary_values.clone().unwrap_or_default();
+        blocks.extend(radial_columns(&secondary_values, 4.4, 0.24, 0.24));
+    }
+    apply_bg3d(
+        render_blocks3d_html(title, &blocks, ("", "", ""), &labels[..n].to_vec(), w, h, bg_str.as_deref(), &o.scene3d()),
+        &o,
+    )
 }
 
 inventory::submit! {
