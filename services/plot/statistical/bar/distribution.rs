@@ -1,7 +1,19 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::boxplot::common::{compute_box, global_range};
 use crate::plot::statistical::common::{escape_xml, palette_color, push_b, push_f2, push_i, Frame};
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len().min(cfg.series.len());
+    let mut out = Vec::with_capacity(n_cats * 2);
+    for ci in 0..n_cats {
+        let stats = compute_box(&cfg.series[ci].1);
+        out.push(Bar3DBlock::new(ci as f64, 0.0, stats.whisker_lo, stats.whisker_hi, 0.08, 0.08, ci));
+        out.push(Bar3DBlock::new(ci as f64, 0.0, stats.q1, stats.q3, 0.3, 0.3, ci));
+    }
+    out
+}
 
 #[crate::chart_demo(
     "labels=[\"Control\",\"Treatment A\",\"Treatment B\"], series=[[23,25,19,30,22,27,24],[15,18,20,22,17,19,16],[30,32,28,35,31,29,33]], variant=\"distribution\""
