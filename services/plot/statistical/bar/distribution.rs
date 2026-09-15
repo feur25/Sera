@@ -6,13 +6,8 @@ use crate::plot::statistical::common::{escape_xml, palette_color, push_b, push_f
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n_cats = cfg.category_labels.len().min(cfg.series.len());
-    let mut out = Vec::with_capacity(n_cats * 2);
-    for ci in 0..n_cats {
-        let stats = compute_box(&cfg.series[ci].1);
-        out.push(Bar3DBlock::new(ci as f64, 0.0, stats.whisker_lo, stats.whisker_hi, 0.08, 0.08, ci));
-        out.push(Bar3DBlock::new(ci as f64, 0.0, stats.q1, stats.q3, 0.3, 0.3, ci));
-    }
-    out
+    let samples: Vec<&[f64]> = (0..n_cats).map(|i| cfg.series[i].1.as_slice()).collect();
+    crate::plot::statistical::_3d::generic::box_whisker_columns(&samples, 0.3, 0.3)
 }
 
 #[crate::chart_demo(

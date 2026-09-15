@@ -5,18 +5,7 @@ use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.labels.len().min(cfg.values.len());
-    if n == 0 {
-        return Vec::new();
-    }
-    let r = 3.0;
-    (0..n)
-        .map(|i| {
-            let theta = std::f64::consts::TAU * i as f64 / n as f64;
-            let v = cfg.values[i];
-            let (z0, z1) = if v >= 0.0 { (0.0, v) } else { (v, 0.0) };
-            Bar3DBlock::new(r * theta.cos(), r * theta.sin(), z0, z1, 0.2, 0.2, i)
-        })
-        .collect()
+    crate::plot::statistical::_3d::generic::radial_diverging_columns(&cfg.values[..n], 3.0, 0.2, 0.2)
 }
 
 #[crate::chart_demo(

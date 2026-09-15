@@ -4,44 +4,7 @@ use super::config::BarConfig;
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.labels.len().min(cfg.values.len());
-    if n == 0 {
-        return Vec::new();
-    }
-    let use_groups = cfg.color_groups.len() == n;
-    let mut groups: Vec<&str> = Vec::new();
-    if use_groups {
-        for g in &cfg.color_groups[..n] {
-            if !groups.contains(&g.as_str()) {
-                groups.push(g.as_str());
-            }
-        }
-    }
-    let n_groups = groups.len().max(1);
-    let gap = if n_groups > 1 {
-        std::f64::consts::TAU * 0.03
-    } else {
-        0.0
-    };
-    let usable = std::f64::consts::TAU - gap * n_groups as f64;
-    let r = 3.2;
-    let mut out = Vec::with_capacity(n);
-    let mut cursor = -std::f64::consts::FRAC_PI_2;
-    for gi in 0..n_groups {
-        let idxs: Vec<usize> = if use_groups {
-            (0..n).filter(|&i| cfg.color_groups[i] == groups[gi]).collect()
-        } else {
-            (0..n).collect()
-        };
-        let count = idxs.len().max(1);
-        let group_angle = usable / n_groups as f64;
-        let slot = group_angle / count as f64;
-        for (k, &i) in idxs.iter().enumerate() {
-            let theta = cursor + slot * (k as f64 + 0.5);
-            out.push(Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, cfg.values[i], 0.24, 0.24, gi));
-        }
-        cursor += group_angle + gap;
-    }
-    out
+    crate::plot::statistical::_3d::generic::radial_grouped_columns(&cfg.values[..n], cfg.color_groups, 3.2, 0.24, 0.24)
 }
 
 #[crate::chart_demo(

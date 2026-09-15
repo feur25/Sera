@@ -6,19 +6,10 @@ use crate::plot::statistical::common::{
 };
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
-    let n_cats = cfg.category_labels.len();
-    if n_cats == 0 || cfg.series.len() < 2 {
+    if cfg.category_labels.is_empty() || cfg.series.len() < 2 {
         return Vec::new();
     }
-    let mut out = Vec::with_capacity(n_cats * 2);
-    for (si, row_offset) in [(0usize, -0.42_f64), (1usize, 0.42_f64)] {
-        let vals = &cfg.series[si].1;
-        for ci in 0..n_cats {
-            let v = vals.get(ci).copied().unwrap_or(0.0).abs();
-            out.push(Bar3DBlock::new(ci as f64, row_offset, 0.0, v, 0.32, 0.32, si));
-        }
-    }
-    out
+    crate::plot::statistical::_3d::generic::two_row_columns(&cfg.series[0].1, &cfg.series[1].1, 0.42, 0.32, 0.32)
 }
 
 #[crate::chart_demo(

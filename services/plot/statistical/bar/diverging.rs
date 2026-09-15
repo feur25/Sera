@@ -6,36 +6,13 @@ use crate::plot::statistical::common::{
 };
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    use crate::plot::statistical::_3d::generic::{diverging_columns, diverging_stacked_columns};
     if !cfg.series.is_empty() {
-        let n = cfg.category_labels.len();
-        let mut out = Vec::new();
-        for ci in 0..n {
-            let mut pos_acc = 0.0_f64;
-            let mut neg_acc = 0.0_f64;
-            for (si, (_, vals)) in cfg.series.iter().enumerate() {
-                let v = vals.get(ci).copied().unwrap_or(0.0);
-                if !v.is_finite() {
-                    continue;
-                }
-                if v >= 0.0 {
-                    out.push(Bar3DBlock::new(ci as f64, 0.0, pos_acc, pos_acc + v, 0.3, 0.3, si));
-                    pos_acc += v;
-                } else {
-                    out.push(Bar3DBlock::new(ci as f64, 0.0, neg_acc + v, neg_acc, 0.3, 0.3, si));
-                    neg_acc += v;
-                }
-            }
-        }
-        return out;
+        return diverging_stacked_columns(cfg.series, cfg.category_labels.len(), 0.3, 0.3);
     }
     let n = cfg.values.len().max(cfg.labels.len());
-    (0..n)
-        .map(|i| {
-            let v = cfg.values.get(i).copied().unwrap_or(0.0);
-            let (z0, z1) = if v >= 0.0 { (0.0, v) } else { (v, 0.0) };
-            Bar3DBlock::new(i as f64, 0.0, z0, z1, 0.35, 0.35, i)
-        })
-        .collect()
+    let padded: Vec<f64> = (0..n).map(|i| cfg.values.get(i).copied().unwrap_or(0.0)).collect();
+    diverging_columns(&padded, 0.35, 0.35)
 }
 
 fn row_extent(cfg: &BarConfig, n: usize) -> (f64, f64) {

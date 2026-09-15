@@ -6,14 +6,8 @@ use crate::plot::statistical::common::hex6;
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.values.len().max(cfg.labels.len());
-    (0..n)
-        .map(|i| {
-            let theta = i as f64 * 0.75;
-            let r = 1.4 + i as f64 * 0.16;
-            let v = cfg.values.get(i).copied().unwrap_or(0.0);
-            Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, v, 0.22, 0.22, i)
-        })
-        .collect()
+    let padded: Vec<f64> = (0..n).map(|i| cfg.values.get(i).copied().unwrap_or(0.0)).collect();
+    crate::plot::statistical::_3d::generic::spiral_columns(&padded, 1.4, 0.16, 0.75, 0.22, 0.22)
 }
 
 #[crate::chart_demo(

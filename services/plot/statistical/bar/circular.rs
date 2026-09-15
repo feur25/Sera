@@ -4,16 +4,7 @@ use super::config::BarConfig;
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.labels.len().min(cfg.values.len());
-    if n == 0 {
-        return Vec::new();
-    }
-    let r = 3.2;
-    (0..n)
-        .map(|i| {
-            let theta = -std::f64::consts::FRAC_PI_2 + std::f64::consts::TAU * i as f64 / n as f64;
-            Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, cfg.values[i], 0.28, 0.28, i)
-        })
-        .collect()
+    crate::plot::statistical::_3d::generic::radial_columns(&cfg.values[..n], 3.2, 0.28, 0.28)
 }
 
 #[crate::chart_demo(
