@@ -39,7 +39,14 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | RadialFlow => Vec::new(),
+        Circular => circular::layout_3d(cfg),
+        CircularGrouped => circular_grouped::layout_3d(cfg),
+        Pyramid => population_pyramid::layout_3d(cfg),
+        Diverging => diverging::layout_3d(cfg),
+        Distribution => distribution::layout_3d(cfg),
+        Spiral => spiral::layout_3d(cfg),
+        Hedgehog => hedgehog::layout_3d(cfg),
+        RadialFlow => radial_flow::layout_3d(cfg),
     }
 }
 
