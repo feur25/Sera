@@ -109,3 +109,103 @@ pub fn render_blocks3d_html(
         extra_js.as_bytes(),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::plot::chart_demo_registry::{iter_entries, kwargs_to_json};
+    use crate::plot::statistical::BarVariant;
+
+    fn stem_of(file: &str) -> String {
+        file.replace('\\', "/")
+            .rsplit('/')
+            .next()
+            .unwrap_or("")
+            .trim_end_matches(".rs")
+            .to_string()
+    }
+
+    fn set_field(json: &str, field: &str, value: &str) -> String {
+        let mut parsed: serde_json::Value = serde_json::from_str(json).expect("demo json");
+        if let Some(obj) = parsed.as_object_mut() {
+            obj.insert(field.to_string(), serde_json::Value::String(value.to_string()));
+        }
+        parsed.to_string()
+    }
+
+    fn with_variant(kwargs: &str, key: &str) -> String {
+        set_field(&kwargs_to_json(kwargs), "variant", key)
+    }
+
+    fn variant_demos() -> Vec<(&'static str, String)> {
+        let demos: Vec<(String, &'static str)> = iter_entries()
+            .filter(|e| e.file.replace('\\', "/").contains("statistical/bar/"))
+            .map(|e| (stem_of(e.file), e.kwargs))
+            .collect();
+        let fallback = demos
+            .iter()
+            .find(|(stem, _)| stem.as_str() == BarVariant::default_key())
+            .map(|(_, kwargs)| *kwargs)
+            .unwrap_or("");
+        BarVariant::keys_and_aliases()
+            .iter()
+            .map(|(key, aliases)| {
+                let kwargs = demos
+                    .iter()
+                    .find(|(stem, _)| stem.as_str() == *key || aliases.iter().any(|a| *a == stem.as_str()))
+                    .map(|(_, kwargs)| *kwargs)
+                    .unwrap_or(fallback);
+                (*key, with_variant(kwargs, key))
+            })
+            .collect()
+    }
+
+    #[test]
+    fn every_bar_variant_has_a_working_3d_counterpart() {
+        let demos = variant_demos();
+        assert_eq!(demos.len(), BarVariant::all().len());
+        for (key, json) in demos {
+            let html = crate::plot::build_bar3d_chart(&json);
+            assert!(html.contains("class=\"c3w\""), "{key} must render a 3D canvas");
+            assert!(html.contains("var BN="), "{key} must emit block data");
+            assert!(!html.contains("var BN=0,"), "{key} must emit at least one 3D block");
+        }
+    }
+
+    #[test]
+    fn every_3d_plane_applies_to_every_bar_variant() {
+        use crate::plot::scene3d::Orientation3D;
+        for (variant_key, json) in variant_demos() {
+            for (plane_key, _) in Orientation3D::keys_and_aliases() {
+                let (yaw, pitch) = Orientation3D::from_str(plane_key).angles();
+                let html = crate::plot::build_bar3d_chart(&set_field(&json, "orientation3d", plane_key));
+                assert!(
+                    html.contains(&format!("var yaw={:.4},pitch={:.4}", yaw, pitch)),
+                    "{variant_key} must honour the {plane_key} plane"
+                );
+            }
+        }
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        use crate::plot::scene3d::Orientation3D;
+        let demos = variant_demos();
+        for (key, json) in &demos {
+            let html = crate::plot::build_bar3d_chart(json);
+            std::fs::write(format!("docs/previews/bar3d-{key}.html"), &html).unwrap();
+            if *key == BarVariant::default_key() {
+                std::fs::write("docs/previews/bar3d.html", &html).unwrap();
+            }
+        }
+        let default_json = demos
+            .iter()
+            .find(|(key, _)| *key == BarVariant::default_key())
+            .map(|(_, json)| json.clone())
+            .unwrap();
+        for (plane_key, _) in Orientation3D::keys_and_aliases() {
+            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "orientation3d", plane_key));
+            std::fs::write(format!("docs/previews/bar3d-plane-{plane_key}.html"), &html).unwrap();
+        }
+    }
+}
