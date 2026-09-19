@@ -536,14 +536,13 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     return null;
   }
 
-  function buildChartPreviewHtml(sp, family, variant, code, geomVariant) {
+  function buildChartPreviewHtml(sp, family, variant, code) {
     if (!sp || !code) return "";
     try {
       var parsed = parseDemoInput(code);
       if (!parsed) return "";
       var input = parsed.input || {};
-      if (geomVariant) input.variant = geomVariant;
-      else if (!input.variant) input.variant = variant;
+      if (!input.variant) input.variant = variant;
       input.width = 900;
       input.height = 480;
       var build = resolveWasmFn(sp, parsed.fn || family);
@@ -551,69 +550,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     } catch (e) {
       return "";
     }
-  }
-
-  var GEOMETRY_COMPANION = { bar_3d: "bar" };
-
-  function geometryOptionsFor(family) {
-    var companion = GEOMETRY_COMPANION[family];
-    if (!companion) return null;
-    var map = chartVariantsMap();
-    var opts = normalizeVariantList(map && map[companion]);
-    return opts.length ? opts : null;
-  }
-
-  function buildCombinedDemoCode(sceneCode, geomKey) {
-    if (!sceneCode || !geomKey || geomKey === "basic") return sceneCode;
-    var q = geomKey.replace(/"/g, "");
-    return sceneCode.replace(/\n\)\n$/, ',\n    variant="' + q + '"\n)\n');
-  }
-
-  function buildGeometryPickerHtml(clsId, sceneKey, options, lang) {
-    var label = lang === "fr" ? "Géométrie 2D (variant)" : "2D geometry (variant)";
-    var html = '<div class="sp-geom-picker" style="margin:8px 0;display:flex;align-items:center;gap:8px;font-size:12px">' +
-      '<label style="color:#94a3b8">' + escapeAttr(label) + '</label>' +
-      '<select class="sp-geom-select" data-cls="' + escapeAttr(clsId) + '" data-scene="' + escapeAttr(sceneKey) + '" style="background:rgba(15,23,42,.6);color:#e2e8f0;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px">';
-    options.forEach(function (item) {
-      html += '<option value="' + escapeAttr(item.key) + '">' + escapeAttr(variantLabel(item)) + '</option>';
-    });
-    html += '</select></div>';
-    return html;
-  }
-
-  function wireGeometryPickers(root, sp, family, lang, panel) {
-    root.querySelectorAll(".sp-geom-select").forEach(function (sel) {
-      sel.addEventListener("change", function () {
-        var clsId = sel.getAttribute("data-cls");
-        var sceneKey = sel.getAttribute("data-scene");
-        var geomKey = sel.value;
-        var varDiv = document.getElementById(variantDomId(clsId, sceneKey));
-        if (!varDiv || !sp || typeof sp.demo !== "function") return;
-        try {
-          var sceneCode = sp.demo(JSON.stringify({ family: family, variant: sceneKey })) || "";
-          var code = buildCombinedDemoCode(sceneCode, geomKey);
-          var codeBlock = varDiv.querySelector(".sp-demo-code-wrap");
-          if (codeBlock) codeBlock.remove();
-          var oldWrap = varDiv.querySelector(".sp-iframe-wrap");
-          if (oldWrap) oldWrap.remove();
-          var oldLabel = varDiv.querySelector(".sp-preview-label");
-          if (oldLabel) oldLabel.remove();
-          var oldFrame = varDiv.querySelector(".sp-preview-frame");
-          if (oldFrame) oldFrame.remove();
-          if (code) varDiv.insertAdjacentHTML("beforeend", buildVariantCodeHtml(code));
-          var chartHtml = buildChartPreviewHtml(sp, family, sceneKey, code, geomKey);
-          var previewHtml = buildVariantPreviewHtml(chartHtml, lang === "fr" ? "Aperçu" : "Preview");
-          if (previewHtml) varDiv.insertAdjacentHTML("beforeend", previewHtml);
-          if (window.hljs) {
-            var hFn = hljs.highlightElement || hljs.highlightBlock;
-            if (hFn) varDiv.querySelectorAll("pre code").forEach(function (c) {
-              try { hFn.call(hljs, c); } catch (e) {}
-            });
-          }
-          if (panel) rescaleIframesInPanel(panel);
-        } catch (e) {}
-      });
-    });
   }
 
   // The srcdoc iframe below is sandboxed without allow-same-origin (a
@@ -755,9 +691,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
       varDiv.style.display = i === 0 ? "block" : "none";
       varDiv.innerHTML = buildVariantAliasesHtml(item, lang);
 
-      var geomOpts = geometryOptionsFor(family);
-      if (geomOpts) varDiv.innerHTML += buildGeometryPickerHtml(clsId, v, geomOpts, lang);
-
       if (i === 0) {
         fillVariantPreview(varDiv, sp, family, v, lang);
       } else {
@@ -768,7 +701,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     });
 
     body.appendChild(clsDiv);
-    wireGeometryPickers(clsDiv, sp, family, lang, panel);
 
     updateAliasForVariant(panel);
 
@@ -789,13 +721,11 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
             btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
           });
-          var geomOpts2 = geometryOptionsFor(family);
           var activeDiv = root.querySelector(".sp-variant.sp-von") || root.querySelector(".sp-variant");
           if (activeDiv) {
             var variant = activeDiv.getAttribute("data-variant") || "basic";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
             activeDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
-            if (geomOpts2) activeDiv.innerHTML += buildGeometryPickerHtml(clsId, variant, geomOpts2, getLang());
             fillVariantPreview(activeDiv, sp2, family, variant, getLang());
             if (window.hljs) {
               var hFn = hljs.highlightElement || hljs.highlightBlock;
@@ -804,7 +734,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
               });
             }
           }
-          wireGeometryPickers(root, sp2, family, getLang(), panel);
           hoistClassRails(panel);
           refreshRailToggleLabel();
           updateAliasForVariant(panel);
