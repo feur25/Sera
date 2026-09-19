@@ -30,11 +30,26 @@ include!(concat!(env!("OUT_DIR"), "/required_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/sera_aliases.rs"));
 include!(concat!(env!("OUT_DIR"), "/chart_alias_registry.rs"));
 
-pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
+const GEOMETRY_TWINS: &[(&str, &str)] = &[("bar_3d", "bar")];
+
+fn geometry_base(family: &str) -> Option<&'static str> {
+    GEOMETRY_TWINS
+        .iter()
+        .find(|(twin, _)| *twin == family)
+        .map(|(_, base)| *base)
+}
+
+fn registry_kwargs(family: &str, variant: &str) -> Option<&'static str> {
     DEMO_REGISTRY
         .iter()
         .find(|(f, v, _)| *f == family && *v == variant)
         .map(|(_, _, k)| *k)
+}
+
+pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
+    geometry_base(family)
+        .and_then(|base| registry_kwargs(base, variant))
+        .or_else(|| registry_kwargs(family, variant))
 }
 
 pub fn required_params_for(family: &str, variant: &str) -> Option<&'static [&'static str]> {
@@ -1112,7 +1127,6 @@ pub fn chart_variants() -> serde_json::Value {
     let scene_default = Scene3DVariant::default_key();
     let default_only: &[(&str, &[&str])] = &[("default", &["default", "classic", "categorical"])];
     for family in [
-        "bar_3d",
         "line_3d",
         "scatter_3d",
         "candlestick3d",
@@ -1129,6 +1143,11 @@ pub fn chart_variants() -> serde_json::Value {
     }
     for family in ["radar3d", "funnel3d", "pie3d", "sunburst3d", "globe"] {
         out.insert(family.to_string(), build(default_only, "default", "3d"));
+    }
+    for (twin, base) in GEOMETRY_TWINS {
+        if let Some(entry) = crate::plot::family_macro::chart_families().find(|e| e.name == *base) {
+            out.insert(twin.to_string(), build((entry.keys_and_aliases)(), (entry.default_key)(), "3d"));
+        }
     }
     Value::Object(out)
 }
