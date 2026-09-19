@@ -569,6 +569,7 @@ function rBarBlocks(mx,my,sc){
   else if(cyEq){sy=sx;}
   else if(cxEq){sx=sy;}
   if(czEq)sz=Math.min(sx,sy);
+  if(typeof BZK==='number'&&BZK>0)sz/=BZK;
   for(var j=0;j<BN;j++){
     var nx=(BX[j]-bcx)/sx,ny=(BY[j]-bcy)/sy;
     var nz0=(BZ0[j]-bzmn)/sz-0.5,nz1=(BZ1[j]-bzmn)/sz-0.5;
