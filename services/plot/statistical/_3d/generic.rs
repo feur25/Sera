@@ -207,13 +207,26 @@ pub fn radial_hierarchical_columns(
     radial_grouped_columns(values, super_group_of, radius, hw, hd)
 }
 
-pub fn spiral_columns(values: &[f64], base_r: f64, r_step: f64, angle_step: f64, hw: f64, hd: f64) -> Vec<Bar3DBlock> {
+pub fn spiral_turn_length(n: usize) -> usize {
+    ((n as f64 / 3.2).ceil() as usize).clamp(12, 48)
+}
+
+pub fn spiral_columns(values: &[f64], hw: f64, hd: f64) -> Vec<Bar3DBlock> {
+    let n = values.len();
+    if n == 0 {
+        return Vec::new();
+    }
+    let per_turn = spiral_turn_length(n);
+    let angle_step = std::f64::consts::TAU / per_turn as f64;
+    let footprint = hw.max(hd);
+    let r_hub = 2.6 * footprint / angle_step;
+    let r_pitch = 3.0 * footprint;
     values
         .iter()
         .enumerate()
         .map(|(i, &v)| {
-            let theta = i as f64 * angle_step;
-            let r = base_r + i as f64 * r_step;
+            let theta = -std::f64::consts::FRAC_PI_2 + angle_step * i as f64;
+            let r = r_hub + r_pitch * i as f64 / per_turn as f64;
             Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, v, hw, hd, i)
         })
         .collect()

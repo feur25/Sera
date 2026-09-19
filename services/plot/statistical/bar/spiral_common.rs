@@ -57,7 +57,7 @@ pub(crate) fn render(cfg: &BarConfig) -> String {
         return String::new();
     }
 
-    let per_rev = ((n as f64 / 3.2).ceil() as usize).clamp(12, 48);
+    let per_rev = crate::plot::statistical::_3d::generic::spiral_turn_length(n);
     let angle_step = TAU / per_rev as f64;
 
     let mut vmax = f64::NEG_INFINITY;
