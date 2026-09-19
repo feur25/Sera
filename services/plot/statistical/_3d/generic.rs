@@ -126,11 +126,14 @@ pub fn radial_columns(values: &[f64], radius: f64, hw: f64, hd: f64) -> Vec<Bar3
     if n == 0 {
         return Vec::new();
     }
+    let slot = std::f64::consts::TAU * radius / n as f64;
+    let half_w = (slot * 0.36).clamp(hw, hw.max(0.5));
+    let half_d = (slot * 0.36).clamp(hd, hd.max(0.5));
     arc_positions(n)
         .into_iter()
         .zip(values.iter())
         .enumerate()
-        .map(|(i, (theta, &v))| Bar3DBlock::new(radius * theta.cos(), radius * theta.sin(), 0.0, v, hw, hd, i))
+        .map(|(i, (theta, &v))| Bar3DBlock::new(radius * theta.cos(), radius * theta.sin(), 0.0, v, half_w, half_d, i))
         .collect()
 }
 
