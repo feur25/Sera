@@ -50,6 +50,14 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     }
 }
 
+pub fn height_ratio_3d(variant: BarVariant) -> f64 {
+    use BarVariant::*;
+    match variant {
+        Circular | CircularGrouped | Spiral | Hedgehog | RadialFlow | Distribution => 0.45,
+        _ => 1.0,
+    }
+}
+
 pub fn render_bar_html(cfg: &BarConfig) -> String {
     use crate::plot::statistical::theme::ChartTheme;
     match cfg.theme {

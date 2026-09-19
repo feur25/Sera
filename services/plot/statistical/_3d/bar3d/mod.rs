@@ -1,4 +1,4 @@
-use crate::plot::statistical::bar::{layout_3d, Bar3DBlock, BarConfig};
+use crate::plot::statistical::bar::{height_ratio_3d, layout_3d, Bar3DBlock, BarConfig};
 
 pub fn render_bar3d_blocks_html(
     title: &str,
@@ -10,12 +10,26 @@ pub fn render_bar3d_blocks_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    render_blocks3d_html(title, &layout_3d(cfg), axis_labels, color_labels, w, h, bg_color, scene)
+    render_blocks3d_scaled_html(title, &layout_3d(cfg), height_ratio_3d(cfg.variant), axis_labels, color_labels, w, h, bg_color, scene)
 }
 
 pub fn render_blocks3d_html(
     title: &str,
     blocks: &[Bar3DBlock],
+    axis_labels: (&str, &str, &str),
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+) -> String {
+    render_blocks3d_scaled_html(title, blocks, 1.0, axis_labels, color_labels, w, h, bg_color, scene)
+}
+
+pub fn render_blocks3d_scaled_html(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    height_ratio: f64,
     axis_labels: (&str, &str, &str),
     color_labels: &[String],
     w: i32,
@@ -75,7 +89,7 @@ pub fn render_blocks3d_html(
         }
         extra_js.push_str(&b.ci.to_string());
     }
-    extra_js.push_str("];");
+    extra_js.push_str(&format!("];var BZK={:.3};", height_ratio));
 
     let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
         .iter()
