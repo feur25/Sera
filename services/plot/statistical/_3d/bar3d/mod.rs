@@ -89,7 +89,7 @@ pub fn render_blocks3d_scaled_html(
         }
         extra_js.push_str(&b.ci.to_string());
     }
-    extra_js.push_str(&format!("];var BZK={:.3};", height_ratio));
+    extra_js.push_str(&format!("];var BZK={:.3},BZM=1.6;", height_ratio));
 
     let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
         .iter()
