@@ -82,6 +82,7 @@ pub struct ChartOpts {
     pub step: Option<f64>,
     pub sub_variant: Option<String>,
     pub orientation3d: Option<String>,
+    pub zone: Option<Vec<f64>>,
     pub palette: Option<Vec<u32>>,
     pub background: Option<String>,
     pub bg_color: Option<String>,
