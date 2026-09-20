@@ -8,6 +8,7 @@ pub mod generic;
 pub mod grid;
 pub mod ohlc;
 pub mod heatmap3d;
+pub mod histogram3d;
 pub mod isosurface;
 pub mod kde3d;
 pub mod lollipop3d;
@@ -18,11 +19,13 @@ pub mod radar3d;
 pub mod ridgeline3d;
 pub mod spread;
 pub mod stacked_bar3d;
+pub mod steps;
 pub mod streamtube;
 pub mod sunburst3d;
 #[cfg(test)]
 pub(crate) mod twin;
 pub mod violin3d;
+pub mod waterfall3d;
 
 pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, BlockView};
 pub use boxplot3d::build_boxplot3d_chart;
@@ -31,6 +34,7 @@ pub use candlestick3d::build_candlestick3d_chart;
 pub use dumbbell3d::build_dumbbell3d_chart;
 pub use funnel3d::build_funnel3d_chart;
 pub use heatmap3d::build_heatmap3d_chart;
+pub use histogram3d::build_histogram3d_chart;
 pub use kde3d::build_kde3d_chart;
 pub use lollipop3d::build_lollipop3d_chart;
 pub use isosurface::build_isosurface_chart;
@@ -45,6 +49,7 @@ pub use stacked_bar3d::build_stacked_bar3d_chart;
 pub use streamtube::build_streamtube_chart;
 pub use sunburst3d::build_sunburst3d_chart;
 pub use violin3d::build_violin3d_chart;
+pub use waterfall3d::build_waterfall3d_chart;
 
 pub use candlestick3d::render_candlestick3d_html;
 pub use dumbbell3d::render_dumbbell3d_html;
