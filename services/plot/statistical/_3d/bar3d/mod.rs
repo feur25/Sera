@@ -213,12 +213,40 @@ mod tests {
     }
 
     #[test]
-    fn the_registry_exposes_scene_and_plane_axes_on_the_twin_family() {
+    fn the_public_builder_forwards_sort_order_to_single_series_variants() {
+        let json = r#"{"title":"t","labels":["A","B","C","D"],"values":[10,40,20,30],"sort_order":"desc"}"#;
+        let html = crate::plot::build_bar3d_chart(json);
+        assert!(
+            html.contains("BZ1=[40.0000,30.0000,20.0000,10.0000]"),
+            "desc order must reach the block heights"
+        );
+    }
+
+    #[test]
+    fn every_chart_theme_styles_every_bar_variant() {
+        use crate::plot::statistical::ChartTheme;
+        for (variant_key, json) in variant_demos() {
+            let plain = crate::plot::build_bar3d_chart(&json);
+            for (theme_key, _) in ChartTheme::keys_and_aliases() {
+                if *theme_key == ChartTheme::default_key() {
+                    continue;
+                }
+                let themed = crate::plot::build_bar3d_chart(&set_field(&json, "theme", theme_key));
+                assert!(themed.contains("class=\"c3w\""), "{variant_key} must stay a 3D canvas under {theme_key}");
+                assert!(themed.contains(".c3w canvas{filter:"), "{variant_key} must be styled by the {theme_key} theme");
+                assert_ne!(themed, plain, "{variant_key} must differ under {theme_key}");
+            }
+        }
+    }
+
+    #[test]
+    fn the_registry_exposes_scene_plane_and_theme_axes_on_the_twin_family() {
         let variants = crate::chart_variants();
         let axes = &variants["bar_3d"]["axes"];
         for (axis, expected) in [
             ("scene", crate::plot::scene3d::Scene3DVariant::keys_and_aliases().len()),
             ("orientation3d", crate::plot::scene3d::Orientation3D::keys_and_aliases().len()),
+            ("theme", crate::plot::statistical::ChartTheme::keys_and_aliases().len()),
         ] {
             assert_eq!(axes[axis]["keys"].as_array().map(|k| k.len()), Some(expected), "{axis} axis must list every key");
             assert!(axes[axis]["default"].is_string(), "{axis} axis must name its default");
@@ -267,6 +295,13 @@ mod tests {
         for (plane_key, _) in Orientation3D::keys_and_aliases() {
             let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "orientation3d", plane_key));
             std::fs::write(format!("docs/previews/bar3d-plane-{plane_key}.html"), &html).unwrap();
+        }
+        for (theme_key, _) in crate::plot::statistical::ChartTheme::keys_and_aliases() {
+            if *theme_key == crate::plot::statistical::ChartTheme::default_key() {
+                continue;
+            }
+            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "theme", theme_key));
+            std::fs::write(format!("docs/previews/bar3d-theme-{theme_key}.html"), &html).unwrap();
         }
         for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
             let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "scene", scene_key));
