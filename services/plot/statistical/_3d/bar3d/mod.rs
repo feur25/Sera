@@ -10,7 +10,19 @@ pub fn render_bar3d_blocks_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    render_blocks3d_scaled_html(title, &layout_3d(cfg), height_ratio_3d(cfg.variant), axis_labels, color_labels, w, h, bg_color, scene)
+    let view = BlockView { height_ratio: height_ratio_3d(cfg.variant), cmap: "" };
+    render_blocks3d_view_html(title, &layout_3d(cfg), &view, axis_labels, color_labels, w, h, bg_color, scene)
+}
+
+pub struct BlockView<'a> {
+    pub height_ratio: f64,
+    pub cmap: &'a str,
+}
+
+impl Default for BlockView<'_> {
+    fn default() -> Self {
+        Self { height_ratio: 1.0, cmap: "" }
+    }
 }
 
 pub fn render_blocks3d_html(
@@ -23,13 +35,13 @@ pub fn render_blocks3d_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    render_blocks3d_scaled_html(title, blocks, 1.0, axis_labels, color_labels, w, h, bg_color, scene)
+    render_blocks3d_view_html(title, blocks, &BlockView::default(), axis_labels, color_labels, w, h, bg_color, scene)
 }
 
-pub fn render_blocks3d_scaled_html(
+pub fn render_blocks3d_view_html(
     title: &str,
     blocks: &[Bar3DBlock],
-    height_ratio: f64,
+    view: &BlockView,
     axis_labels: (&str, &str, &str),
     color_labels: &[String],
     w: i32,
@@ -100,7 +112,10 @@ pub fn render_blocks3d_scaled_html(
         }
         extra_js.push(']');
     }
-    extra_js.push_str(&format!(";var BZK={:.3},BZM=1.6;", height_ratio));
+    extra_js.push_str(&format!(";var BZK={:.3},BZM=1.6;", view.height_ratio));
+    if !view.cmap.is_empty() {
+        extra_js.push_str(&format!("CMAP='{}';", view.cmap));
+    }
 
     let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
         .iter()

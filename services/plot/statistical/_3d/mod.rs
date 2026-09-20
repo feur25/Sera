@@ -4,6 +4,7 @@ pub mod candlestick3d;
 pub mod dumbbell3d;
 pub mod funnel3d;
 pub mod generic;
+pub mod grid;
 pub mod heatmap3d;
 pub mod isosurface;
 pub mod kde3d;
@@ -18,7 +19,7 @@ pub mod streamtube;
 pub mod sunburst3d;
 pub mod violin3d;
 
-pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html};
+pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, BlockView};
 pub use bubble3d::build_bubble3d_chart;
 pub use candlestick3d::build_candlestick3d_chart;
 pub use dumbbell3d::build_dumbbell3d_chart;
