@@ -33,7 +33,7 @@ pub fn render_heatmap3d_html(
 }
 
 #[crate::chart_demo("labels=[\"R1\",\"R2\"], categories=[\"C1\",\"C2\"], matrix=[[1,2],[3,4]]")]
-#[crate::params(paramsList["title","labels","col_labels","categories","matrix","values","x_labels","variant","widths","ranges","bins","sort_order","scene","orientation3d","theme","bg_color","width","height","x_label","y_label","z_label"])]
+#[crate::params(paramsList["title","labels","col_labels","categories","matrix","values","x_labels","variant","widths","ranges","bins","sort_order","scene","orientation3d","theme","zone","bg_color","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 #[crate::sera_builder]
 pub fn build_heatmap3d_chart(input: &str) -> String {
@@ -69,11 +69,7 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView {
-        height_ratio: HEIGHT_RATIO_3D,
-        cmap: colormap_3d(variant),
-        uniform: true,
-    };
+    let view = BlockView::new(HEIGHT_RATIO_3D, colormap_3d(variant)).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
         &heatmap_layout_3d(&cfg),
@@ -137,6 +133,11 @@ mod tests {
     fn the_legacy_categories_and_labels_layout_still_renders() {
         let json = r#"{"title":"t","labels":["R1","R2"],"categories":["C1","C2"],"matrix":[[1,2],[3,4]]}"#;
         twin::assert_blocks(&build_heatmap3d_chart(json), "legacy heatmap3d call");
+    }
+
+    #[test]
+    fn every_heatmap_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_heatmap3d_chart, &demos());
     }
 
     #[test]
