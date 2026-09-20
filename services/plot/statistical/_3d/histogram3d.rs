@@ -4,7 +4,7 @@ use crate::plot::statistical::{HistogramConfig, HistogramVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]")]
-#[crate::params(paramsList["title","values","overlay","color_groups","series_names","variant","bins","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","width","height"])]
+#[crate::params(paramsList["title","values","overlay","color_groups","series_names","variant","bins","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
 #[crate::sera_alias("histogram3d", "histogram_3d", "histogram3d_chart", "hist3d")]
 #[crate::sera_builder]
 pub fn build_histogram3d_chart(input: &str) -> String {
@@ -33,10 +33,7 @@ pub fn build_histogram3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView {
-        height_ratio: layout3d::HEIGHT_RATIO,
-        ..BlockView::default()
-    };
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, "").with_zone(o.zone.as_deref());
     let color_labels: Vec<String> = if categories.is_empty() { names.clone() } else { Vec::new() };
     let html = render_blocks3d_view_html(
         title,
@@ -95,6 +92,11 @@ mod tests {
     #[test]
     fn the_registry_exposes_the_histogram_variants_and_the_view_axes() {
         twin::check_axes("histogram3d", HistogramVariant::all().len());
+    }
+
+    #[test]
+    fn every_histogram_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_histogram3d_chart, &demos());
     }
 
     #[test]
