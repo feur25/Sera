@@ -10,6 +10,7 @@ pub mod overlay;
 pub mod stacked;
 pub mod step;
 pub mod variant;
+pub mod layout3d;
 
 pub use common::{bin_to_edges, compute_bins};
 pub use config::HistogramConfig;
