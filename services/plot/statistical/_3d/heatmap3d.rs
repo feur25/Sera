@@ -1,4 +1,6 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::{colormap_3d, heatmap_layout_3d, HeatmapConfig, HeatmapVariant, HEIGHT_RATIO_3D};
 use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_heatmap3d_html(
@@ -31,49 +33,58 @@ pub fn render_heatmap3d_html(
 }
 
 #[crate::chart_demo("labels=[\"R1\",\"R2\"], categories=[\"C1\",\"C2\"], matrix=[[1,2],[3,4]]")]
-#[crate::params(paramsList["title","labels","categories","matrix","x_labels","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
+#[crate::params(paramsList["title","labels","col_labels","categories","matrix","values","x_labels","variant","widths","ranges","bins","sort_order","scene","orientation3d","theme","bg_color","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 #[crate::sera_builder]
 pub fn build_heatmap3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
-    let x_labels = a.x_labels.or_else(|| a.labels.clone()).unwrap_or_default();
-    let y_labels = a.categories.or(a.labels).unwrap_or_default();
-    let values = a.matrix.unwrap_or_default();
-    let nr = y_labels.len().min(values.len());
-    let nc = x_labels.len();
-    let mut xv = Vec::new();
-    let mut yv = Vec::new();
-    let mut zv = Vec::new();
-    let mut cv = Vec::new();
-    let mut cl = Vec::new();
-    for r in 0..nr {
-        let row = &values[r];
-        for c2 in 0..nc.min(row.len()) {
-            xv.push(c2 as f64);
-            yv.push(r as f64);
-            zv.push(row[c2]);
-            cv.push(0.0);
-            cl.push(format!("{}/{}", y_labels[r], x_labels[c2]));
-        }
-    }
+    let column_names = o.col_labels.clone().or_else(|| a.x_labels.clone());
+    let (row_labels, col_labels) = match a.categories.clone() {
+        Some(categories) => (categories, column_names.or_else(|| a.labels.clone()).unwrap_or_default()),
+        None => (a.labels.clone().unwrap_or_default(), column_names.unwrap_or_default()),
+    };
+    let flat_matrix: Vec<f64> = match a.matrix {
+        Some(rows) => rows.into_iter().flatten().collect(),
+        None => a.values.unwrap_or_default(),
+    };
+    let variant = HeatmapVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let widths = o.widths.clone().unwrap_or_default();
+    let heights = o.ranges.clone().unwrap_or_default();
+    let cfg = HeatmapConfig {
+        title,
+        variant,
+        row_labels: &row_labels,
+        col_labels: &col_labels,
+        flat_matrix: &flat_matrix,
+        x_widths: &widths,
+        y_heights: &heights,
+        discrete_steps: o.bins.unwrap_or(0).max(0) as usize,
+        ..HeatmapConfig::default()
+    };
+    let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
-    apply_bg3d(
-        crate::plot::statistical::_3d::render_heatmap3d_html(
-            title,
-            &xv,
-            &yv,
-            &zv,
-            (&o.xl(), &o.yl(), &o.zl()),
-            &cv,
-            &cl,
-            o.w(900),
-            o.h(560),
-            bg_str.as_deref(),
-            &o.scene3d(),
-        ),
-        &o,
-    )
+    let bg_default = if env == "default" && bg_str.is_none() {
+        Some("#090d18")
+    } else {
+        bg_str.as_deref()
+    };
+    let view = BlockView {
+        height_ratio: HEIGHT_RATIO_3D,
+        cmap: colormap_3d(variant),
+    };
+    let html = render_blocks3d_view_html(
+        title,
+        &heatmap_layout_3d(&cfg),
+        &view,
+        (&o.xl(), &o.yl(), &o.zl()),
+        &[],
+        o.w(900),
+        o.h(560),
+        bg_default,
+        env,
+    );
+    apply_bg3d(html, &o)
 }
 
 inventory::submit! {
