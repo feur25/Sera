@@ -111,6 +111,10 @@ chart = sp.bar3d("Sales", variant="spiral", labels=years, values=counts, scene="
 <iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-cosmic.html"></iframe></div>
 </div>
 
+## Auto-scaling zone
+
+The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
+
 ## Gallery
 
 <div class="sp-3d-grid">
@@ -385,6 +389,10 @@ chart = sp.bar3d("Ventes", variant="spiral", labels=years, values=counts, scene=
 <div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
 <iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-cosmic.html"></iframe></div>
 </div>
+
+<h2>Zone auto-ajustée</h2>
+
+La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
 
 <h2>Galerie</h2>
 
