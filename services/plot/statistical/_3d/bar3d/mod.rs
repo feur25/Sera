@@ -1,4 +1,5 @@
-use crate::plot::statistical::bar::{height_ratio_3d, layout_3d, Bar3DBlock, BarConfig};
+use super::zone::{self, Fit};
+use crate::plot::statistical::bar::{fit_3d, height_ratio_3d, layout_3d, Bar3DBlock, BarConfig};
 
 pub fn render_bar3d_blocks_html(
     title: &str,
@@ -9,20 +10,38 @@ pub fn render_bar3d_blocks_html(
     h: i32,
     bg_color: Option<&str>,
     scene: &str,
+    zone: Option<&[f64]>,
 ) -> String {
-    let view = BlockView { height_ratio: height_ratio_3d(cfg.variant), ..BlockView::default() };
+    let view = BlockView::new(height_ratio_3d(cfg.variant), "").with_zone(zone).with_fit(fit_3d(cfg.variant));
     render_blocks3d_view_html(title, &layout_3d(cfg), &view, axis_labels, color_labels, w, h, bg_color, scene)
 }
 
 pub struct BlockView<'a> {
     pub height_ratio: f64,
     pub cmap: &'a str,
-    pub uniform: bool,
+    pub zone: Option<[f64; 3]>,
+    pub fit: Fit,
+}
+
+impl<'a> BlockView<'a> {
+    pub fn new(height_ratio: f64, cmap: &'a str) -> Self {
+        Self { height_ratio, cmap, zone: None, fit: Fit::Uniform }
+    }
+
+    pub fn with_zone(mut self, proportions: Option<&[f64]>) -> Self {
+        self.zone = proportions.and_then(|p| <[f64; 3]>::try_from(p).ok());
+        self
+    }
+
+    pub fn with_fit(mut self, fit: Fit) -> Self {
+        self.fit = fit;
+        self
+    }
 }
 
 impl Default for BlockView<'_> {
     fn default() -> Self {
-        Self { height_ratio: 1.0, cmap: "", uniform: false }
+        Self::new(1.0, "")
     }
 }
 
@@ -39,6 +58,33 @@ pub fn render_blocks3d_html(
     render_blocks3d_view_html(title, blocks, &BlockView::default(), axis_labels, color_labels, w, h, bg_color, scene)
 }
 
+fn column(blocks: &[Bar3DBlock], value: impl Fn(&Bar3DBlock) -> String) -> String {
+    blocks.iter().map(value).collect::<Vec<_>>().join(",")
+}
+
+fn block_script(blocks: &[Bar3DBlock], view: &BlockView) -> String {
+    let coords = |pick: fn(&Bar3DBlock) -> f64| column(blocks, move |b| format!("{:.4}", pick(b)));
+    let mut js = format!(
+        "var BN={},BX=[{}],BY=[{}],BZ0=[{}],BZ1=[{}],BHW=[{}],BHD=[{}],BCI=[{}]",
+        blocks.len(),
+        coords(|b| b.cx),
+        coords(|b| b.cy),
+        coords(|b| b.z0),
+        coords(|b| b.z1),
+        coords(|b| b.hw),
+        coords(|b| b.hd),
+        column(blocks, |b| b.ci.to_string()),
+    );
+    if blocks.iter().any(|b| b.tone.is_some()) {
+        js.push_str(&format!(",BCT=[{}]", column(blocks, |b| format!("{:.4}", b.tone.unwrap_or(-1.0)))));
+    }
+    js.push_str(&format!(";var BFIT={};", zone::fit(blocks, view.height_ratio, view.zone, view.fit).to_js()));
+    if !view.cmap.is_empty() {
+        js.push_str(&format!("CMAP='{}';", view.cmap));
+    }
+    js
+}
+
 pub fn render_blocks3d_view_html(
     title: &str,
     blocks: &[Bar3DBlock],
@@ -50,99 +96,15 @@ pub fn render_blocks3d_view_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    let mut extra_js = String::with_capacity(blocks.len() * 48 + 32);
-    extra_js.push_str("var BN=");
-    extra_js.push_str(&blocks.len().to_string());
-    extra_js.push_str(",BX=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.cx));
-    }
-    extra_js.push_str("],BY=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.cy));
-    }
-    extra_js.push_str("],BZ0=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.z0));
-    }
-    extra_js.push_str("],BZ1=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.z1));
-    }
-    extra_js.push_str("],BHW=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.hw));
-    }
-    extra_js.push_str("],BHD=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&format!("{:.4}", b.hd));
-    }
-    extra_js.push_str("],BCI=[");
-    for (i, b) in blocks.iter().enumerate() {
-        if i > 0 {
-            extra_js.push(',');
-        }
-        extra_js.push_str(&b.ci.to_string());
-    }
-    extra_js.push(']');
-    if blocks.iter().any(|b| b.tone.is_some()) {
-        extra_js.push_str(",BCT=[");
-        for (i, b) in blocks.iter().enumerate() {
-            if i > 0 {
-                extra_js.push(',');
-            }
-            extra_js.push_str(&format!("{:.4}", b.tone.unwrap_or(-1.0)));
-        }
-        extra_js.push(']');
-    }
-    extra_js.push_str(&format!(";var BZK={:.3},BZM=1.6;", view.height_ratio));
-    if !view.cmap.is_empty() {
-        extra_js.push_str(&format!("CMAP='{}';", view.cmap));
-    }
-    if view.uniform {
-        extra_js.push_str("var BUF=1;");
-    }
-
-    let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
-        .iter()
-        .map(|b| (b.cx, b.cy, b.z1))
-        .fold(
-            (Vec::new(), Vec::new(), Vec::new()),
-            |(mut xs, mut ys, mut zs), (x, y, z)| {
-                xs.push(x);
-                ys.push(y);
-                zs.push(z);
-                (xs, ys, zs)
-            },
-        );
-    let x = if x.is_empty() { vec![0.0] } else { x };
-    let y = if y.is_empty() { vec![0.0] } else { y };
-    let z = if z.is_empty() { vec![0.0] } else { z };
-
+    let anchor = |pick: fn(&Bar3DBlock) -> f64| -> Vec<f64> {
+        if blocks.is_empty() { vec![0.0] } else { blocks.iter().map(pick).collect() }
+    };
     crate::html::js_3d::render_3d_html_impl(
         1,
         title,
-        &x,
-        &y,
-        &z,
+        &anchor(|b| b.cx),
+        &anchor(|b| b.cy),
+        &anchor(|b| b.z1),
         axis_labels,
         &[],
         color_labels,
@@ -150,7 +112,7 @@ pub fn render_blocks3d_view_html(
         h,
         bg_color,
         scene,
-        extra_js.as_bytes(),
+        block_script(blocks, view).as_bytes(),
     )
 }
 
@@ -218,6 +180,11 @@ mod tests {
             html.contains("BZ1=[40.0000,30.0000,20.0000,10.0000]"),
             "desc order must reach the block heights"
         );
+    }
+
+    #[test]
+    fn every_bar_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_bar3d_chart, &demos());
     }
 
     #[test]
