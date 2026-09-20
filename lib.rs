@@ -1075,6 +1075,7 @@ pub fn true_required_params(chart: Option<&str>, variant: Option<&str>) -> serde
 
 fn view_axes() -> serde_json::Value {
     use crate::plot::scene3d::{Orientation3D, Scene3DVariant};
+    use crate::plot::statistical::theme::ChartTheme;
     use serde_json::{Map, Value};
 
     fn axis(keys: &'static [(&'static str, &'static [&'static str])], default_key: &'static str) -> Value {
@@ -1093,6 +1094,7 @@ fn view_axes() -> serde_json::Value {
         "orientation3d".to_string(),
         axis(Orientation3D::keys_and_aliases(), Orientation3D::default_key()),
     );
+    axes.insert("theme".to_string(), axis(ChartTheme::keys_and_aliases(), ChartTheme::default_key()));
     Value::Object(axes)
 }
 
