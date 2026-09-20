@@ -1,4 +1,7 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::candlestick::layout3d;
+use crate::plot::statistical::{CandlestickConfig, CandlestickVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_candlestick3d_html(
@@ -31,7 +34,7 @@ pub fn render_candlestick3d_html(
 }
 
 #[crate::chart_demo("labels=[\"D1\",\"D2\",\"D3\"], open=[10,12,11], high=[14,15,13], low=[9,10,9], close=[12,13,12]")]
-#[crate::params(paramsList["title","labels","open","high","low","close","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
+#[crate::params(paramsList["title","labels","open","high","low","close","volume","variant","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","width","height"])]
 #[crate::sera_alias("candlestick3d", "candlestick_3d", "candlestick3d_chart", "ohlc3d")]
 #[crate::sera_builder]
 pub fn build_candlestick3d_chart(input: &str) -> String {
@@ -42,42 +45,44 @@ pub fn build_candlestick3d_chart(input: &str) -> String {
     let high = a.high.unwrap_or_default();
     let low = a.low.unwrap_or_default();
     let close = a.close.unwrap_or_default();
-    let n = labels
-        .len()
-        .min(open.len())
-        .min(high.len())
-        .min(low.len())
-        .min(close.len());
-    let mut xv = Vec::new();
-    let mut yv = Vec::new();
-    let mut zv = Vec::new();
-    for i in 0..n {
-        xv.extend([open[i], high[i], low[i], close[i]]);
-        yv.extend([i as f64; 4]);
-        zv.extend([0.0f64; 4]);
-    }
-    let xl = o.xl();
-    let yl = o.yl();
-    let zl = o.zl();
-    let x_lbl = if xl.is_empty() { "Price" } else { &xl };
-    let y_lbl = if yl.is_empty() { "Bar" } else { &yl };
+    let volume = a.volume.unwrap_or_default();
+    let variant = CandlestickVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let cfg = CandlestickConfig {
+        title,
+        variant,
+        labels: &labels,
+        open: &open,
+        high: &high,
+        low: &low,
+        close: &close,
+        volume: &volume,
+        ..CandlestickConfig::default()
+    };
+    let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
-    apply_bg3d(
-        crate::plot::statistical::_3d::render_candlestick3d_html(
-            title,
-            &xv,
-            &yv,
-            &zv,
-            (x_lbl, y_lbl, &zl),
-            &[],
-            &labels,
-            o.w(900),
-            o.h(560),
-            bg_str.as_deref(),
-            &o.scene3d(),
-        ),
-        &o,
-    )
+    let bg_default = if env == "default" && bg_str.is_none() {
+        Some("#090d18")
+    } else {
+        bg_str.as_deref()
+    };
+    let view = BlockView {
+        height_ratio: layout3d::HEIGHT_RATIO,
+        cmap: layout3d::COLORMAP,
+        uniform: true,
+    };
+    let (xl, yl) = (o.xl(), o.yl());
+    let html = render_blocks3d_view_html(
+        title,
+        &layout3d::layout_3d(&cfg),
+        &view,
+        (if xl.is_empty() { "Bar" } else { &xl }, &yl, &o.zl()),
+        &[],
+        o.w(900),
+        o.h(560),
+        bg_default,
+        env,
+    );
+    apply_bg3d(html, &o)
 }
 
 inventory::submit! {
@@ -87,5 +92,57 @@ inventory::submit! {
         name: "candlestick_3d",
         renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
         positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::plot::build_candlestick3d_chart;
+    use crate::plot::statistical::_3d::twin;
+    use crate::plot::statistical::CandlestickVariant;
+
+    fn demos() -> twin::Demos {
+        twin::variant_demos(
+            "statistical/candlestick/",
+            CandlestickVariant::keys_and_aliases(),
+            CandlestickVariant::default_key(),
+        )
+    }
+
+    #[test]
+    fn every_candlestick_variant_has_a_working_3d_counterpart() {
+        twin::check_variants(build_candlestick3d_chart, &demos(), CandlestickVariant::all().len());
+    }
+
+    #[test]
+    fn every_3d_plane_applies_to_every_candlestick_variant() {
+        twin::check_planes(build_candlestick3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_scene_applies_to_every_candlestick_variant() {
+        twin::check_scenes(build_candlestick3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_chart_theme_styles_every_candlestick_variant() {
+        twin::check_themes(build_candlestick3d_chart, &demos());
+    }
+
+    #[test]
+    fn the_registry_exposes_the_candlestick_variants_and_the_view_axes() {
+        twin::check_axes("candlestick3d", CandlestickVariant::all().len());
+    }
+
+    #[test]
+    fn the_legacy_three_bar_call_still_renders() {
+        let json = r#"{"title":"t","labels":["D1","D2","D3"],"open":[10,12,11],"high":[14,15,13],"low":[9,10,9],"close":[12,13,12]}"#;
+        twin::assert_blocks(&build_candlestick3d_chart(json), "legacy candlestick3d call");
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        twin::write_previews("candlestick3d", build_candlestick3d_chart, &demos(), CandlestickVariant::default_key());
     }
 }
