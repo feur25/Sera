@@ -10,18 +10,19 @@ pub fn render_bar3d_blocks_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    let view = BlockView { height_ratio: height_ratio_3d(cfg.variant), cmap: "" };
+    let view = BlockView { height_ratio: height_ratio_3d(cfg.variant), ..BlockView::default() };
     render_blocks3d_view_html(title, &layout_3d(cfg), &view, axis_labels, color_labels, w, h, bg_color, scene)
 }
 
 pub struct BlockView<'a> {
     pub height_ratio: f64,
     pub cmap: &'a str,
+    pub uniform: bool,
 }
 
 impl Default for BlockView<'_> {
     fn default() -> Self {
-        Self { height_ratio: 1.0, cmap: "" }
+        Self { height_ratio: 1.0, cmap: "", uniform: false }
     }
 }
 
@@ -116,6 +117,9 @@ pub fn render_blocks3d_view_html(
     if !view.cmap.is_empty() {
         extra_js.push_str(&format!("CMAP='{}';", view.cmap));
     }
+    if view.uniform {
+        extra_js.push_str("var BUF=1;");
+    }
 
     let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
         .iter()
@@ -152,132 +156,37 @@ pub fn render_blocks3d_view_html(
 
 #[cfg(test)]
 mod tests {
-    use crate::plot::chart_demo_registry::{iter_entries, kwargs_to_json};
+    use crate::plot::build_bar3d_chart;
+    use crate::plot::statistical::_3d::twin;
     use crate::plot::statistical::BarVariant;
 
-    fn stem_of(file: &str) -> String {
-        file.replace('\\', "/")
-            .rsplit('/')
-            .next()
-            .unwrap_or("")
-            .trim_end_matches(".rs")
-            .to_string()
-    }
-
-    fn set_field(json: &str, field: &str, value: &str) -> String {
-        let mut parsed: serde_json::Value = serde_json::from_str(json).expect("demo json");
-        if let Some(obj) = parsed.as_object_mut() {
-            obj.insert(field.to_string(), serde_json::Value::String(value.to_string()));
-        }
-        parsed.to_string()
-    }
-
-    fn with_variant(kwargs: &str, key: &str) -> String {
-        set_field(&kwargs_to_json(kwargs), "variant", key)
-    }
-
-    fn variant_demos() -> Vec<(&'static str, String)> {
-        let demos: Vec<(String, &'static str)> = iter_entries()
-            .filter(|e| e.file.replace('\\', "/").contains("statistical/bar/"))
-            .map(|e| (stem_of(e.file), e.kwargs))
-            .collect();
-        let fallback = demos
-            .iter()
-            .find(|(stem, _)| stem.as_str() == BarVariant::default_key())
-            .map(|(_, kwargs)| *kwargs)
-            .unwrap_or("");
-        BarVariant::keys_and_aliases()
-            .iter()
-            .map(|(key, aliases)| {
-                let kwargs = demos
-                    .iter()
-                    .find(|(stem, _)| stem.as_str() == *key || aliases.iter().any(|a| *a == stem.as_str()))
-                    .map(|(_, kwargs)| *kwargs)
-                    .unwrap_or(fallback);
-                (*key, with_variant(kwargs, key))
-            })
-            .collect()
+    fn demos() -> twin::Demos {
+        twin::variant_demos("statistical/bar/", BarVariant::keys_and_aliases(), BarVariant::default_key())
     }
 
     #[test]
     fn every_bar_variant_has_a_working_3d_counterpart() {
-        let demos = variant_demos();
-        assert_eq!(demos.len(), BarVariant::all().len());
-        for (key, json) in demos {
-            let html = crate::plot::build_bar3d_chart(&json);
-            assert!(html.contains("class=\"c3w\""), "{key} must render a 3D canvas");
-            assert!(html.contains("var BN="), "{key} must emit block data");
-            assert!(!html.contains("var BN=0,"), "{key} must emit at least one 3D block");
-        }
+        twin::check_variants(build_bar3d_chart, &demos(), BarVariant::all().len());
     }
 
     #[test]
     fn every_3d_plane_applies_to_every_bar_variant() {
-        use crate::plot::scene3d::Orientation3D;
-        for (variant_key, json) in variant_demos() {
-            for (plane_key, _) in Orientation3D::keys_and_aliases() {
-                let (yaw, pitch) = Orientation3D::from_str(plane_key).angles();
-                let html = crate::plot::build_bar3d_chart(&set_field(&json, "orientation3d", plane_key));
-                assert!(
-                    html.contains(&format!("var yaw={:.4},pitch={:.4}", yaw, pitch)),
-                    "{variant_key} must honour the {plane_key} plane"
-                );
-            }
-        }
+        twin::check_planes(build_bar3d_chart, &demos());
     }
 
     #[test]
     fn every_scene_applies_to_every_bar_variant() {
-        use crate::plot::scene3d::Scene3DVariant;
-        for (variant_key, json) in variant_demos() {
-            for (scene_key, _) in Scene3DVariant::keys_and_aliases() {
-                let html = crate::plot::build_bar3d_chart(&set_field(&json, "scene", scene_key));
-                assert!(html.contains("class=\"c3w\""), "{variant_key} must render under the {scene_key} scene");
-                assert!(html.contains("var BN="), "{variant_key} must emit block data under the {scene_key} scene");
-            }
-        }
-    }
-
-    #[test]
-    fn the_public_builder_forwards_sort_order_to_single_series_variants() {
-        let json = r#"{"title":"t","labels":["A","B","C","D"],"values":[10,40,20,30],"sort_order":"desc"}"#;
-        let html = crate::plot::build_bar3d_chart(json);
-        assert!(
-            html.contains("BZ1=[40.0000,30.0000,20.0000,10.0000]"),
-            "desc order must reach the block heights"
-        );
+        twin::check_scenes(build_bar3d_chart, &demos());
     }
 
     #[test]
     fn every_chart_theme_styles_every_bar_variant() {
-        use crate::plot::statistical::ChartTheme;
-        for (variant_key, json) in variant_demos() {
-            let plain = crate::plot::build_bar3d_chart(&json);
-            for (theme_key, _) in ChartTheme::keys_and_aliases() {
-                if *theme_key == ChartTheme::default_key() {
-                    continue;
-                }
-                let themed = crate::plot::build_bar3d_chart(&set_field(&json, "theme", theme_key));
-                assert!(themed.contains("class=\"c3w\""), "{variant_key} must stay a 3D canvas under {theme_key}");
-                assert!(themed.contains(".c3w canvas{filter:"), "{variant_key} must be styled by the {theme_key} theme");
-                assert_ne!(themed, plain, "{variant_key} must differ under {theme_key}");
-            }
-        }
+        twin::check_themes(build_bar3d_chart, &demos());
     }
 
     #[test]
     fn the_registry_exposes_scene_plane_and_theme_axes_on_the_twin_family() {
-        let variants = crate::chart_variants();
-        let axes = &variants["bar_3d"]["axes"];
-        for (axis, expected) in [
-            ("scene", crate::plot::scene3d::Scene3DVariant::keys_and_aliases().len()),
-            ("orientation3d", crate::plot::scene3d::Orientation3D::keys_and_aliases().len()),
-            ("theme", crate::plot::statistical::ChartTheme::keys_and_aliases().len()),
-        ] {
-            assert_eq!(axes[axis]["keys"].as_array().map(|k| k.len()), Some(expected), "{axis} axis must list every key");
-            assert!(axes[axis]["default"].is_string(), "{axis} axis must name its default");
-        }
-        assert_eq!(variants["bar_3d"]["variants"].as_array().map(|v| v.len()), Some(BarVariant::all().len()));
+        twin::check_axes("bar_3d", BarVariant::all().len());
     }
 
     #[test]
@@ -302,36 +211,18 @@ mod tests {
     }
 
     #[test]
+    fn the_public_builder_forwards_sort_order_to_single_series_variants() {
+        let json = r#"{"title":"t","labels":["A","B","C","D"],"values":[10,40,20,30],"sort_order":"desc"}"#;
+        let html = build_bar3d_chart(json);
+        assert!(
+            html.contains("BZ1=[40.0000,30.0000,20.0000,10.0000]"),
+            "desc order must reach the block heights"
+        );
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
-        use crate::plot::scene3d::Orientation3D;
-        let demos = variant_demos();
-        for (key, json) in &demos {
-            let html = crate::plot::build_bar3d_chart(json);
-            std::fs::write(format!("docs/previews/bar3d-{key}.html"), &html).unwrap();
-            if *key == BarVariant::default_key() {
-                std::fs::write("docs/previews/bar3d.html", &html).unwrap();
-            }
-        }
-        let default_json = demos
-            .iter()
-            .find(|(key, _)| *key == BarVariant::default_key())
-            .map(|(_, json)| json.clone())
-            .unwrap();
-        for (plane_key, _) in Orientation3D::keys_and_aliases() {
-            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "orientation3d", plane_key));
-            std::fs::write(format!("docs/previews/bar3d-plane-{plane_key}.html"), &html).unwrap();
-        }
-        for (theme_key, _) in crate::plot::statistical::ChartTheme::keys_and_aliases() {
-            if *theme_key == crate::plot::statistical::ChartTheme::default_key() {
-                continue;
-            }
-            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "theme", theme_key));
-            std::fs::write(format!("docs/previews/bar3d-theme-{theme_key}.html"), &html).unwrap();
-        }
-        for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
-            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "scene", scene_key));
-            std::fs::write(format!("docs/previews/bar3d-scene-{scene_key}.html"), &html).unwrap();
-        }
+        twin::write_previews("bar3d", build_bar3d_chart, &demos(), BarVariant::default_key());
     }
 }
