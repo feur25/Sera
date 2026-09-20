@@ -5,6 +5,7 @@ pub mod config;
 pub mod heikin;
 pub mod hollow;
 pub mod indicators;
+pub mod layout3d;
 pub mod line;
 pub mod milestone;
 pub mod mountain;
