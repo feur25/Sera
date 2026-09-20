@@ -9,6 +9,7 @@ pub mod lollipop;
 pub mod stepped;
 pub mod trend;
 pub mod variant;
+pub mod layout3d;
 
 pub use config::WaterfallConfig;
 pub use variant::WaterfallVariant;
