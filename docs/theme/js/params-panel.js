@@ -648,7 +648,8 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
 
   var AXIS_LABELS = {
     scene: { en: "3D scene", fr: "Scène 3D" },
-    orientation3d: { en: "3D plane", fr: "Plan 3D" }
+    orientation3d: { en: "3D plane", fr: "Plan 3D" },
+    theme: { en: "Theme", fr: "Thème" }
   };
 
   function axesFor(family) {
