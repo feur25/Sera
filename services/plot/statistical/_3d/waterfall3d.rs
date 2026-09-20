@@ -4,7 +4,7 @@ use crate::plot::statistical::{WaterfallConfig, WaterfallVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]")]
-#[crate::params(paramsList["title","labels","values","variant","sort_order","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","width","height"])]
+#[crate::params(paramsList["title","labels","values","variant","sort_order","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
 #[crate::sera_alias("waterfall3d", "waterfall_3d", "waterfall3d_chart")]
 #[crate::sera_builder]
 pub fn build_waterfall3d_chart(input: &str) -> String {
@@ -29,11 +29,7 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView {
-        height_ratio: layout3d::HEIGHT_RATIO,
-        cmap: layout3d::COLORMAP,
-        uniform: false,
-    };
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
         &layout3d::layout_3d(&cfg),
@@ -91,6 +87,11 @@ mod tests {
     #[test]
     fn the_registry_exposes_the_waterfall_variants_and_the_view_axes() {
         twin::check_axes("waterfall3d", WaterfallVariant::all().len());
+    }
+
+    #[test]
+    fn every_waterfall_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_waterfall3d_chart, &demos());
     }
 
     #[test]
