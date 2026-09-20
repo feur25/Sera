@@ -84,6 +84,33 @@ The scene is a second independent axis: `scene` swaps the environment the bars a
 chart = sp.bar3d("Sales", variant="spiral", labels=years, values=counts, scene="terrain", orientation3d="vertical")
 ```
 
+## Themes
+
+`theme` restyles the whole canvas (colour grade and glow) and applies to every variant, scene and plane. Sorting follows the 2D chart too: `sort_order="desc"` reorders the columns of every single-series variant.
+
+<div data-sp-registry-table="themes" data-family="bar_3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-cosmic.html"></iframe></div>
+</div>
+
 ## Gallery
 
 <div class="sp-3d-grid">
@@ -331,6 +358,33 @@ La scène est un second axe indépendant : `scene` change l'environnement dans l
 ```python
 chart = sp.bar3d("Ventes", variant="spiral", labels=years, values=counts, scene="terrain", orientation3d="vertical")
 ```
+
+<h2>Thèmes</h2>
+
+`theme` restyle tout le canevas (étalonnage des couleurs et halo) et s'applique à chaque variante, scène et plan. Le tri suit aussi le graphique 2D : `sort_order="desc"` réordonne les colonnes de toute variante à série unique.
+
+<div data-sp-registry-table="themes" data-family="bar_3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-theme-cosmic.html"></iframe></div>
+</div>
 
 <h2>Galerie</h2>
 
