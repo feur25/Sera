@@ -329,7 +329,11 @@ pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
     };
     let h = apply_annotations(h, o);
     let h = apply_kwarg_chains(h, o);
-    crate::apply_global_color_bindings(h)
+    let h = crate::apply_global_color_bindings(h);
+    match o.theme {
+        Some(ref t) => crate::plot::statistical::apply_chart_theme(h, t),
+        None => h,
+    }
 }
 
 pub fn build_html_chart(input: &str) -> String {
