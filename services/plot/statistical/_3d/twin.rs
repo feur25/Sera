@@ -92,6 +92,19 @@ pub fn check_themes(build: fn(&str) -> String, demos: &Demos) {
     }
 }
 
+pub fn check_zone(build: fn(&str) -> String, demos: &Demos) {
+    for (variant_key, json) in demos {
+        assert!(build(json).contains("var BFIT="), "{variant_key} must carry its fitted zone");
+        let mut forced: serde_json::Value = serde_json::from_str(json).expect("demo json");
+        forced["zone"] = serde_json::json!([2.0, 1.0, 1.0]);
+        let html = build(&forced.to_string());
+        assert!(
+            html.contains("\"lx\":1.000000,\"ly\":0.500000,\"lz\":0.500000"),
+            "{variant_key} must honour an explicit zone"
+        );
+    }
+}
+
 pub fn check_axes(family: &str, variants: usize) {
     let listing = crate::chart_variants();
     let entry = &listing[family];
