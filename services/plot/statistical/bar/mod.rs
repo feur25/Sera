@@ -64,6 +64,14 @@ fn dispatch_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     }
 }
 
+pub fn fit_3d(variant: BarVariant) -> crate::plot::statistical::_3d::zone::Fit {
+    use crate::plot::statistical::_3d::zone::Fit;
+    match variant {
+        BarVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
+
 pub fn height_ratio_3d(variant: BarVariant) -> f64 {
     use BarVariant::*;
     match variant {
