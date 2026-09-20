@@ -569,6 +569,7 @@ function rBarBlocks(mx,my,sc){
   if(cxEq&&cyEq){sx=sy=Math.max(sx,sy);}
   else if(cyEq){sy=sx;}
   else if(cxEq){sx=sy;}
+  if(typeof BUF!=='undefined'&&BUF){sx=sy=Math.max(sx,sy);}
   if(czEq)sz=Math.min(sx,sy);
   if(typeof BZK==='number'&&BZK>0)sz/=BZK;
   for(var j=0;j<BN;j++){
