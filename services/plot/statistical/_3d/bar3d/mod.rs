@@ -201,6 +201,53 @@ mod tests {
     }
 
     #[test]
+    fn every_scene_applies_to_every_bar_variant() {
+        use crate::plot::scene3d::Scene3DVariant;
+        for (variant_key, json) in variant_demos() {
+            for (scene_key, _) in Scene3DVariant::keys_and_aliases() {
+                let html = crate::plot::build_bar3d_chart(&set_field(&json, "scene", scene_key));
+                assert!(html.contains("class=\"c3w\""), "{variant_key} must render under the {scene_key} scene");
+                assert!(html.contains("var BN="), "{variant_key} must emit block data under the {scene_key} scene");
+            }
+        }
+    }
+
+    #[test]
+    fn the_registry_exposes_scene_and_plane_axes_on_the_twin_family() {
+        let variants = crate::chart_variants();
+        let axes = &variants["bar_3d"]["axes"];
+        for (axis, expected) in [
+            ("scene", crate::plot::scene3d::Scene3DVariant::keys_and_aliases().len()),
+            ("orientation3d", crate::plot::scene3d::Orientation3D::keys_and_aliases().len()),
+        ] {
+            assert_eq!(axes[axis]["keys"].as_array().map(|k| k.len()), Some(expected), "{axis} axis must list every key");
+            assert!(axes[axis]["default"].is_string(), "{axis} axis must name its default");
+        }
+        assert_eq!(variants["bar_3d"]["variants"].as_array().map(|v| v.len()), Some(BarVariant::all().len()));
+    }
+
+    #[test]
+    fn sort_order_reorders_the_columns_like_the_2d_chart() {
+        use crate::plot::statistical::bar::{layout_3d, BarConfig};
+        let labels: Vec<String> = ["A", "B", "C", "D"].iter().map(|s| s.to_string()).collect();
+        let values = [10.0, 40.0, 20.0, 30.0];
+        for (order, expected) in [
+            ("none", vec![10.0, 40.0, 20.0, 30.0]),
+            ("desc", vec![40.0, 30.0, 20.0, 10.0]),
+            ("asc", vec![10.0, 20.0, 30.0, 40.0]),
+        ] {
+            let cfg = BarConfig {
+                labels: &labels,
+                values: &values,
+                sort_order: order,
+                ..BarConfig::default()
+            };
+            let tops: Vec<f64> = layout_3d(&cfg).iter().map(|b| b.z1).collect();
+            assert_eq!(tops, expected, "sort_order={order}");
+        }
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
         use crate::plot::scene3d::Orientation3D;
@@ -220,6 +267,10 @@ mod tests {
         for (plane_key, _) in Orientation3D::keys_and_aliases() {
             let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "orientation3d", plane_key));
             std::fs::write(format!("docs/previews/bar3d-plane-{plane_key}.html"), &html).unwrap();
+        }
+        for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
+            let html = crate::plot::build_bar3d_chart(&set_field(&default_json, "scene", scene_key));
+            std::fs::write(format!("docs/previews/bar3d-scene-{scene_key}.html"), &html).unwrap();
         }
     }
 }
