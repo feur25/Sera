@@ -5,6 +5,7 @@ pub mod dumbbell3d;
 pub mod funnel3d;
 pub mod generic;
 pub mod grid;
+pub mod ohlc;
 #[cfg(test)]
 pub(crate) mod twin;
 pub mod heatmap3d;
