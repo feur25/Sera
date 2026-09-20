@@ -530,11 +530,12 @@ function drawSortedBars(bars,colFn){
   for(var i=0;i<bars.length;i++){
     var b=bars[i],pTop=pj(b.nx,b.ny,b.z1);
     if(!pTop)continue;
-    b.d=pTop.d;live.push(b);
+    b.d=pTop.d;b.px=mx+pTop.x*sc;b.py=my-pTop.y*sc;live.push(b);
   }
   live.sort(function(a,c){return c.d-a.d;});
   for(var k=0;k<live.length;k++){
     drawShapedBar(live[k],colFn(live[k]));
+    if(live[k].i!==undefined)pp.push({sx:live[k].px,sy:live[k].py,i:live[k].i,r:6});
   }
 }
 function isEnvScene(){return SCENE==='terrain'||SCENE==='tower'||SCENE==='radial'||SCENE==='podium';}
@@ -576,7 +577,7 @@ function rBarBlocks(mx,my,sc){
     var nx=(BX[j]-bcx)/sx,ny=(BY[j]-bcy)/sy;
     var nz0=(BZ0[j]-bzmn)/sz-0.5,nz1=(BZ1[j]-bzmn)/sz-0.5;
     var hw=BHW[j]/sx,hd=BHD[j]/sy;
-    bars.push({nx:nx,ny:ny,z0:nz0,z1:nz1,hw:hw,hd:hd,ci:BCI[j],tone:(typeof BCT!=='undefined')?BCT[j]:-1});
+    bars.push({i:j,nx:nx,ny:ny,z0:nz0,z1:nz1,hw:hw,hd:hd,ci:BCI[j],tone:(typeof BCT!=='undefined')?BCT[j]:-1});
   }
   drawSortedBars(bars,function(b){return b.tone>=0?cmapHex(b.tone,CMAP):PAL[b.ci%PAL.length];});
 }
@@ -1589,9 +1590,9 @@ function ht(ex,ey){var bi=-1,bd=900;for(var i=pp.length-1;i>=0;i--){var dx=pp[i]
 function sT(idx,ex,ey){
   var lbl=CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1);
   var h='<b>'+lbl+'</b>';
-  h+='<span>'+xl+':</span> <span class="tv">'+X[idx].toFixed(3)+'</span><br>';
-  h+='<span>'+yl+':</span> <span class="tv">'+Y[idx].toFixed(3)+'</span><br>';
-  h+='<span>'+zl+':</span> <span class="tv">'+Z[idx].toFixed(3)+'</span>';
+  h+='<span>'+(xl||'X')+':</span> <span class="tv">'+X[idx].toFixed(3)+'</span><br>';
+  h+='<span>'+(yl||'Y')+':</span> <span class="tv">'+Y[idx].toFixed(3)+'</span><br>';
+  h+='<span>'+(zl||'Z')+':</span> <span class="tv">'+Z[idx].toFixed(3)+'</span>';
   tip.innerHTML=h;tip.className='c3t v'+(pin?' p':'');
   var bx=wrap.getBoundingClientRect();
   var tx=ex-bx.left+16,ty=ey-bx.top-14;
