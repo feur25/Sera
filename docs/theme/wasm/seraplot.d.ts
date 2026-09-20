@@ -36,6 +36,8 @@ declare namespace wasm_bindgen {
 
     export function buildBoxplot(input: string): string;
 
+    export function buildBoxplot3dChart(input: string): string;
+
     export function buildBubble(input: string): string;
 
     export function buildBubble3dChart(input: string): string;
@@ -107,6 +109,8 @@ declare namespace wasm_bindgen {
     export function buildHexbin(input: string): string;
 
     export function buildHistogram(input: string): string;
+
+    export function buildHistogram3dChart(input: string): string;
 
     export function buildHive(input: string): string;
 
@@ -199,6 +203,8 @@ declare namespace wasm_bindgen {
     export function buildVoxelsChart(input: string): string;
 
     export function buildWaterfall(input: string): string;
+
+    export function buildWaterfall3dChart(input: string): string;
 
     export function buildWireframe3dChart(input: string): string;
 
@@ -475,6 +481,7 @@ declare interface InitOutput {
     readonly buildBar3dChart: (a: number, b: number) => [number, number];
     readonly buildBarChart: (a: number, b: number) => [number, number];
     readonly buildBoxplot: (a: number, b: number) => [number, number];
+    readonly buildBoxplot3dChart: (a: number, b: number) => [number, number];
     readonly buildBubble: (a: number, b: number) => [number, number];
     readonly buildBubble3dChart: (a: number, b: number) => [number, number];
     readonly buildBubbleMap: (a: number, b: number) => [number, number];
@@ -511,6 +518,7 @@ declare interface InitOutput {
     readonly buildHeatmap3dChart: (a: number, b: number) => [number, number];
     readonly buildHexbin: (a: number, b: number) => [number, number];
     readonly buildHistogram: (a: number, b: number) => [number, number];
+    readonly buildHistogram3dChart: (a: number, b: number) => [number, number];
     readonly buildHive: (a: number, b: number) => [number, number];
     readonly buildIcicle: (a: number, b: number) => [number, number];
     readonly buildIsosurfaceChart: (a: number, b: number) => [number, number];
@@ -557,6 +565,7 @@ declare interface InitOutput {
     readonly buildViolin3dChart: (a: number, b: number) => [number, number];
     readonly buildVoxelsChart: (a: number, b: number) => [number, number];
     readonly buildWaterfall: (a: number, b: number) => [number, number];
+    readonly buildWaterfall3dChart: (a: number, b: number) => [number, number];
     readonly buildWireframe3dChart: (a: number, b: number) => [number, number];
     readonly buildWordcloud: (a: number, b: number) => [number, number];
     readonly call: (a: number, b: number, c: number, d: number) => [number, number];
