@@ -89,7 +89,18 @@ pub fn render_blocks3d_scaled_html(
         }
         extra_js.push_str(&b.ci.to_string());
     }
-    extra_js.push_str(&format!("];var BZK={:.3},BZM=1.6;", height_ratio));
+    extra_js.push(']');
+    if blocks.iter().any(|b| b.tone.is_some()) {
+        extra_js.push_str(",BCT=[");
+        for (i, b) in blocks.iter().enumerate() {
+            if i > 0 {
+                extra_js.push(',');
+            }
+            extra_js.push_str(&format!("{:.4}", b.tone.unwrap_or(-1.0)));
+        }
+        extra_js.push(']');
+    }
+    extra_js.push_str(&format!(";var BZK={:.3},BZM=1.6;", height_ratio));
 
     let (x, y, z): (Vec<f64>, Vec<f64>, Vec<f64>) = blocks
         .iter()
