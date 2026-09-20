@@ -72,6 +72,7 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
     let view = BlockView {
         height_ratio: HEIGHT_RATIO_3D,
         cmap: colormap_3d(variant),
+        uniform: true,
     };
     let html = render_blocks3d_view_html(
         title,
@@ -94,5 +95,53 @@ inventory::submit! {
         name: "heatmap_3d",
         renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
         positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::plot::build_heatmap3d_chart;
+    use crate::plot::statistical::_3d::twin;
+    use crate::plot::statistical::HeatmapVariant;
+
+    fn demos() -> twin::Demos {
+        twin::variant_demos("statistical/heatmap/", HeatmapVariant::keys_and_aliases(), HeatmapVariant::default_key())
+    }
+
+    #[test]
+    fn every_heatmap_variant_has_a_working_3d_counterpart() {
+        twin::check_variants(build_heatmap3d_chart, &demos(), HeatmapVariant::all().len());
+    }
+
+    #[test]
+    fn every_3d_plane_applies_to_every_heatmap_variant() {
+        twin::check_planes(build_heatmap3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_scene_applies_to_every_heatmap_variant() {
+        twin::check_scenes(build_heatmap3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_chart_theme_styles_every_heatmap_variant() {
+        twin::check_themes(build_heatmap3d_chart, &demos());
+    }
+
+    #[test]
+    fn the_registry_exposes_the_heatmap_variants_and_the_view_axes() {
+        twin::check_axes("heatmap3d", HeatmapVariant::all().len());
+    }
+
+    #[test]
+    fn the_legacy_categories_and_labels_layout_still_renders() {
+        let json = r#"{"title":"t","labels":["R1","R2"],"categories":["C1","C2"],"matrix":[[1,2],[3,4]]}"#;
+        twin::assert_blocks(&build_heatmap3d_chart(json), "legacy heatmap3d call");
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        twin::write_previews("heatmap3d", build_heatmap3d_chart, &demos(), HeatmapVariant::default_key());
     }
 }
