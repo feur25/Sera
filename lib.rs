@@ -30,7 +30,7 @@ include!(concat!(env!("OUT_DIR"), "/required_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/sera_aliases.rs"));
 include!(concat!(env!("OUT_DIR"), "/chart_alias_registry.rs"));
 
-const GEOMETRY_TWINS: &[(&str, &str)] = &[("bar_3d", "bar"), ("heatmap3d", "heatmap")];
+const GEOMETRY_TWINS: &[(&str, &str)] = &[("bar_3d", "bar"), ("heatmap3d", "heatmap"), ("candlestick3d", "candlestick")];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
     GEOMETRY_TWINS
@@ -1154,7 +1154,6 @@ pub fn chart_variants() -> serde_json::Value {
     for family in [
         "line_3d",
         "scatter_3d",
-        "candlestick3d",
         "dumbbell3d",
         "kde3d",
         "lollipop3d",
