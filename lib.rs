@@ -1073,6 +1073,29 @@ pub fn true_required_params(chart: Option<&str>, variant: Option<&str>) -> serde
     Value::Object(root)
 }
 
+fn view_axes() -> serde_json::Value {
+    use crate::plot::scene3d::{Orientation3D, Scene3DVariant};
+    use serde_json::{Map, Value};
+
+    fn axis(keys: &'static [(&'static str, &'static [&'static str])], default_key: &'static str) -> Value {
+        let mut m = Map::new();
+        m.insert("default".to_string(), Value::String(default_key.to_string()));
+        m.insert(
+            "keys".to_string(),
+            Value::Array(keys.iter().map(|(k, _)| Value::String((*k).to_string())).collect()),
+        );
+        Value::Object(m)
+    }
+
+    let mut axes = Map::new();
+    axes.insert("scene".to_string(), axis(Scene3DVariant::keys_and_aliases(), Scene3DVariant::default_key()));
+    axes.insert(
+        "orientation3d".to_string(),
+        axis(Orientation3D::keys_and_aliases(), Orientation3D::default_key()),
+    );
+    Value::Object(axes)
+}
+
 #[sera_doc(
     category = "utility",
     file = "api/reference.md",
@@ -1146,7 +1169,11 @@ pub fn chart_variants() -> serde_json::Value {
     }
     for (twin, base) in GEOMETRY_TWINS {
         if let Some(entry) = crate::plot::family_macro::chart_families().find(|e| e.name == *base) {
-            out.insert(twin.to_string(), build((entry.keys_and_aliases)(), (entry.default_key)(), "3d"));
+            let mut twin_entry = build((entry.keys_and_aliases)(), (entry.default_key)(), "3d");
+            if let Value::Object(map) = &mut twin_entry {
+                map.insert("axes".to_string(), view_axes());
+            }
+            out.insert(twin.to_string(), twin_entry);
         }
     }
     Value::Object(out)
