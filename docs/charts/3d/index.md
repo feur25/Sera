@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acceleration.
+SeraPlot provides 18 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
 |---|---|
@@ -18,6 +18,7 @@ SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acce
 | [Violin 3D](violin3d.md) | `violin3d()` |
 | [Heatmap 3D](heatmap3d.md) | `heatmap3d()` |
 | [Candlestick 3D](candlestick3d.md) | `candlestick3d()` |
+| [Boxplot 3D](boxplot3d.md) | `boxplot3d()` |
 | [Dumbbell 3D](dumbbell3d.md) | `dumbbell3d()` |
 | [Funnel 3D](funnel3d.md) | `funnel3d()` |
 | [Sunburst 3D](sunburst3d.md) | `sunburst3d()` |
@@ -28,7 +29,7 @@ SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-SeraPlot propose 17 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
+SeraPlot propose 18 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |
 |-----------|----------|
@@ -44,6 +45,7 @@ SeraPlot propose 17 types de graphiques tridimensionnels rendus avec acc\u00e9l\
 | [Violon 3D](violin3d.md) | `violin3d()` |
 | [Heatmap 3D](heatmap3d.md) | `heatmap3d()` |
 | [Bougie 3D](candlestick3d.md) | `candlestick3d()` |
+| [Boîte à moustaches 3D](boxplot3d.md) | `boxplot3d()` |
 | [Halt\u00e8re 3D](dumbbell3d.md) | `dumbbell3d()` |
 | [Entonnoir 3D](funnel3d.md) | `funnel3d()` |
 | [Sunburst 3D](sunburst3d.md) | `sunburst3d()` |
