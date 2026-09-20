@@ -4,7 +4,7 @@ use crate::plot::statistical::{BoxplotConfig, BoxplotVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]")]
-#[crate::params(paramsList["title","labels","values","series","variant","notch","jitter","boxen_depth","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","width","height"])]
+#[crate::params(paramsList["title","labels","values","series","variant","notch","jitter","boxen_depth","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
 #[crate::sera_alias("boxplot3d", "boxplot_3d", "boxplot3d_chart", "box3d")]
 #[crate::sera_builder]
 pub fn build_boxplot3d_chart(input: &str) -> String {
@@ -32,11 +32,7 @@ pub fn build_boxplot3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView {
-        height_ratio: layout3d::HEIGHT_RATIO,
-        cmap: layout3d::COLORMAP,
-        uniform: true,
-    };
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
         &layout3d::layout_3d(&cfg),
@@ -100,6 +96,11 @@ mod tests {
     fn flat_values_with_repeated_labels_render_like_the_2d_chart() {
         let json = r#"{"title":"t","labels":["A","A","A","B","B","B"],"values":[1,2,3,4,5,6]}"#;
         twin::assert_blocks(&build_boxplot3d_chart(json), "flat boxplot3d call");
+    }
+
+    #[test]
+    fn every_boxplot_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_boxplot3d_chart, &demos());
     }
 
     #[test]
