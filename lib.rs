@@ -30,7 +30,7 @@ include!(concat!(env!("OUT_DIR"), "/required_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/sera_aliases.rs"));
 include!(concat!(env!("OUT_DIR"), "/chart_alias_registry.rs"));
 
-const GEOMETRY_TWINS: &[(&str, &str)] = &[("bar_3d", "bar"), ("heatmap3d", "heatmap"), ("candlestick3d", "candlestick")];
+const GEOMETRY_TWINS: &[(&str, &str)] = &[("bar_3d", "bar"), ("heatmap3d", "heatmap"), ("candlestick3d", "candlestick"), ("boxplot3d", "boxplot")];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
     GEOMETRY_TWINS
