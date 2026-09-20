@@ -646,6 +646,75 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     return true;
   }
 
+  var AXIS_LABELS = {
+    scene: { en: "3D scene", fr: "Scène 3D" },
+    orientation3d: { en: "3D plane", fr: "Plan 3D" }
+  };
+
+  function axesFor(family) {
+    var map = chartVariantsMap();
+    var entry = map && map[canonicalFamilyName(family, map)];
+    var axes = entry && entry.axes;
+    return axes && Object.keys(axes).length ? axes : null;
+  }
+
+  function axisLabel(axis, lang) {
+    var labels = AXIS_LABELS[axis];
+    return labels ? labels[lang === "fr" ? "fr" : "en"] : axis;
+  }
+
+  function buildAxesPickerHtml(axes, lang) {
+    var html = '<div class="sp-axes-picker" style="margin:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-size:12px">';
+    Object.keys(axes).forEach(function (axis) {
+      var spec = axes[axis];
+      html += '<label style="display:flex;align-items:center;gap:6px;color:#94a3b8">' + escapeAttr(axisLabel(axis, lang)) +
+        '<select class="sp-axis-select" data-axis="' + escapeAttr(axis) + '" data-default="' + escapeAttr(spec.default) + '" style="background:rgba(15,23,42,.6);color:#e2e8f0;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px">';
+      spec.keys.forEach(function (key) {
+        html += '<option value="' + escapeAttr(key) + '">' + escapeAttr(key) + '</option>';
+      });
+      html += '</select></label>';
+    });
+    return html + '</div>';
+  }
+
+  function applyAxesToCode(code, selections) {
+    var extra = selections.map(function (sel) {
+      return ",\n    " + sel.axis + '="' + sel.value.replace(/"/g, "") + '"';
+    }).join("");
+    return extra ? code.replace(/\n\)\n$/, extra + "\n)\n") : code;
+  }
+
+  function wireAxesPickers(root, family, lang, panel) {
+    root.addEventListener("change", function (ev) {
+      var target = ev.target;
+      if (!target || !target.classList || !target.classList.contains("sp-axis-select")) return;
+      var varDiv = target.closest(".sp-variant");
+      var sp = window.SeraplotWASM;
+      if (!varDiv || !sp || typeof sp.demo !== "function") return;
+      var variant = varDiv.getAttribute("data-variant");
+      var selections = Array.prototype.slice.call(varDiv.querySelectorAll(".sp-axis-select"))
+        .filter(function (sel) { return sel.value !== sel.getAttribute("data-default"); })
+        .map(function (sel) { return { axis: sel.getAttribute("data-axis"), value: sel.value }; });
+      try {
+        var code = applyAxesToCode(sp.demo(JSON.stringify({ family: family, variant: variant })) || "", selections);
+        [".sp-demo-code-wrap", ".sp-iframe-wrap", ".sp-preview-label", ".sp-preview-frame"].forEach(function (selector) {
+          var node = varDiv.querySelector(selector);
+          if (node) node.remove();
+        });
+        if (code) varDiv.insertAdjacentHTML("beforeend", buildVariantCodeHtml(code));
+        var preview = buildVariantPreviewHtml(buildChartPreviewHtml(sp, family, variant, code), lang === "fr" ? "Aperçu" : "Preview");
+        if (preview) varDiv.insertAdjacentHTML("beforeend", preview);
+        if (window.hljs) {
+          var highlight = hljs.highlightElement || hljs.highlightBlock;
+          if (highlight) varDiv.querySelectorAll("pre code").forEach(function (block) {
+            try { highlight.call(hljs, block); } catch (e) {}
+          });
+        }
+        if (panel) rescaleIframesInPanel(panel);
+      } catch (e) {}
+    });
+  }
+
   function injectVariantCls(panel, body, data, lang) {
     var family = data.functionName;
     if (!family) return;
@@ -690,6 +759,8 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
       varDiv.className = "sp-variant" + (i === 0 ? " sp-von" : "");
       varDiv.style.display = i === 0 ? "block" : "none";
       varDiv.innerHTML = buildVariantAliasesHtml(item, lang);
+      var axes = axesFor(family);
+      if (axes) varDiv.innerHTML += buildAxesPickerHtml(axes, lang);
 
       if (i === 0) {
         fillVariantPreview(varDiv, sp, family, v, lang);
@@ -701,6 +772,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     });
 
     body.appendChild(clsDiv);
+    wireAxesPickers(clsDiv, family, lang, panel);
 
     updateAliasForVariant(panel);
 
@@ -726,6 +798,8 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
             var variant = activeDiv.getAttribute("data-variant") || "basic";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
             activeDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
+            var liveAxes = axesFor(family);
+            if (liveAxes) activeDiv.innerHTML += buildAxesPickerHtml(liveAxes, getLang());
             fillVariantPreview(activeDiv, sp2, family, variant, getLang());
             if (window.hljs) {
               var hFn = hljs.highlightElement || hljs.highlightBlock;
