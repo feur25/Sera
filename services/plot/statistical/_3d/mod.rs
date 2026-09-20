@@ -1,4 +1,5 @@
 pub mod bar3d;
+pub mod boxplot3d;
 pub mod bubble3d;
 pub mod candlestick3d;
 pub mod dumbbell3d;
@@ -6,8 +7,6 @@ pub mod funnel3d;
 pub mod generic;
 pub mod grid;
 pub mod ohlc;
-#[cfg(test)]
-pub(crate) mod twin;
 pub mod heatmap3d;
 pub mod isosurface;
 pub mod kde3d;
@@ -17,12 +16,16 @@ pub mod pie3d;
 pub mod plot_3d_types;
 pub mod radar3d;
 pub mod ridgeline3d;
+pub mod spread;
 pub mod stacked_bar3d;
 pub mod streamtube;
 pub mod sunburst3d;
+#[cfg(test)]
+pub(crate) mod twin;
 pub mod violin3d;
 
 pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, BlockView};
+pub use boxplot3d::build_boxplot3d_chart;
 pub use bubble3d::build_bubble3d_chart;
 pub use candlestick3d::build_candlestick3d_chart;
 pub use dumbbell3d::build_dumbbell3d_chart;
