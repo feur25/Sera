@@ -283,3 +283,36 @@ pub fn grid_columns(n_rows: usize, n_cols: usize, matrix: &[f64], hw: f64, hd: f
         })
         .collect()
 }
+
+pub fn plate_columns(values: &[f64], thickness: f64, hw: f64, hd: f64) -> Vec<Bar3DBlock> {
+    values
+        .iter()
+        .enumerate()
+        .map(|(i, &v)| Bar3DBlock::new(i as f64, 0.0, v - thickness, v, hw, hd, i))
+        .collect()
+}
+
+pub fn transposed(blocks: Vec<Bar3DBlock>) -> Vec<Bar3DBlock> {
+    blocks
+        .into_iter()
+        .map(|b| Bar3DBlock { cx: b.cy, cy: b.cx, hw: b.hd, hd: b.hw, ..b })
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn transposing_swaps_the_footprint_axes_and_keeps_tone() {
+        let flipped = transposed(vec![Bar3DBlock::new(1.0, 2.0, 0.0, 1.0, 0.3, 0.1, 0).with_tone(0.4)]);
+        assert_eq!((flipped[0].cx, flipped[0].cy, flipped[0].hw, flipped[0].hd), (2.0, 1.0, 0.1, 0.3));
+        assert_eq!(flipped[0].tone, Some(0.4));
+    }
+
+    #[test]
+    fn plates_hug_the_top_of_each_value() {
+        let plates = plate_columns(&[3.0, 5.0], 0.5, 0.5, 0.4);
+        assert_eq!((plates[1].z0, plates[1].z1, plates[1].cx), (4.5, 5.0, 1.0));
+    }
+}
