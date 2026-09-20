@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod grouped;
 pub mod horizontal;
+pub mod layout3d;
 pub mod letter_value;
 pub mod notched;
 pub mod outliers;
