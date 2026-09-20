@@ -7,6 +7,7 @@ pub struct Bar3DBlock {
     pub hw: f64,
     pub hd: f64,
     pub ci: usize,
+    pub tone: Option<f64>,
 }
 
 impl Bar3DBlock {
@@ -19,6 +20,12 @@ impl Bar3DBlock {
             hw,
             hd,
             ci,
+            tone: None,
         }
+    }
+
+    pub fn with_tone(mut self, tone: f64) -> Self {
+        self.tone = Some(tone.clamp(0.0, 1.0));
+        self
     }
 }
