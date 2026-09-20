@@ -26,6 +26,7 @@ pub mod sunburst3d;
 pub(crate) mod twin;
 pub mod violin3d;
 pub mod waterfall3d;
+pub mod zone;
 
 pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, BlockView};
 pub use boxplot3d::build_boxplot3d_chart;
