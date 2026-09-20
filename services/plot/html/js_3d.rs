@@ -575,9 +575,9 @@ function rBarBlocks(mx,my,sc){
     var nx=(BX[j]-bcx)/sx,ny=(BY[j]-bcy)/sy;
     var nz0=(BZ0[j]-bzmn)/sz-0.5,nz1=(BZ1[j]-bzmn)/sz-0.5;
     var hw=BHW[j]/sx,hd=BHD[j]/sy;
-    bars.push({nx:nx,ny:ny,z0:nz0,z1:nz1,hw:hw,hd:hd,ci:BCI[j]});
+    bars.push({nx:nx,ny:ny,z0:nz0,z1:nz1,hw:hw,hd:hd,ci:BCI[j],tone:(typeof BCT!=='undefined')?BCT[j]:-1});
   }
-  drawSortedBars(bars,function(b){return PAL[b.ci%PAL.length];});
+  drawSortedBars(bars,function(b){return b.tone>=0?cmapHex(b.tone,CMAP):PAL[b.ci%PAL.length];});
 }
 function rEnvBars(mx,my,sc){
   pp=[];
