@@ -1,5 +1,6 @@
 use crate::html::hover::HoverSlot;
 
+#[derive(Clone)]
 pub struct BarConfig<'a> {
     pub variant: super::variant::BarVariant,
     pub theme: crate::plot::statistical::theme::ChartTheme,
