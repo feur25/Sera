@@ -34,7 +34,7 @@ pub fn render_candlestick3d_html(
 }
 
 #[crate::chart_demo("labels=[\"D1\",\"D2\",\"D3\"], open=[10,12,11], high=[14,15,13], low=[9,10,9], close=[12,13,12]")]
-#[crate::params(paramsList["title","labels","open","high","low","close","volume","variant","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","width","height"])]
+#[crate::params(paramsList["title","labels","open","high","low","close","volume","variant","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
 #[crate::sera_alias("candlestick3d", "candlestick_3d", "candlestick3d_chart", "ohlc3d")]
 #[crate::sera_builder]
 pub fn build_candlestick3d_chart(input: &str) -> String {
@@ -65,11 +65,7 @@ pub fn build_candlestick3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView {
-        height_ratio: layout3d::HEIGHT_RATIO,
-        cmap: layout3d::COLORMAP,
-        uniform: true,
-    };
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let (xl, yl) = (o.xl(), o.yl());
     let html = render_blocks3d_view_html(
         title,
@@ -138,6 +134,11 @@ mod tests {
     fn the_legacy_three_bar_call_still_renders() {
         let json = r#"{"title":"t","labels":["D1","D2","D3"],"open":[10,12,11],"high":[14,15,13],"low":[9,10,9],"close":[12,13,12]}"#;
         twin::assert_blocks(&build_candlestick3d_chart(json), "legacy candlestick3d call");
+    }
+
+    #[test]
+    fn every_candlestick_variant_honours_an_explicit_zone() {
+        twin::check_zone(build_candlestick3d_chart, &demos());
     }
 
     #[test]
