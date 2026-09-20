@@ -93,6 +93,8 @@
   - [Heatmap 3D](charts/3d/heatmap3d.md)
   - [Candlestick 3D](charts/3d/candlestick3d.md)
   - [Boxplot 3D](charts/3d/boxplot3d.md)
+  - [Waterfall 3D](charts/3d/waterfall3d.md)
+  - [Histogram 3D](charts/3d/histogram3d.md)
   - [Dumbbell 3D](charts/3d/dumbbell3d.md)
   - [Funnel 3D](charts/3d/funnel3d.md)
   - [Sunburst 3D](charts/3d/sunburst3d.md)
