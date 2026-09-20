@@ -63,6 +63,27 @@ chart = sp.bar3d("Sales", variant="grouped", labels=labels, series=series, serie
 chart = chart.orient3d("front")
 ```
 
+## 3D scenes
+
+The scene is a second independent axis: `scene` swaps the environment the bars are drawn in and applies to **every** variant too. Every scene works with every plane.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Each series keeps its own categorical palette color, rendered as shaded 3D bars on a flat grid.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; The data is resampled onto a dense grid and rendered as hundreds of thin colormap-colored columns, forming a continuous mountain-of-bars terrain.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; The data is resampled onto a dense field of round skyscraper-like towers instead of boxes, for a city-skyline reading of magnitude.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; The data is resampled onto a dense polar grid of rings and wedges radiating from the center, like a 3D radar/sonar sweep of the value field.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; The data is resampled onto a dense grid and quantized into stepped terrace levels, like a rice-terrace contour map, to read value bands at a glance.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-podium.html"></iframe></div>
+</div>
+
+```python
+chart = sp.bar3d("Sales", variant="spiral", labels=years, values=counts, scene="terrain", orientation3d="vertical")
+```
+
 ## Gallery
 
 <div class="sp-3d-grid">
@@ -288,6 +309,27 @@ Le point de vue est indépendant de la variante : `orientation3d` (alias `tilt3d
 ```python
 chart = sp.bar3d("Ventes", variant="grouped", labels=labels, series=series, series_names=names, orientation3d="vertical")
 chart = chart.orient3d("front")
+```
+
+<h2>Scènes 3D</h2>
+
+La scène est un second axe indépendant : `scene` change l'environnement dans lequel les barres sont dessinées et s'applique aussi à **toutes** les variantes. Chaque scène fonctionne avec chaque plan.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Chaque série garde sa propre couleur de palette catégorielle, rendue en barres 3D ombrées sur une grille plate.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; Les données sont réinterpolées sur une grille dense et rendues en centaines de fines colonnes colorées par hauteur, formant un terrain continu en montagne de barres.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; Les données sont réinterpolées sur un champ dense de tours cylindriques façon gratte-ciel au lieu de boites, pour une lecture des magnitudes en skyline urbaine.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; Les données sont réinterpolées sur une grille polaire dense d'anneaux et de secteurs partant du centre, comme un balayage radar/sonar 3D du champ de valeurs.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; Les données sont réinterpolées sur une grille dense et quantifiées en paliers étagés, façon rizière en terrasses, pour lire les tranches de valeurs d'un coup d'oeil.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bar3d-scene-podium.html"></iframe></div>
+</div>
+
+```python
+chart = sp.bar3d("Ventes", variant="spiral", labels=years, values=counts, scene="terrain", orientation3d="vertical")
 ```
 
 <h2>Galerie</h2>
