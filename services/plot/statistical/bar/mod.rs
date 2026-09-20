@@ -13,6 +13,7 @@ pub mod grouped_stacked;
 pub mod hedgehog;
 pub mod marimekko;
 pub mod multicategory;
+pub mod ordering;
 pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
@@ -28,6 +29,19 @@ pub use config::BarConfig;
 pub use variant::BarVariant;
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    if !ordering::is_reordered(cfg) {
+        return dispatch_3d(cfg);
+    }
+    let ordered = ordering::ordered(cfg);
+    dispatch_3d(&BarConfig {
+        labels: &ordered.labels,
+        values: &ordered.values,
+        color_groups: &ordered.groups,
+        ..cfg.clone()
+    })
+}
+
+fn dispatch_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     use BarVariant::*;
     match cfg.variant {
         Basic => basic::layout_3d(cfg),
