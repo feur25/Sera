@@ -1,9 +1,10 @@
 use super::common::group_values;
 use super::config::BoxplotConfig;
 use super::variant::BoxplotVariant;
+use crate::plot::statistical::_3d::generic::transposed;
 use crate::plot::statistical::_3d::spread::{
-    box_blocks, letter_value_blocks, outlier_blocks, overall_span, point_blocks, transposed, violin_blocks, BoxStyle,
-    Group, Scatter,
+    box_blocks, letter_value_blocks, outlier_blocks, overall_span, point_blocks, violin_blocks, BoxStyle, Group,
+    Scatter,
 };
 use crate::plot::statistical::bar::Bar3DBlock;
 
