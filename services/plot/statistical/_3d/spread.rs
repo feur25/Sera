@@ -196,13 +196,6 @@ pub fn letter_value_blocks(groups: &[Group], levels: usize, hw: f64, depth: f64)
         .collect()
 }
 
-pub fn transposed(blocks: Vec<Bar3DBlock>) -> Vec<Bar3DBlock> {
-    blocks
-        .into_iter()
-        .map(|b| Bar3DBlock { cx: b.cy, cy: b.cx, hw: b.hd, hd: b.hw, ..b })
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -270,11 +263,5 @@ mod tests {
         let bands = letter_value_blocks(&groups()[..1], 3, 0.4, 0.3);
         assert_eq!(bands.len(), 5);
         assert!(bands[1].hw < bands[0].hw && bands[3].hw < bands[1].hw);
-    }
-
-    #[test]
-    fn transposing_swaps_the_footprint_axes() {
-        let flipped = transposed(vec![Bar3DBlock::new(1.0, 2.0, 0.0, 1.0, 0.3, 0.1, 0)]);
-        assert_eq!((flipped[0].cx, flipped[0].cy, flipped[0].hw, flipped[0].hd), (2.0, 1.0, 0.1, 0.3));
     }
 }
