@@ -136,6 +136,14 @@ pub fn block_count(html: &str) -> usize {
     html.split("var BN=").nth(1).and_then(|s| s.split(',').next()).and_then(|s| s.parse().ok()).unwrap_or(0)
 }
 
+pub fn point_count(html: &str) -> usize {
+    html.split("var X=[")
+        .nth(1)
+        .and_then(|s| s.split(']').next())
+        .map(|body| if body.is_empty() { 0 } else { body.split(',').count() })
+        .unwrap_or(0)
+}
+
 fn scene_script(html: &str) -> &str {
     let start = html.find("var BN=").unwrap_or(0);
     let end = html.find("var N=X.length").unwrap_or(html.len());
@@ -186,6 +194,30 @@ pub fn check_big(build: fn(&str) -> String, demos: &Demos, factor: usize) {
         assert!(html.len() < 8 * 1024 * 1024, "{variant_key} emitted {} bytes for big data", html.len());
         assert!(elapsed.as_secs() < 30, "{variant_key} took {elapsed:?} on big data");
     }
+}
+
+pub fn wave(n: usize, phase: usize) -> Vec<f64> {
+    (0..n).map(|i| ((i + phase * 97) as f64 * 0.013).sin() * 50.0 + (i % 11) as f64).collect()
+}
+
+pub fn names(n: usize) -> Vec<String> {
+    (0..n).map(|i| format!("L{i}")).collect()
+}
+
+pub fn check_capped(build: fn(&str) -> String, columns: fn(usize) -> serde_json::Value, cap: fn(&super::budget::Budget) -> usize) {
+    let with_budget = |n: usize, max_points: Option<usize>| {
+        let mut body = columns(n);
+        if let Some(points) = max_points {
+            body["max_points"] = serde_json::json!(points);
+        }
+        build(&body.to_string())
+    };
+    let big = with_budget(400_000, None);
+    assert_eq!(point_count(&big), cap(&super::budget::Budget::default()));
+    assert!(big.len() < 4 * 1024 * 1024, "emitted {} bytes for big data", big.len());
+    assert_eq!(point_count(&with_budget(400_000, Some(100))), cap(&super::budget::Budget::new(Some(100))));
+    assert_eq!(point_count(&with_budget(50, None)), 50);
+    assert_eq!(point_count(&with_budget(0, None)), 0);
 }
 
 pub fn check_axes(family: &str, variants: usize) {
