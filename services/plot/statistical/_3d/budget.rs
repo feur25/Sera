@@ -3,7 +3,8 @@ use super::super::bar::Bar3DBlock;
 pub const DEFAULT_POINTS: usize = 1500;
 pub const MAX_POINTS: usize = 4000;
 pub const MIN_POINTS: usize = 8;
-pub const MAX_CELLS: usize = 4096;
+pub const MIN_CELLS: usize = 64;
+pub const MAX_CELLS: usize = 12000;
 pub const SAMPLE_CAP: usize = 300;
 pub const GROUP_CAP: usize = 400;
 pub const HARD_BLOCKS: usize = 12000;
@@ -16,6 +17,10 @@ pub struct Budget {
 impl Budget {
     pub fn new(max_points: Option<usize>) -> Self {
         Self { points: max_points.filter(|p| *p >= MIN_POINTS).unwrap_or(DEFAULT_POINTS).min(MAX_POINTS) }
+    }
+
+    pub fn cells(&self) -> usize {
+        (self.points * 3).clamp(MIN_CELLS, MAX_CELLS)
     }
 }
 
@@ -172,6 +177,9 @@ mod tests {
         assert_eq!(Budget::new(Some(2)).points, DEFAULT_POINTS);
         assert_eq!(Budget::new(Some(100)).points, 100);
         assert_eq!(Budget::new(Some(usize::MAX)).points, MAX_POINTS);
+        assert_eq!(Budget::default().cells(), DEFAULT_POINTS * 3);
+        assert_eq!(Budget::new(Some(8)).cells(), MIN_CELLS);
+        assert_eq!(Budget::new(Some(MAX_POINTS)).cells(), MAX_CELLS);
     }
 
     #[test]
