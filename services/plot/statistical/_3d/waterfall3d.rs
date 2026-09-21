@@ -96,6 +96,16 @@ mod tests {
     }
 
     #[test]
+    fn every_waterfall_variant_survives_empty_single_and_extreme_inputs() {
+        twin::check_robust(build_waterfall3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_waterfall_variant_stays_within_the_block_budget_on_big_data() {
+        twin::check_big(build_waterfall3d_chart, &demos(), 2000);
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
         twin::write_previews("waterfall3d", build_waterfall3d_chart, &demos(), WaterfallVariant::default_key());
