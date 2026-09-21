@@ -105,6 +105,89 @@ pub fn check_zone(build: fn(&str) -> String, demos: &Demos) {
     }
 }
 
+fn reshape(value: &mut serde_json::Value, len: &dyn Fn(usize) -> usize, keep_outer: bool) {
+    match value {
+        serde_json::Value::Array(items) => {
+            let nested = items.iter().any(|v| v.is_array());
+            if !(nested && keep_outer) {
+                let base = std::mem::take(items);
+                if !base.is_empty() {
+                    *items = (0..len(base.len())).map(|i| base[i % base.len()].clone()).collect();
+                }
+            }
+            if nested {
+                items.iter_mut().for_each(|v| reshape(v, len, keep_outer));
+            }
+        }
+        serde_json::Value::Object(map) => {
+            map.iter_mut().filter(|(k, _)| k.as_str() != "zone").for_each(|(_, v)| reshape(v, len, keep_outer));
+        }
+        _ => {}
+    }
+}
+
+fn reshaped(json: &str, len: &dyn Fn(usize) -> usize, keep_outer: bool) -> String {
+    let mut parsed: serde_json::Value = serde_json::from_str(json).expect("demo json");
+    reshape(&mut parsed, len, keep_outer);
+    parsed.to_string()
+}
+
+pub fn block_count(html: &str) -> usize {
+    html.split("var BN=").nth(1).and_then(|s| s.split(',').next()).and_then(|s| s.parse().ok()).unwrap_or(0)
+}
+
+fn scene_script(html: &str) -> &str {
+    let start = html.find("var BN=").unwrap_or(0);
+    let end = html.find("var N=X.length").unwrap_or(html.len());
+    &html[start..end.max(start)]
+}
+
+pub fn check_robust(build: fn(&str) -> String, demos: &Demos) {
+    for (variant_key, json) in demos {
+        let cases: Vec<(&str, String)> = vec![
+            ("empty", reshaped(json, &|_| 0, false)),
+            ("single", reshaped(json, &|_| 1, false)),
+            ("pair", reshaped(json, &|_| 2, false)),
+            ("doubled", reshaped(json, &|n| n * 2, true)),
+        ];
+        for (case, input) in cases {
+            let html = build(&input);
+            let script = scene_script(&html);
+            assert!(!script.contains("NaN") && !script.contains("inf"), "{variant_key} with {case} input must not emit non-finite numbers");
+            assert!(block_count(&html) <= super::budget::HARD_BLOCKS, "{variant_key} with {case} input must respect the hard cap");
+        }
+        let mut extreme: serde_json::Value = serde_json::from_str(json).expect("demo json");
+        fn blow_up(v: &mut serde_json::Value) {
+            match v {
+                serde_json::Value::Number(n) => {
+                    if let Some(f) = n.as_f64() {
+                        *v = serde_json::json!(f * 1e300);
+                    }
+                }
+                serde_json::Value::Array(a) => a.iter_mut().for_each(blow_up),
+                _ => {}
+            }
+        }
+        blow_up(&mut extreme);
+        let html = build(&extreme.to_string());
+        let script = scene_script(&html);
+        assert!(!script.contains("NaN") && !script.contains("inf"), "{variant_key} with extreme values must not emit non-finite numbers");
+    }
+}
+
+pub fn check_big(build: fn(&str) -> String, demos: &Demos, factor: usize) {
+    for (variant_key, json) in demos {
+        let input = reshaped(json, &|n| n * factor, true);
+        let started = std::time::Instant::now();
+        let html = build(&input);
+        let elapsed = started.elapsed();
+        let blocks = block_count(&html);
+        assert!(blocks <= super::budget::HARD_BLOCKS, "{variant_key} drew {blocks} blocks for big data");
+        assert!(html.len() < 8 * 1024 * 1024, "{variant_key} emitted {} bytes for big data", html.len());
+        assert!(elapsed.as_secs() < 30, "{variant_key} took {elapsed:?} on big data");
+    }
+}
+
 pub fn check_axes(family: &str, variants: usize) {
     let listing = crate::chart_variants();
     let entry = &listing[family];
