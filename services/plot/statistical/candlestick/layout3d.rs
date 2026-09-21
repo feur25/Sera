@@ -1,9 +1,10 @@
 use super::common::heikin_ashi;
 use super::config::CandlestickConfig;
 use super::variant::CandlestickVariant;
+use crate::plot::statistical::_3d::budget::{Budget, Buckets};
 use crate::plot::statistical::_3d::ohlc::{
-    area_blocks, candle_blocks, extreme_markers, moving_average, stem_blocks, tick_blocks, track_blocks, volume_blocks,
-    Quotes, UP,
+    area_blocks, candle_blocks, extreme_markers, moving_average, pooled, stem_blocks, tick_blocks, track_blocks,
+    volume_blocks, Quotes, UP,
 };
 use crate::plot::statistical::bar::Bar3DBlock;
 
@@ -108,25 +109,32 @@ fn overlay_blocks(overlay: Overlay, quotes: &Quotes, volume: &[f64]) -> Vec<Bar3
     }
 }
 
-pub fn layout_3d(cfg: &CandlestickConfig) -> Vec<Bar3DBlock> {
+pub fn layout_3d(cfg: &CandlestickConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     let plan = recipe(cfg.variant);
     let raw = Quotes { open: cfg.open, high: cfg.high, low: cfg.low, close: cfg.close };
     let n = raw.len();
     if n == 0 {
         return Vec::new();
     }
+    let buckets = Buckets::new(n, budget.points);
+    let reduced = (!buckets.is_identity()).then(|| pooled(&raw, cfg.volume, &buckets));
+    let (source, volume) = match &reduced {
+        Some(p) => (p.quotes(), p.volume.as_slice()),
+        None => (raw, cfg.volume),
+    };
+    let m = source.len();
     let smoothed = if plan.smoothed {
-        heikin_ashi(&cfg.open[..n], &cfg.high[..n], &cfg.low[..n], &cfg.close[..n])
+        heikin_ashi(&source.open[..m], &source.high[..m], &source.low[..m], &source.close[..m])
     } else {
         Default::default()
     };
     let quotes = if plan.smoothed {
         Quotes { open: &smoothed.0, high: &smoothed.1, low: &smoothed.2, close: &smoothed.3 }
     } else {
-        raw
+        source
     };
     let mut blocks = glyph_blocks(plan.glyph, &quotes);
-    blocks.extend(overlay_blocks(plan.overlay, &quotes, cfg.volume));
+    blocks.extend(overlay_blocks(plan.overlay, &quotes, volume));
     blocks
 }
 
@@ -141,15 +149,18 @@ mod tests {
     const VOLUME: [f64; 6] = [1200.0, 900.0, 1500.0, 800.0, 2000.0, 1000.0];
 
     fn blocks_for(variant: CandlestickVariant) -> Vec<Bar3DBlock> {
-        layout_3d(&CandlestickConfig {
-            variant,
-            open: &OPEN,
-            high: &HIGH,
-            low: &LOW,
-            close: &CLOSE,
-            volume: &VOLUME,
-            ..CandlestickConfig::default()
-        })
+        layout_3d(
+            &CandlestickConfig {
+                variant,
+                open: &OPEN,
+                high: &HIGH,
+                low: &LOW,
+                close: &CLOSE,
+                volume: &VOLUME,
+                ..CandlestickConfig::default()
+            },
+            &Budget::default(),
+        )
     }
 
     #[test]
@@ -185,6 +196,26 @@ mod tests {
 
     #[test]
     fn empty_quotes_draw_nothing() {
-        assert!(layout_3d(&CandlestickConfig::default()).is_empty());
+        assert!(layout_3d(&CandlestickConfig::default(), &Budget::default()).is_empty());
+    }
+
+    #[test]
+    fn long_histories_are_pooled_to_the_budget_without_losing_the_range() {
+        let n = 50_000;
+        let close: Vec<f64> = (0..n).map(|i| 100.0 + (i as f64 * 0.01).sin() * 20.0).collect();
+        let open: Vec<f64> = close.iter().map(|v| v - 0.5).collect();
+        let high: Vec<f64> = close.iter().map(|v| v + 1.0).collect();
+        let low: Vec<f64> = close.iter().map(|v| v - 1.0).collect();
+        let cfg = CandlestickConfig {
+            open: &open,
+            high: &high,
+            low: &low,
+            close: &close,
+            ..CandlestickConfig::default()
+        };
+        let blocks = layout_3d(&cfg, &Budget::new(Some(500)));
+        assert_eq!(blocks.len(), 1000);
+        let top = blocks.iter().map(|b| b.z1).fold(f64::MIN, f64::max);
+        assert!((top - (120.0 + 1.0)).abs() < 0.5);
     }
 }
