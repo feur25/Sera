@@ -97,6 +97,7 @@
   - [Histogram 3D](charts/3d/histogram3d.md)
   - [Dumbbell 3D](charts/3d/dumbbell3d.md)
   - [Bullet 3D](charts/3d/bullet3d.md)
+  - [Gantt 3D](charts/3d/gantt3d.md)
   - [Funnel 3D](charts/3d/funnel3d.md)
   - [Sunburst 3D](charts/3d/sunburst3d.md)
   - [Stacked Bar 3D](charts/3d/stacked-bar3d.md)
