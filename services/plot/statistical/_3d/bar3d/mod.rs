@@ -1,3 +1,4 @@
+use super::budget;
 use super::zone::{self, Fit};
 use crate::plot::statistical::bar::{fit_3d, height_ratio_3d, layout_3d, Bar3DBlock, BarConfig};
 
@@ -78,6 +79,12 @@ fn block_script(blocks: &[Bar3DBlock], view: &BlockView) -> String {
     if blocks.iter().any(|b| b.tone.is_some()) {
         js.push_str(&format!(",BCT=[{}]", column(blocks, |b| format!("{:.4}", b.tone.unwrap_or(-1.0)))));
     }
+    if blocks.iter().any(|b| b.end.is_some()) {
+        let ends = |pick: fn((f64, f64)) -> f64, own: fn(&Bar3DBlock) -> f64| {
+            column(blocks, move |b| format!("{:.4}", b.end.map(pick).unwrap_or_else(|| own(b))))
+        };
+        js.push_str(&format!(",BEZ0=[{}],BEZ1=[{}]", ends(|e| e.0, |b| b.z0), ends(|e| e.1, |b| b.z1)));
+    }
     js.push_str(&format!(";var BFIT={};", zone::fit(blocks, view.height_ratio, view.zone, view.fit).to_js()));
     if !view.cmap.is_empty() {
         js.push_str(&format!("CMAP='{}';", view.cmap));
@@ -96,15 +103,13 @@ pub fn render_blocks3d_view_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    let anchor = |pick: fn(&Bar3DBlock) -> f64| -> Vec<f64> {
-        if blocks.is_empty() { vec![0.0] } else { blocks.iter().map(pick).collect() }
-    };
+    let kept = budget::thin(budget::sound(blocks), budget::HARD_BLOCKS);
     crate::html::js_3d::render_3d_html_impl(
         1,
         title,
-        &anchor(|b| b.cx),
-        &anchor(|b| b.cy),
-        &anchor(|b| b.z1),
+        &[0.0],
+        &[0.0],
+        &[0.0],
         axis_labels,
         &[],
         color_labels,
@@ -112,7 +117,7 @@ pub fn render_blocks3d_view_html(
         h,
         bg_color,
         scene,
-        block_script(blocks, view).as_bytes(),
+        block_script(&kept, view).as_bytes(),
     )
 }
 
