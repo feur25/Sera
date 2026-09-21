@@ -6,11 +6,17 @@ use std::f64::consts::TAU;
 const MIN_RING: f64 = 2.5;
 const GEM_STRETCH: f64 = 1.3;
 const GEM_DEPTH: f64 = 0.6;
+const PLATE: f64 = 0.22;
+const ARROW_LAYERS: [f64; 3] = [1.0, 0.62, 0.28];
+const ARROW_LENGTH: f64 = 1.7;
+const DASH_DUTY: f64 = 0.55;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Head {
     Cube,
+    Plate,
     Diamond,
+    Arrow,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -81,10 +87,25 @@ fn gem(stem: &Bar3DBlock, z: f64, width: f64, tall: f64) -> Vec<Bar3DBlock> {
     ]
 }
 
+fn arrow(stem: &Bar3DBlock, z: f64, width: f64, tall: f64) -> Vec<Bar3DBlock> {
+    let dir = if z >= (stem.z0 + stem.z1) / 2.0 { 1.0 } else { -1.0 };
+    let each = tall * ARROW_LENGTH / ARROW_LAYERS.len() as f64;
+    ARROW_LAYERS
+        .iter()
+        .enumerate()
+        .map(|(k, scale)| {
+            let (a, b) = (z + dir * each * k as f64, z + dir * each * (k + 1) as f64);
+            Bar3DBlock::new(stem.cx, stem.cy, a.min(b), a.max(b), width * scale, width * scale, stem.ci)
+        })
+        .collect()
+}
+
 fn head_at(stem: &Bar3DBlock, z: f64, style: Head, width: f64, tall: f64) -> Vec<Bar3DBlock> {
     let blocks = match style {
         Head::Cube => vec![Bar3DBlock::new(stem.cx, stem.cy, z - tall / 2.0, z + tall / 2.0, width, width, stem.ci)],
+        Head::Plate => vec![Bar3DBlock::new(stem.cx, stem.cy, z - tall * PLATE / 2.0, z + tall * PLATE / 2.0, width, width, stem.ci)],
         Head::Diamond => gem(stem, z, width, tall),
+        Head::Arrow => arrow(stem, z, width, tall),
     };
     blocks
         .into_iter()
@@ -105,6 +126,26 @@ pub fn heads(stems: &[Bar3DBlock], tips: Tips, style: Head, width: f64, height_r
                 Tips::Both => vec![stem.z0, stem.z1],
             };
             ends.into_iter().flat_map(move |z| head_at(stem, z, style, width, tall))
+        })
+        .collect()
+}
+
+pub fn headed_at(stems: &[Bar3DBlock], levels: &[f64], style: Head, width: f64, height_ratio: f64) -> Vec<Bar3DBlock> {
+    let tall = cube_height(stems, width * 2.0, height_ratio);
+    stems.iter().zip(levels).flat_map(|(stem, &z)| head_at(stem, z, style, width, tall)).collect()
+}
+
+pub fn dashed(stems: &[Bar3DBlock], dashes: usize) -> Vec<Bar3DBlock> {
+    let count = dashes.max(1);
+    stems
+        .iter()
+        .flat_map(|stem| {
+            let (low, high) = stem.z_range();
+            let step = (high - low) / count as f64;
+            (0..count).map(move |k| {
+                let z0 = low + step * k as f64;
+                Bar3DBlock { z0, z1: z0 + step * DASH_DUTY, ..*stem }
+            })
         })
         .collect()
 }
@@ -149,6 +190,47 @@ mod tests {
         assert!((left.cx + right.cx).abs() < 1e-9);
         let (low, high) = left.z_range();
         assert!(((low + high) / 2.0 - 10.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn heads_can_be_placed_at_explicit_levels_one_per_stem() {
+        let rods = [Bar3DBlock::new(0.0, 0.0, 0.0, 10.0, 0.05, 0.05, 3), Bar3DBlock::new(1.0, 0.0, 0.0, 10.0, 0.05, 0.05, 4)];
+        let placed = headed_at(&rods, &[2.0, 7.0], Head::Cube, 0.3, 0.8);
+        assert_eq!(placed.len(), 2);
+        assert!(((placed[1].z0 + placed[1].z1) / 2.0 - 7.0).abs() < 1e-9);
+        assert_eq!((placed[0].ci, placed[1].cx), (3, 1.0));
+    }
+
+    #[test]
+    fn plates_are_flatter_than_cubes_at_the_same_width() {
+        let rod = [Bar3DBlock::new(0.0, 0.0, 0.0, 10.0, 0.05, 0.05, 0)];
+        let cube = headed_at(&rod, &[10.0], Head::Cube, 0.3, 0.8)[0];
+        let disc = headed_at(&rod, &[10.0], Head::Plate, 0.3, 0.8)[0];
+        assert!((disc.z1 - disc.z0) < (cube.z1 - cube.z0) * 0.3);
+        assert_eq!(disc.hw, cube.hw);
+    }
+
+    #[test]
+    fn arrows_narrow_away_from_the_stem_in_the_direction_of_travel() {
+        let rod = [Bar3DBlock::new(0.0, 0.0, 0.0, 10.0, 0.05, 0.05, 0)];
+        let up = headed_at(&rod, &[10.0], Head::Arrow, 0.3, 0.8);
+        assert_eq!(up.len(), 3);
+        assert!(up.iter().all(|b| b.z0 >= 10.0 - 1e-9));
+        assert!(up[0].hw > up[1].hw && up[1].hw > up[2].hw);
+        assert!(up[0].z1 <= up[1].z0 + 1e-9 && up[1].z1 <= up[2].z0 + 1e-9);
+        let down = headed_at(&rod, &[0.0], Head::Arrow, 0.3, 0.8);
+        assert!(down.iter().all(|b| b.z1 <= 1e-9));
+    }
+
+    #[test]
+    fn dashes_cut_every_stem_into_evenly_spaced_segments_with_gaps() {
+        let rod = [Bar3DBlock::new(2.0, 1.0, 0.0, 10.0, 0.05, 0.05, 6).with_tone(0.5)];
+        let cut = dashed(&rod, 4);
+        assert_eq!(cut.len(), 4);
+        assert!((cut[1].z0 - 2.5).abs() < 1e-9);
+        assert!(cut[0].z1 < cut[1].z0);
+        assert_eq!((cut[3].cx, cut[3].ci, cut[3].tone), (2.0, 6, Some(0.5)));
+        assert_eq!(dashed(&rod, 0).len(), 1);
     }
 
     #[test]
