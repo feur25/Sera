@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use std::f64::consts::TAU;
 
 const MIN_RING: f64 = 2.5;
-const DIAMOND: [f64; 4] = [0.35, 0.85, 0.85, 0.35];
+const GEM_STRETCH: f64 = 1.3;
+const GEM_DEPTH: f64 = 0.6;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Head {
@@ -16,15 +17,6 @@ pub enum Head {
 pub enum Tips {
     Far,
     Both,
-}
-
-impl Head {
-    fn layers(self) -> &'static [f64] {
-        match self {
-            Head::Cube => &[1.0],
-            Head::Diamond => &DIAMOND,
-        }
-    }
 }
 
 pub fn finite(values: &[f64]) -> Vec<f64> {
@@ -79,19 +71,26 @@ fn far_end(stem: &Bar3DBlock) -> f64 {
     if stem.z1.abs() >= stem.z0.abs() { stem.z1 } else { stem.z0 }
 }
 
+fn gem(stem: &Bar3DBlock, z: f64, width: f64, tall: f64) -> Vec<Bar3DBlock> {
+    let half = tall * GEM_STRETCH / 2.0;
+    let (tip, belly) = ((z, z), (z - half, z + half));
+    let depth = width * GEM_DEPTH;
+    vec![
+        Bar3DBlock::sloped(stem.cx - width / 2.0, stem.cy, tip, belly, width / 2.0, depth, stem.ci),
+        Bar3DBlock::sloped(stem.cx + width / 2.0, stem.cy, belly, tip, width / 2.0, depth, stem.ci),
+    ]
+}
+
 fn head_at(stem: &Bar3DBlock, z: f64, style: Head, width: f64, tall: f64) -> Vec<Bar3DBlock> {
-    let layers = style.layers();
-    let each = tall / layers.len() as f64;
-    layers
-        .iter()
-        .enumerate()
-        .map(|(k, scale)| {
-            let z0 = z - tall / 2.0 + each * k as f64;
-            let block = Bar3DBlock::new(stem.cx, stem.cy, z0, z0 + each, width * scale, width * scale, stem.ci);
-            match stem.tone {
-                Some(tone) => block.with_tone(tone),
-                None => block,
-            }
+    let blocks = match style {
+        Head::Cube => vec![Bar3DBlock::new(stem.cx, stem.cy, z - tall / 2.0, z + tall / 2.0, width, width, stem.ci)],
+        Head::Diamond => gem(stem, z, width, tall),
+    };
+    blocks
+        .into_iter()
+        .map(|block| match stem.tone {
+            Some(tone) => block.with_tone(tone),
+            None => block,
         })
         .collect()
 }
@@ -140,13 +139,16 @@ mod tests {
     }
 
     #[test]
-    fn a_diamond_head_is_four_tapering_layers_stacked_around_the_tip() {
-        let gem = heads(&stems()[..1], Tips::Far, Head::Diamond, 0.4, 0.8);
-        assert_eq!(gem.len(), 4);
-        assert!(gem[0].hw < gem[1].hw && gem[3].hw < gem[2].hw);
-        assert!((gem[0].z1 - gem[1].z0).abs() < 1e-9);
-        let middle = (gem[0].z0 + gem[3].z1) / 2.0;
-        assert!((middle - 10.0).abs() < 1e-9);
+    fn a_diamond_head_is_a_rhombic_prism_made_of_two_wedges_meeting_at_the_belly() {
+        let stone = heads(&stems()[..1], Tips::Far, Head::Diamond, 0.4, 0.8);
+        assert_eq!(stone.len(), 2);
+        let (left, right) = (stone[0], stone[1]);
+        assert_eq!((left.z0, left.z1), (10.0, 10.0));
+        assert_eq!(left.end, Some((right.z0, right.z1)));
+        assert_eq!(right.end, Some((10.0, 10.0)));
+        assert!((left.cx + right.cx).abs() < 1e-9);
+        let (low, high) = left.z_range();
+        assert!(((low + high) / 2.0 - 10.0).abs() < 1e-9);
     }
 
     #[test]
