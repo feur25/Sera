@@ -1,4 +1,4 @@
-use super::budget;
+use super::budget::{self, Budget};
 use super::zone::{self, Fit};
 use crate::plot::statistical::bar::{fit_3d, height_ratio_3d, layout_3d, Bar3DBlock, BarConfig};
 
@@ -12,9 +12,10 @@ pub fn render_bar3d_blocks_html(
     bg_color: Option<&str>,
     scene: &str,
     zone: Option<&[f64]>,
+    budget: &Budget,
 ) -> String {
     let view = BlockView::new(height_ratio_3d(cfg.variant), "").with_zone(zone).with_fit(fit_3d(cfg.variant));
-    render_blocks3d_view_html(title, &layout_3d(cfg), &view, axis_labels, color_labels, w, h, bg_color, scene)
+    render_blocks3d_view_html(title, &layout_3d(cfg, budget), &view, axis_labels, color_labels, w, h, bg_color, scene)
 }
 
 pub struct BlockView<'a> {
@@ -158,6 +159,7 @@ mod tests {
 
     #[test]
     fn sort_order_reorders_the_columns_like_the_2d_chart() {
+        use crate::plot::statistical::_3d::budget::Budget;
         use crate::plot::statistical::bar::{layout_3d, BarConfig};
         let labels: Vec<String> = ["A", "B", "C", "D"].iter().map(|s| s.to_string()).collect();
         let values = [10.0, 40.0, 20.0, 30.0];
@@ -172,7 +174,7 @@ mod tests {
                 sort_order: order,
                 ..BarConfig::default()
             };
-            let tops: Vec<f64> = layout_3d(&cfg).iter().map(|b| b.z1).collect();
+            let tops: Vec<f64> = layout_3d(&cfg, &Budget::default()).iter().map(|b| b.z1).collect();
             assert_eq!(tops, expected, "sort_order={order}");
         }
     }
