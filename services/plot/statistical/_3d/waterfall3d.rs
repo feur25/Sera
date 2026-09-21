@@ -1,10 +1,11 @@
+use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::waterfall::layout3d;
 use crate::plot::statistical::{WaterfallConfig, WaterfallVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]")]
-#[crate::params(paramsList["title","labels","values","variant","sort_order","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
+#[crate::params(paramsList["title","labels","values","variant","sort_order","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","max_points","width","height"])]
 #[crate::sera_alias("waterfall3d", "waterfall_3d", "waterfall3d_chart")]
 #[crate::sera_builder]
 pub fn build_waterfall3d_chart(input: &str) -> String {
@@ -32,7 +33,7 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
-        &layout3d::layout_3d(&cfg),
+        &layout3d::layout_3d(&cfg, &Budget::new(o.max_points)),
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
         &labels,
