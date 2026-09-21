@@ -1,7 +1,8 @@
+use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("x=[1,2,3], y=[1,2,3], z=[1,2,3], sizes=[10,20,30]")]
-#[crate::params(paramsList["title","x","y","z","sizes","palette","bg_color","scene","orientation3d","width","height","x_label","y_label","z_label"])]
+#[crate::params(paramsList["title","x","y","z","sizes","palette","bg_color","scene","orientation3d","max_points","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias(
     "bubble3d",
     "bubble_3d",
@@ -20,6 +21,9 @@ pub fn build_bubble3d_chart(input: &str) -> String {
     let cv = o.color_values.clone().unwrap_or_default();
     let cl = o.color_labels.clone().unwrap_or_default();
     let n = x.len().min(y.len()).min(z.len()).min(size_values.len());
+    let keep = even_indices(n, Budget::new(o.max_points).elements());
+    let (x, y, z, size_values, cv) = (pick(&x, &keep), pick(&y, &keep), pick(&z, &keep), pick(&size_values, &keep), pick(&cv, &keep));
+    let n = keep.len();
     let smn = size_values[..n]
         .iter()
         .cloned()
@@ -54,4 +58,27 @@ pub fn build_bubble3d_chart(input: &str) -> String {
         size_js.as_bytes(),
     );
     apply_bg3d(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::build_bubble3d_chart;
+    use crate::plot::statistical::_3d::budget::Budget;
+    use crate::plot::statistical::_3d::twin;
+
+    fn columns(n: usize) -> serde_json::Value {
+        serde_json::json!({"title": "t", "x": twin::wave(n, 0), "y": twin::wave(n, 1), "z": twin::wave(n, 2), "sizes": twin::wave(n, 3)})
+    }
+
+    #[test]
+    fn a_big_bubble_chart_is_capped_by_the_budget_and_small_ones_are_untouched() {
+        twin::check_capped(build_bubble3d_chart, columns, Budget::elements);
+    }
+
+    #[test]
+    fn sizes_follow_the_kept_bubbles() {
+        let html = build_bubble3d_chart(&columns(100_000).to_string());
+        let sizes = html.split("var S=[").nth(1).and_then(|s| s.split(']').next()).map(|s| s.split(',').count());
+        assert_eq!(sizes, Some(Budget::default().elements()));
+    }
 }
