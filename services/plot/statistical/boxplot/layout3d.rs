@@ -93,26 +93,32 @@ fn split_evenly(samples: &[f64], parts: usize) -> Vec<&[f64]> {
         .collect()
 }
 
-fn grouped_by_label(labels: &[String], values: &[f64]) -> Vec<Vec<f64>> {
+fn grouped_by_label(labels: &[String], values: &[f64]) -> (Vec<String>, Vec<Vec<f64>>) {
     let mut slots: HashMap<&str, usize> = HashMap::new();
+    let mut names: Vec<String> = Vec::new();
     let mut groups: Vec<Vec<f64>> = Vec::new();
     for (label, &value) in labels.iter().zip(values) {
         let slot = *slots.entry(label.as_str()).or_insert_with(|| {
+            names.push(label.clone());
             groups.push(Vec::new());
             groups.len() - 1
         });
         groups[slot].push(value);
     }
-    groups
+    (names, groups)
 }
 
-fn categories(cfg: &BoxplotConfig, cap: usize) -> Vec<Vec<f64>> {
-    let all = if cfg.values.is_empty() {
-        cfg.series.to_vec()
+fn categories(cfg: &BoxplotConfig, cap: usize) -> (Vec<String>, Vec<Vec<f64>>) {
+    let (names, all) = if cfg.values.is_empty() {
+        let names: Vec<String> = (0..cfg.series.len())
+            .map(|i| cfg.category_labels.get(i).cloned().unwrap_or_else(|| format!("G{}", i + 1)))
+            .collect();
+        (names, cfg.series.to_vec())
     } else {
         grouped_by_label(cfg.category_labels, cfg.values)
     };
-    even_indices(all.len(), cap).into_iter().map(|i| all[i].clone()).collect()
+    let kept = even_indices(all.len(), cap);
+    (kept.iter().map(|&i| names[i].clone()).collect(), kept.iter().map(|&i| all[i].clone()).collect())
 }
 
 fn groups_of<'a>(plan: Recipe, flat: &'a [Vec<f64>], grouped: &'a [Vec<&'a [f64]>]) -> Vec<Group<'a>> {
@@ -138,18 +144,19 @@ fn groups_of<'a>(plan: Recipe, flat: &'a [Vec<f64>], grouped: &'a [Vec<&'a [f64]
 }
 
 pub fn layout_3d(cfg: &BoxplotConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    layout_named(cfg, budget).0
+}
+
+pub fn layout_named(cfg: &BoxplotConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
     let plan = recipe(cfg.variant);
     let cap = budget.points.min(GROUP_CAP);
-    let flat = categories(cfg, cap);
+    let (names, flat) = categories(cfg, cap);
     let n_cats = cfg.category_labels.len().max(1);
-    let split: Vec<Vec<&[f64]>> = if plan.grouped {
-        even_indices(cfg.series.len(), cap).into_iter().map(|i| split_evenly(&cfg.series[i], n_cats)).collect()
-    } else {
-        Vec::new()
-    };
+    let kept_series: Vec<usize> = if plan.grouped { even_indices(cfg.series.len(), cap) } else { Vec::new() };
+    let split: Vec<Vec<&[f64]>> = kept_series.iter().map(|&i| split_evenly(&cfg.series[i], n_cats)).collect();
     let groups = groups_of(plan, &flat, &split);
     if groups.is_empty() {
-        return Vec::new();
+        return (Vec::new(), names);
     }
     let size = overall_span(&groups) * POINT_SHARE;
     let hw = if plan.grouped { BOX_HW * 0.5 } else { BOX_HW };
@@ -170,7 +177,15 @@ pub fn layout_3d(cfg: &BoxplotConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     if plan.swap {
         blocks = transposed(blocks);
     }
-    blocks
+    let names = if plan.grouped && !kept_series.is_empty() {
+        kept_series
+            .iter()
+            .map(|&i| cfg.series_names.get(i).cloned().unwrap_or_else(|| format!("S{}", i + 1)))
+            .collect()
+    } else {
+        names
+    };
+    (blocks, names)
 }
 
 #[cfg(test)]
@@ -243,6 +258,22 @@ mod tests {
         rows.sort();
         rows.dedup();
         assert_eq!(rows.len(), 2);
+    }
+
+    #[test]
+    fn block_names_follow_the_groups_or_the_series_of_the_grouped_variant() {
+        let cats = labels();
+        let data = vec![vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2.0, 3.0, 4.0, 5.0, 6.0, 7.0]];
+        let series_names = vec!["north".to_string(), "south".to_string()];
+        let config = |variant| BoxplotConfig {
+            variant,
+            category_labels: &cats,
+            series: &data,
+            series_names: &series_names,
+            ..BoxplotConfig::default()
+        };
+        assert_eq!(layout_named(&config(BoxplotVariant::Basic), &Budget::default()).1, vec!["A", "B"]);
+        assert_eq!(layout_named(&config(BoxplotVariant::Grouped), &Budget::default()).1, vec!["north", "south"]);
     }
 
     #[test]
