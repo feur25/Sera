@@ -1,4 +1,5 @@
 use super::super::bar::Bar3DBlock;
+use super::budget::Buckets;
 
 pub const UP: f64 = 1.0;
 pub const DOWN: f64 = 0.0;
@@ -28,6 +29,31 @@ impl<'a> Quotes<'a> {
         let n = self.len();
         let top = self.high[..n].iter().cloned().fold(f64::NEG_INFINITY, f64::max);
         (top - self.floor()).max(1e-9)
+    }
+}
+
+pub struct Pooled {
+    pub open: Vec<f64>,
+    pub high: Vec<f64>,
+    pub low: Vec<f64>,
+    pub close: Vec<f64>,
+    pub volume: Vec<f64>,
+}
+
+impl Pooled {
+    pub fn quotes(&self) -> Quotes<'_> {
+        Quotes { open: &self.open, high: &self.high, low: &self.low, close: &self.close }
+    }
+}
+
+pub fn pooled(q: &Quotes, volume: &[f64], buckets: &Buckets) -> Pooled {
+    let n = q.len();
+    Pooled {
+        open: buckets.first(&q.open[..n]),
+        high: buckets.high(&q.high[..n]),
+        low: buckets.low(&q.low[..n]),
+        close: buckets.last(&q.close[..n]),
+        volume: if volume.is_empty() { Vec::new() } else { buckets.sum(volume) },
     }
 }
 
@@ -198,6 +224,19 @@ mod tests {
     #[test]
     fn moving_average_warms_up_then_slides() {
         assert_eq!(moving_average(&[2.0, 4.0, 6.0, 8.0], 2), vec![2.0, 3.0, 5.0, 7.0]);
+    }
+
+    #[test]
+    fn pooled_quotes_open_first_close_last_and_keep_the_extremes_and_the_volume() {
+        let buckets = Buckets::new(4, 2);
+        let volume = [1.0, 2.0, 3.0, 4.0];
+        let p = pooled(&quotes(), &volume, &buckets);
+        assert_eq!(p.open, vec![10.0, 11.0]);
+        assert_eq!(p.close, vec![11.0, 15.0]);
+        assert_eq!(p.high, vec![15.0, 16.0]);
+        assert_eq!(p.low, vec![9.0, 9.0]);
+        assert_eq!(p.volume, vec![3.0, 7.0]);
+        assert_eq!(p.quotes().len(), 2);
     }
 
     #[test]
