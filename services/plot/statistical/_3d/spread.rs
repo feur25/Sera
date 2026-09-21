@@ -1,7 +1,10 @@
 use super::super::bar::Bar3DBlock;
+use super::budget::{quantile_sample, SAMPLE_CAP};
 use crate::plot::statistical::boxplot::common::{compute_box, quartile};
 
 pub const MEDIAN_TONE: f64 = 0.5;
+const DENSITY_CAP: usize = 2000;
+const BAND_CAP: usize = 50_000;
 
 #[derive(Clone, Copy)]
 pub struct Group<'a> {
@@ -31,12 +34,6 @@ pub fn overall_span(groups: &[Group]) -> f64 {
     let all = groups.iter().flat_map(|g| g.samples.iter()).filter(|v| v.is_finite());
     let (lo, hi) = all.fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
     if lo.is_finite() { (hi - lo).max(1e-9) } else { 1.0 }
-}
-
-fn sorted(samples: &[f64]) -> Vec<f64> {
-    let mut s: Vec<f64> = samples.iter().copied().filter(|v| v.is_finite()).collect();
-    s.sort_by(|a, b| a.total_cmp(b));
-    s
 }
 
 pub fn box_blocks(groups: &[Group], style: &BoxStyle) -> Vec<Bar3DBlock> {
@@ -78,8 +75,7 @@ pub fn outlier_blocks(groups: &[Group], size: f64) -> Vec<Bar3DBlock> {
     groups
         .iter()
         .flat_map(|g| {
-            compute_box(g.samples)
-                .outliers
+            quantile_sample(&compute_box(g.samples).outliers, SAMPLE_CAP)
                 .into_iter()
                 .map(move |v| Bar3DBlock::new(g.cx, g.cy, v - size / 2.0, v + size / 2.0, size / 2.0, size / 2.0, g.class))
         })
@@ -112,7 +108,7 @@ pub fn point_blocks(groups: &[Group], scatter: Scatter, reach: f64, size: f64) -
     groups
         .iter()
         .flat_map(|g| {
-            let values = sorted(g.samples);
+            let values = quantile_sample(g.samples, SAMPLE_CAP);
             let offsets: Vec<f64> = match scatter {
                 Scatter::Aligned => vec![0.0; values.len()],
                 Scatter::Jitter => (0..values.len())
@@ -141,7 +137,7 @@ pub fn violin_blocks(groups: &[Group], slices: usize, max_hw: f64, depth: f64) -
     groups
         .iter()
         .flat_map(|g| {
-            let values = sorted(g.samples);
+            let values = quantile_sample(g.samples, DENSITY_CAP);
             let (Some(&lo), Some(&hi)) = (values.first(), values.last()) else {
                 return Vec::new();
             };
@@ -169,7 +165,7 @@ pub fn letter_value_blocks(groups: &[Group], levels: usize, hw: f64, depth: f64)
     groups
         .iter()
         .flat_map(|g| {
-            let values = sorted(g.samples);
+            let values = quantile_sample(g.samples, BAND_CAP);
             if values.is_empty() {
                 return Vec::new();
             }
@@ -247,6 +243,17 @@ mod tests {
         assert_eq!(crowded, 0);
         let jitter = point_blocks(&groups()[..1], Scatter::Jitter, 0.35, 0.2);
         assert!(jitter.iter().any(|b| b.cx != 0.0));
+    }
+
+    #[test]
+    fn huge_samples_are_capped_before_they_become_blocks() {
+        let big: Vec<f64> = (0..200_000u64).map(|i| ((i * 7919) % 10_007) as f64).collect();
+        let g = [Group { samples: &big, cx: 0.0, cy: 0.0, class: 0 }];
+        assert!(point_blocks(&g, Scatter::Swarm, 2.0, 5.0).len() <= SAMPLE_CAP);
+        assert!(point_blocks(&g, Scatter::Jitter, 2.0, 5.0).len() <= SAMPLE_CAP);
+        assert!(outlier_blocks(&g, 5.0).len() <= SAMPLE_CAP);
+        assert_eq!(violin_blocks(&g, 16, 0.4, 0.3).len(), 16);
+        assert_eq!(letter_value_blocks(&g, 4, 0.4, 0.3).len(), 7);
     }
 
     #[test]
