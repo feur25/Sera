@@ -5,7 +5,7 @@ use crate::plot::statistical::{BoxplotConfig, BoxplotVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]")]
-#[crate::params(paramsList["title","labels","values","series","variant","notch","jitter","boxen_depth","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","max_points","width","height"])]
+#[crate::params(paramsList["title","labels","values","series","variant","series_names","notch","jitter","boxen_depth","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","max_points","width","height"])]
 #[crate::sera_alias("boxplot3d", "boxplot_3d", "boxplot3d_chart", "box3d")]
 #[crate::sera_builder]
 pub fn build_boxplot3d_chart(input: &str) -> String {
@@ -14,6 +14,7 @@ pub fn build_boxplot3d_chart(input: &str) -> String {
     let category_labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let series = a.series.unwrap_or_default();
+    let series_names = o.series_names.clone().unwrap_or_default();
     let variant = BoxplotVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let cfg = BoxplotConfig {
         title,
@@ -21,6 +22,7 @@ pub fn build_boxplot3d_chart(input: &str) -> String {
         category_labels: &category_labels,
         values: &values,
         series: &series,
+        series_names: &series_names,
         notch: o.notch.unwrap_or(false),
         jitter: o.jitter.unwrap_or(0.35),
         boxen_depth: o.boxen_depth.unwrap_or(4),
@@ -34,12 +36,13 @@ pub fn build_boxplot3d_chart(input: &str) -> String {
         bg_str.as_deref()
     };
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
+    let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
     let html = render_blocks3d_view_html(
         title,
-        &layout3d::layout_3d(&cfg, &Budget::new(o.max_points)),
+        &blocks,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
-        &category_labels,
+        &names,
         o.w(900),
         o.h(560),
         bg_default,
