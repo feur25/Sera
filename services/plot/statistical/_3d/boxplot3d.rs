@@ -105,6 +105,16 @@ mod tests {
     }
 
     #[test]
+    fn every_boxplot_variant_survives_empty_single_and_extreme_inputs() {
+        twin::check_robust(build_boxplot3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_boxplot_variant_stays_within_the_block_budget_on_big_data() {
+        twin::check_big(build_boxplot3d_chart, &demos(), 2000);
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
         twin::write_previews("boxplot3d", build_boxplot3d_chart, &demos(), BoxplotVariant::default_key());
