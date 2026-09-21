@@ -34,13 +34,13 @@ pub fn build_histogram3d_chart(input: &str) -> String {
         bg_str.as_deref()
     };
     let view = BlockView::new(layout3d::HEIGHT_RATIO, "").with_zone(o.zone.as_deref());
-    let color_labels: Vec<String> = if categories.is_empty() { names.clone() } else { Vec::new() };
+    let (blocks, series_names) = layout3d::layout_named(&cfg);
     let html = render_blocks3d_view_html(
         title,
-        &layout3d::layout_3d(&cfg),
+        &blocks,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
-        &color_labels,
+        &series_names,
         o.w(900),
         o.h(560),
         bg_default,
