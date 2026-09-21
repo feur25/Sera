@@ -1,13 +1,15 @@
-use super::common::{bin_to_edges, compute_bins, group_indices};
+use super::common::{bin_to_edges, compute_bins};
 use super::config::HistogramConfig;
 use super::variant::HistogramVariant;
 use crate::plot::statistical::_3d::generic::{grouped_columns, plate_columns, transposed};
 use crate::plot::statistical::bar::Bar3DBlock;
+use std::collections::HashMap;
 
 pub const HEIGHT_RATIO: f64 = 0.8;
 const BIN_HW: f64 = 0.46;
 const BIN_DEPTH: f64 = 0.42;
 const PLATE_SHARE: f64 = 0.02;
+const GROUP_LIMIT: usize = 60;
 
 #[derive(Clone, Copy)]
 enum Measure {
@@ -68,16 +70,22 @@ fn recipe(variant: HistogramVariant) -> Recipe {
 
 fn counted(cfg: &HistogramConfig, edges: &[f64]) -> Vec<(String, Vec<u64>)> {
     if !cfg.categories.is_empty() {
-        let n = cfg.values.len();
-        let (groups, idx) = group_indices(cfg.categories, n);
-        let mut buckets: Vec<Vec<f64>> = vec![Vec::new(); groups.len().max(1)];
+        let mut slots: HashMap<&str, usize> = HashMap::new();
+        let mut names: Vec<String> = Vec::new();
+        let mut buckets: Vec<Vec<f64>> = Vec::new();
         for (i, &v) in cfg.values.iter().enumerate() {
-            let slot = idx.get(i).copied().unwrap_or(0).min(buckets.len() - 1);
+            let key = cfg.categories.get(i).map(|c| c.as_str()).unwrap_or("");
+            let slot = *slots.entry(key).or_insert_with(|| {
+                names.push(key.to_string());
+                buckets.push(Vec::new());
+                buckets.len() - 1
+            });
             buckets[slot].push(v);
         }
-        return groups
+        return names
             .into_iter()
             .zip(buckets)
+            .take(GROUP_LIMIT)
             .map(|(name, bucket)| (name, bin_to_edges(&bucket, edges).0))
             .collect();
     }
@@ -211,6 +219,21 @@ mod tests {
         let plates = blocks_for(HistogramVariant::Step);
         assert!(plates.iter().all(|b| b.z1 - b.z0 < 0.5));
         assert_eq!(blocks_for(HistogramVariant::Basic)[2].cx, blocks_for(HistogramVariant::Horizontal)[2].cy);
+    }
+
+    #[test]
+    fn huge_samples_with_many_groups_stay_within_the_bin_and_group_limits() {
+        let values: Vec<f64> = (0..400_000u64).map(|i| ((i * 7919) % 10_007) as f64).collect();
+        let groups: Vec<String> = (0..400_000u64).map(|i| format!("G{}", i % 500)).collect();
+        let blocks = layout_3d(&HistogramConfig {
+            variant: HistogramVariant::Stacked,
+            values: &values,
+            categories: &groups,
+            bins: 5000,
+            ..HistogramConfig::default()
+        });
+        assert!(blocks.len() <= 512 * GROUP_LIMIT);
+        assert!(!blocks.is_empty());
     }
 
     #[test]
