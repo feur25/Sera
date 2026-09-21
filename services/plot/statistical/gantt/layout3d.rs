@@ -7,7 +7,7 @@ use crate::plot::statistical::_3d::zone::Fit;
 use crate::plot::statistical::bar::Bar3DBlock;
 use crate::plot::statistical::common::format_axis_label;
 
-pub const HEIGHT_RATIO: f64 = 0.25;
+pub const HEIGHT_RATIO: f64 = 0.12;
 pub const COLORMAP: &str = "cyber";
 pub const FIT: Fit = Fit::Stretch;
 const TONE_LOW: f64 = 0.08;
