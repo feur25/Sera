@@ -4,9 +4,9 @@ use super::zone::cube_height;
 pub const SCALE: f64 = 100.0;
 pub const PARTS: usize = 4;
 
-const BACK_Y: f64 = 0.2;
-const FRONT_Y: f64 = -0.2;
-const BAND_HW: f64 = 0.44;
+const BACK_Y: f64 = -0.2;
+const FRONT_Y: f64 = 0.2;
+const BAND_HW: f64 = 0.4;
 const RAIL_HW: f64 = 0.12;
 const BAND_HD: f64 = 0.16;
 const BAR_HW: f64 = 0.2;
@@ -14,7 +14,7 @@ const WIDE_HW: f64 = 0.34;
 const TUBE_HW: f64 = 0.09;
 const PAIR_HW: f64 = 0.13;
 const PAIR_SHIFT: f64 = 0.19;
-const MARK_HW: f64 = 0.47;
+const MARK_HW: f64 = 0.43;
 const MARK_HD: f64 = 0.36;
 const MARK_THICK: f64 = SCALE * 0.014;
 const FLOOR: f64 = SCALE * 0.004;
@@ -260,7 +260,7 @@ mod tests {
     #[test]
     fn the_track_is_a_back_layer_and_the_bar_a_front_layer_unless_there_is_no_track() {
         let layered = bullets(&[gauge(60.0, 100.0)], plan(Bands::Track, Bar::Column), 0.8);
-        assert!(layered[0].cy > layered[1].cy);
+        assert!(layered[0].cy < layered[1].cy);
         assert_eq!(bullets(&[gauge(60.0, 100.0)], plan(Bands::None, Bar::Column), 0.8)[0].cy, 0.0);
     }
 
