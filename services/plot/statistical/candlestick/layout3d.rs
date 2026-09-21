@@ -110,11 +110,15 @@ fn overlay_blocks(overlay: Overlay, quotes: &Quotes, volume: &[f64]) -> Vec<Bar3
 }
 
 pub fn layout_3d(cfg: &CandlestickConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    layout_named(cfg, budget).0
+}
+
+pub fn layout_named(cfg: &CandlestickConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
     let plan = recipe(cfg.variant);
     let raw = Quotes { open: cfg.open, high: cfg.high, low: cfg.low, close: cfg.close };
     let n = raw.len();
     if n == 0 {
-        return Vec::new();
+        return (Vec::new(), Vec::new());
     }
     let buckets = Buckets::new(n, budget.points);
     let reduced = (!buckets.is_identity()).then(|| pooled(&raw, cfg.volume, &buckets));
@@ -135,7 +139,7 @@ pub fn layout_3d(cfg: &CandlestickConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     };
     let mut blocks = glyph_blocks(plan.glyph, &quotes);
     blocks.extend(overlay_blocks(plan.overlay, &quotes, volume));
-    blocks
+    (blocks, buckets.first(cfg.labels))
 }
 
 #[cfg(test)]
@@ -192,6 +196,22 @@ mod tests {
         let hollow = blocks_for(CandlestickVariant::Hollow);
         let solid = blocks_for(CandlestickVariant::Basic);
         assert!(hollow[0].tone.unwrap() < solid[0].tone.unwrap());
+    }
+
+    #[test]
+    fn block_names_are_the_first_label_of_each_pooled_bar() {
+        let labels: Vec<String> = (0..1000).map(|i| format!("D{i}")).collect();
+        let flat = vec![10.0; 1000];
+        let cfg = CandlestickConfig {
+            labels: &labels,
+            open: &flat,
+            high: &flat,
+            low: &flat,
+            close: &flat,
+            ..CandlestickConfig::default()
+        };
+        let (_, names) = layout_named(&cfg, &Budget::new(Some(100)));
+        assert_eq!((names.len(), names[1].as_str()), (100, "D10"));
     }
 
     #[test]
