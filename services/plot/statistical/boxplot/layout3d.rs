@@ -1,6 +1,7 @@
-use super::common::group_values;
 use super::config::BoxplotConfig;
+use std::collections::HashMap;
 use super::variant::BoxplotVariant;
+use crate::plot::statistical::_3d::budget::{even_indices, Budget, GROUP_CAP};
 use crate::plot::statistical::_3d::generic::transposed;
 use crate::plot::statistical::_3d::spread::{
     box_blocks, letter_value_blocks, outlier_blocks, overall_span, point_blocks, violin_blocks, BoxStyle, Group,
@@ -92,11 +93,26 @@ fn split_evenly(samples: &[f64], parts: usize) -> Vec<&[f64]> {
         .collect()
 }
 
-fn categories(cfg: &BoxplotConfig) -> Vec<Vec<f64>> {
-    if cfg.values.is_empty() {
-        return cfg.series.to_vec();
+fn grouped_by_label(labels: &[String], values: &[f64]) -> Vec<Vec<f64>> {
+    let mut slots: HashMap<&str, usize> = HashMap::new();
+    let mut groups: Vec<Vec<f64>> = Vec::new();
+    for (label, &value) in labels.iter().zip(values) {
+        let slot = *slots.entry(label.as_str()).or_insert_with(|| {
+            groups.push(Vec::new());
+            groups.len() - 1
+        });
+        groups[slot].push(value);
     }
-    group_values(cfg.category_labels, cfg.values).1
+    groups
+}
+
+fn categories(cfg: &BoxplotConfig, cap: usize) -> Vec<Vec<f64>> {
+    let all = if cfg.values.is_empty() {
+        cfg.series.to_vec()
+    } else {
+        grouped_by_label(cfg.category_labels, cfg.values)
+    };
+    even_indices(all.len(), cap).into_iter().map(|i| all[i].clone()).collect()
 }
 
 fn groups_of<'a>(plan: Recipe, flat: &'a [Vec<f64>], grouped: &'a [Vec<&'a [f64]>]) -> Vec<Group<'a>> {
@@ -121,12 +137,13 @@ fn groups_of<'a>(plan: Recipe, flat: &'a [Vec<f64>], grouped: &'a [Vec<&'a [f64]
         .collect()
 }
 
-pub fn layout_3d(cfg: &BoxplotConfig) -> Vec<Bar3DBlock> {
+pub fn layout_3d(cfg: &BoxplotConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     let plan = recipe(cfg.variant);
-    let flat = categories(cfg);
+    let cap = budget.points.min(GROUP_CAP);
+    let flat = categories(cfg, cap);
     let n_cats = cfg.category_labels.len().max(1);
     let split: Vec<Vec<&[f64]>> = if plan.grouped {
-        cfg.series.iter().map(|s| split_evenly(s, n_cats)).collect()
+        even_indices(cfg.series.len(), cap).into_iter().map(|i| split_evenly(&cfg.series[i], n_cats)).collect()
     } else {
         Vec::new()
     };
@@ -175,12 +192,15 @@ mod tests {
     fn blocks_for(variant: BoxplotVariant) -> Vec<Bar3DBlock> {
         let names = labels();
         let data = series();
-        layout_3d(&BoxplotConfig {
-            variant,
-            category_labels: &names,
-            series: &data,
-            ..BoxplotConfig::default()
-        })
+        layout_3d(
+            &BoxplotConfig {
+                variant,
+                category_labels: &names,
+                series: &data,
+                ..BoxplotConfig::default()
+            },
+            &Budget::default(),
+        )
     }
 
     #[test]
@@ -210,12 +230,15 @@ mod tests {
     fn grouped_spreads_each_series_across_the_depth_axis() {
         let names = labels();
         let data = vec![vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2.0, 3.0, 4.0, 5.0, 6.0, 7.0]];
-        let blocks = layout_3d(&BoxplotConfig {
-            variant: BoxplotVariant::Grouped,
-            category_labels: &names,
-            series: &data,
-            ..BoxplotConfig::default()
-        });
+        let blocks = layout_3d(
+            &BoxplotConfig {
+                variant: BoxplotVariant::Grouped,
+                category_labels: &names,
+                series: &data,
+                ..BoxplotConfig::default()
+            },
+            &Budget::default(),
+        );
         let mut rows: Vec<i64> = blocks.iter().map(|b| (b.cy * 100.0) as i64).collect();
         rows.sort();
         rows.dedup();
@@ -226,11 +249,35 @@ mod tests {
     fn values_with_repeated_labels_are_grouped_like_the_2d_chart() {
         let names: Vec<String> = ["A", "A", "A", "B", "B", "B"].iter().map(|s| s.to_string()).collect();
         let values = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
-        let blocks = layout_3d(&BoxplotConfig {
-            category_labels: &names,
-            values: &values,
-            ..BoxplotConfig::default()
-        });
+        let blocks = layout_3d(
+            &BoxplotConfig {
+                category_labels: &names,
+                values: &values,
+                ..BoxplotConfig::default()
+            },
+            &Budget::default(),
+        );
         assert_eq!(blocks.len(), 6);
+    }
+
+    #[test]
+    fn huge_samples_and_many_categories_stay_within_the_block_budget() {
+        let big: Vec<f64> = (0..300_000u64).map(|i| ((i * 7919) % 10_007) as f64).collect();
+        let names: Vec<String> = (0..3).map(|i| format!("G{i}")).collect();
+        let series = vec![big.clone(), big.clone(), big];
+        for variant in [BoxplotVariant::Points, BoxplotVariant::Swarm, BoxplotVariant::Violin, BoxplotVariant::LetterValue] {
+            let blocks = layout_3d(
+                &BoxplotConfig { variant, category_labels: &names, series: &series, ..BoxplotConfig::default() },
+                &Budget::default(),
+            );
+            assert!(blocks.len() < 3000, "{} produced {} blocks", variant.name(), blocks.len());
+        }
+        let labels: Vec<String> = (0..20_000).map(|i| format!("C{}", i % 5000)).collect();
+        let values: Vec<f64> = (0..20_000).map(|i| (i % 97) as f64).collect();
+        let blocks = layout_3d(
+            &BoxplotConfig { category_labels: &labels, values: &values, ..BoxplotConfig::default() },
+            &Budget::default(),
+        );
+        assert!(blocks.len() <= GROUP_CAP * 3);
     }
 }
