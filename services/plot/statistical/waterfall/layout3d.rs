@@ -89,6 +89,10 @@ fn graded_tones(blocks: &mut [Bar3DBlock], steps: &[Step]) {
 }
 
 pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    layout_named(cfg, budget).0
+}
+
+pub fn layout_named(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
     let n = cfg.labels.len().min(cfg.values.len());
     let buckets = Buckets::new(n, budget.points);
     if buckets.is_identity() {
@@ -105,9 +109,9 @@ pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     })
 }
 
-fn stepped_3d(cfg: &WaterfallConfig) -> Vec<Bar3DBlock> {
+fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     let Some(prepared) = prepare(cfg) else {
-        return Vec::new();
+        return (Vec::new(), Vec::new());
     };
     let steps: Vec<Step> = (0..prepared.n)
         .map(|i| Step { start: prepared.starts[i], end: prepared.ends[i], total: prepared.is_total[i] })
@@ -130,7 +134,7 @@ fn stepped_3d(cfg: &WaterfallConfig) -> Vec<Bar3DBlock> {
     if plan.swap {
         blocks = transposed(blocks);
     }
-    blocks
+    (blocks, prepared.labels)
 }
 
 #[cfg(test)]
@@ -180,6 +184,16 @@ mod tests {
         let basic = blocks_for(WaterfallVariant::Basic);
         let horizontal = blocks_for(WaterfallVariant::Horizontal);
         assert_eq!(basic[2].cx, horizontal[2].cy);
+    }
+
+    #[test]
+    fn block_labels_follow_the_pooled_and_sorted_steps() {
+        let labels: Vec<String> = (0..1000).map(|i| format!("S{i}")).collect();
+        let values: Vec<f64> = vec![1.0; 1000];
+        let cfg = WaterfallConfig { labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let (blocks, names) = layout_named(&cfg, &Budget::new(Some(100)));
+        assert_eq!((blocks.len(), names.len()), (100, 100));
+        assert_eq!(names[1], "S10");
     }
 
     #[test]
