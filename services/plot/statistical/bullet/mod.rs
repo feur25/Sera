@@ -4,6 +4,7 @@ pub mod common;
 pub mod compare;
 pub mod config;
 pub mod dot;
+pub mod layout3d;
 pub mod minimal;
 pub mod progress;
 pub mod segmented;
