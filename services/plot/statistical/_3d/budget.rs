@@ -8,6 +8,8 @@ pub const MAX_CELLS: usize = 12000;
 pub const SAMPLE_CAP: usize = 300;
 pub const GROUP_CAP: usize = 400;
 pub const HARD_BLOCKS: usize = 12000;
+pub const ELEMENT_FACTOR: usize = 2;
+pub const CLOUD_FACTOR: usize = 25;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Budget {
@@ -21,6 +23,14 @@ impl Budget {
 
     pub fn cells(&self) -> usize {
         (self.points * 3).clamp(MIN_CELLS, MAX_CELLS)
+    }
+
+    pub fn elements(&self) -> usize {
+        self.points * ELEMENT_FACTOR
+    }
+
+    pub fn cloud(&self) -> usize {
+        self.points * CLOUD_FACTOR
     }
 }
 
@@ -152,6 +162,10 @@ fn is_sound(b: &Bar3DBlock) -> bool {
         && b.tone.map(|t| t.is_finite()).unwrap_or(true)
 }
 
+pub fn pick<T: Clone>(items: &[T], keep: &[usize]) -> Vec<T> {
+    keep.iter().filter_map(|&i| items.get(i).cloned()).collect()
+}
+
 pub fn sound(blocks: &[Bar3DBlock]) -> Vec<Bar3DBlock> {
     blocks.iter().copied().filter(is_sound).collect()
 }
@@ -180,6 +194,23 @@ mod tests {
         assert_eq!(Budget::default().cells(), DEFAULT_POINTS * 3);
         assert_eq!(Budget::new(Some(8)).cells(), MIN_CELLS);
         assert_eq!(Budget::new(Some(MAX_POINTS)).cells(), MAX_CELLS);
+    }
+
+    #[test]
+    fn element_and_cloud_caps_scale_with_the_point_budget() {
+        assert_eq!(Budget::default().elements(), DEFAULT_POINTS * ELEMENT_FACTOR);
+        assert_eq!(Budget::default().cloud(), DEFAULT_POINTS * CLOUD_FACTOR);
+        assert_eq!(Budget::new(Some(100)).cloud(), 100 * CLOUD_FACTOR);
+        assert!(Budget::new(Some(usize::MAX)).cloud() <= MAX_POINTS * CLOUD_FACTOR);
+    }
+
+    #[test]
+    fn picking_follows_the_kept_rows_and_skips_missing_ones() {
+        let names = ["a", "b", "c", "d"];
+        assert_eq!(pick(&names, &even_indices(4, 2)), vec!["a", "c"]);
+        assert_eq!(pick(&names, &even_indices(4, 10)), names.to_vec());
+        assert_eq!(pick(&[1.0, 2.0], &[0, 1, 5]), vec![1.0, 2.0]);
+        assert!(pick::<f64>(&[], &[0, 1]).is_empty());
     }
 
     #[test]
