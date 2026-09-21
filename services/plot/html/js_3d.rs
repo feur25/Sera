@@ -519,8 +519,8 @@ function drawCuboidBar(nx,ny,z0,z1,hw,hd,baseCol,e0,e1){
   fillFace(a3,a0,b0,b3,fc.left,lv);
   fillFace(b0,b1,b2,b3,fc.top,lv);
   fillFace(a0,a3,a2,a1,fc.bottom,lv);
-  if(SCENE==='default'){
-    drawGlowCap(nx,ny,Math.max(z1,f1),Math.min(hw,hd),baseCol);
+  if(SCENE==='default'&&e0===undefined){
+    drawGlowCap(nx,ny,z1,Math.min(hw,hd),baseCol);
   }
 }
 function drawTowerBar(nx,ny,z0,z1,r,baseCol){
