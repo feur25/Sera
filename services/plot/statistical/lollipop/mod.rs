@@ -8,6 +8,7 @@ pub mod config;
 pub mod custom;
 pub mod diverging;
 pub mod duel;
+pub mod layout3d;
 pub mod office;
 pub mod trend;
 pub mod variant;
