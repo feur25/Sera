@@ -195,21 +195,6 @@ pub fn reordered(n_rows: usize, n_cols: usize, cells: &[f64], row_order: &[usize
         .collect()
 }
 
-pub fn decimated(n_rows: usize, n_cols: usize, cells: &[f64], max_cells: usize) -> (usize, usize, Vec<f64>) {
-    let total = n_rows * n_cols;
-    if total <= max_cells || max_cells == 0 || cells.len() < total {
-        return (n_rows, n_cols, cells.to_vec());
-    }
-    let stride = ((total as f64 / max_cells as f64).sqrt().ceil() as usize).max(1);
-    let rows: Vec<usize> = (0..n_rows).step_by(stride).collect();
-    let cols: Vec<usize> = (0..n_cols).step_by(stride).collect();
-    let out = rows
-        .iter()
-        .flat_map(|&r| cols.iter().map(move |&c| cells[r * n_cols + c]))
-        .collect();
-    (rows.len(), cols.len(), out)
-}
-
 pub fn upsampled(n_rows: usize, n_cols: usize, cells: &[f64], factor: usize) -> (usize, usize, Vec<f64>) {
     if factor <= 1 || n_rows < 2 || n_cols < 2 || cells.len() < n_rows * n_cols {
         return (n_rows, n_cols, cells.to_vec());
@@ -310,15 +295,5 @@ mod tests {
         assert_eq!(up[0], 1.0);
         assert_eq!(up[14], 6.0);
         assert_eq!(up[1], 1.5);
-    }
-
-    #[test]
-    fn decimation_keeps_small_grids_and_strides_large_ones() {
-        let cells: Vec<f64> = (0..100).map(|i| i as f64).collect();
-        assert_eq!(decimated(10, 10, &cells, 100).2.len(), 100);
-        let (r, c, out) = decimated(10, 10, &cells, 25);
-        assert_eq!((r, c, out.len()), (5, 5, 25));
-        assert_eq!(out[1], 2.0);
-        assert_eq!(out[5], 20.0);
     }
 }
