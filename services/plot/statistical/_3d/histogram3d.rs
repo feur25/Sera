@@ -100,6 +100,16 @@ mod tests {
     }
 
     #[test]
+    fn every_histogram_variant_survives_empty_single_and_extreme_inputs() {
+        twin::check_robust(build_histogram3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_histogram_variant_stays_within_the_block_budget_on_big_data() {
+        twin::check_big(build_histogram3d_chart, &demos(), 2000);
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
         twin::write_previews("histogram3d", build_histogram3d_chart, &demos(), HistogramVariant::default_key());
