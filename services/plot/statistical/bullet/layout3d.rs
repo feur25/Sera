@@ -8,6 +8,7 @@ use crate::plot::statistical::common::format_axis_label;
 
 pub const HEIGHT_RATIO: f64 = 0.8;
 pub const COLORMAP: &str = "bullet";
+const ROW_CAP: usize = 600;
 
 fn plan(variant: BulletVariant) -> Plan {
     use BulletVariant::*;
@@ -64,7 +65,7 @@ pub fn layout_3d(cfg: &BulletConfig, budget: &Budget) -> Vec<Bar3DBlock> {
 
 pub fn layout_named(cfg: &BulletConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
     let n = cfg.labels.len().min(cfg.values.len());
-    let buckets = Buckets::new(n, budget.points);
+    let buckets = Buckets::new(n, budget.points.min(ROW_CAP));
     if buckets.is_identity() {
         return bullets_3d(cfg);
     }
@@ -172,6 +173,16 @@ mod tests {
         let (blocks, out) = layout_named(&cfg, &Budget::new(Some(100)));
         assert_eq!((blocks.len(), out.len()), (100 * 4, 100 * 4));
         assert!(out[4].starts_with("R10 "));
+    }
+
+    #[test]
+    fn wide_walls_cap_the_rows_lower_than_the_shared_budget() {
+        let names: Vec<String> = (0..5000).map(|i| format!("R{i}")).collect();
+        let values = vec![50.0; 5000];
+        let cfg = BulletConfig { variant: BulletVariant::Segmented, labels: &names, values: &values, ..BulletConfig::default() };
+        let (blocks, out) = layout_named(&cfg, &Budget::new(Some(4000)));
+        assert_eq!(out.len(), ROW_CAP * 4);
+        assert_eq!(blocks.len(), ROW_CAP * 4);
     }
 
     #[test]
