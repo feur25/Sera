@@ -1,6 +1,7 @@
 use super::common::prepare;
 use super::config::WaterfallConfig;
 use super::variant::WaterfallVariant;
+use crate::plot::statistical::_3d::budget::{Budget, Buckets};
 use crate::plot::statistical::_3d::generic::transposed;
 use crate::plot::statistical::_3d::steps::{
     arrow_tips, floating_bars, running_track, stem_heads, Step, TOTAL_TONE,
@@ -87,7 +88,24 @@ fn graded_tones(blocks: &mut [Bar3DBlock], steps: &[Step]) {
     }
 }
 
-pub fn layout_3d(cfg: &WaterfallConfig) -> Vec<Bar3DBlock> {
+pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    let n = cfg.labels.len().min(cfg.values.len());
+    let buckets = Buckets::new(n, budget.points);
+    if buckets.is_identity() {
+        return stepped_3d(cfg);
+    }
+    let labels = buckets.first(&cfg.labels[..n]);
+    let values = buckets.sum(&cfg.values[..n]);
+    stepped_3d(&WaterfallConfig {
+        variant: cfg.variant,
+        labels: &labels,
+        values: &values,
+        sort_order: cfg.sort_order,
+        ..WaterfallConfig::default()
+    })
+}
+
+fn stepped_3d(cfg: &WaterfallConfig) -> Vec<Bar3DBlock> {
     let Some(prepared) = prepare(cfg) else {
         return Vec::new();
     };
@@ -122,12 +140,15 @@ mod tests {
     fn blocks_for(variant: WaterfallVariant) -> Vec<Bar3DBlock> {
         let labels: Vec<String> = ["Start", "Q1", "Q2", "Q3", "End"].iter().map(|s| s.to_string()).collect();
         let values = [100.0, 30.0, -15.0, 40.0, 155.0];
-        layout_3d(&WaterfallConfig {
-            variant,
-            labels: &labels,
-            values: &values,
-            ..WaterfallConfig::default()
-        })
+        layout_3d(
+            &WaterfallConfig {
+                variant,
+                labels: &labels,
+                values: &values,
+                ..WaterfallConfig::default()
+            },
+            &Budget::default(),
+        )
     }
 
     #[test]
@@ -163,6 +184,19 @@ mod tests {
 
     #[test]
     fn empty_input_draws_nothing() {
-        assert!(layout_3d(&WaterfallConfig::default()).is_empty());
+        assert!(layout_3d(&WaterfallConfig::default(), &Budget::default()).is_empty());
+    }
+
+    #[test]
+    fn long_ledgers_are_pooled_by_sum_so_the_final_total_is_preserved() {
+        let n = 100_000;
+        let labels: Vec<String> = (0..n).map(|i| format!("S{i}")).collect();
+        let values: Vec<f64> = (0..n).map(|i| if i % 3 == 0 { -1.0 } else { 2.0 }).collect();
+        let cfg = WaterfallConfig { labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let blocks = layout_3d(&cfg, &Budget::new(Some(400)));
+        assert_eq!(blocks.len(), 400);
+        let expected: f64 = values.iter().sum();
+        let top = blocks.iter().map(|b| b.z1).fold(f64::MIN, f64::max);
+        assert!((top - expected).abs() < expected.abs() * 0.01 + 5.0);
     }
 }
