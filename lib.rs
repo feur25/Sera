@@ -39,6 +39,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("histogram3d", "histogram"),
     ("line_3d", "line"),
     ("lollipop3d", "lollipop"),
+    ("dumbbell3d", "dumbbell"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
@@ -1162,7 +1163,6 @@ pub fn chart_variants() -> serde_json::Value {
     let default_only: &[(&str, &[&str])] = &[("default", &["default", "classic", "categorical"])];
     for family in [
         "scatter_3d",
-        "dumbbell3d",
         "kde3d",
         "ridgeline3d",
         "stacked_bar3d",
