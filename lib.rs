@@ -42,6 +42,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("dumbbell3d", "dumbbell"),
     ("bullet3d", "bullet"),
     ("gantt3d", "gantt"),
+    ("funnel3d", "funnel"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
@@ -1173,7 +1174,7 @@ pub fn chart_variants() -> serde_json::Value {
     ] {
         out.insert(family.to_string(), build(scene_keys, scene_default, "3d"));
     }
-    for family in ["radar3d", "funnel3d", "pie3d", "sunburst3d", "globe"] {
+    for family in ["radar3d", "pie3d", "sunburst3d", "globe"] {
         out.insert(family.to_string(), build(default_only, "default", "3d"));
     }
     for (twin, base) in GEOMETRY_TWINS {
