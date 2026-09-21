@@ -114,6 +114,13 @@ pub fn fit(blocks: &[Bar3DBlock], height_ratio: f64, explicit: Option<[f64; 3]>,
     }
 }
 
+pub fn true_ratio(blocks: &[Bar3DBlock]) -> f64 {
+    let [rx, ry, rz] = extents(blocks).spans();
+    let longest = rx.max(ry);
+    let (lx, ly) = ((rx / longest).max(MIN_ASPECT), (ry / longest).max(MIN_ASPECT));
+    (rz / longest) / (0.5 + 0.5 * lx.min(ly) / lx.max(ly))
+}
+
 pub fn cube_height(blocks: &[Bar3DBlock], width: f64, height_ratio: f64) -> f64 {
     if blocks.is_empty() {
         return width;
@@ -234,6 +241,14 @@ mod tests {
         assert!(stretched.data[1] > uniform.data[1] * 3.0);
         assert!((stretched.dims[0] - 1.0).abs() < 1e-9 && (stretched.dims[1] - 1.0).abs() < 1e-9);
         assert!(stretched.dims[2] > uniform.dims[2] * 3.0);
+    }
+
+    #[test]
+    fn the_true_ratio_gives_the_height_the_same_scale_as_the_footprint() {
+        for blocks in [row(12), grid(4, 6), row(1)] {
+            let zone = fit(&blocks, true_ratio(&blocks), None, Fit::Uniform);
+            assert!((zone.scale[2] - zone.scale[0]).abs() < 1e-9 * zone.scale[0].max(1.0));
+        }
     }
 
     #[test]
