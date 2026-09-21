@@ -46,6 +46,8 @@ declare namespace wasm_bindgen {
 
     export function buildBullet(input: string): string;
 
+    export function buildBullet3dChart(input: string): string;
+
     export function buildCandlestick(input: string): string;
 
     export function buildCandlestick3dChart(input: string): string;
@@ -91,6 +93,8 @@ declare namespace wasm_bindgen {
     export function buildFunnel3dChart(input: string): string;
 
     export function buildGantt(input: string): string;
+
+    export function buildGantt3dChart(input: string): string;
 
     export function buildGauge(input: string): string;
 
@@ -486,6 +490,7 @@ declare interface InitOutput {
     readonly buildBubble3dChart: (a: number, b: number) => [number, number];
     readonly buildBubbleMap: (a: number, b: number) => [number, number];
     readonly buildBullet: (a: number, b: number) => [number, number];
+    readonly buildBullet3dChart: (a: number, b: number) => [number, number];
     readonly buildCandlestick: (a: number, b: number) => [number, number];
     readonly buildCandlestick3dChart: (a: number, b: number) => [number, number];
     readonly buildCartogram: (a: number, b: number) => [number, number];
@@ -509,6 +514,7 @@ declare interface InitOutput {
     readonly buildFunnel: (a: number, b: number) => [number, number];
     readonly buildFunnel3dChart: (a: number, b: number) => [number, number];
     readonly buildGantt: (a: number, b: number) => [number, number];
+    readonly buildGantt3dChart: (a: number, b: number) => [number, number];
     readonly buildGauge: (a: number, b: number) => [number, number];
     readonly buildGlobe3dChart: (a: number, b: number) => [number, number];
     readonly buildGraticuleMap: (a: number, b: number) => [number, number];
