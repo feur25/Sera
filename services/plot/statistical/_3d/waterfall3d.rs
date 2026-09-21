@@ -31,12 +31,13 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
         bg_str.as_deref()
     };
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
+    let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
     let html = render_blocks3d_view_html(
         title,
-        &layout3d::layout_3d(&cfg, &Budget::new(o.max_points)),
+        &blocks,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
-        &labels,
+        &names,
         o.w(900),
         o.h(560),
         bg_default,
