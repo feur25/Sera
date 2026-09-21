@@ -28,6 +28,7 @@ pub mod stems;
 pub mod steps;
 pub mod streamtube;
 pub mod sunburst3d;
+pub mod tiers;
 pub mod timeline;
 #[cfg(test)]
 pub(crate) mod twin;
