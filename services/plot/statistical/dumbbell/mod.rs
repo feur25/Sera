@@ -7,6 +7,7 @@ pub mod config;
 pub mod delta;
 pub mod dotted;
 pub mod glow;
+pub mod layout3d;
 pub mod ranked;
 pub mod variant;
 
