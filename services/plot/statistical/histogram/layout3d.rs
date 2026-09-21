@@ -118,13 +118,17 @@ fn measured(counts: &[u64], measure: Measure, width: f64) -> Vec<f64> {
 }
 
 pub fn layout_3d(cfg: &HistogramConfig) -> Vec<Bar3DBlock> {
+    layout_named(cfg).0
+}
+
+pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     if cfg.values.is_empty() {
-        return Vec::new();
+        return (Vec::new(), Vec::new());
     }
     let (_, edges) = compute_bins(cfg.values, cfg.bins);
     let n_bins = edges.len().saturating_sub(1);
     if n_bins == 0 {
-        return Vec::new();
+        return (Vec::new(), Vec::new());
     }
     let plan = recipe(cfg.variant);
     let width = (edges[n_bins] - edges[0]) / n_bins as f64;
@@ -150,7 +154,7 @@ pub fn layout_3d(cfg: &HistogramConfig) -> Vec<Bar3DBlock> {
     if plan.swap {
         blocks = transposed(blocks);
     }
-    blocks
+    (blocks, series.into_iter().map(|(name, _)| name).collect())
 }
 
 #[cfg(test)]
