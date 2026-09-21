@@ -114,6 +114,14 @@ pub fn fit(blocks: &[Bar3DBlock], height_ratio: f64, explicit: Option<[f64; 3]>,
     }
 }
 
+pub fn cube_height(blocks: &[Bar3DBlock], width: f64, height_ratio: f64) -> f64 {
+    if blocks.is_empty() {
+        return width;
+    }
+    let zone = fit(blocks, height_ratio, None, Fit::Uniform);
+    width * zone.scale[2] / zone.scale[0]
+}
+
 impl Zone {
     pub fn to_js(&self) -> String {
         let e = &self.extents;
@@ -226,6 +234,15 @@ mod tests {
         assert!(stretched.data[1] > uniform.data[1] * 3.0);
         assert!((stretched.dims[0] - 1.0).abs() < 1e-9 && (stretched.dims[1] - 1.0).abs() < 1e-9);
         assert!(stretched.dims[2] > uniform.dims[2] * 3.0);
+    }
+
+    #[test]
+    fn a_cube_height_looks_as_tall_as_it_is_wide_once_fitted() {
+        let blocks = row(12);
+        let zone = fit(&blocks, 0.8, None, Fit::Uniform);
+        let tall = cube_height(&blocks, 0.6, 0.8);
+        assert!((tall / zone.scale[2] - 0.6 / zone.scale[0]).abs() < 1e-9);
+        assert_eq!(cube_height(&[], 0.6, 0.8), 0.6);
     }
 
     #[test]
