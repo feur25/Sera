@@ -1,4 +1,5 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::candlestick::layout3d;
 use crate::plot::statistical::{CandlestickConfig, CandlestickVariant};
@@ -34,7 +35,7 @@ pub fn render_candlestick3d_html(
 }
 
 #[crate::chart_demo("labels=[\"D1\",\"D2\",\"D3\"], open=[10,12,11], high=[14,15,13], low=[9,10,9], close=[12,13,12]")]
-#[crate::params(paramsList["title","labels","open","high","low","close","volume","variant","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","width","height"])]
+#[crate::params(paramsList["title","labels","open","high","low","close","volume","variant","x_label","y_label","z_label","bg_color","scene","orientation3d","theme","zone","max_points","width","height"])]
 #[crate::sera_alias("candlestick3d", "candlestick_3d", "candlestick3d_chart", "ohlc3d")]
 #[crate::sera_builder]
 pub fn build_candlestick3d_chart(input: &str) -> String {
@@ -69,7 +70,7 @@ pub fn build_candlestick3d_chart(input: &str) -> String {
     let (xl, yl) = (o.xl(), o.yl());
     let html = render_blocks3d_view_html(
         title,
-        &layout3d::layout_3d(&cfg),
+        &layout3d::layout_3d(&cfg, &Budget::new(o.max_points)),
         &view,
         (if xl.is_empty() { "Bar" } else { &xl }, &yl, &o.zl()),
         &[],
