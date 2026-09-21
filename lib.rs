@@ -41,6 +41,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("lollipop3d", "lollipop"),
     ("dumbbell3d", "dumbbell"),
     ("bullet3d", "bullet"),
+    ("gantt3d", "gantt"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
