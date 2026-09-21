@@ -195,7 +195,7 @@ mod tests {
         for &variant in LollipopVariant::all() {
             let (blocks, names) = draw(variant, &[3.0, 5.0, 2.0, 8.0, 4.0], &groups());
             let expected = match variant {
-                LollipopVariant::Custom => 5 + 5 * 4,
+                LollipopVariant::Custom => 5 + 5 * 2,
                 LollipopVariant::Trend => 10 + 4,
                 _ => 10,
             };
@@ -261,11 +261,12 @@ mod tests {
     }
 
     #[test]
-    fn custom_heads_taper_towards_their_ends() {
+    fn custom_heads_are_rhombic_wedges_instead_of_cubes() {
         let (blocks, _) = draw(LollipopVariant::Custom, &[3.0], &[]);
-        assert_eq!(blocks.len(), 5);
-        assert!(blocks[1].hw < blocks[2].hw && blocks[4].hw < blocks[3].hw);
-        assert!(blocks[2].hw < HEAD_HW);
+        assert_eq!(blocks.len(), 3);
+        assert!(blocks[0].end.is_none());
+        assert!(blocks[1].end.is_some() && blocks[2].end.is_some());
+        assert!(blocks[1].hw < HEAD_HW);
     }
 
     #[test]
