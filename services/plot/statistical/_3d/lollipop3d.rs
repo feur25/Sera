@@ -1,4 +1,5 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget};
 use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_lollipop3d_html(
@@ -31,7 +32,7 @@ pub fn render_lollipop3d_html(
 }
 
 #[crate::chart_demo("x=[1,2,3], y=[1,2,3], z=[4,5,6]")]
-#[crate::params(paramsList["title","x","y","z","color_labels","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
+#[crate::params(paramsList["title","x","y","z","color_labels","x_label","y_label","z_label","bg_color","scene","orientation3d","max_points","width","height"])]
 #[crate::sera_alias("lollipop3d", "lollipop_3d", "lollipop3d_chart")]
 #[crate::sera_builder]
 pub fn build_lollipop3d_chart(input: &str) -> String {
@@ -41,6 +42,8 @@ pub fn build_lollipop3d_chart(input: &str) -> String {
     let y = a.y.unwrap_or_default();
     let z = a.z.unwrap_or_default();
     let cl = o.color_labels.clone().unwrap_or_default();
+    let keep = even_indices(x.len().min(y.len()).min(z.len()), Budget::new(o.max_points).elements());
+    let (x, y, z) = (pick(&x, &keep), pick(&y, &keep), pick(&z, &keep));
     let bg_str = o.bg_str();
     apply_bg3d(
         crate::plot::statistical::_3d::render_lollipop3d_html(
@@ -67,5 +70,21 @@ inventory::submit! {
         name: "lollipop_3d",
         renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
         positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::build_lollipop3d_chart;
+    use crate::plot::statistical::_3d::budget::Budget;
+    use crate::plot::statistical::_3d::twin;
+
+    fn columns(n: usize) -> serde_json::Value {
+        serde_json::json!({"title": "t", "x": twin::wave(n, 0), "y": twin::wave(n, 1), "z": twin::wave(n, 2)})
+    }
+
+    #[test]
+    fn a_big_lollipop_chart_is_capped_by_the_budget_and_small_ones_are_untouched() {
+        twin::check_capped(build_lollipop3d_chart, columns, Budget::elements);
     }
 }
