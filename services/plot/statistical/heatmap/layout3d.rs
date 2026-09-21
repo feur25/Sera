@@ -2,9 +2,10 @@ use super::common::{finite_minmax, hierarchical_leaf_order, map_value_to_t, quan
 use super::config::HeatmapConfig;
 use super::unequal::{default_x_widths, default_y_heights};
 use super::variant::HeatmapVariant;
+use crate::plot::statistical::_3d::budget::{pooled_grid, Budget};
 use crate::plot::statistical::_3d::grid::{
-    bubble_cells, col_sums, decimated, group_offsets, hex_cells, leading_groups, margin_cells, radial_cells,
-    rect_cells, reordered, ridge_cells, row_sums, upsampled, CellField,
+    bubble_cells, col_sums, group_offsets, hex_cells, leading_groups, margin_cells, radial_cells, rect_cells,
+    reordered, ridge_cells, row_sums, upsampled, CellField,
 };
 use crate::plot::statistical::bar::Bar3DBlock;
 
@@ -12,7 +13,6 @@ pub const HEIGHT_RATIO: f64 = 0.6;
 const HEIGHT_FLOOR: f64 = 0.06;
 const SMOOTH_FACTOR: usize = 3;
 const SMOOTH_MAX_CELLS: usize = 3600;
-const MAX_CELLS: usize = 4096;
 const GROUP_SEPARATOR: &str = "::";
 
 #[derive(Clone, Copy)]
@@ -199,14 +199,14 @@ fn tone_of(plan: Recipe, cfg: &HeatmapConfig, v: f64, bounds: (f64, f64)) -> f64
     quantize_t(map_value_to_t(v, bounds.0, bounds.1, plan.log, plan.diverging), steps)
 }
 
-pub fn layout_3d(cfg: &HeatmapConfig) -> Vec<Bar3DBlock> {
+pub fn layout_3d(cfg: &HeatmapConfig, budget: &Budget) -> Vec<Bar3DBlock> {
     let plan = recipe(cfg.variant);
     let (mut n_rows, mut n_cols) = dims(cfg);
     if n_rows == 0 || n_cols == 0 {
         return Vec::new();
     }
     let mut cells = cells_of(cfg, n_rows, n_cols);
-    (n_rows, n_cols, cells) = decimated(n_rows, n_cols, &cells, MAX_CELLS);
+    (n_rows, n_cols, cells) = pooled_grid(n_rows, n_cols, &cells, budget.cells());
     if plan.cluster {
         let (row_vectors, col_vectors) = line_vectors(n_rows, n_cols, &cells);
         cells = reordered(
@@ -293,13 +293,16 @@ mod tests {
         let rows = labels(n_rows, "r");
         let cols = labels(n_cols, "c");
         let values: Vec<f64> = (0..n_rows * n_cols).map(|i| ((i * 7) % 11) as f64 + 1.0).collect();
-        layout_3d(&HeatmapConfig {
-            variant,
-            row_labels: &rows,
-            col_labels: &cols,
-            flat_matrix: &values,
-            ..HeatmapConfig::default()
-        })
+        layout_3d(
+            &HeatmapConfig {
+                variant,
+                row_labels: &rows,
+                col_labels: &cols,
+                flat_matrix: &values,
+                ..HeatmapConfig::default()
+            },
+            &Budget::default(),
+        )
     }
 
     #[test]
@@ -312,9 +315,10 @@ mod tests {
 
     #[test]
     fn oversized_grids_are_decimated_before_they_become_blocks() {
+        let cap = Budget::default().cells();
         let blocks = blocks_for(HeatmapVariant::Basic, 200, 200);
-        assert!(blocks.len() <= MAX_CELLS);
-        assert!(blocks.len() > MAX_CELLS / 4);
+        assert!(blocks.len() <= cap);
+        assert!(blocks.len() > cap / 4);
     }
 
     #[test]
@@ -333,13 +337,16 @@ mod tests {
     fn correlation_columns_go_below_zero_for_negative_values() {
         let rows = labels(3, "r");
         let values = [-1.0, -0.5, 0.2, 0.4, 1.0, -0.8, 0.0, 0.6, -0.3];
-        let blocks = layout_3d(&HeatmapConfig {
-            variant: HeatmapVariant::Correlation,
-            row_labels: &rows,
-            col_labels: &rows,
-            flat_matrix: &values,
-            ..HeatmapConfig::default()
-        });
+        let blocks = layout_3d(
+            &HeatmapConfig {
+                variant: HeatmapVariant::Correlation,
+                row_labels: &rows,
+                col_labels: &rows,
+                flat_matrix: &values,
+                ..HeatmapConfig::default()
+            },
+            &Budget::default(),
+        );
         assert!(blocks.iter().any(|b| b.z1 < 0.0));
         assert!(blocks.iter().any(|b| b.z1 > 0.0));
     }
