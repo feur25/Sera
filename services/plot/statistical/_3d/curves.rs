@@ -72,7 +72,7 @@ pub fn toned_ribbon(points: &[Point], tones: &[f64], row: f64, depth: f64, class
     out
 }
 
-pub fn area_blocks(points: &[Point], joined: &[bool], floor: f64, row: f64, depth: f64, class: usize) -> Vec<Bar3DBlock> {
+pub fn area_blocks(points: &[Point], joined: &[bool], floor: f64, row: f64, depth: f64, class: usize, graded: bool) -> Vec<Bar3DBlock> {
     let (lo, hi) = points
         .iter()
         .map(|p| p.1)
@@ -84,7 +84,7 @@ pub fn area_blocks(points: &[Point], joined: &[bool], floor: f64, row: f64, dept
         .enumerate()
         .filter(|(i, w)| joined.get(*i).copied().unwrap_or(true) && w[0].1.is_finite() && w[1].1.is_finite())
         .map(|(_, w)| {
-            Bar3DBlock::sloped(
+            let block = Bar3DBlock::sloped(
                 (w[0].0 + w[1].0) / 2.0,
                 row,
                 (floor, w[0].1),
@@ -92,8 +92,12 @@ pub fn area_blocks(points: &[Point], joined: &[bool], floor: f64, row: f64, dept
                 (w[1].0 - w[0].0) / 2.0,
                 depth,
                 class,
-            )
-            .with_tone((((w[0].1 + w[1].1) / 2.0 - floor) / range).clamp(0.0, 1.0))
+            );
+            if graded {
+                block.with_tone((((w[0].1 + w[1].1) / 2.0 - floor) / range).clamp(0.0, 1.0))
+            } else {
+                block
+            }
         })
         .collect()
 }
@@ -202,18 +206,58 @@ pub fn catmull_rom(points: &[Point], per_segment: usize, tension: f64) -> Vec<Po
     out
 }
 
-pub fn marker_blocks(points: &[Point], size: f64, row: f64, class: usize, tone: Option<f64>) -> Vec<Bar3DBlock> {
+pub fn marker_blocks(points: &[Point], size_xy: f64, size_z: f64, row: f64, class: usize, tone: Option<f64>) -> Vec<Bar3DBlock> {
     points
         .iter()
         .filter(|p| p.1.is_finite())
         .map(|p| {
-            let block = Bar3DBlock::new(p.0, row, p.1 - size / 2.0, p.1 + size / 2.0, size / 2.0, size / 2.0, class);
+            let block = Bar3DBlock::new(p.0, row, p.1 - size_z / 2.0, p.1 + size_z / 2.0, size_xy / 2.0, size_xy / 2.0, class);
             match tone {
                 Some(t) => block.with_tone(t),
                 None => block,
             }
         })
         .collect()
+}
+
+pub fn slope_tones(points: &[Point]) -> Vec<f64> {
+    let slopes: Vec<f64> = points
+        .windows(2)
+        .map(|w| if w[0].1.is_finite() && w[1].1.is_finite() { (w[1].1 - w[0].1) / (w[1].0 - w[0].0).abs().max(1e-12) } else { 0.0 })
+        .collect();
+    let peak = slopes.iter().fold(1e-12_f64, |m, v| m.max(v.abs()));
+    slopes.iter().map(|s| 0.5 + 0.5 * s / peak).collect()
+}
+
+pub fn regimes(points: &[Point], tolerance: f64) -> Vec<f64> {
+    let (lo, hi) = points
+        .iter()
+        .map(|p| p.1)
+        .filter(|v| v.is_finite())
+        .fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), v| (lo.min(v), hi.max(v)));
+    let eps = (hi - lo).max(1e-12) * tolerance;
+    points
+        .windows(2)
+        .map(|w| {
+            let delta = w[1].1 - w[0].1;
+            if !delta.is_finite() || delta.abs() <= eps { 0.5 } else if delta > 0.0 { 1.0 } else { 0.0 }
+        })
+        .collect()
+}
+
+pub fn regime_plates(points: &[Point], tones: &[f64], floor: f64, thickness: f64, row: f64, depth: f64, class: usize) -> Vec<Bar3DBlock> {
+    let mut out = Vec::new();
+    let mut start = 0usize;
+    while start < tones.len() {
+        let mut end = start;
+        while end + 1 < tones.len() && tones[end + 1] == tones[start] {
+            end += 1;
+        }
+        let (x0, x1) = (points[start].0, points[end + 1].0);
+        out.push(Bar3DBlock::new((x0 + x1) / 2.0, row, floor - thickness, floor, (x1 - x0) / 2.0, depth, class).with_tone(tones[start]));
+        start = end + 1;
+    }
+    out
 }
 
 #[cfg(test)]
@@ -249,9 +293,10 @@ mod tests {
     #[test]
     fn areas_fill_down_to_the_floor_with_a_tone_by_height() {
         let joined = vec![true; 5];
-        let area = area_blocks(&line(), &joined, 0.0, 0.0, 0.4, 1);
+        let area = area_blocks(&line(), &joined, 0.0, 0.0, 0.4, 1, true);
         assert!(area.iter().all(|b| b.z0 == 0.0 && b.end.map(|e| e.0 == 0.0).unwrap_or(false)));
         assert!(area[3].tone.unwrap() > area[0].tone.unwrap());
+        assert!(area_blocks(&line(), &joined, 0.0, 0.0, 0.4, 1, false).iter().all(|b| b.tone.is_none()));
     }
 
     #[test]
@@ -290,7 +335,20 @@ mod tests {
         assert!(!dashes.is_empty() && dashes.len() < 20);
         let mut points = line();
         points[1].1 = f64::NAN;
-        assert_eq!(marker_blocks(&points, 0.5, 0.0, 0, None).len(), 5);
+        assert_eq!(marker_blocks(&points, 0.5, 2.0, 0.0, 0, None).len(), 5);
+    }
+
+    #[test]
+    fn slopes_and_regimes_become_tones_and_floor_plates() {
+        let tones = slope_tones(&line());
+        assert_eq!(tones.len(), 5);
+        assert!(tones[0] > 0.5 && tones[1] < 0.5);
+        let steady = points_of(&[10.0, 10.0, 20.0, 30.0, 5.0]);
+        let regime = regimes(&steady, 0.05);
+        assert_eq!(regime, vec![0.5, 1.0, 1.0, 0.0]);
+        let plates = regime_plates(&steady, &regime, 0.0, 1.0, 0.0, 0.4, 0);
+        assert_eq!(plates.len(), 3);
+        assert_eq!((plates[1].cx, plates[1].hw, plates[1].tone), (2.0, 1.0, Some(1.0)));
     }
 
     #[test]
