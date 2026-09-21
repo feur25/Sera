@@ -7,6 +7,7 @@ pub mod dashed;
 pub mod epoch;
 pub mod filled;
 pub mod gapped;
+pub mod layout3d;
 pub mod momentum;
 pub mod multi;
 pub mod pace;
