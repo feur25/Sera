@@ -234,11 +234,21 @@ pub fn check_axes(family: &str, variants: usize) {
     }
 }
 
+fn gallery_size(json: &str) -> String {
+    let mut parsed: serde_json::Value = serde_json::from_str(json).expect("demo json");
+    if let Some(obj) = parsed.as_object_mut() {
+        obj.remove("width");
+        obj.remove("height");
+    }
+    parsed.to_string()
+}
+
 pub fn write_previews(prefix: &str, build: fn(&str) -> String, demos: &Demos, default_key: &str) {
+    let demos: Demos = demos.iter().map(|(key, json)| (*key, gallery_size(json))).collect();
     let write = |name: String, html: String| {
         std::fs::write(format!("docs/previews/{prefix}-{name}.html"), html).unwrap();
     };
-    for (key, json) in demos {
+    for (key, json) in &demos {
         let html = build(json);
         if *key == default_key {
             std::fs::write(format!("docs/previews/{prefix}.html"), &html).unwrap();
