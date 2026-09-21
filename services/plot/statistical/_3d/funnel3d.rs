@@ -1,5 +1,6 @@
 use crate::html::js_3d::render_3d_html;
 use crate::plot::statistical::_3d::budget::Budget;
+use crate::plot::statistical::_3d::zone::true_ratio;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::funnel::layout3d;
 use crate::plot::statistical::{FunnelConfig, FunnelVariant};
@@ -67,8 +68,8 @@ pub fn build_funnel3d_chart(input: &str) -> String {
     let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
-    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::colormap(&cfg)).with_zone(o.zone.as_deref());
     let (blocks, block_names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
+    let view = BlockView::new(true_ratio(&blocks), layout3d::colormap(&cfg)).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
         &blocks,
