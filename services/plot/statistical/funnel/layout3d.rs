@@ -6,7 +6,6 @@ use crate::plot::statistical::_3d::tiers::{split, stack, Profile, Tier, HALF};
 use crate::plot::statistical::bar::Bar3DBlock;
 use crate::plot::statistical::common::format_axis_label;
 
-pub const HEIGHT_RATIO: f64 = 0.85;
 const LANE: f64 = 2.6 * HALF;
 const TONE_LOW: f64 = 0.1;
 const TONE_HIGH: f64 = 0.9;
@@ -89,6 +88,14 @@ fn peak(values: &[f64]) -> f64 {
     values.iter().copied().fold(0.0_f64, f64::max).max(1e-12)
 }
 
+fn area_share(value: f64, top: f64) -> f64 {
+    (value / top).sqrt()
+}
+
+fn part_share(part: f64, total: f64, top: f64) -> f64 {
+    if total > 0.0 { area_share(total, top) * part / total } else { 0.0 }
+}
+
 fn percent(value: f64, base: f64) -> f64 {
     if base > 0.0 { (value / base * 100.0).round() } else { 0.0 }
 }
@@ -117,7 +124,7 @@ fn single(plan: Recipe, cfg: &FunnelConfig, budget: &Budget) -> (Vec<Bar3DBlock>
     };
     let values = clean(&prepared.values);
     let top = peak(&values);
-    let mut shares: Vec<f64> = values.iter().map(|v| v / top).collect();
+    let mut shares: Vec<f64> = values.iter().map(|v| area_share(*v, top)).collect();
     if plan.pyramid {
         shares = pyramidal(&shares);
     }
@@ -139,7 +146,7 @@ fn single(plan: Recipe, cfg: &FunnelConfig, budget: &Budget) -> (Vec<Bar3DBlock>
             if plan.mode == Mode::Rate { format!("{base} · {}% of previous", (rates[k] * 100.0).round()) } else { base }
         })
         .collect();
-    (stack(&tiers, plan.profile, plan.reverse, (0.0, 0.0)), names)
+    (stack(&tiers, plan.profile, plan.reverse, 0.0), names)
 }
 
 fn compare(plan: Recipe, cfg: &FunnelConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
@@ -156,9 +163,9 @@ fn compare(plan: Recipe, cfg: &FunnelConfig, budget: &Budget) -> (Vec<Bar3DBlock
         let tiers: Vec<Tier> = values
             .iter()
             .enumerate()
-            .map(|(k, v)| Tier { width: v / top, class: offset + k, tone: Some(series_tone(s, count)) })
+            .map(|(k, v)| Tier { width: area_share(*v, top), class: offset + k, tone: Some(series_tone(s, count)) })
             .collect();
-        blocks.extend(stack(&tiers, plan.profile, plan.reverse, (0.0, s as f64 * LANE)));
+        blocks.extend(stack(&tiers, plan.profile, plan.reverse, s as f64 * LANE));
         names.extend(stages.iter().zip(&values).map(|(stage, v)| format!("{name} · {stage} · {}", format_axis_label(*v))));
     }
     (blocks, names)
@@ -178,7 +185,7 @@ fn grouped(plan: Recipe, cfg: &FunnelConfig, budget: &Budget) -> (Vec<Bar3DBlock
     let stages: Vec<Vec<Tier>> = (0..labels.len())
         .map(|k| {
             (0..count)
-                .map(|s| Tier { width: columns[s].get(k).copied().unwrap_or(0.0) / top, class: k * count + s, tone: Some(series_tone(s, count)) })
+                .map(|s| Tier { width: part_share(columns[s].get(k).copied().unwrap_or(0.0), totals[k], top), class: k * count + s, tone: Some(series_tone(s, count)) })
                 .collect()
         })
         .collect();
@@ -233,7 +240,6 @@ mod tests {
             let (blocks, names) = draw(variant);
             let per_stage = match variant {
                 FunnelVariant::Basic | FunnelVariant::Pyramid | FunnelVariant::Inverted | FunnelVariant::Rounded => 4,
-                FunnelVariant::Chevron => 2,
                 _ => 1,
             };
             assert_eq!(blocks.len(), 5 * per_stage, "{variant:?}");
@@ -260,15 +266,15 @@ mod tests {
     fn inverted_funnels_stand_on_their_widest_stage() {
         let (normal, _) = draw(FunnelVariant::Stepped);
         let (upside, _) = draw(FunnelVariant::Inverted);
-        assert!(normal[0].z0 > normal[4].z0);
-        assert!(upside[0].z0 < upside[4].z0);
+        assert!(normal[0].cx < normal[4].cx);
+        assert!(upside[0].cx > upside[4].cx);
     }
 
     #[test]
     fn the_pyramid_narrows_faster_than_the_plain_funnel() {
         let (plain, _) = draw(FunnelVariant::Basic);
         let (pyramid, _) = draw(FunnelVariant::Pyramid);
-        assert!(pyramid[16].hw < plain[16].hw);
+        assert!(pyramid[16].hd < plain[16].hd);
     }
 
     #[test]
