@@ -50,12 +50,12 @@ pub fn extents(blocks: &[Bar3DBlock]) -> Extents {
     Extents {
         x: fold(&|b| (b.cx - b.hw, b.cx + b.hw)),
         y: fold(&|b| (b.cy - b.hd, b.cy + b.hd)),
-        z: fold(&|b| (b.z0.min(b.z1), b.z0.max(b.z1))),
+        z: fold(&|b| b.z_range()),
     }
 }
 
 fn is_flat(blocks: &[Bar3DBlock]) -> bool {
-    blocks.windows(2).all(|w| w[0].z0 == w[1].z0 && w[0].z1 == w[1].z1)
+    blocks.windows(2).all(|w| w[0].z0 == w[1].z0 && w[0].z1 == w[1].z1 && w[0].end.is_none() && w[1].end.is_none())
 }
 
 fn proportions(explicit: Option<[f64; 3]>) -> Option<[f64; 3]> {
