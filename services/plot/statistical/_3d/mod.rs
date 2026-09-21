@@ -1,7 +1,9 @@
 pub mod bar3d;
 pub mod boxplot3d;
 pub mod bubble3d;
+pub mod budget;
 pub mod candlestick3d;
+pub mod curves;
 pub mod dumbbell3d;
 pub mod funnel3d;
 pub mod generic;
