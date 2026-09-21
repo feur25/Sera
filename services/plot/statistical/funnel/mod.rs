@@ -7,6 +7,7 @@ pub mod config;
 pub mod grouped;
 pub mod conversion;
 pub mod inverted;
+pub mod layout3d;
 pub mod pyramid;
 pub mod rounded;
 pub mod stepped;
