@@ -1,4 +1,5 @@
 use crate::html::js_3d::render_3d_html;
+use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::{colormap_3d, heatmap_layout_3d, HeatmapConfig, HeatmapVariant, HEIGHT_RATIO_3D};
 use crate::plot::{apply_bg3d, parse_all};
@@ -33,7 +34,7 @@ pub fn render_heatmap3d_html(
 }
 
 #[crate::chart_demo("labels=[\"R1\",\"R2\"], categories=[\"C1\",\"C2\"], matrix=[[1,2],[3,4]]")]
-#[crate::params(paramsList["title","labels","col_labels","categories","matrix","values","x_labels","variant","widths","ranges","bins","sort_order","scene","orientation3d","theme","zone","bg_color","width","height","x_label","y_label","z_label"])]
+#[crate::params(paramsList["title","labels","col_labels","categories","matrix","values","x_labels","variant","widths","ranges","bins","sort_order","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 #[crate::sera_builder]
 pub fn build_heatmap3d_chart(input: &str) -> String {
@@ -72,7 +73,7 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
     let view = BlockView::new(HEIGHT_RATIO_3D, colormap_3d(variant)).with_zone(o.zone.as_deref());
     let html = render_blocks3d_view_html(
         title,
-        &heatmap_layout_3d(&cfg),
+        &heatmap_layout_3d(&cfg, &Budget::new(o.max_points)),
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
         &[],
