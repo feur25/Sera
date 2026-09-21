@@ -37,6 +37,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("boxplot3d", "boxplot"),
     ("waterfall3d", "waterfall"),
     ("histogram3d", "histogram"),
+    ("line_3d", "line"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
@@ -1159,7 +1160,6 @@ pub fn chart_variants() -> serde_json::Value {
     let scene_default = Scene3DVariant::default_key();
     let default_only: &[(&str, &[&str])] = &[("default", &["default", "classic", "categorical"])];
     for family in [
-        "line_3d",
         "scatter_3d",
         "dumbbell3d",
         "kde3d",
