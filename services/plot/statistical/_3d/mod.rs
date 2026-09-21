@@ -21,6 +21,7 @@ pub mod radar3d;
 pub mod ridgeline3d;
 pub mod spread;
 pub mod stacked_bar3d;
+pub mod stems;
 pub mod steps;
 pub mod streamtube;
 pub mod sunburst3d;
