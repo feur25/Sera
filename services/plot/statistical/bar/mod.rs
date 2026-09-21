@@ -1,3 +1,4 @@
+use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::{apply, apply_h, parse_all};
 pub mod basic;
 pub mod block3d;
@@ -18,6 +19,7 @@ pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
 pub mod radial_flow;
+pub mod reduction;
 pub mod relative;
 pub mod spiral;
 pub mod spiral_common;
@@ -28,7 +30,23 @@ pub use block3d::Bar3DBlock;
 pub use config::BarConfig;
 pub use variant::BarVariant;
 
-pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+pub fn layout_3d(cfg: &BarConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    match reduction::reduced(cfg, budget) {
+        Some(r) => ordered_3d(&BarConfig {
+            labels: &r.labels,
+            values: &r.values,
+            category_labels: &r.category_labels,
+            series: &r.series,
+            color_groups: &r.color_groups,
+            widths: &r.widths,
+            super_categories: &r.super_categories,
+            ..cfg.clone()
+        }),
+        None => ordered_3d(cfg),
+    }
+}
+
+fn ordered_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     if !ordering::is_reordered(cfg) {
         return dispatch_3d(cfg);
     }
