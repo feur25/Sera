@@ -38,6 +38,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("waterfall3d", "waterfall"),
     ("histogram3d", "histogram"),
     ("line_3d", "line"),
+    ("lollipop3d", "lollipop"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
@@ -1163,7 +1164,6 @@ pub fn chart_variants() -> serde_json::Value {
         "scatter_3d",
         "dumbbell3d",
         "kde3d",
-        "lollipop3d",
         "ridgeline3d",
         "stacked_bar3d",
         "violin3d",
