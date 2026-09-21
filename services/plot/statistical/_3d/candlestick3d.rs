@@ -143,6 +143,16 @@ mod tests {
     }
 
     #[test]
+    fn every_candlestick_variant_survives_empty_single_and_extreme_inputs() {
+        twin::check_robust(build_candlestick3d_chart, &demos());
+    }
+
+    #[test]
+    fn every_candlestick_variant_stays_within_the_block_budget_on_big_data() {
+        twin::check_big(build_candlestick3d_chart, &demos(), 2000);
+    }
+
+    #[test]
     #[ignore]
     fn write_preview_assets() {
         twin::write_previews("candlestick3d", build_candlestick3d_chart, &demos(), CandlestickVariant::default_key());
