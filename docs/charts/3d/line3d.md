@@ -79,7 +79,7 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 
 `theme` restyles the whole canvas (colour grade and glow) and applies to every variant, scene and plane.
 
-<div data-sp-registry-table="themes" data-family="line3d"></div>
+<div data-sp-registry-table="themes" data-family="line_3d"></div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
 <div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
@@ -226,7 +226,7 @@ chart = sp.line3d(
 
 ## Parameters
 
-<div data-sp-registry-table="options" data-family="line3d"></div>
+<div data-sp-registry-table="options" data-family="line_3d"></div>
 
 ## Returns
 
@@ -304,7 +304,7 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 
 `theme` restyle tout le canevas (étalonnage des couleurs et halo) et s'applique à chaque variante, scène et plan.
 
-<div data-sp-registry-table="themes" data-family="line3d"></div>
+<div data-sp-registry-table="themes" data-family="line_3d"></div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
 <div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
@@ -451,7 +451,7 @@ chart = sp.line3d(
 
 <h2>Paramètres</h2>
 
-<div data-sp-registry-table="options" data-family="line3d"></div>
+<div data-sp-registry-table="options" data-family="line_3d"></div>
 
 <h2>Retour</h2>
 
