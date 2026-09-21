@@ -284,6 +284,26 @@ pub fn grid_columns(n_rows: usize, n_cols: usize, matrix: &[f64], hw: f64, hd: f
         .collect()
 }
 
+pub fn panel_columns(values: &[f64], classes: &[usize], gap: f64, hw: f64, hd: f64) -> Vec<Bar3DBlock> {
+    let mut cursor = 0.0;
+    let mut previous: Option<usize> = None;
+    values
+        .iter()
+        .enumerate()
+        .map(|(i, &v)| {
+            let class = classes.get(i).copied().unwrap_or(0);
+            if matches!(previous, Some(p) if p != class) {
+                cursor += gap;
+            }
+            previous = Some(class);
+            let (z0, z1) = if v >= 0.0 { (0.0, v) } else { (v, 0.0) };
+            let block = Bar3DBlock::new(cursor, 0.0, z0, z1, hw, hd, class);
+            cursor += 1.0;
+            block
+        })
+        .collect()
+}
+
 pub fn plate_columns(values: &[f64], thickness: f64, hw: f64, hd: f64) -> Vec<Bar3DBlock> {
     values
         .iter()
@@ -308,6 +328,15 @@ mod tests {
         let flipped = transposed(vec![Bar3DBlock::new(1.0, 2.0, 0.0, 1.0, 0.3, 0.1, 0).with_tone(0.4)]);
         assert_eq!((flipped[0].cx, flipped[0].cy, flipped[0].hw, flipped[0].hd), (2.0, 1.0, 0.1, 0.3));
         assert_eq!(flipped[0].tone, Some(0.4));
+    }
+
+    #[test]
+    fn panels_leave_a_gap_whenever_the_class_changes_and_keep_the_sign() {
+        let panels = panel_columns(&[1.0, -2.0, 3.0], &[0, 0, 1], 1.5, 0.3, 0.3);
+        assert_eq!(panels.iter().map(|b| b.cx).collect::<Vec<_>>(), vec![0.0, 1.0, 3.5]);
+        assert_eq!(panels.iter().map(|b| b.ci).collect::<Vec<_>>(), vec![0, 0, 1]);
+        assert_eq!((panels[1].z0, panels[1].z1), (-2.0, 0.0));
+        assert_eq!(panel_columns(&[1.0, 2.0], &[], 1.5, 0.3, 0.3)[1].cx, 1.0);
     }
 
     #[test]
