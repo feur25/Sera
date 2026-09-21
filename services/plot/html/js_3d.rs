@@ -301,8 +301,20 @@ function applyFit(){
   ZN={x0:-BFIT.lx/2-P,x1:BFIT.lx/2+P,y0:-BFIT.ly/2-P,y1:BFIT.ly/2+P,z0:-BFIT.dz/2,z1:BFIT.dz/2+P};
   TK={x0:-BFIT.dx/2,x1:BFIT.dx/2,y0:-BFIT.dy/2,y1:BFIT.dy/2,z0:-BFIT.dz/2,z1:BFIT.dz/2};
   xmn=e[0];xr=e[1]-e[0]||1;ymn=e[2];yr=e[3]-e[2]||1;zmn=e[4];zr=e[5]-e[4]||1;
-  zoom0=BFIT.zoom;zoom=zoom0;
   rebuildCorners();
+  zoom0=Math.max(BFIT.zoom,frameZoom());zoom=zoom0;
+}
+function frameZoom(){
+  var scl=Math.min(W,H)*0.34,lim=[W/2/scl*0.88,H/2/scl*0.82],lo=0.4,hi=24,px=panX,py=panY;
+  sc=scl;panX=0;panY=0;
+  for(var k=0;k<30;k++){
+    var mid=(lo+hi)/2,ok=true;
+    zoom=mid;camSet();
+    for(var i=0;i<8&&ok;i++){var p=pj(cV[i][0],cV[i][1],cV[i][2]);ok=!!p&&Math.abs(p.x)<=lim[0]&&Math.abs(p.y)<=lim[1];}
+    if(ok)hi=mid;else lo=mid;
+  }
+  panX=px;panY=py;
+  return hi;
 }
 rebuildCorners();
 applyFit();
