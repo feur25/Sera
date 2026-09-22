@@ -49,6 +49,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("treemap3d", "treemap"),
     ("circle_pack3d", "circle_pack"),
     ("dendrogram3d", "dendrogram"),
+    ("area3d", "area"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
