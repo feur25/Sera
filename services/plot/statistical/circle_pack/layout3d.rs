@@ -63,9 +63,10 @@ fn packed_blocks(circles: &[Circle], plan: Recipe, branch_count: usize) -> Vec<B
         .iter()
         .enumerate()
         .filter(|(_, c)| c.r > 1e-6)
+        .filter(|(_, c)| !plan.leaves_only || is_leaf(c))
         .map(|(i, c)| {
             let leaf = is_leaf(c);
-            let height = if plan.leaves_only && !leaf {
+            let height = if !leaf {
                 THIN_HEIGHT
             } else if plan.thin {
                 THIN_HEIGHT
@@ -167,11 +168,22 @@ mod tests {
     }
 
     #[test]
-    fn leaf_focus_gives_leaves_the_full_height_and_flattens_branches() {
+    fn leaf_focus_only_draws_the_true_leaves_at_full_height() {
         let (blocks, names) = draw(CirclePackVariant::LeafFocus);
+        assert_eq!(blocks.len(), 3);
+        let mut sorted = names.clone();
+        sorted.sort();
+        assert_eq!(sorted, vec!["A1".to_string(), "A2".to_string(), "B".to_string()]);
+        assert!(blocks.iter().all(|b| b.z1 == BASE_HEIGHT));
+    }
+
+    #[test]
+    fn non_leaf_ancestors_are_flattened_to_a_thin_base_in_the_default_packed_shape() {
+        let (blocks, names) = draw(CirclePackVariant::Basic);
         let root = &blocks[names.iter().position(|n| n == "Root").unwrap()];
         let a1 = &blocks[names.iter().position(|n| n == "A1").unwrap()];
-        assert!(a1.z1 > root.z1);
+        assert_eq!(root.z1, THIN_HEIGHT);
+        assert_eq!(a1.z1, BASE_HEIGHT);
     }
 
     #[test]
