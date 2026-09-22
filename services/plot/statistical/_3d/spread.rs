@@ -30,6 +30,21 @@ pub enum Scatter {
     Swarm,
 }
 
+pub fn grouped_by_label(categories: &[String], values: &[f64]) -> Vec<(String, Vec<f64>)> {
+    let n = categories.len().min(values.len());
+    let mut order: Vec<String> = Vec::new();
+    let mut map: std::collections::HashMap<&str, Vec<f64>> = std::collections::HashMap::new();
+    for i in 0..n {
+        let key = categories[i].as_str();
+        map.entry(key).or_insert_with(|| {
+            order.push(key.to_string());
+            Vec::new()
+        });
+        map.get_mut(key).unwrap().push(values[i]);
+    }
+    order.into_iter().map(|k| { let v = map.remove(k.as_str()).unwrap_or_default(); (k, v) }).collect()
+}
+
 pub fn overall_span(groups: &[Group]) -> f64 {
     let all = groups.iter().flat_map(|g| g.samples.iter()).filter(|v| v.is_finite());
     let (lo, hi) = all.fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
@@ -207,6 +222,17 @@ mod tests {
     }
 
     const STYLE: BoxStyle = BoxStyle { hw: 0.3, depth: 0.3, whisker_hw: 0.05, notch: false, median: true };
+
+    #[test]
+    fn grouped_by_label_preserves_first_appearance_order_and_collects_every_value() {
+        let categories = ["B", "A", "B", "A", "C"].map(str::to_string);
+        let values = [1.0, 2.0, 3.0, 4.0, 5.0];
+        let out = grouped_by_label(&categories, &values);
+        assert_eq!(out.iter().map(|(k, _)| k.clone()).collect::<Vec<_>>(), vec!["B", "A", "C"]);
+        assert_eq!(out[0].1, vec![1.0, 3.0]);
+        assert_eq!(out[1].1, vec![2.0, 4.0]);
+        assert_eq!(out[2].1, vec![5.0]);
+    }
 
     #[test]
     fn boxes_stack_whisker_box_and_median_per_group() {
