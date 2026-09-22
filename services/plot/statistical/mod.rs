@@ -116,6 +116,8 @@ pub use boxplot::{render_boxplot_html, BoxplotConfig, BoxplotVariant};
 pub use bubble::BubbleVariant;
 pub use bullet::{render_bullet_html, BulletConfig, BulletVariant};
 pub use candlestick::{render_candlestick_html, CandlestickConfig, CandlestickVariant};
+pub use circle_pack::{render_circle_pack_html, CirclePackConfig, CirclePackVariant};
+pub use dendrogram::{render_dendrogram_html, DendrogramConfig, DendrogramVariant};
 pub use dumbbell::{render_dumbbell_html, DumbbellConfig, DumbbellVariant};
 pub use eventplot::{render_eventplot_html, EventplotConfig, EventplotVariant};
 pub use funnel::{render_funnel_html, FunnelConfig, FunnelVariant};
