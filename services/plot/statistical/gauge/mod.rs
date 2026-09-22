@@ -5,6 +5,7 @@ pub mod common;
 pub mod concentric;
 pub mod config;
 pub mod glow;
+pub mod layout3d;
 pub mod radial;
 pub mod segmented;
 pub mod sleek;
