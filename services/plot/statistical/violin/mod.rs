@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod half;
 pub mod horizontal;
+pub mod layout3d;
 pub mod mean;
 pub mod points;
 pub mod quartile;
