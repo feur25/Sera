@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod gapped;
 pub mod horizontal;
+pub mod layout3d;
 pub mod radial;
 pub mod rank;
 pub mod variant;
