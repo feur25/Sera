@@ -73,7 +73,7 @@ fn narrowed(spans: &[(f64, f64)], gap: f64) -> Vec<(f64, f64)> {
 }
 
 fn branch_tone(p: &Prepared, i: usize) -> f64 {
-    let n = p.roots.len().max(1);
+    let n = p.cidx.iter().copied().max().unwrap_or(0) + 1;
     p.cidx[i] as f64 / n.max(2) as f64
 }
 
@@ -120,9 +120,9 @@ mod tests {
 
     fn tree() -> (Vec<String>, Vec<String>, Vec<f64>) {
         (
-            ["Root", "A", "B", "A1", "A2"].iter().map(|s| s.to_string()).collect(),
-            ["", "Root", "Root", "A", "A"].iter().map(|s| s.to_string()).collect(),
-            vec![0.0, 40.0, 60.0, 25.0, 15.0],
+            ["A", "B", "A1", "A2", "B1"].iter().map(|s| s.to_string()).collect(),
+            ["", "", "A", "A", "B"].iter().map(|s| s.to_string()).collect(),
+            vec![40.0, 60.0, 25.0, 15.0, 20.0],
         )
     }
 
@@ -177,7 +177,8 @@ mod tests {
         let mono = draw(SunburstVariant::Mono).0;
         assert!(mono.iter().all(|b| b.tone == Some(MONO_TONE)));
         let basic = draw(SunburstVariant::Basic).0;
-        assert!(basic.iter().any(|b| b.tone != Some(MONO_TONE)));
+        let tones: std::collections::HashSet<_> = basic.iter().map(|b| b.tone.unwrap().to_bits()).collect();
+        assert!(tones.len() >= 2);
     }
 
     #[test]
