@@ -5,6 +5,7 @@ pub mod config;
 pub mod depth_fade;
 pub mod donut;
 pub mod gapped;
+pub mod layout3d;
 pub mod mono;
 pub mod outlined;
 pub mod variant;
