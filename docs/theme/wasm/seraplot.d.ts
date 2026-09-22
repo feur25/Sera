@@ -98,6 +98,8 @@ declare namespace wasm_bindgen {
 
     export function buildGauge(input: string): string;
 
+    export function buildGauge3dChart(input: string): string;
+
     export function buildGlobe3dChart(input: string): string;
 
     export function buildGraticuleMap(input: string): string;
@@ -119,6 +121,8 @@ declare namespace wasm_bindgen {
     export function buildHive(input: string): string;
 
     export function buildIcicle(input: string): string;
+
+    export function buildIcicle3dChart(input: string): string;
 
     export function buildIsosurfaceChart(input: string): string;
 
@@ -516,6 +520,7 @@ declare interface InitOutput {
     readonly buildGantt: (a: number, b: number) => [number, number];
     readonly buildGantt3dChart: (a: number, b: number) => [number, number];
     readonly buildGauge: (a: number, b: number) => [number, number];
+    readonly buildGauge3dChart: (a: number, b: number) => [number, number];
     readonly buildGlobe3dChart: (a: number, b: number) => [number, number];
     readonly buildGraticuleMap: (a: number, b: number) => [number, number];
     readonly buildGroupedBar: (a: number, b: number) => [number, number];
@@ -527,6 +532,7 @@ declare interface InitOutput {
     readonly buildHistogram3dChart: (a: number, b: number) => [number, number];
     readonly buildHive: (a: number, b: number) => [number, number];
     readonly buildIcicle: (a: number, b: number) => [number, number];
+    readonly buildIcicle3dChart: (a: number, b: number) => [number, number];
     readonly buildIsosurfaceChart: (a: number, b: number) => [number, number];
     readonly buildJoint: (a: number, b: number) => [number, number];
     readonly buildKde3dChart: (a: number, b: number) => [number, number];
