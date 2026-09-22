@@ -5,6 +5,7 @@ pub mod config;
 pub mod flat;
 pub mod gapped;
 pub mod heat;
+pub mod layout3d;
 pub mod mono;
 pub mod nested;
 pub mod outlined;
