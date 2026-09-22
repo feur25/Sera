@@ -4,6 +4,7 @@
     "ridgeline3d", "bubble3d", "pie3d", "violin3d", "heatmap3d",
     "candlestick3d", "boxplot3d", "waterfall3d", "histogram3d", "dumbbell3d",
     "bullet3d", "gantt3d", "funnel3d", "gauge3d", "sunburst3d", "icicle3d",
+    "treemap3d", "circle_pack3d", "dendrogram3d",
     "stacked-bar3d", "globe3d",
   ];
 
@@ -14,7 +15,7 @@
   function titleCase(slug) {
     return slug
       .replace(/-?3d$/, " 3D")
-      .split(/[- ]/)
+      .split(/[-_ ]/)
       .filter(Boolean)
       .map(function (w) { return w === "3D" ? w : w.charAt(0).toUpperCase() + w.slice(1); })
       .join(" ");
