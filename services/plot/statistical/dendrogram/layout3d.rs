@@ -1,7 +1,7 @@
 use super::common::{tree_for, TreeNode};
 use super::config::DendrogramConfig;
 use super::variant::DendrogramVariant;
-use crate::plot::statistical::_3d::budget::Budget;
+use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget, SAMPLE_CAP};
 use crate::plot::statistical::_3d::hierarchy::branch_tone;
 use crate::plot::statistical::_3d::lineage::{markers, midpoints, paths, Point, EDGE_HW, EDGE_STEPS, NODE_HW};
 use crate::plot::statistical::bar::Bar3DBlock;
@@ -84,6 +84,24 @@ fn link_path(parent: Point, child: Point, elbow: bool) -> Vec<Point> {
 }
 
 fn dendrogram_3d(cfg: &DendrogramConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
+    let capped_labels: Vec<String>;
+    let capped_values: Vec<Vec<f64>>;
+    let scoped_cfg: DendrogramConfig;
+    let cfg = if cfg.values.len() > SAMPLE_CAP {
+        let keep = even_indices(cfg.values.len(), SAMPLE_CAP);
+        capped_labels = pick(cfg.labels, &keep);
+        capped_values = pick(cfg.values, &keep);
+        scoped_cfg = DendrogramConfig {
+            labels: &capped_labels,
+            values: &capped_values,
+            parents: cfg.parents,
+            clusters: cfg.clusters,
+            ..DendrogramConfig::default()
+        };
+        &scoped_cfg
+    } else {
+        cfg
+    };
     let Some((mut nodes, roots)) = tree_for(cfg) else {
         return (Vec::new(), Vec::new());
     };
@@ -201,5 +219,16 @@ mod tests {
         let cfg = DendrogramConfig { labels: &labels, parents: &parents, ..DendrogramConfig::default() };
         let (blocks, names) = layout_named(&cfg, &Budget::default());
         assert_eq!((blocks.len(), names.len()), (1, 1));
+    }
+
+    #[test]
+    fn a_huge_raw_matrix_is_sampled_before_clustering_instead_of_exploding() {
+        let n = 2000;
+        let labels: Vec<String> = (0..n).map(|i| format!("L{i}")).collect();
+        let values: Vec<Vec<f64>> = (0..n).map(|i| vec![(i % 7) as f64, (i % 11) as f64]).collect();
+        let cfg = DendrogramConfig { labels: &labels, values: &values, ..DendrogramConfig::default() };
+        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        assert!(names.len() <= SAMPLE_CAP * 2);
+        assert!(blocks.len() < 20_000);
     }
 }
