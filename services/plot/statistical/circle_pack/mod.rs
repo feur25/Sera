@@ -5,6 +5,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod flat;
+pub mod layout3d;
 pub mod matrix;
 pub mod swarm;
 pub mod variant;
