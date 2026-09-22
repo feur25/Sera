@@ -7,6 +7,7 @@ pub mod config;
 pub mod elegant;
 pub mod genealogy;
 pub mod horizontal;
+pub mod layout3d;
 pub mod radial;
 pub mod triangular;
 pub mod variant;
