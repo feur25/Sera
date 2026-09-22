@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 22 three-dimensional chart types rendered with full WebGL acceleration.
+SeraPlot provides 24 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
 |---|---|
@@ -25,7 +25,9 @@ SeraPlot provides 22 three-dimensional chart types rendered with full WebGL acce
 | [Bullet 3D](bullet3d.md) | `bullet3d()` |
 | [Gantt 3D](gantt3d.md) | `gantt3d()` |
 | [Funnel 3D](funnel3d.md) | `funnel3d()` |
+| [Gauge 3D](gauge3d.md) | `gauge3d()` |
 | [Sunburst 3D](sunburst3d.md) | `sunburst3d()` |
+| [Icicle 3D](icicle3d.md) | `icicle3d()` |
 | [Stacked Bar 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
@@ -33,7 +35,7 @@ SeraPlot provides 22 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-SeraPlot propose 22 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
+SeraPlot propose 24 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |
 |-----------|----------|
@@ -56,7 +58,9 @@ SeraPlot propose 22 types de graphiques tridimensionnels rendus avec acc\u00e9l\
 | [Bullet 3D](bullet3d.md) | `bullet3d()` |
 | [Gantt 3D](gantt3d.md) | `gantt3d()` |
 | [Entonnoir 3D](funnel3d.md) | `funnel3d()` |
+| [Jauge 3D](gauge3d.md) | `gauge3d()` |
 | [Sunburst 3D](sunburst3d.md) | `sunburst3d()` |
+| [Icicle 3D](icicle3d.md) | `icicle3d()` |
 | [Barres empil\u00e9es 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
