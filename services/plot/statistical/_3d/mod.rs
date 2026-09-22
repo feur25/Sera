@@ -1,3 +1,4 @@
+pub mod area3d;
 pub mod bar3d;
 pub mod boxplot3d;
 pub mod bubble3d;
@@ -44,6 +45,7 @@ pub mod violin3d;
 pub mod waterfall3d;
 pub mod zone;
 
+pub use area3d::build_area3d_chart;
 pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, BlockView};
 pub use boxplot3d::build_boxplot3d_chart;
 pub use bubble3d::build_bubble3d_chart;
