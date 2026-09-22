@@ -3,7 +3,7 @@
     "scatter3d", "bar3d", "line3d", "radar3d", "lollipop3d", "kde3d",
     "ridgeline3d", "bubble3d", "pie3d", "violin3d", "heatmap3d",
     "candlestick3d", "boxplot3d", "waterfall3d", "histogram3d", "dumbbell3d",
-    "bullet3d", "gantt3d", "funnel3d", "sunburst3d",
+    "bullet3d", "gantt3d", "funnel3d", "gauge3d", "sunburst3d", "icicle3d",
     "stacked-bar3d", "globe3d",
   ];
 
