@@ -63,7 +63,7 @@ fn narrowed(spans: &[(f64, f64)], gap: f64) -> Vec<(f64, f64)> {
 }
 
 fn branch_tone(p: &Prepared, i: usize) -> f64 {
-    let n = p.roots.len().max(1);
+    let n = p.cidx.iter().copied().max().unwrap_or(0) + 1;
     p.cidx[i] as f64 / n.max(2) as f64
 }
 
@@ -147,6 +147,22 @@ mod tests {
                 assert_eq!(blocks.len(), 5, "{variant:?}");
             }
         }
+    }
+
+    #[test]
+    fn many_branches_each_keep_a_distinct_tone_instead_of_collapsing_past_two() {
+        let mut labels = vec!["Root".to_string()];
+        let mut parents = vec![String::new()];
+        let mut values = vec![0.0];
+        for k in 0..6 {
+            labels.push(format!("Branch{k}"));
+            parents.push("Root".to_string());
+            values.push(10.0);
+        }
+        let cfg = IcicleConfig { labels: &labels, parents: &parents, values: &values, ..IcicleConfig::default() };
+        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        let tones: std::collections::HashSet<_> = blocks.iter().map(|b| (b.tone.unwrap() * 1000.0).round() as i64).collect();
+        assert_eq!(tones.len(), 7);
     }
 
     #[test]
