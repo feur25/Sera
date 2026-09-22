@@ -6,6 +6,7 @@ pub mod config;
 pub mod curved;
 pub mod diverging;
 pub mod highlighted;
+pub mod layout3d;
 pub mod monochrome;
 pub mod stepped;
 pub mod thick;
