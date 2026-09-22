@@ -3,6 +3,7 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod gradient;
+pub mod layout3d;
 pub mod leader;
 pub mod percent;
 pub mod ribbon;
