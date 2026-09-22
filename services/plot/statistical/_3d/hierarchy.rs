@@ -83,6 +83,37 @@ pub fn radians_from_unit(span: (f64, f64)) -> (f64, f64) {
     (base + span.0 * TAU, base + span.1 * TAU)
 }
 
+pub fn footprint(rects: &[(f64, f64, f64, f64)], scale: f64, height_of: impl Fn(usize) -> f64, tone_of: impl Fn(usize) -> f64) -> Vec<Bar3DBlock> {
+    rects
+        .iter()
+        .enumerate()
+        .filter(|(_, &(x0, y0, x1, y1))| (x1 - x0).abs() > MIN_SPAN && (y1 - y0).abs() > MIN_SPAN)
+        .map(|(i, &(x0, y0, x1, y1))| {
+            let (cx, cy) = ((x0 + x1) / 2.0 * scale, (y0 + y1) / 2.0 * scale);
+            let (hw, hd) = ((x1 - x0) / 2.0 * scale, (y1 - y0) / 2.0 * scale);
+            Bar3DBlock::new(cx, cy, 0.0, height_of(i), hw, hd, i).with_tone(tone_of(i))
+        })
+        .collect()
+}
+
+pub fn branches<'a>(names: impl Iterator<Item = &'a str>) -> (Vec<usize>, Vec<String>) {
+    let mut slots: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    let ids = names
+        .map(|name| {
+            *slots.entry(name).or_insert_with(|| {
+                order.push(name.to_string());
+                order.len() - 1
+            })
+        })
+        .collect();
+    (ids, order)
+}
+
+pub fn branch_tone(id: usize, count: usize) -> f64 {
+    id as f64 / count.max(2) as f64
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -147,5 +178,29 @@ mod tests {
         let (a0, a1) = radians_from_unit((0.0, 1.0));
         assert!((a1 - a0 - TAU).abs() < 1e-9);
         assert_eq!(a0, -PI / 2.0);
+    }
+
+    #[test]
+    fn footprint_centres_and_sizes_each_block_from_its_own_rect_and_skips_zero_area_ones() {
+        let rects = [(0.0, 0.0, 0.5, 1.0), (0.5, 0.0, 0.5, 1.0)];
+        let out = footprint(&rects, 10.0, |_| BASE_HEIGHT, |i| i as f64 * 0.1);
+        assert_eq!(out.len(), 1);
+        assert_eq!((out[0].cx, out[0].cy, out[0].hw, out[0].hd), (2.5, 5.0, 2.5, 5.0));
+        assert_eq!(out[0].tone, Some(0.0));
+    }
+
+    #[test]
+    fn branches_number_names_by_first_appearance_and_repeat_the_same_id() {
+        let names = ["b", "a", "b", "c"];
+        let (ids, order) = branches(names.iter().copied());
+        assert_eq!(ids, vec![0, 1, 0, 2]);
+        assert_eq!(order, vec!["b", "a", "c"]);
+    }
+
+    #[test]
+    fn branch_tone_spans_zero_to_one_across_the_branch_count() {
+        assert_eq!(branch_tone(0, 3), 0.0);
+        assert_eq!(branch_tone(2, 3), 2.0 / 3.0);
+        assert_eq!(branch_tone(0, 1), 0.0);
     }
 }
