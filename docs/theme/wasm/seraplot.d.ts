@@ -60,6 +60,8 @@ declare namespace wasm_bindgen {
 
     export function buildCirclePack(input: string): string;
 
+    export function buildCirclePack3dChart(input: string): string;
+
     export function buildCircos(input: string): string;
 
     export function buildConeChart(input: string): string;
@@ -73,6 +75,8 @@ declare namespace wasm_bindgen {
     export function buildDbscanChart3d(input: string): string;
 
     export function buildDendrogram(input: string): string;
+
+    export function buildDendrogram3dChart(input: string): string;
 
     export function buildDonutChart(input: string): string;
 
@@ -199,6 +203,8 @@ declare namespace wasm_bindgen {
     export function buildSurface3dChart(input: string): string;
 
     export function buildTreemap(input: string): string;
+
+    export function buildTreemap3dChart(input: string): string;
 
     export function buildVectorFieldMap(input: string): string;
 
@@ -501,6 +507,7 @@ declare interface InitOutput {
     readonly buildChord: (a: number, b: number) => [number, number];
     readonly buildChoropleth: (a: number, b: number) => [number, number];
     readonly buildCirclePack: (a: number, b: number) => [number, number];
+    readonly buildCirclePack3dChart: (a: number, b: number) => [number, number];
     readonly buildCircos: (a: number, b: number) => [number, number];
     readonly buildConeChart: (a: number, b: number) => [number, number];
     readonly buildContourMap: (a: number, b: number) => [number, number];
@@ -508,6 +515,7 @@ declare interface InitOutput {
     readonly buildDbscanChart: (a: number, b: number) => [number, number];
     readonly buildDbscanChart3d: (a: number, b: number) => [number, number];
     readonly buildDendrogram: (a: number, b: number) => [number, number];
+    readonly buildDendrogram3dChart: (a: number, b: number) => [number, number];
     readonly buildDonutChart: (a: number, b: number) => [number, number];
     readonly buildDumbbell: (a: number, b: number) => [number, number];
     readonly buildDumbbell3dChart: (a: number, b: number) => [number, number];
@@ -571,6 +579,7 @@ declare interface InitOutput {
     readonly buildSunburst3dChart: (a: number, b: number) => [number, number];
     readonly buildSurface3dChart: (a: number, b: number) => [number, number];
     readonly buildTreemap: (a: number, b: number) => [number, number];
+    readonly buildTreemap3dChart: (a: number, b: number) => [number, number];
     readonly buildVectorFieldMap: (a: number, b: number) => [number, number];
     readonly buildVenn: (a: number, b: number) => [number, number];
     readonly buildViolin: (a: number, b: number) => [number, number];
