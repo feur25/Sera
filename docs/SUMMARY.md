@@ -105,6 +105,9 @@
   - [Treemap 3D](charts/3d/treemap3d.md)
   - [Circle Pack 3D](charts/3d/circle_pack3d.md)
   - [Dendrogram 3D](charts/3d/dendrogram3d.md)
+  - [Area 3D](charts/3d/area3d.md)
+  - [Stackplot 3D](charts/3d/stackplot3d.md)
+  - [Slope 3D](charts/3d/slope3d.md)
   - [Stacked Bar 3D](charts/3d/stacked-bar3d.md)
   - [Globe 3D](charts/3d/globe3d.md)
 - [Map Charts](charts/map/index.md)
@@ -119,7 +122,7 @@
 - [Web App (sp.App)](canvas/webapp.md)
 - [Sera Pulse — Pricing & Activation](seraplot/pulse-pricing.md)
 
----
+<!-- ---
 
 # SeraML
 
@@ -173,7 +176,7 @@
 # SeraDFrame
 
 - [SeraDFrame](canvas/dframe.md)
-- [Table (Data Engineering)](canvas/table.md)
+- [Table (Data Engineering)](canvas/table.md) -->
 
 ---
 

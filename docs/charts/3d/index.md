@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 27 three-dimensional chart types rendered with full WebGL acceleration.
+SeraPlot provides 30 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
 |---|---|
@@ -31,6 +31,9 @@ SeraPlot provides 27 three-dimensional chart types rendered with full WebGL acce
 | [Treemap 3D](treemap3d.md) | `treemap3d()` |
 | [Circle Pack 3D](circle_pack3d.md) | `circle_pack3d()` |
 | [Dendrogram 3D](dendrogram3d.md) | `dendrogram3d()` |
+| [Area 3D](area3d.md) | `area3d()` |
+| [Stackplot 3D](stackplot3d.md) | `stackplot3d()` |
+| [Slope 3D](slope3d.md) | `slope3d()` |
 | [Stacked Bar 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
@@ -38,7 +41,7 @@ SeraPlot provides 27 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-SeraPlot propose 27 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
+SeraPlot propose 30 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |
 |-----------|----------|
@@ -67,6 +70,9 @@ SeraPlot propose 27 types de graphiques tridimensionnels rendus avec acc\u00e9l\
 | [Treemap 3D](treemap3d.md) | `treemap3d()` |
 | [Circle Pack 3D](circle_pack3d.md) | `circle_pack3d()` |
 | [Dendrogramme 3D](dendrogram3d.md) | `dendrogram3d()` |
+| [Aire 3D](area3d.md) | `area3d()` |
+| [Stackplot 3D](stackplot3d.md) | `stackplot3d()` |
+| [Pente 3D](slope3d.md) | `slope3d()` |
 | [Barres empil\u00e9es 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
