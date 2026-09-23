@@ -59,6 +59,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("splom3d", "splom"),
     ("hexbin3d", "hexbin"),
     ("eventplot3d", "eventplot"),
+    ("scatterternary3d", "scatterternary"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
