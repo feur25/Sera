@@ -4,6 +4,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod labeled;
+pub mod layout3d;
 pub mod variant;
 
 pub use config::ScatterTernaryConfig;
