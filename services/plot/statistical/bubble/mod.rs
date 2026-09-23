@@ -6,6 +6,7 @@ pub mod common;
 pub mod config;
 pub mod deluxe;
 pub mod labeled;
+pub mod layout3d;
 pub mod negative;
 pub mod outlined;
 pub mod plasma;
