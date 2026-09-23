@@ -5,6 +5,7 @@
     "candlestick3d", "boxplot3d", "waterfall3d", "histogram3d", "dumbbell3d",
     "bullet3d", "gantt3d", "funnel3d", "gauge3d", "sunburst3d", "icicle3d",
     "treemap3d", "circle_pack3d", "dendrogram3d",
+    "area3d", "stackplot3d", "slope3d",
     "stacked-bar3d", "globe3d",
   ];
 
