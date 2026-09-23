@@ -5,6 +5,7 @@ pub mod common;
 pub mod config;
 pub mod dotted;
 pub mod highlight;
+pub mod layout3d;
 pub mod log_counts;
 pub mod marginals;
 pub mod mincnt;
