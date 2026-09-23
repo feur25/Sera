@@ -11,6 +11,7 @@ const POINT_SIZE: f64 = 0.045;
 const POINT_HEIGHT: f64 = 0.06;
 const MARGIN: f64 = 0.12;
 const LINE_TONE: f64 = 0.5;
+const MAX_AXES: usize = 8;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Glyph {
@@ -73,6 +74,17 @@ pub fn layout_3d(cfg: &SplomConfig, budget: &Budget) -> Vec<Bar3DBlock> {
 }
 
 pub fn layout_named(cfg: &SplomConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+    let capped_axes: Vec<String>;
+    let capped_series: Vec<Vec<f64>>;
+    let scoped_cfg: SplomConfig;
+    let cfg = if cfg.axes.len() > MAX_AXES {
+        capped_axes = cfg.axes[..MAX_AXES].to_vec();
+        capped_series = cfg.series_values.iter().map(|row| row[..row.len().min(MAX_AXES)].to_vec()).collect();
+        scoped_cfg = SplomConfig { variant: cfg.variant, axes: &capped_axes, series_values: &capped_series, ..SplomConfig::default() };
+        &scoped_cfg
+    } else {
+        cfg
+    };
     let Some(p) = prepare(cfg) else {
         return (Vec::new(), Vec::new());
     };
@@ -168,6 +180,16 @@ mod tests {
     #[test]
     fn empty_input_draws_nothing() {
         assert!(layout_named(&SplomConfig::default(), &Budget::default()).0.is_empty());
+    }
+
+    #[test]
+    fn a_huge_axis_count_is_capped_before_the_cell_grid_is_built() {
+        let axes: Vec<String> = (0..6000).map(|i| format!("A{i}")).collect();
+        let series: Vec<Vec<f64>> = (0..20).map(|i| (0..6000).map(|j| ((i * (j + 1)) % 97) as f64).collect()).collect();
+        let cfg = SplomConfig { axes: &axes, series_values: &series, ..SplomConfig::default() };
+        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        assert!(names.len() <= MAX_AXES * MAX_AXES);
+        assert!(blocks.len() < 12_000);
     }
 
     #[test]
