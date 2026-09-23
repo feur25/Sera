@@ -48,6 +48,14 @@ pub fn build_scatter3d_chart(input: &str) -> String {
     let cats_arg = a.categories.unwrap_or_default();
     let categories = if !cats_arg.is_empty() { cats_arg } else { o.color_groups.clone().unwrap_or_default() };
     let color_values = o.color_values.clone().unwrap_or_default();
+    let series_names = o.series_names.clone().unwrap_or_default();
+    let series: Vec<(String, Vec<f64>)> = a
+        .series
+        .unwrap_or_default()
+        .into_iter()
+        .enumerate()
+        .map(|(si, vals)| (series_names.get(si).cloned().unwrap_or_else(|| format!("S{}", si + 1)), vals))
+        .collect();
     let variant = ScatterVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let cfg = ScatterConfig {
         variant,
@@ -57,6 +65,7 @@ pub fn build_scatter3d_chart(input: &str) -> String {
         labels: &labels,
         categories: &categories,
         color_values: &color_values,
+        series: &series,
         ..ScatterConfig::default()
     };
     let env = o.scene.as_deref().unwrap_or("default");
@@ -105,7 +114,14 @@ mod tests {
 
     fn demos() -> twin::Demos {
         let base = r#"{"x":[1,2,3,4,5,6],"y":[2.1,3.9,6.2,7.8,10.1,12.0]}"#;
-        ScatterVariant::keys_and_aliases().iter().map(|(key, _)| (*key, twin::set_field(base, "variant", key))).collect()
+        let wide = r#"{"x":[1,2,3,4,5,6],"series":[[2.1,3.9,6.2,7.8,10.1,12.0],[5.0,4.5,4.0,3.2,2.8,2.1]],"series_names":["A","B"]}"#;
+        ScatterVariant::keys_and_aliases()
+            .iter()
+            .map(|(key, _)| {
+                let src = if *key == "wide_form" { wide } else { base };
+                (*key, twin::set_field(src, "variant", key))
+            })
+            .collect()
     }
 
     #[test]
