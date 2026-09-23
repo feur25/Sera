@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod connected;
 pub mod density;
+pub mod layout3d;
 pub mod variant;
 
 pub use config::EventplotConfig;
