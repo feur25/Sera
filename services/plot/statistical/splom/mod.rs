@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod correlation;
 pub mod density;
+pub mod layout3d;
 pub mod regression;
 pub mod variant;
 
