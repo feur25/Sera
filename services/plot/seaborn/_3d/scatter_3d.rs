@@ -137,4 +137,10 @@ mod tests {
     fn every_scatter_variant_survives_empty_single_and_extreme_inputs() {
         twin::check_robust(build_scatter3d_chart, &demos());
     }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        twin::write_previews("scatter3d", build_scatter3d_chart, &demos(), ScatterVariant::default_key());
+    }
 }
