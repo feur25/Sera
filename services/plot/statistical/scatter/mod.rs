@@ -7,6 +7,7 @@ pub mod continuous_hue;
 pub mod dual_style;
 pub mod facet;
 pub mod labeled;
+pub mod layout3d;
 pub mod regression;
 pub mod residual;
 pub mod rug;
