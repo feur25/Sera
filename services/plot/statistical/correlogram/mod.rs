@@ -6,6 +6,7 @@ pub mod common;
 pub mod config;
 pub mod ellipse;
 pub mod heatmap;
+pub mod layout3d;
 pub mod mixed;
 pub mod pie_square;
 pub mod text;
