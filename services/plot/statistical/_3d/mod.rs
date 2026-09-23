@@ -93,4 +93,3 @@ pub use plot_3d_types::register_statistical_3d_types;
 pub use radar3d::render_radar3d_html;
 pub use ridgeline3d::render_ridgeline3d_html;
 pub use stacked_bar3d::render_stacked_bar3d_html;
-pub use violin3d::render_violin3d_html;
