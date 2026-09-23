@@ -26,6 +26,8 @@ declare namespace wasm_bindgen {
 
     export function buildArcDiagram(input: string): string;
 
+    export function buildArea3dChart(input: string): string;
+
     export function buildAreaChart(input: string): string;
 
     export function buildBar(input: string): string;
@@ -186,6 +188,8 @@ declare namespace wasm_bindgen {
 
     export function buildSlope(input: string): string;
 
+    export function buildSlope3dChart(input: string): string;
+
     export function buildSplom(input: string): string;
 
     export function buildStackedBar(input: string): string;
@@ -193,6 +197,8 @@ declare namespace wasm_bindgen {
     export function buildStackedBar3dChart(input: string): string;
 
     export function buildStackplot(input: string): string;
+
+    export function buildStackplot3dChart(input: string): string;
 
     export function buildStreamtubeChart(input: string): string;
 
@@ -490,6 +496,7 @@ declare interface InitOutput {
     readonly aliasResolve: (a: number, b: number) => [number, number];
     readonly applyChartMethod: (a: number, b: number, c: number, d: number, e: number, f: number) => [number, number];
     readonly buildArcDiagram: (a: number, b: number) => [number, number];
+    readonly buildArea3dChart: (a: number, b: number) => [number, number];
     readonly buildAreaChart: (a: number, b: number) => [number, number];
     readonly buildBar: (a: number, b: number) => [number, number];
     readonly buildBar3dChart: (a: number, b: number) => [number, number];
@@ -570,10 +577,12 @@ declare interface InitOutput {
     readonly buildScatterChart: (a: number, b: number) => [number, number];
     readonly buildScatterTernary: (a: number, b: number) => [number, number];
     readonly buildSlope: (a: number, b: number) => [number, number];
+    readonly buildSlope3dChart: (a: number, b: number) => [number, number];
     readonly buildSplom: (a: number, b: number) => [number, number];
     readonly buildStackedBar: (a: number, b: number) => [number, number];
     readonly buildStackedBar3dChart: (a: number, b: number) => [number, number];
     readonly buildStackplot: (a: number, b: number) => [number, number];
+    readonly buildStackplot3dChart: (a: number, b: number) => [number, number];
     readonly buildStreamtubeChart: (a: number, b: number) => [number, number];
     readonly buildSunburst: (a: number, b: number) => [number, number];
     readonly buildSunburst3dChart: (a: number, b: number) => [number, number];
