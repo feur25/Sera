@@ -157,4 +157,10 @@ mod tests {
     fn every_bubble_variant_survives_empty_single_and_extreme_inputs() {
         twin::check_robust(build_bubble3d_chart, &demos());
     }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        twin::write_previews("bubble3d", build_bubble3d_chart, &demos(), BubbleVariant::default_key());
+    }
 }
