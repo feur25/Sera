@@ -6,6 +6,7 @@ pub mod contour;
 pub mod cumulative;
 pub mod fill;
 pub mod histogram;
+pub mod layout3d;
 pub mod levels;
 pub mod normalized;
 pub mod stack;
