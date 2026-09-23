@@ -3,6 +3,7 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod heatmap;
+pub mod layout3d;
 pub mod lines;
 pub mod mean;
 pub mod quartiles;
