@@ -52,6 +52,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("area3d", "area"),
     ("stackplot3d", "stackplot"),
     ("slope3d", "slope"),
+    ("violin3d", "violin"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
