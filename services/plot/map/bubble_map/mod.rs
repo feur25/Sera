@@ -3,6 +3,7 @@ pub mod config;
 pub mod filled;
 pub mod globe;
 pub mod hexbin;
+pub mod layout3d;
 pub mod pie_glyph;
 pub mod pie_markers;
 pub mod proportional;
