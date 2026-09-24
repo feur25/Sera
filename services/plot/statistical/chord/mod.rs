@@ -5,6 +5,7 @@ pub mod bipartite;
 pub mod common;
 pub mod config;
 pub mod directed;
+pub mod layout3d;
 pub mod mono;
 pub mod variant;
 
