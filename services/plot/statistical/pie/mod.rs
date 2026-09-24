@@ -5,6 +5,7 @@ pub mod config;
 pub mod donut;
 pub mod exploded;
 pub mod kpi;
+pub mod layout3d;
 pub mod native;
 pub mod nested;
 pub mod nightingale;
