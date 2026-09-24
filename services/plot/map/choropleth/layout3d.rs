@@ -8,7 +8,7 @@ use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::lineage::{paths, Point, EDGE_STEPS};
 use crate::plot::statistical::_3d::ohlc::{DOWN, UP};
 use crate::plot::statistical::bar::Bar3DBlock;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 const HEIGHT: f64 = 2.6;
 const FOOT: f64 = 0.16;
@@ -78,7 +78,9 @@ fn choropleth_3d(cfg: &ChoroplethConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     }
 
     let peak = matched.iter().map(|(_, _, v)| v.abs()).fold(1e-12, f64::max);
+    let peak_sv = matched.iter().map(|(j, _, _)| cfg.secondary_values.get(*j).copied().unwrap_or(0.0).abs()).fold(1e-12, f64::max);
     let trace_all = visible.len() <= MAX_TRACED_SHAPES;
+    let mut trace_cache: HashMap<&str, Vec<Point>> = HashMap::new();
     let mut blocks = Vec::new();
     let mut names = Vec::new();
 
@@ -105,7 +107,6 @@ fn choropleth_3d(cfg: &ChoroplethConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
             }
             Tone::Bivariate => {
                 let sv = cfg.secondary_values.get(i).copied().unwrap_or(0.0);
-                let peak_sv = matched.iter().map(|(j, _, _)| cfg.secondary_values.get(*j).copied().unwrap_or(0.0).abs()).fold(1e-12, f64::max);
                 (0.0, (HEIGHT * (value.abs() / peak)).max(0.05), (sv.abs() / peak_sv).clamp(0.0, 1.0))
             }
             Tone::ByValue => (0.0, (HEIGHT * (value.abs() / peak)).max(0.05), (value.abs() / peak).clamp(0.0, 1.0)),
@@ -113,9 +114,9 @@ fn choropleth_3d(cfg: &ChoroplethConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
         blocks.push(Bar3DBlock::new(cx, cy, z0, z1, FOOT, FOOT, ci).with_tone(tone));
 
         if trace_all {
-            let trace = outline_trace(cfg.region, shape, TRACE_PTS);
+            let trace = trace_cache.entry(shape.id.as_str()).or_insert_with(|| outline_trace(cfg.region, shape, TRACE_PTS));
             if trace.len() >= 2 {
-                blocks.extend(paths(&[trace], OUTLINE_HW, EDGE_STEPS, |_| ci, |_| tone));
+                blocks.extend(paths(std::slice::from_ref(trace), OUTLINE_HW, EDGE_STEPS, |_| ci, |_| tone));
             }
         }
     }
@@ -204,5 +205,22 @@ mod tests {
         let cfg = ChoroplethConfig::new(region);
         let (blocks, names) = layout_named(&cfg, &Budget::default());
         assert!(blocks.is_empty() && names.is_empty());
+    }
+
+    #[test]
+    fn massive_duplicate_matches_reuse_a_cached_outline_trace_instead_of_recomputing_it() {
+        let region = regions::resolve("usa_states").unwrap();
+        let n = 500_000;
+        let pool = ["CA", "TX", "NY", "FL", "IL"];
+        let labels: Vec<String> = (0..n).map(|i| pool[i % pool.len()].to_string()).collect();
+        let values: Vec<f64> = (0..n).map(|i| (i % 100) as f64).collect();
+        let mut cfg = ChoroplethConfig::new(region);
+        cfg.labels = &labels;
+        cfg.values = &values;
+        let t0 = std::time::Instant::now();
+        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        assert_eq!(names.len(), n);
+        assert!(!blocks.is_empty());
+        assert!(t0.elapsed().as_secs() < 3, "took {:?}", t0.elapsed());
     }
 }
