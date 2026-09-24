@@ -8,6 +8,8 @@
     "area3d", "stackplot3d", "slope3d",
     "correlogram3d", "splom3d", "hexbin3d", "eventplot3d",
     "scatterternary3d", "plot_web3d", "orbita3d",
+    "sankey3d", "chord3d", "arc_diagram3d", "hive3d",
+    "parallel3d", "parcats3d", "venn3d", "wordcloud3d", "pulse3d",
     "stacked-bar3d", "globe3d",
   ];
 

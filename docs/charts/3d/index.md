@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 37 three-dimensional chart types rendered with full WebGL acceleration.
+SeraPlot provides 46 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
 |---|---|
@@ -41,6 +41,15 @@ SeraPlot provides 37 three-dimensional chart types rendered with full WebGL acce
 | [Scatter Ternary 3D](scatterternary3d.md) | `scatterternary3d()` |
 | [Plot Web 3D](plot_web3d.md) | `plot_web3d()` |
 | [Orbita 3D](orbita3d.md) | `orbita3d()` |
+| [Sankey 3D](sankey3d.md) | `sankey3d()` |
+| [Chord 3D](chord3d.md) | `chord3d()` |
+| [Arc Diagram 3D](arc_diagram3d.md) | `arc_diagram3d()` |
+| [Hive 3D](hive3d.md) | `hive3d()` |
+| [Parallel Coordinates 3D](parallel3d.md) | `parallel3d()` |
+| [Parallel Categories 3D](parcats3d.md) | `parcats3d()` |
+| [Venn 3D](venn3d.md) | `venn3d()` |
+| [Word Cloud 3D](wordcloud3d.md) | `wordcloud3d()` |
+| [Pulse 3D](pulse3d.md) | `pulse3d()` |
 | [Stacked Bar 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
@@ -48,7 +57,7 @@ SeraPlot provides 37 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-SeraPlot propose 37 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
+SeraPlot propose 46 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |
 |-----------|----------|
@@ -87,6 +96,15 @@ SeraPlot propose 37 types de graphiques tridimensionnels rendus avec acc\u00e9l\
 | [Scatter Ternaire 3D](scatterternary3d.md) | `scatterternary3d()` |
 | [Plot Web 3D](plot_web3d.md) | `plot_web3d()` |
 | [Orbita 3D](orbita3d.md) | `orbita3d()` |
+| [Sankey 3D](sankey3d.md) | `sankey3d()` |
+| [Chord 3D](chord3d.md) | `chord3d()` |
+| [Diagramme en arcs 3D](arc_diagram3d.md) | `arc_diagram3d()` |
+| [Hive 3D](hive3d.md) | `hive3d()` |
+| [Coordonn\u00e9es parall\u00e8les 3D](parallel3d.md) | `parallel3d()` |
+| [Cat\u00e9gories parall\u00e8les 3D](parcats3d.md) | `parcats3d()` |
+| [Diagramme de Venn 3D](venn3d.md) | `venn3d()` |
+| [Nuage de mots 3D](wordcloud3d.md) | `wordcloud3d()` |
+| [Pulse 3D](pulse3d.md) | `pulse3d()` |
 | [Barres empil\u00e9es 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
