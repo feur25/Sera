@@ -2,6 +2,7 @@ pub mod animated;
 pub mod arc;
 pub mod common;
 pub mod config;
+pub mod layout3d;
 pub mod range_rings;
 pub mod ribbon;
 pub mod straight;
