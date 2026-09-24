@@ -6,6 +6,7 @@ pub mod common;
 pub mod config;
 pub mod gapped;
 pub mod hourglass;
+pub mod layout3d;
 pub mod matrix;
 pub mod ribbon;
 pub mod sorted;
