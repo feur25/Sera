@@ -1600,4 +1600,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     }, 150);
   });
   _obs.observe(document.body, { childList: true, subtree: true });
+
+  window.SeraPlotParseDemoInput = parseDemoInput;
 })();

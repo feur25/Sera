@@ -66,9 +66,14 @@
     }).join("");
   }
 
+  function renderEffectsBadge(d) {
+    if (d.category !== "chart_method" || !window.SeraPlotMethodEffects) return "";
+    return window.SeraPlotMethodEffects.badge(d.name);
+  }
+
   function renderCard(d, l) {
     return "<div class=\"cm-card\">" +
-      "<div class=\"cm-name\"><code class=\"cm-fn\">" + esc(signature(d)) + "</code>" + renderAliases(d) + "</div>" +
+      "<div class=\"cm-name\"><code class=\"cm-fn\">" + esc(signature(d)) + "</code>" + renderAliases(d) + renderEffectsBadge(d) + "</div>" +
       "<div class=\"cm-desc\">" + esc(textFor(d, l)) + "</div>" +
       renderParams(d, l) +
       "</div>";
