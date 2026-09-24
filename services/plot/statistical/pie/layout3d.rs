@@ -5,8 +5,8 @@ use crate::plot::statistical::_3d::hierarchy::{branch_tone, rings, RING_THICK};
 use crate::plot::statistical::bar::Bar3DBlock;
 use std::f64::consts::TAU;
 
-const HOLE: f64 = 2.0;
-const DONUT_HOLE: f64 = HOLE * 1.8;
+const HOLE: f64 = 0.75;
+const DONUT_HOLE: f64 = HOLE + 2.2;
 const HEIGHT: f64 = 1.0;
 const PULL_FACTOR: f64 = 0.35;
 const SPOKE_HOLE: f64 = 0.5;
