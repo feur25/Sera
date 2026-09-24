@@ -48,6 +48,8 @@ declare namespace wasm_bindgen {
 
     export function buildBubbleMap(input: string): string;
 
+    export function buildBubbleMap3dChart(input: string): string;
+
     export function buildBullet(input: string): string;
 
     export function buildBullet3dChart(input: string): string;
@@ -58,11 +60,15 @@ declare namespace wasm_bindgen {
 
     export function buildCartogram(input: string): string;
 
+    export function buildCartogram3dChart(input: string): string;
+
     export function buildChord(input: string): string;
 
     export function buildChord3dChart(input: string): string;
 
     export function buildChoropleth(input: string): string;
+
+    export function buildChoropleth3dChart(input: string): string;
 
     export function buildCirclePack(input: string): string;
 
@@ -73,6 +79,8 @@ declare namespace wasm_bindgen {
     export function buildConeChart(input: string): string;
 
     export function buildContourMap(input: string): string;
+
+    export function buildContourMap3dChart(input: string): string;
 
     export function buildCorrelogram(input: string): string;
 
@@ -102,6 +110,8 @@ declare namespace wasm_bindgen {
 
     export function buildFlowMap(input: string): string;
 
+    export function buildFlowMap3dChart(input: string): string;
+
     export function buildFunnel(input: string): string;
 
     export function buildFunnel3dChart(input: string): string;
@@ -117,6 +127,8 @@ declare namespace wasm_bindgen {
     export function buildGlobe3dChart(input: string): string;
 
     export function buildGraticuleMap(input: string): string;
+
+    export function buildGraticuleMap3dChart(input: string): string;
 
     export function buildGroupedBar(input: string): string;
 
@@ -241,6 +253,8 @@ declare namespace wasm_bindgen {
     export function buildTreemap3dChart(input: string): string;
 
     export function buildVectorFieldMap(input: string): string;
+
+    export function buildVectorFieldMap3dChart(input: string): string;
 
     export function buildVenn(input: string): string;
 
@@ -539,19 +553,23 @@ declare interface InitOutput {
     readonly buildBubble: (a: number, b: number) => [number, number];
     readonly buildBubble3dChart: (a: number, b: number) => [number, number];
     readonly buildBubbleMap: (a: number, b: number) => [number, number];
+    readonly buildBubbleMap3dChart: (a: number, b: number) => [number, number];
     readonly buildBullet: (a: number, b: number) => [number, number];
     readonly buildBullet3dChart: (a: number, b: number) => [number, number];
     readonly buildCandlestick: (a: number, b: number) => [number, number];
     readonly buildCandlestick3dChart: (a: number, b: number) => [number, number];
     readonly buildCartogram: (a: number, b: number) => [number, number];
+    readonly buildCartogram3dChart: (a: number, b: number) => [number, number];
     readonly buildChord: (a: number, b: number) => [number, number];
     readonly buildChord3dChart: (a: number, b: number) => [number, number];
     readonly buildChoropleth: (a: number, b: number) => [number, number];
+    readonly buildChoropleth3dChart: (a: number, b: number) => [number, number];
     readonly buildCirclePack: (a: number, b: number) => [number, number];
     readonly buildCirclePack3dChart: (a: number, b: number) => [number, number];
     readonly buildCircos: (a: number, b: number) => [number, number];
     readonly buildConeChart: (a: number, b: number) => [number, number];
     readonly buildContourMap: (a: number, b: number) => [number, number];
+    readonly buildContourMap3dChart: (a: number, b: number) => [number, number];
     readonly buildCorrelogram: (a: number, b: number) => [number, number];
     readonly buildCorrelogram3dChart: (a: number, b: number) => [number, number];
     readonly buildDbscanChart: (a: number, b: number) => [number, number];
@@ -566,6 +584,7 @@ declare interface InitOutput {
     readonly buildFacet: (a: number, b: number) => [number, number];
     readonly buildFirehoseChart: (a: number, b: number) => [number, number];
     readonly buildFlowMap: (a: number, b: number) => [number, number];
+    readonly buildFlowMap3dChart: (a: number, b: number) => [number, number];
     readonly buildFunnel: (a: number, b: number) => [number, number];
     readonly buildFunnel3dChart: (a: number, b: number) => [number, number];
     readonly buildGantt: (a: number, b: number) => [number, number];
@@ -574,6 +593,7 @@ declare interface InitOutput {
     readonly buildGauge3dChart: (a: number, b: number) => [number, number];
     readonly buildGlobe3dChart: (a: number, b: number) => [number, number];
     readonly buildGraticuleMap: (a: number, b: number) => [number, number];
+    readonly buildGraticuleMap3dChart: (a: number, b: number) => [number, number];
     readonly buildGroupedBar: (a: number, b: number) => [number, number];
     readonly buildHbar: (a: number, b: number) => [number, number];
     readonly buildHeatmap: (a: number, b: number) => [number, number];
@@ -636,6 +656,7 @@ declare interface InitOutput {
     readonly buildTreemap: (a: number, b: number) => [number, number];
     readonly buildTreemap3dChart: (a: number, b: number) => [number, number];
     readonly buildVectorFieldMap: (a: number, b: number) => [number, number];
+    readonly buildVectorFieldMap3dChart: (a: number, b: number) => [number, number];
     readonly buildVenn: (a: number, b: number) => [number, number];
     readonly buildVenn3dChart: (a: number, b: number) => [number, number];
     readonly buildViolin: (a: number, b: number) => [number, number];
