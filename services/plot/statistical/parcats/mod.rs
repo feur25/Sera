@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod layout3d;
 pub mod variant;
 
 pub use config::ParcatsConfig;
