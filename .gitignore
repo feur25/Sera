@@ -1,6 +1,7 @@
 book/
 target/
 pkg/
+dist/
 *.lock
 .env
 .DS_Store
@@ -8,7 +9,6 @@ src/telemetry/
 *.csv
 v2/
 tools/
-pulse/
 secret/
 python/seraplot/*.pyd
 python/seraplot/*.pyd.bak

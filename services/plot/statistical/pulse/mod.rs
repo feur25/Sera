@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod dot;
 pub mod filled;
+pub mod layout3d;
 pub mod outlined;
 pub mod radial;
 pub mod variant;
