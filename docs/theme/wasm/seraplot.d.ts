@@ -72,6 +72,8 @@ declare namespace wasm_bindgen {
 
     export function buildCorrelogram(input: string): string;
 
+    export function buildCorrelogram3dChart(input: string): string;
+
     export function buildDbscanChart(input: string): string;
 
     export function buildDbscanChart3d(input: string): string;
@@ -87,6 +89,8 @@ declare namespace wasm_bindgen {
     export function buildDumbbell3dChart(input: string): string;
 
     export function buildEventplot(input: string): string;
+
+    export function buildEventplot3dChart(input: string): string;
 
     export function buildFacet(input: string): string;
 
@@ -119,6 +123,8 @@ declare namespace wasm_bindgen {
     export function buildHeatmap3dChart(input: string): string;
 
     export function buildHexbin(input: string): string;
+
+    export function buildHexbin3dChart(input: string): string;
 
     export function buildHistogram(input: string): string;
 
@@ -156,6 +162,8 @@ declare namespace wasm_bindgen {
 
     export function buildOrbita(input: string): string;
 
+    export function buildOrbita3dChart(input: string): string;
+
     export function buildParallel(input: string): string;
 
     export function buildParcats(input: string): string;
@@ -167,6 +175,8 @@ declare namespace wasm_bindgen {
     export function buildPieChart(input: string): string;
 
     export function buildPlotWeb(input: string): string;
+
+    export function buildPlotWeb3dChart(input: string): string;
 
     export function buildPulse(input: string): string;
 
@@ -186,11 +196,15 @@ declare namespace wasm_bindgen {
 
     export function buildScatterTernary(input: string): string;
 
+    export function buildScatterternary3dChart(input: string): string;
+
     export function buildSlope(input: string): string;
 
     export function buildSlope3dChart(input: string): string;
 
     export function buildSplom(input: string): string;
+
+    export function buildSplom3dChart(input: string): string;
 
     export function buildStackedBar(input: string): string;
 
@@ -519,6 +533,7 @@ declare interface InitOutput {
     readonly buildConeChart: (a: number, b: number) => [number, number];
     readonly buildContourMap: (a: number, b: number) => [number, number];
     readonly buildCorrelogram: (a: number, b: number) => [number, number];
+    readonly buildCorrelogram3dChart: (a: number, b: number) => [number, number];
     readonly buildDbscanChart: (a: number, b: number) => [number, number];
     readonly buildDbscanChart3d: (a: number, b: number) => [number, number];
     readonly buildDendrogram: (a: number, b: number) => [number, number];
@@ -527,6 +542,7 @@ declare interface InitOutput {
     readonly buildDumbbell: (a: number, b: number) => [number, number];
     readonly buildDumbbell3dChart: (a: number, b: number) => [number, number];
     readonly buildEventplot: (a: number, b: number) => [number, number];
+    readonly buildEventplot3dChart: (a: number, b: number) => [number, number];
     readonly buildFacet: (a: number, b: number) => [number, number];
     readonly buildFirehoseChart: (a: number, b: number) => [number, number];
     readonly buildFlowMap: (a: number, b: number) => [number, number];
@@ -543,6 +559,7 @@ declare interface InitOutput {
     readonly buildHeatmap: (a: number, b: number) => [number, number];
     readonly buildHeatmap3dChart: (a: number, b: number) => [number, number];
     readonly buildHexbin: (a: number, b: number) => [number, number];
+    readonly buildHexbin3dChart: (a: number, b: number) => [number, number];
     readonly buildHistogram: (a: number, b: number) => [number, number];
     readonly buildHistogram3dChart: (a: number, b: number) => [number, number];
     readonly buildHive: (a: number, b: number) => [number, number];
@@ -561,12 +578,14 @@ declare interface InitOutput {
     readonly buildMesh3dChart: (a: number, b: number) => [number, number];
     readonly buildMultilineChart: (a: number, b: number) => [number, number];
     readonly buildOrbita: (a: number, b: number) => [number, number];
+    readonly buildOrbita3dChart: (a: number, b: number) => [number, number];
     readonly buildParallel: (a: number, b: number) => [number, number];
     readonly buildParcats: (a: number, b: number) => [number, number];
     readonly buildPie: (a: number, b: number) => [number, number];
     readonly buildPie3dChart: (a: number, b: number) => [number, number];
     readonly buildPieChart: (a: number, b: number) => [number, number];
     readonly buildPlotWeb: (a: number, b: number) => [number, number];
+    readonly buildPlotWeb3dChart: (a: number, b: number) => [number, number];
     readonly buildPulse: (a: number, b: number) => [number, number];
     readonly buildRadar3dChart: (a: number, b: number) => [number, number];
     readonly buildRadarChart: (a: number, b: number) => [number, number];
@@ -576,9 +595,11 @@ declare interface InitOutput {
     readonly buildScatter3dChart: (a: number, b: number) => [number, number];
     readonly buildScatterChart: (a: number, b: number) => [number, number];
     readonly buildScatterTernary: (a: number, b: number) => [number, number];
+    readonly buildScatterternary3dChart: (a: number, b: number) => [number, number];
     readonly buildSlope: (a: number, b: number) => [number, number];
     readonly buildSlope3dChart: (a: number, b: number) => [number, number];
     readonly buildSplom: (a: number, b: number) => [number, number];
+    readonly buildSplom3dChart: (a: number, b: number) => [number, number];
     readonly buildStackedBar: (a: number, b: number) => [number, number];
     readonly buildStackedBar3dChart: (a: number, b: number) => [number, number];
     readonly buildStackplot: (a: number, b: number) => [number, number];
