@@ -5,6 +5,7 @@ pub mod common;
 pub mod config;
 pub mod dashed;
 pub mod filled;
+pub mod layout3d;
 pub mod lines;
 pub mod markers;
 pub mod petal;

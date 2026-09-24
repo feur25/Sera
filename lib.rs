@@ -81,6 +81,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("graticule_map3d", "graticule_map"),
     ("vector_field_map3d", "vector_field_map"),
     ("pie3d", "pie"),
+    ("radar3d", "radar"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {

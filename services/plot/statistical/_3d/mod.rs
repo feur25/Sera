@@ -120,5 +120,4 @@ pub use heatmap3d::render_heatmap3d_html;
 pub use lollipop3d::render_lollipop3d_html;
 pub use mesh3d::{cone_mesh, cube_mesh, grid_to_mesh, render_mesh3d_html};
 pub use plot_3d_types::register_statistical_3d_types;
-pub use radar3d::render_radar3d_html;
 pub use stacked_bar3d::render_stacked_bar3d_html;
