@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 46 three-dimensional chart types rendered with full WebGL acceleration.
+SeraPlot provides 53 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
 |---|---|
@@ -50,6 +50,13 @@ SeraPlot provides 46 three-dimensional chart types rendered with full WebGL acce
 | [Venn 3D](venn3d.md) | `venn3d()` |
 | [Word Cloud 3D](wordcloud3d.md) | `wordcloud3d()` |
 | [Pulse 3D](pulse3d.md) | `pulse3d()` |
+| [Choropleth 3D](choropleth3d.md) | `choropleth3d()` |
+| [Bubble Map 3D](bubble_map3d.md) | `bubble_map3d()` |
+| [Cartogram 3D](cartogram3d.md) | `cartogram3d()` |
+| [Flow Map 3D](flow_map3d.md) | `flow_map3d()` |
+| [Contour Map 3D](contour_map3d.md) | `contour_map3d()` |
+| [Graticule Map 3D](graticule_map3d.md) | `graticule_map3d()` |
+| [Vector Field Map 3D](vector_field_map3d.md) | `vector_field_map3d()` |
 | [Stacked Bar 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 
@@ -57,7 +64,7 @@ SeraPlot provides 46 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-SeraPlot propose 46 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
+SeraPlot propose 53 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |
 |-----------|----------|
@@ -105,6 +112,13 @@ SeraPlot propose 46 types de graphiques tridimensionnels rendus avec acc\u00e9l\
 | [Diagramme de Venn 3D](venn3d.md) | `venn3d()` |
 | [Nuage de mots 3D](wordcloud3d.md) | `wordcloud3d()` |
 | [Pulse 3D](pulse3d.md) | `pulse3d()` |
+| [Choropleth 3D](choropleth3d.md) | `choropleth3d()` |
+| [Carte \u00e0 bulles 3D](bubble_map3d.md) | `bubble_map3d()` |
+| [Cartogramme 3D](cartogram3d.md) | `cartogram3d()` |
+| [Carte de flux 3D](flow_map3d.md) | `flow_map3d()` |
+| [Carte de contours 3D](contour_map3d.md) | `contour_map3d()` |
+| [Carte du graticule 3D](graticule_map3d.md) | `graticule_map3d()` |
+| [Carte de champ vectoriel 3D](vector_field_map3d.md) | `vector_field_map3d()` |
 | [Barres empil\u00e9es 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
 

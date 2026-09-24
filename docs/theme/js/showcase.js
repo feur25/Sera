@@ -10,6 +10,8 @@
     "scatterternary3d", "plot_web3d", "orbita3d",
     "sankey3d", "chord3d", "arc_diagram3d", "hive3d",
     "parallel3d", "parcats3d", "venn3d", "wordcloud3d", "pulse3d",
+    "choropleth3d", "bubble_map3d", "cartogram3d", "flow_map3d",
+    "contour_map3d", "graticule_map3d", "vector_field_map3d",
     "stacked-bar3d", "globe3d",
   ];
 
