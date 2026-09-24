@@ -1,6 +1,7 @@
 pub mod arrows;
 pub mod common;
 pub mod config;
+pub mod layout3d;
 pub mod streamlines;
 pub mod variant;
 pub mod wind_barbs;

@@ -79,6 +79,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("flow_map3d", "flow_map"),
     ("contour_map3d", "contour_map"),
     ("graticule_map3d", "graticule_map"),
+    ("vector_field_map3d", "vector_field_map"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
