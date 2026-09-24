@@ -1,3 +1,4 @@
+pub mod geo;
 pub mod globe;
 pub mod globe_html;
 pub mod globe_types;
