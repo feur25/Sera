@@ -1,7 +1,7 @@
 use super::config::ChoroplethConfig;
 use crate::plot::map::world_data;
 
-fn terminator_lat_deg(lon_deg: f64, sub_lat_deg: f64, sub_lon_deg: f64) -> f64 {
+pub fn terminator_lat_deg(lon_deg: f64, sub_lat_deg: f64, sub_lon_deg: f64) -> f64 {
     let sub_lat = sub_lat_deg.to_radians();
     let h = (lon_deg - sub_lon_deg).to_radians();
     (-sub_lat.cos() * h.cos()).atan2(sub_lat.sin()).to_degrees()

@@ -5,6 +5,7 @@ pub mod config;
 pub mod daynight;
 pub mod diverging;
 pub mod dot_density;
+pub mod layout3d;
 pub mod orthographic;
 pub mod polar;
 pub mod sequential;
