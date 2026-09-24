@@ -1,5 +1,5 @@
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::_3d::{render_blocks3d_view_html_zoomable, BlockView};
 use crate::plot::statistical::sunburst::layout3d;
 use crate::plot::statistical::{SunburstConfig, SunburstVariant};
 use crate::plot::{apply_bg3d, parse_all};
@@ -26,8 +26,8 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
-    let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-    let html = render_blocks3d_view_html(
+    let (blocks, names, groups) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
+    let html = render_blocks3d_view_html_zoomable(
         title,
         &blocks,
         &view,
@@ -37,6 +37,7 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
         o.h(560),
         bg_default,
         env,
+        &groups,
     );
     apply_bg3d(html, &o)
 }
@@ -105,6 +106,15 @@ mod tests {
     fn node_labels_reach_the_tooltip_names() {
         let html = build_sunburst3d_chart(r#"{"title":"t","labels":["Root","A","B"],"parents":["","Root","Root"],"values":[0,40,60]}"#);
         assert!(html.contains("'Root'") && html.contains("'A'") && html.contains("'B'"));
+    }
+
+    #[test]
+    fn only_the_zoomable_variant_carries_click_to_zoom_groups() {
+        let base = r#"{"title":"t","labels":["Root","A","B"],"parents":["","Root","Root"],"values":[0,40,60],"variant":"#;
+        let zoomable = build_sunburst3d_chart(&format!("{base}\"zoomable\"}}"));
+        assert!(zoomable.contains("var ZKIDS="));
+        let basic = build_sunburst3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var ZKIDS="));
     }
 
     #[test]
