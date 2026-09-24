@@ -2,6 +2,7 @@ pub mod common;
 pub mod config;
 pub mod demers;
 pub mod dorling;
+pub mod layout3d;
 pub mod variant;
 
 pub use config::CartogramConfig;

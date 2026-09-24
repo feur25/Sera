@@ -75,6 +75,7 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("pulse3d", "pulse"),
     ("choropleth3d", "choropleth"),
     ("bubble_map3d", "bubble_map"),
+    ("cartogram3d", "cartogram"),
 ];
 
 fn geometry_base(family: &str) -> Option<&'static str> {
