@@ -7,6 +7,7 @@ pub mod context;
 pub mod cosmos;
 pub mod image;
 pub mod labelmap;
+pub mod layout3d;
 pub mod network;
 pub mod neuron;
 pub mod shape;
