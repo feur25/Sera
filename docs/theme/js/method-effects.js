@@ -10,31 +10,40 @@
     return [];
   }
 
-  function sampleForType(ty, name) {
+  function inputCardinality(input) {
+    var max = 0;
+    Object.keys(input || {}).forEach(function (k) {
+      if (Array.isArray(input[k])) max = Math.max(max, input[k].length);
+    });
+    return max || 3;
+  }
+
+  function sampleForType(ty, name, n) {
     ty = String(ty || "").toLowerCase();
-    var n = String(name || "").toLowerCase();
+    var nm = String(name || "").toLowerCase();
+    n = n || 3;
     if (ty === "bool") return true;
-    if (ty === "int") return /idx|index/.test(n) ? 0 : 5;
-    if (ty === "float") return /opacity|frac|ratio/.test(n) ? 0.5 : 1.0;
+    if (ty === "int") return /idx|index/.test(nm) ? 0 : 5;
+    if (ty === "float") return /opacity|frac|ratio/.test(nm) ? 0.5 : 1.0;
     if (ty === "str") {
-      if (/color/.test(n)) return "#6366f1";
-      if (/kind|shape|position|align|mode/.test(n)) return "rect";
+      if (/color/.test(nm)) return "#6366f1";
+      if (/kind|shape|position|align|mode/.test(nm)) return "rect";
       return "Sample";
     }
-    if (ty.indexOf("list[str]") === 0) return ["A", "B"];
-    if (ty.indexOf("list[float]") === 0 || ty.indexOf("list[int]") === 0) return [1, 2, 3];
+    if (ty.indexOf("list[str]") === 0) return Array.from({ length: n }, function (_, i) { return "S" + i; });
+    if (ty.indexOf("list[float]") === 0 || ty.indexOf("list[int]") === 0) return Array.from({ length: n }, function (_, i) { return i + 1; });
     if (ty.indexOf("list[") === 0) return [];
     if (ty.indexOf("dict") === 0) return {};
     return null;
   }
 
-  function syntheticArgsFor(methodName) {
+  function syntheticArgsFor(methodName, n) {
     var reg = window.SeraPlotMethodRegistry;
     var docs = (reg && reg.docs) || [];
     var doc = docs.filter(function (d) { return d.name === methodName; })[0];
     var args = {};
     (doc && doc.params || []).forEach(function (p) {
-      var v = sampleForType(p.ty, p.name);
+      var v = sampleForType(p.ty, p.name, n);
       if (v !== null) args[p.name] = v;
     });
     return args;
@@ -50,6 +59,16 @@
     STATE.listeners.forEach(function (fn) { fn(STATE); });
   }
 
+  function allTargets(families) {
+    var out = [];
+    Object.keys(families || {}).forEach(function (family) {
+      var variants = variantKeysOf(families[family]);
+      if (!variants.length) variants = ["basic"];
+      variants.forEach(function (variant) { out.push({ family: family, variant: variant }); });
+    });
+    return out;
+  }
+
   function runComputation() {
     if (STATE.running || STATE.map) return;
     var sp = window.SeraplotWASM;
@@ -60,22 +79,20 @@
     try { families = JSON.parse(sp.chartVariants()) || {}; } catch (e) {}
     var methods = chartMethodNames();
     var map = {};
-    var argsByMethod = {};
-    methods.forEach(function (m) { map[m] = []; argsByMethod[m] = JSON.stringify(syntheticArgsFor(m)); });
+    methods.forEach(function (m) { map[m] = []; });
 
-    var names = Object.keys(families);
+    var targets = allTargets(families);
     STATE.running = true;
     STATE.done = 0;
-    STATE.total = names.length;
+    STATE.total = targets.length;
     var idx = 0;
 
     function step() {
       var t0 = performance.now();
-      while (idx < names.length && performance.now() - t0 < 24) {
-        var family = names[idx++];
+      while (idx < targets.length && performance.now() - t0 < 40) {
+        var target = targets[idx++];
         STATE.done = idx;
-        var variants = variantKeysOf(families[family]);
-        var variant = variants.length ? variants[0] : "basic";
+        var family = target.family, variant = target.variant;
         try {
           var snippet = sp.demo(JSON.stringify({ family: family, variant: variant }));
           if (!snippet) continue;
@@ -83,16 +100,18 @@
           if (!parsed || !parsed.input) continue;
           var baseline = sp.call(family, JSON.stringify(parsed.input));
           if (!baseline) continue;
+          var n = inputCardinality(parsed.input);
           for (var mi = 0; mi < methods.length; mi++) {
             var method = methods[mi];
+            var args = JSON.stringify(syntheticArgsFor(method, n));
             var after;
-            try { after = sp.applyChartMethod(baseline, method, argsByMethod[method]); } catch (e2) { after = baseline; }
+            try { after = sp.applyChartMethod(baseline, method, args); } catch (e2) { after = baseline; }
             if (after && after !== baseline) map[method].push({ family: family, variant: variant });
           }
         } catch (e) {}
       }
       notify();
-      if (idx < names.length) {
+      if (idx < targets.length) {
         setTimeout(step, 0);
       } else {
         STATE.running = false;
