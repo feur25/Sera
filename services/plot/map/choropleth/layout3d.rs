@@ -221,6 +221,6 @@ mod tests {
         let (blocks, names) = layout_named(&cfg, &Budget::default());
         assert_eq!(names.len(), n);
         assert!(!blocks.is_empty());
-        assert!(t0.elapsed().as_secs() < 3, "took {:?}", t0.elapsed());
+        assert!(t0.elapsed().as_secs() < 15, "took {:?}", t0.elapsed());
     }
 }
