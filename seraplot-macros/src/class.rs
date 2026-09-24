@@ -86,10 +86,24 @@ fn js_method_blocks(
                 });
                 call_args.push(quote! { #var });
             }
+            "i64" => {
+                let d = default.unwrap_or_else(|| quote! { 0 });
+                decls.push(quote! {
+                    let #var: i64 = __args.get(#name).and_then(|v| v.as_i64()).unwrap_or(#d);
+                });
+                call_args.push(quote! { #var });
+            }
             "u32" => {
                 let d = default.unwrap_or_else(|| quote! { 0 });
                 decls.push(quote! {
                     let #var: u32 = __args.get(#name).and_then(|v| v.as_u64()).map(|x| x as u32).unwrap_or(#d);
+                });
+                call_args.push(quote! { #var });
+            }
+            "u64" => {
+                let d = default.unwrap_or_else(|| quote! { 0 });
+                decls.push(quote! {
+                    let #var: u64 = __args.get(#name).and_then(|v| v.as_u64()).unwrap_or(#d);
                 });
                 call_args.push(quote! { #var });
             }
@@ -130,6 +144,12 @@ fn js_method_blocks(
             "Vec<u32>" => {
                 decls.push(quote! {
                     let #var: Vec<u32> = __args.get(#name).and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|x| x.as_u64().map(|y| y as u32)).collect()).unwrap_or_default();
+                });
+                call_args.push(quote! { #var });
+            }
+            "Vec<f64>" => {
+                decls.push(quote! {
+                    let #var: Vec<f64> = __args.get(#name).and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|x| x.as_f64()).collect()).unwrap_or_default();
                 });
                 call_args.push(quote! { #var });
             }
