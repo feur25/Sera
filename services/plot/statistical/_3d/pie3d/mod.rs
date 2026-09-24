@@ -5,7 +5,7 @@ use crate::plot::statistical::pie::layout3d;
 use crate::plot::statistical::PieVariant;
 use crate::plot::{apply_bg3d, parse_all};
 
-#[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], values=[30,50,20]")]
+#[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]")]
 #[crate::params(paramsList["title","labels","values","secondary_values","sort_order","variant","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias("pie3d", "pie_3d", "pie3d_chart", "pie3d_family", "pies3d")]
 #[crate::sera_builder]
@@ -54,7 +54,7 @@ mod tests {
     use crate::plot::statistical::PieVariant;
 
     fn demos() -> twin::Demos {
-        let base = r#"{"labels":["A","B","C"],"values":[30,50,20],"secondary_values":[10,15,5]}"#;
+        let base = r#"{"labels":["Apple","Banana","Cherry","Date","Fig"],"values":[40,25,20,10,5],"secondary_values":[55,30,15]}"#;
         PieVariant::keys_and_aliases().iter().map(|(key, _)| (*key, twin::set_field(base, "variant", key))).collect()
     }
 
