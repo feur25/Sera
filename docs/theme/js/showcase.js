@@ -6,6 +6,8 @@
     "bullet3d", "gantt3d", "funnel3d", "gauge3d", "sunburst3d", "icicle3d",
     "treemap3d", "circle_pack3d", "dendrogram3d",
     "area3d", "stackplot3d", "slope3d",
+    "correlogram3d", "splom3d", "hexbin3d", "eventplot3d",
+    "scatterternary3d", "plot_web3d", "orbita3d",
     "stacked-bar3d", "globe3d",
   ];
 
