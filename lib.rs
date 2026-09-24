@@ -105,6 +105,7 @@ pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
 }
 
 pub fn required_params_for(family: &str, variant: &str) -> Option<&'static [&'static str]> {
+    let family = geometry_base(family).unwrap_or(family);
     if let Some(e) = PARAMS_REGISTRY
         .iter()
         .find(|(f, v, _)| *f == family && *v == variant)
@@ -118,6 +119,7 @@ pub fn required_params_for(family: &str, variant: &str) -> Option<&'static [&'st
 }
 
 pub fn true_required_params_for(family: &str, variant: &str) -> Option<&'static [&'static str]> {
+    let family = geometry_base(family).unwrap_or(family);
     if let Some(e) = REQUIRED_REGISTRY
         .iter()
         .find(|(f, v, _)| *f == family && *v == variant)
