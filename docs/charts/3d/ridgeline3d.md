@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,68 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One density ridge per category, rows close enough that tall ridges overlap the row behind them.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-    priority=[0],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lines</code></h3><p>The same ridges pressed to a needle-thin profile, a wireframe-like reading of the landscape.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-lines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Lines 3D&quot;,
-    variant=&quot;lines&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>quartiles</code></h3><p>The basic ridges plus a marker plate at each category&#x27;s first quartile, median and third quartile.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-quartiles.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Quartiles 3D&quot;,
-    variant=&quot;quartiles&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mean</code></h3><p>The basic ridges plus a single marker plate at each category&#x27;s arithmetic mean.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-mean.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Mean 3D&quot;,
-    variant=&quot;mean&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rug</code></h3><p>Thin ridges plus a small tick at every raw sample&#x27;s position along its row.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-rug.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Rug 3D&quot;,
-    variant=&quot;rug&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heatmap</code></h3><p>The same ridges toned cell by cell on a continuous ramp instead of one flat colour per row.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-heatmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Heatmap 3D&quot;,
-    variant=&quot;heatmap&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>spaced</code></h3><p>The same ridges pushed onto widely separated rows, so none of them overlap.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-spaced.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Spaced 3D&quot;,
-    variant=&quot;spaced&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -262,68 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une crête de densité par catégorie, les rangées assez proches pour que les hautes crêtes recouvrent la rangée derrière elles.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-    priority=[0],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lines</code></h3><p>Les mêmes crêtes pressées en un profil fin comme une aiguille, une lecture filaire du paysage.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-lines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Lines 3D&quot;,
-    variant=&quot;lines&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>quartiles</code></h3><p>Les crêtes de base plus une dalle repère au premier quartile, à la médiane et au troisième quartile de chaque catégorie.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-quartiles.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Quartiles 3D&quot;,
-    variant=&quot;quartiles&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mean</code></h3><p>Les crêtes de base plus une unique dalle repère à la moyenne arithmétique de chaque catégorie.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-mean.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Mean 3D&quot;,
-    variant=&quot;mean&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rug</code></h3><p>Crêtes fines plus une petite marque à la position de chaque échantillon brut le long de sa rangée.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-rug.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Rug 3D&quot;,
-    variant=&quot;rug&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heatmap</code></h3><p>Les mêmes crêtes teintées cellule par cellule sur une rampe continue au lieu d&#x27;une couleur plate par rangée.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-heatmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Heatmap 3D&quot;,
-    variant=&quot;heatmap&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>spaced</code></h3><p>Les mêmes crêtes poussées sur des rangées largement séparées, si bien qu&#x27;aucune ne se chevauche.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-spaced.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.ridgeline3d(
-    &quot;Spaced 3D&quot;,
-    variant=&quot;spaced&quot;,
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 2.0, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

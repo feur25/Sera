@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -98,69 +93,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>One marker per node, one weighted arc per edge.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>straight</code></h3><p>The same arcs, thinner and understated.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-straight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Straight 3D&quot;,
-    variant=&quot;straight&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>animated</code></h3><p>The same arcs as arc; the 2D chart&#x27;s moving-dash animation has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-animated.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Animated 3D&quot;,
-    variant=&quot;animated&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The same arcs, visibly thicker.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>track</code></h3><p>No edge list at all: <code>lats</code>/<code>lons</code> visited in order become one connected, weighted path.</p><p class="sp-3d-uses">Uses: <code>lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-track.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Track 3D&quot;,
-    variant=&quot;track&quot;,
-    lats=[10.5, 12.1, 13.8, 15.9, 18.2, 20.8, ...],
-    lons=[-38.5, -45.2, -50.1, -54.6, -58.9, -63.5, ...],
-    field=[25, 35, 45, 60, 75, 95, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>range_rings</code></h3><p>The same arcs as arc; the 2D chart&#x27;s concentric distance rings have no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-range_rings.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Range Rings 3D&quot;,
-    variant=&quot;range_rings&quot;,
-    lats=[40.7, 51.5, 1.35, -33.9, -23.5, -33.9],
-    lons=[-74.0, -0.12, 103.8, 151.2, -46.6, 18.4],
-    field=[500, 1500, 3000],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -261,69 +193,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>Un repère par nœud, un arc pondéré par lien.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>straight</code></h3><p>Les mêmes arcs, plus fins et discrets.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-straight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Straight 3D&quot;,
-    variant=&quot;straight&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>animated</code></h3><p>Les mêmes arcs que arc ; l&#x27;animation en tirets mobiles du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-animated.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Animated 3D&quot;,
-    variant=&quot;animated&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>Les mêmes arcs, visiblement plus épais.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;DE&quot;, &quot;GB&quot;, &quot;JP&quot;, &quot;IN&quot;, ...],
-    edges_i=[0, 1, 0, 0, 0, 0, ...],
-    edges_j=[1, 0, 8, 9, 2, 4, ...],
-    edges_w=[420, 380, 580, 490, 190, 210, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>track</code></h3><p>Aucune liste de liens : <code>lats</code>/<code>lons</code> visités dans l&#x27;ordre deviennent un unique chemin connecté et pondéré.</p><p class="sp-3d-uses">Utilise: <code>lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-track.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Track 3D&quot;,
-    variant=&quot;track&quot;,
-    lats=[10.5, 12.1, 13.8, 15.9, 18.2, 20.8, ...],
-    lons=[-38.5, -45.2, -50.1, -54.6, -58.9, -63.5, ...],
-    field=[25, 35, 45, 60, 75, 95, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>range_rings</code></h3><p>Les mêmes arcs que arc ; les anneaux de distance concentriques du graphique 2D n&#x27;ont pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/flow_map3d-range_rings.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.flow_map3d(
-    &quot;Range Rings 3D&quot;,
-    variant=&quot;range_rings&quot;,
-    lats=[40.7, 51.5, 1.35, -33.9, -23.5, -33.9],
-    lons=[-74.0, -0.12, 103.8, 151.2, -46.6, 18.4],
-    field=[500, 1500, 3000],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

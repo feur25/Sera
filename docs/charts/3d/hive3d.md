@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -97,76 +92,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One column per node on its axis, one direct edge per link.</p><p class="sp-3d-uses">Uses: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>curved</code></h3><p>The same columns with every edge routed through the hub&#x27;s centre.</p><p class="sp-3d-uses">Uses: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-curved.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Curved 3D&quot;,
-    variant=&quot;curved&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>weighted</code></h3><p>The same direct edges, thickness scaling with <code>edges_w</code>.</p><p class="sp-3d-uses">Uses: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-weighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Weighted 3D&quot;,
-    variant=&quot;weighted&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>The same direct edges, thin and understated.</p><p class="sp-3d-uses">Uses: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>The same direct edges as basic; the source end reads from <code>edges_i</code>.</p><p class="sp-3d-uses">Uses: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -266,76 +191,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une colonne par nœud sur son axe, un lien direct par arête.</p><p class="sp-3d-uses">Utilise: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>curved</code></h3><p>Les mêmes colonnes avec chaque lien routé par le centre du moyeu.</p><p class="sp-3d-uses">Utilise: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-curved.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Curved 3D&quot;,
-    variant=&quot;curved&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>weighted</code></h3><p>Les mêmes liens directs, l&#x27;épaisseur suivant <code>edges_w</code>.</p><p class="sp-3d-uses">Utilise: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-weighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Weighted 3D&quot;,
-    variant=&quot;weighted&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>Les mêmes liens directs, fins et discrets.</p><p class="sp-3d-uses">Utilise: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>Les mêmes liens directs que basic ; l&#x27;extrémité source se lit dans <code>edges_i</code>.</p><p class="sp-3d-uses">Utilise: <code>axes, labels, categories, values, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/hive3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.hive3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    axes=[&quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;],
-    labels=[&quot;n1&quot;, &quot;n2&quot;, &quot;n3&quot;, &quot;n4&quot;, &quot;n5&quot;, &quot;n6&quot;],
-    categories=[&quot;Biology&quot;, &quot;Biology&quot;, &quot;Chemistry&quot;, &quot;Chemistry&quot;, &quot;Physics&quot;, &quot;Physics&quot;],
-    values=[0.3, 0.7, 0.2, 0.9, 0.5, 0.8],
-    edges_i=[0, 1, 2, 4],
-    edges_j=[2, 3, 4, 5],
-    edges_w=[1, 2, 1.5, 0.8],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

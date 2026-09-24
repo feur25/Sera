@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -103,80 +98,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One filled density curve per group, each on its own depth row.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outline</code></h3><p>The same curves as a thin ribbon only, no fill underneath.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-outline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Outline 3D&quot;, variant=&quot;outline&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>The density curve turned into a staircase profile before it is filled.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Stepped 3D&quot;, variant=&quot;stepped&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rug</code></h3><p>A thin filled curve plus a small tick at every raw sample&#x27;s position.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-rug.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Rug 3D&quot;, variant=&quot;rug&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>histogram</code></h3><p>The density curve as a ribbon in front of the group&#x27;s own binned histogram columns.</p><p class="sp-3d-uses">Uses: <code>categories, values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-histogram.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Histogram 3D&quot;, variant=&quot;histogram&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>The same filled curves as basic, read as a strict probability density.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Normalized 3D&quot;,
-    variant=&quot;normalized&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cumulative</code></h3><p>The running integral of the density instead of the density itself, rising monotonically to one.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-cumulative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Cumulative 3D&quot;, variant=&quot;cumulative&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>contour</code></h3><p>A bivariate density field from paired x/y samples, one grid of columns per group toned by density.</p><p class="sp-3d-uses">Uses: <code>categories, x, y</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-contour.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Contour 3D&quot;,
-    variant=&quot;contour&quot;,
-    x=[55.4, 60.0, 51.3, 59.0, 54.0, 54.0, ...],
-    y=[1.51, 1.93, 1.95, 1.9, 2.02, 1.6, ...],
-    categories=[&quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, ...],
-    x_label=&quot;waiting&quot;,
-    y_label=&quot;duration&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>levels</code></h3><p>The same bivariate field quantised into a handful of discrete height bands, like iso-contour rings.</p><p class="sp-3d-uses">Uses: <code>categories, x, y</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-levels.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Levels 3D&quot;,
-    variant=&quot;levels&quot;,
-    x=[55.4, 60.0, 51.3, 59.0, 54.0, 54.0, ...],
-    y=[1.51, 1.93, 1.95, 1.9, 2.02, 1.6, ...],
-    categories=[&quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, ...],
-    x_label=&quot;waiting&quot;,
-    y_label=&quot;duration&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stack</code></h3><p>Every group&#x27;s density curve stacked on top of the one before it.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-stack.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Stack 3D&quot;,
-    variant=&quot;stack&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>fill</code></h3><p>The same stack normalised so every point&#x27;s total reads exactly 100%.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-fill.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Fill 3D&quot;,
-    variant=&quot;fill&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -282,80 +203,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une courbe de densité remplie par groupe, chacune sur sa propre rangée de profondeur.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outline</code></h3><p>Les mêmes courbes en simple ruban fin, sans remplissage en dessous.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-outline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Outline 3D&quot;, variant=&quot;outline&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>La courbe de densité transformée en profil d&#x27;escalier avant d&#x27;être remplie.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Stepped 3D&quot;, variant=&quot;stepped&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rug</code></h3><p>Une fine courbe remplie plus une petite marque à la position de chaque échantillon brut.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-rug.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Rug 3D&quot;, variant=&quot;rug&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>histogram</code></h3><p>La courbe de densité en ruban devant les colonnes de l&#x27;histogramme binné propre au groupe.</p><p class="sp-3d-uses">Utilise: <code>categories, values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-histogram.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Histogram 3D&quot;, variant=&quot;histogram&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>Les mêmes courbes remplies que basic, lues comme une densité de probabilité stricte.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Normalized 3D&quot;,
-    variant=&quot;normalized&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cumulative</code></h3><p>L&#x27;intégrale cumulée de la densité au lieu de la densité elle-même, montant de façon monotone jusqu&#x27;à un.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-cumulative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(&quot;Cumulative 3D&quot;, variant=&quot;cumulative&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>contour</code></h3><p>Un champ de densité bivarié à partir de paires x/y, une grille de colonnes par groupe teintée selon la densité.</p><p class="sp-3d-uses">Utilise: <code>categories, x, y</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-contour.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Contour 3D&quot;,
-    variant=&quot;contour&quot;,
-    x=[55.4, 60.0, 51.3, 59.0, 54.0, 54.0, ...],
-    y=[1.51, 1.93, 1.95, 1.9, 2.02, 1.6, ...],
-    categories=[&quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, ...],
-    x_label=&quot;waiting&quot;,
-    y_label=&quot;duration&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>levels</code></h3><p>Le même champ bivarié quantifié en une poignée de bandes de hauteur discrètes, façon anneaux iso-contour.</p><p class="sp-3d-uses">Utilise: <code>categories, x, y</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-levels.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Levels 3D&quot;,
-    variant=&quot;levels&quot;,
-    x=[55.4, 60.0, 51.3, 59.0, 54.0, 54.0, ...],
-    y=[1.51, 1.93, 1.95, 1.9, 2.02, 1.6, ...],
-    categories=[&quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, &quot;short&quot;, ...],
-    x_label=&quot;waiting&quot;,
-    y_label=&quot;duration&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stack</code></h3><p>La courbe de densité de chaque groupe empilée sur celle qui précède.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-stack.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Stack 3D&quot;,
-    variant=&quot;stack&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>fill</code></h3><p>Le même empilement normalisé pour que le total de chaque point lise exactement 100 %.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/kde3d-fill.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.kde3d(
-    &quot;Fill 3D&quot;,
-    variant=&quot;fill&quot;,
-    values=[4.74, 5.51, 4.77, 4.68, 4.07, 4.79, ...],
-    categories=[&quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, &quot;Large group&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -102,92 +97,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One box per category from the first to the third quartile, a thin whisker column and a highlighted median slab.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The basic layout turned a quarter-turn: categories run along the depth axis instead of the width axis.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>notched</code></h3><p>Boxes split around a narrower waist at the median, sized by the confidence interval of the median.</p><p class="sp-3d-uses">Uses: <code>labels, series, notch</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-notched.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Notched 3D&quot;,
-    variant=&quot;notched&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>grouped</code></h3><p>Each series becomes a row of boxes side by side in depth, categories along the width axis.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-grouped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Grouped 3D&quot;,
-    variant=&quot;grouped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>points</code></h3><p>Boxes plus every raw sample as a small cube aligned on the box axis.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-points.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Points 3D&quot;,
-    variant=&quot;points&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outliers</code></h3><p>Boxes plus the samples beyond the whisker fences drawn as cubes.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-outliers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Outliers 3D&quot;,
-    variant=&quot;outliers&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-    show_text=True,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>strip</code></h3><p>Slim boxes with every sample scattered across the width by a deterministic jitter.</p><p class="sp-3d-uses">Uses: <code>labels, series, jitter</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-strip.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Strip 3D&quot;,
-    variant=&quot;strip&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>swarm</code></h3><p>Slim boxes with every sample pushed sideways just enough not to overlap its neighbours.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-swarm.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Swarm 3D&quot;,
-    variant=&quot;swarm&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>violin</code></h3><p>A stack of slices whose width follows the Gaussian density of the samples.</p><p class="sp-3d-uses">Uses: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-violin.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Violin 3D&quot;,
-    variant=&quot;violin&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>letter_value</code></h3><p>Nested bands for the quartile, eighth, sixteenth... ranges, each narrower than the last (<code>boxen_depth</code> levels).</p><p class="sp-3d-uses">Uses: <code>labels, series, boxen_depth</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-letter_value.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Letter Value 3D&quot;,
-    variant=&quot;letter_value&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -292,92 +201,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une boîte par catégorie du premier au troisième quartile, une fine colonne de moustache et une dalle de médiane mise en évidence.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>La disposition de base tournée d&#x27;un quart de tour : les catégories courent le long de l&#x27;axe de profondeur plutôt que de largeur.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>notched</code></h3><p>Boîtes coupées autour d&#x27;une taille plus étroite à la médiane, dimensionnée par l&#x27;intervalle de confiance de la médiane.</p><p class="sp-3d-uses">Utilise: <code>labels, series, notch</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-notched.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Notched 3D&quot;,
-    variant=&quot;notched&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>grouped</code></h3><p>Chaque série devient une rangée de boîtes côte à côte en profondeur, les catégories le long de l&#x27;axe de largeur.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-grouped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Grouped 3D&quot;,
-    variant=&quot;grouped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>points</code></h3><p>Boîtes plus chaque échantillon brut en petit cube aligné sur l&#x27;axe de la boîte.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-points.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Points 3D&quot;,
-    variant=&quot;points&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outliers</code></h3><p>Boîtes plus les échantillons au-delà des barrières des moustaches dessinés en cubes.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-outliers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Outliers 3D&quot;,
-    variant=&quot;outliers&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-    show_text=True,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>strip</code></h3><p>Boîtes fines avec chaque échantillon dispersé sur la largeur par un jitter déterministe.</p><p class="sp-3d-uses">Utilise: <code>labels, series, jitter</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-strip.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Strip 3D&quot;,
-    variant=&quot;strip&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>swarm</code></h3><p>Boîtes fines avec chaque échantillon poussé sur le côté juste assez pour ne pas chevaucher ses voisins.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-swarm.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Swarm 3D&quot;,
-    variant=&quot;swarm&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>violin</code></h3><p>Une pile de tranches dont la largeur suit la densité gaussienne des échantillons.</p><p class="sp-3d-uses">Utilise: <code>labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-violin.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Violin 3D&quot;,
-    variant=&quot;violin&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>letter_value</code></h3><p>Bandes emboîtées pour les plages du quartile, du huitième, du seizième... chacune plus étroite que la précédente (<code>boxen_depth</code> niveaux).</p><p class="sp-3d-uses">Utilise: <code>labels, series, boxen_depth</code></p><iframe class="sp-preview-frame" data-src="../../previews/boxplot3d-letter_value.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.boxplot3d(
-    &quot;Letter Value 3D&quot;,
-    variant=&quot;letter_value&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    series=[[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...], [2.0, 2.8, 3.2, 3.6, 4.1, 4.5, ...], [1.8, 2.2, 2.6, 3.0, 3.4, 3.9, ...]],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

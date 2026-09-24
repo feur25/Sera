@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,75 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>vertical</code></h3><p>Nodes stacked depth by depth top to bottom, elbowed edges (a right-angle turn at the child&#x27;s depth) linking child to parent.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-vertical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Vertical 3D&quot;,
-    variant=&quot;vertical&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The same elbowed tree turned a quarter-turn: depth runs along the width axis instead of the row axis.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>The tree wrapped around a ring: depth becomes radius and leaves spread by angle, edges still elbowed.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compact</code></h3><p>The same vertical elbowed tree with a tighter row spacing between depth levels.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-compact.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Compact 3D&quot;,
-    variant=&quot;compact&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>elegant</code></h3><p>The same vertical tree with a straight diagonal edge from parent to child instead of an elbow.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-elegant.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Elegant 3D&quot;,
-    variant=&quot;elegant&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>triangular</code></h3><p>The same straight diagonal parent-to-child edges as elegant, from the triangular 2D layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-triangular.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Triangular 3D&quot;,
-    variant=&quot;triangular&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>genealogy</code></h3><p>The same radial ring as radial, from a hand-built genealogy tree passed through <code>parents</code>.</p><p class="sp-3d-uses">Uses: <code>labels, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-genealogy.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Genealogy 3D&quot;,
-    variant=&quot;genealogy&quot;,
-    labels=[&quot;f0g0&quot;, &quot;f0g1n0&quot;, &quot;f0g1n1&quot;, &quot;f0g1n2&quot;, &quot;f0g1n3&quot;, &quot;f0g1n4&quot;, ...],
-    parents=[&quot;&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bloom</code></h3><p>The same radial ring with a tighter radius step between depth levels, drawing the rings closer together.</p><p class="sp-3d-uses">Uses: <code>labels, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-bloom.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Bloom 3D&quot;,
-    variant=&quot;bloom&quot;,
-    labels=[&quot;Felicidad&quot;, &quot;Serenidad&quot;, &quot;Optimismo&quot;, &quot;Gratitud&quot;, &quot;Diversion&quot;, &quot;Orgullo&quot;, ...],
-    parents=[&quot;&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -271,75 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>vertical</code></h3><p>Nœuds empilés profondeur par profondeur de haut en bas, arêtes coudées (un angle droit à la profondeur de l&#x27;enfant) reliant l&#x27;enfant au parent.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-vertical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Vertical 3D&quot;,
-    variant=&quot;vertical&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>Le même arbre coudé tourné d&#x27;un quart de tour : la profondeur court le long de l&#x27;axe de largeur au lieu de l&#x27;axe des lignes.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>L&#x27;arbre enroulé autour d&#x27;un anneau : la profondeur devient rayon et les feuilles s&#x27;écartent par angle, arêtes toujours coudées.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compact</code></h3><p>Le même arbre coudé vertical avec un espacement de lignes plus serré entre niveaux de profondeur.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-compact.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Compact 3D&quot;,
-    variant=&quot;compact&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>elegant</code></h3><p>Le même arbre vertical avec une arête diagonale droite du parent à l&#x27;enfant au lieu d&#x27;un coude.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-elegant.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Elegant 3D&quot;,
-    variant=&quot;elegant&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>triangular</code></h3><p>Les mêmes arêtes diagonales droites parent-enfant qu&#x27;elegant, depuis la disposition 2D triangulaire.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-triangular.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Triangular 3D&quot;,
-    variant=&quot;triangular&quot;,
-    labels=[&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;, &quot;B1&quot;, &quot;B2&quot;, &quot;B3&quot;, ...],
-    matrix=[[1, 1], [1.2, 0.9], [0.9, 1.1], [5, 5], [5.2, 4.8], [4.9, 5.1], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>genealogy</code></h3><p>Le même anneau radial que radial, depuis un arbre généalogique construit à la main et passé via <code>parents</code>.</p><p class="sp-3d-uses">Utilise: <code>labels, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-genealogy.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Genealogy 3D&quot;,
-    variant=&quot;genealogy&quot;,
-    labels=[&quot;f0g0&quot;, &quot;f0g1n0&quot;, &quot;f0g1n1&quot;, &quot;f0g1n2&quot;, &quot;f0g1n3&quot;, &quot;f0g1n4&quot;, ...],
-    parents=[&quot;&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, &quot;f0g0&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bloom</code></h3><p>Le même anneau radial avec un pas de rayon plus serré entre niveaux de profondeur, rapprochant les anneaux.</p><p class="sp-3d-uses">Utilise: <code>labels, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/dendrogram3d-bloom.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dendrogram3d(
-    &quot;Bloom 3D&quot;,
-    variant=&quot;bloom&quot;,
-    labels=[&quot;Felicidad&quot;, &quot;Serenidad&quot;, &quot;Optimismo&quot;, &quot;Gratitud&quot;, &quot;Diversion&quot;, &quot;Orgullo&quot;, ...],
-    parents=[&quot;&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, &quot;Felicidad&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

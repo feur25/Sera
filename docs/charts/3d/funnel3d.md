@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,85 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Smooth tapered frusta: every stage narrows towards the next one along the flow.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>One straight slab per stage, like a staircase of tunnels.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rounded</code></h3><p>Barrel-shaped stages that bulge in the middle of each slab.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-rounded.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Rounded 3D&quot;,
-    variant=&quot;rounded&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>chevron</code></h3><p>Every stage is a wedge that narrows towards the flow, like a pipeline of arrows.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-chevron.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Chevron 3D&quot;,
-    variant=&quot;chevron&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pyramid</code></h3><p>Sections shrink faster, following a pyramid profile that blends the values with a linear taper.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-pyramid.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Pyramid 3D&quot;,
-    variant=&quot;pyramid&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>inverted</code></h3><p>The funnel turned around: the widest stage sits at the front and the narrowest at the back.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-inverted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Inverted 3D&quot;,
-    variant=&quot;inverted&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>conversion</code></h3><p>Stages toned by their conversion rate from the previous stage, red for a heavy drop and green for a high rate.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-conversion.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Conversion 3D&quot;,
-    variant=&quot;conversion&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compare</code></h3><p>Several funnels side by side, each with its own stages (<code>series</code> and <code>category_series</code>).</p><p class="sp-3d-uses">Uses: <code>series, series_names, category_series</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-compare.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Compare 3D&quot;,
-    variant=&quot;compare&quot;,
-    series=[[120, 60, 30, 20], [100, 60, 40, 30, 20], [90, 70, 50, 30, 10, 5]],
-    series_names=[&quot;Montreal&quot;, &quot;Toronto&quot;, &quot;Vancouver&quot;],
-    category_series=[[&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;], [&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;Invoice sent&quot;], [&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;Invoice sent&quot;, &quot;Finalized&quot;]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>grouped</code></h3><p>Stages shared by several series, split across the section and toned by series.</p><p class="sp-3d-uses">Uses: <code>labels, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-grouped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Grouped 3D&quot;,
-    variant=&quot;grouped&quot;,
-    labels=[&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;invoice sent&quot;],
-    series=[[39, 27.4, 20.6, 11, 3], [52, 36, 18, 14, 5]],
-    series_names=[&quot;Montreal&quot;, &quot;Toronto&quot;],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -283,85 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Des troncs effilés et lisses : chaque étape se rétrécit vers la suivante le long du flux.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>Une dalle droite par étape, comme un escalier de tunnels.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rounded</code></h3><p>Des étapes en forme de tonneau qui bombent au milieu de chaque dalle.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-rounded.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Rounded 3D&quot;,
-    variant=&quot;rounded&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>chevron</code></h3><p>Chaque étape est un coin qui se rétrécit dans le sens du flux, comme un pipeline de flèches.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-chevron.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Chevron 3D&quot;,
-    variant=&quot;chevron&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pyramid</code></h3><p>Les sections rétrécissent plus vite, suivant un profil de pyramide qui mêle les valeurs à un effilement linéaire.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-pyramid.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Pyramid 3D&quot;,
-    variant=&quot;pyramid&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>inverted</code></h3><p>L&#x27;entonnoir retourné : l&#x27;étape la plus large est à l&#x27;avant et la plus étroite au fond.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-inverted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Inverted 3D&quot;,
-    variant=&quot;inverted&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>conversion</code></h3><p>Étapes teintées par leur taux de conversion depuis l&#x27;étape précédente, rouge pour une forte chute et vert pour un taux élevé.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-conversion.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Conversion 3D&quot;,
-    variant=&quot;conversion&quot;,
-    labels=[&quot;Visits&quot;, &quot;Signups&quot;, &quot;Trial&quot;, &quot;Paid&quot;, &quot;Renewed&quot;],
-    values=[1000, 520, 210, 85, 40],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compare</code></h3><p>Plusieurs entonnoirs côte à côte, chacun avec ses propres étapes (<code>series</code> et <code>category_series</code>).</p><p class="sp-3d-uses">Utilise: <code>series, series_names, category_series</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-compare.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Compare 3D&quot;,
-    variant=&quot;compare&quot;,
-    series=[[120, 60, 30, 20], [100, 60, 40, 30, 20], [90, 70, 50, 30, 10, 5]],
-    series_names=[&quot;Montreal&quot;, &quot;Toronto&quot;, &quot;Vancouver&quot;],
-    category_series=[[&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;], [&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;Invoice sent&quot;], [&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;Invoice sent&quot;, &quot;Finalized&quot;]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>grouped</code></h3><p>Étapes partagées par plusieurs séries, réparties sur la section et teintées par série.</p><p class="sp-3d-uses">Utilise: <code>labels, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/funnel3d-grouped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.funnel3d(
-    &quot;Grouped 3D&quot;,
-    variant=&quot;grouped&quot;,
-    labels=[&quot;Website visit&quot;, &quot;Downloads&quot;, &quot;Potential customers&quot;, &quot;Requested price&quot;, &quot;invoice sent&quot;],
-    series=[[39, 27.4, 20.6, 11, 3], [52, 36, 18, 14, 5]],
-    series_names=[&quot;Montreal&quot;, &quot;Toronto&quot;],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

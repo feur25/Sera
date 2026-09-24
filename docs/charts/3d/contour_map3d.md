@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -95,40 +90,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>A full grid surface, one column per cell.</p><p class="sp-3d-uses">Uses: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    lats=[64.1, 61.2, 68.9, 62.0, 59.9, 55.75, ...],
-    lons=[-21.9, -149.9, 33.0, 129.7, 10.75, 37.6, ...],
-    field=[4, 2, -3, -15, 6, 5, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>isolines</code></h3><p>The same grid surface as filled; the 2D chart&#x27;s stroked-line styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-isolines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Isolines 3D&quot;,
-    variant=&quot;isolines&quot;,
-    lats=[65, 55, 35, 55, 32, -28, ...],
-    lons=[-20, -165, -25, 90, -140, -105, ...],
-    field=[-12, -10, 11, 15, 9, 10, ...],
-    bins=7,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>extrema</code></h3><p>The same grid surface plus a tall marker at every local high and low.</p><p class="sp-3d-uses">Uses: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-extrema.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Extrema 3D&quot;,
-    variant=&quot;extrema&quot;,
-    lats=[65, 55, 35, 55, 32, -28, ...],
-    lons=[-20, -165, -25, 90, -140, -105, ...],
-    field=[-12, -10, 11, 15, 9, 10, ...],
-    bins=5,
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -226,40 +187,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>Une surface de grille complète, une colonne par cellule.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    lats=[64.1, 61.2, 68.9, 62.0, 59.9, 55.75, ...],
-    lons=[-21.9, -149.9, 33.0, 129.7, 10.75, 37.6, ...],
-    field=[4, 2, -3, -15, 6, 5, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>isolines</code></h3><p>La même surface de grille que filled ; le style en lignes tracées du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-isolines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Isolines 3D&quot;,
-    variant=&quot;isolines&quot;,
-    lats=[65, 55, 35, 55, 32, -28, ...],
-    lons=[-20, -165, -25, 90, -140, -105, ...],
-    field=[-12, -10, 11, 15, 9, 10, ...],
-    bins=7,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>extrema</code></h3><p>La même surface de grille plus un repère haut à chaque maximum et minimum local.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, field</code></p><iframe class="sp-preview-frame" data-src="../../previews/contour_map3d-extrema.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.contour_map3d(
-    &quot;Extrema 3D&quot;,
-    variant=&quot;extrema&quot;,
-    lats=[65, 55, 35, 55, 32, -28, ...],
-    lons=[-20, -165, -25, 90, -140, -105, ...],
-    field=[-12, -10, 11, 15, 9, 10, ...],
-    bins=5,
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

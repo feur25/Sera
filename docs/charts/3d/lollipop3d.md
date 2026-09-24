@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,87 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One thin stem per value topped by a head cube; the height is the value.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cleveland</code></h3><p>The basic layout turned a quarter-turn: the categories run along the depth axis.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-cleveland.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Cleveland 3D&quot;,
-    variant=&quot;cleveland&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>Stems grow up or down from the mean instead of zero, toned green above it and red below.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, -38, 17, -42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>circular</code></h3><p>The stems stand on a ring, one per category, like a radial dot plot.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-circular.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Circular 3D&quot;,
-    variant=&quot;circular&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>office</code></h3><p>Categories laid out panel by panel with a gap between <code>color_groups</code>, one colour per group (a season, a team).</p><p class="sp-3d-uses">Uses: <code>labels, values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-office.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Office 3D&quot;,
-    variant=&quot;office&quot;,
-    y_label=&quot;rating&quot;,
-    labels=[&quot;S1E1&quot;, &quot;S1E2&quot;, &quot;S1E3&quot;, &quot;S1E4&quot;, &quot;S2E1&quot;, &quot;S2E2&quot;, ...],
-    values=[7.5, 8.3, 7.9, 8.1, 8.4, 8.7, ...],
-    color_groups=[&quot;S1&quot;, &quot;S1&quot;, &quot;S1&quot;, &quot;S1&quot;, &quot;S2&quot;, &quot;S2&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>conditional_color</code></h3><p>Horizontal stems coloured by sign: one colour for values at or above zero, another for negative ones.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-conditional_color.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Conditional Color 3D&quot;,
-    variant=&quot;conditional_color&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;, &quot;Zeta&quot;],
-    values=[24, -38, 17, -12, 29, -6],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Heads toned along the colormap by value and joined by a sloped ribbon that follows the trend.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;1951&quot;, &quot;1961&quot;, &quot;1971&quot;, &quot;1981&quot;, &quot;1991&quot;, &quot;2001&quot;, &quot;2011&quot;, &quot;2021&quot;],
-    values=[-0.3, -0.15, 0.05, 0.22, 0.38, 0.61, 0.85, 1.1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>custom</code></h3><p>The head is a faceted diamond, a rhombic prism cut from two sloped wedges, instead of a cube.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-custom.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Custom 3D&quot;,
-    variant=&quot;custom&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>duel</code></h3><p>Two groups face each other on a ring: the first rises above the ring plane, the second hangs below it.</p><p class="sp-3d-uses">Uses: <code>labels, values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-duel.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Duel 3D&quot;,
-    variant=&quot;duel&quot;,
-    labels=[&quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, ...],
-    values=[1, 27, 28, 88, 73, 81, ...],
-    color_groups=[&quot;Barcelona&quot;, &quot;Real Madrid&quot;, &quot;Real Madrid&quot;, &quot;Barcelona&quot;, &quot;Real Madrid&quot;, &quot;Barcelona&quot;, ...],
-    palette=[3316734, 15547189],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -285,87 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une fine tige par valeur coiffée d&#x27;un cube ; la hauteur est la valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cleveland</code></h3><p>La disposition de base tournée d&#x27;un quart de tour : les catégories courent le long de l&#x27;axe de profondeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-cleveland.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Cleveland 3D&quot;,
-    variant=&quot;cleveland&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>Les tiges montent ou descendent depuis la moyenne au lieu de zéro, vertes au-dessus et rouges en dessous.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, -38, 17, -42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>circular</code></h3><p>Les tiges se dressent sur un anneau, une par catégorie, comme un nuage de points radial.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-circular.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Circular 3D&quot;,
-    variant=&quot;circular&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>office</code></h3><p>Catégories disposées panneau par panneau avec un espace entre les <code>color_groups</code>, une couleur par groupe (une saison, une équipe).</p><p class="sp-3d-uses">Utilise: <code>labels, values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-office.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Office 3D&quot;,
-    variant=&quot;office&quot;,
-    y_label=&quot;rating&quot;,
-    labels=[&quot;S1E1&quot;, &quot;S1E2&quot;, &quot;S1E3&quot;, &quot;S1E4&quot;, &quot;S2E1&quot;, &quot;S2E2&quot;, ...],
-    values=[7.5, 8.3, 7.9, 8.1, 8.4, 8.7, ...],
-    color_groups=[&quot;S1&quot;, &quot;S1&quot;, &quot;S1&quot;, &quot;S1&quot;, &quot;S2&quot;, &quot;S2&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>conditional_color</code></h3><p>Tiges horizontales colorées selon le signe : une couleur pour les valeurs supérieures ou égales à zéro, une autre pour les négatives.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-conditional_color.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Conditional Color 3D&quot;,
-    variant=&quot;conditional_color&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;, &quot;Zeta&quot;],
-    values=[24, -38, 17, -12, 29, -6],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Têtes teintées le long de la palette selon la valeur et reliées par un ruban incliné qui suit la tendance.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;1951&quot;, &quot;1961&quot;, &quot;1971&quot;, &quot;1981&quot;, &quot;1991&quot;, &quot;2001&quot;, &quot;2011&quot;, &quot;2021&quot;],
-    values=[-0.3, -0.15, 0.05, 0.22, 0.38, 0.61, 0.85, 1.1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>custom</code></h3><p>La tête est un diamant à facettes, un prisme rhombique taillé dans deux coins inclinés, au lieu d&#x27;un cube.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-custom.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Custom 3D&quot;,
-    variant=&quot;custom&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[24, 38, 17, 42, 29],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>duel</code></h3><p>Deux groupes s&#x27;affrontent sur un anneau : le premier s&#x27;élève au-dessus du plan de l&#x27;anneau, le second pend en dessous.</p><p class="sp-3d-uses">Utilise: <code>labels, values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/lollipop3d-duel.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.lollipop3d(
-    &quot;Duel 3D&quot;,
-    variant=&quot;duel&quot;,
-    labels=[&quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, &quot;1929&quot;, ...],
-    values=[1, 27, 28, 88, 73, 81, ...],
-    color_groups=[&quot;Barcelona&quot;, &quot;Real Madrid&quot;, &quot;Real Madrid&quot;, &quot;Barcelona&quot;, &quot;Real Madrid&quot;, &quot;Barcelona&quot;, ...],
-    palette=[3316734, 15547189],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

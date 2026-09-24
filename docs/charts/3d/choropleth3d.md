@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,80 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>sequential</code></h3><p>One column per matched region at its centroid, height and tone following its value.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-sequential.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Sequential 3D&quot;,
-    variant=&quot;sequential&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>binned</code></h3><p>The same columns, height and tone stepped into discrete bins instead of a continuous ramp.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-binned.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Binned 3D&quot;,
-    variant=&quot;binned&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>Columns rise above the floor for a positive value and sink below it for a negative one.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[0.8, -0.4, 2.1, 0.3, -1.4, 1.6, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>orthographic</code></h3><p>The same columns as sequential; the 2D globe-look projection has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-orthographic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Orthographic 3D&quot;,
-    variant=&quot;orthographic&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;IN&quot;, &quot;ID&quot;, &quot;PK&quot;, &quot;BR&quot;, ...],
-    values=[331.9, 1412.0, 1380.0, 273.5, 220.9, 213.3, ...],
-    center_lat=15,
-    center_lon=10,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>polar</code></h3><p>The same columns as sequential; the 2D polar projection has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-polar.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Polar 3D&quot;,
-    variant=&quot;polar&quot;,
-    labels=[&quot;US&quot;, &quot;CA&quot;, &quot;RU&quot;, &quot;NO&quot;, &quot;SE&quot;, &quot;FI&quot;, ...],
-    values=[12.4, 9.1, 5.2, 3.8, 2.9, 2.1, ...],
-    center_lat=90,
-    center_lon=0,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bivariate</code></h3><p>The same columns, toned by <code>secondary_values</code> instead of <code>values</code>.</p><p class="sp-3d-uses">Uses: <code>labels, values, secondary_values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-bivariate.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Bivariate 3D&quot;,
-    variant=&quot;bivariate&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;WA&quot;, &quot;CO&quot;, ...],
-    values=[245, 180, 310, 190, 275, 260, ...],
-    secondary_values=[42, 28, 38, 31, 45, 40, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot_density</code></h3><p>The same columns as sequential; the 2D chart&#x27;s random dot-fill has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-dot_density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Dot Density 3D&quot;,
-    variant=&quot;dot_density&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;WA&quot;, &quot;CO&quot;, ...],
-    values=[38900, 30500, 19600, 22600, 7800, 5900, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>daynight</code></h3><p>No per-region columns at all: a curved terminator trace plus a sun marker at the subsolar point.</p><p class="sp-3d-uses">Uses: <code></code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-daynight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(&quot;Daynight 3D&quot;, variant=&quot;daynight&quot;, center_lat=15.0, center_lon=-40.0)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -276,80 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>sequential</code></h3><p>Une colonne par région reconnue à son centroïde, hauteur et teinte suivant sa valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-sequential.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Sequential 3D&quot;,
-    variant=&quot;sequential&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>binned</code></h3><p>Les mêmes colonnes, hauteur et teinte réparties en paliers discrets plutôt qu&#x27;une rampe continue.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-binned.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Binned 3D&quot;,
-    variant=&quot;binned&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>Les colonnes s&#x27;élèvent au-dessus du sol pour une valeur positive et s&#x27;enfoncent en dessous pour une négative.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[0.8, -0.4, 2.1, 0.3, -1.4, 1.6, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>orthographic</code></h3><p>Les mêmes colonnes que sequential ; la projection 2D façon globe n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-orthographic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Orthographic 3D&quot;,
-    variant=&quot;orthographic&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;IN&quot;, &quot;ID&quot;, &quot;PK&quot;, &quot;BR&quot;, ...],
-    values=[331.9, 1412.0, 1380.0, 273.5, 220.9, 213.3, ...],
-    center_lat=15,
-    center_lon=10,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>polar</code></h3><p>Les mêmes colonnes que sequential ; la projection polaire 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-polar.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Polar 3D&quot;,
-    variant=&quot;polar&quot;,
-    labels=[&quot;US&quot;, &quot;CA&quot;, &quot;RU&quot;, &quot;NO&quot;, &quot;SE&quot;, &quot;FI&quot;, ...],
-    values=[12.4, 9.1, 5.2, 3.8, 2.9, 2.1, ...],
-    center_lat=90,
-    center_lon=0,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bivariate</code></h3><p>Les mêmes colonnes, teintées selon <code>secondary_values</code> plutôt que <code>values</code>.</p><p class="sp-3d-uses">Utilise: <code>labels, values, secondary_values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-bivariate.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Bivariate 3D&quot;,
-    variant=&quot;bivariate&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;WA&quot;, &quot;CO&quot;, ...],
-    values=[245, 180, 310, 190, 275, 260, ...],
-    secondary_values=[42, 28, 38, 31, 45, 40, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot_density</code></h3><p>Les mêmes colonnes que sequential ; le remplissage aléatoire en points du 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-dot_density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(
-    &quot;Dot Density 3D&quot;,
-    variant=&quot;dot_density&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;WA&quot;, &quot;CO&quot;, ...],
-    values=[38900, 30500, 19600, 22600, 7800, 5900, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>daynight</code></h3><p>Aucune colonne par région : un tracé de terminateur courbe plus un repère solaire au point sous-solaire.</p><p class="sp-3d-uses">Utilise: <code></code></p><iframe class="sp-preview-frame" data-src="../../previews/choropleth3d-daynight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.choropleth3d(&quot;Daynight 3D&quot;, variant=&quot;daynight&quot;, center_lat=15.0, center_lon=-40.0)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

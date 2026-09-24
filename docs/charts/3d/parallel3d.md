@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,94 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One straight-segment ribbon per row, toned by its own index.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>smooth</code></h3><p>The same ribbons, densified into a smooth curve.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-smooth.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Smooth 3D&quot;,
-    variant=&quot;smooth&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>categorical</code></h3><p>The same straight ribbons, toned by category instead of row index.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-categorical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Categorical 3D&quot;,
-    variant=&quot;categorical&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>highlight</code></h3><p>The same straight ribbons; the highlighted row reads bright, every other one dims.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-highlight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Highlight 3D&quot;,
-    variant=&quot;highlight&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>density</code></h3><p>The same straight ribbons, all toned down to a uniform faded read.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Density 3D&quot;,
-    variant=&quot;density&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>The same smooth, coloured ribbons as smooth.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The same straight ribbons, visibly thicker.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lineage</code></h3><p>The same straight ribbons, toned by category.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-lineage.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Lineage 3D&quot;,
-    variant=&quot;lineage&quot;,
-    axes=[&quot;1880&quot;, &quot;1890&quot;, &quot;1900&quot;, &quot;1910&quot;, &quot;1920&quot;, &quot;1930&quot;, ...],
-    series_names=[&quot;Art Nouveau&quot;, &quot;Arts and Crafts&quot;, &quot;Constructivism&quot;, &quot;Art Deco&quot;, &quot;Bauhaus&quot;, &quot;Surrealism&quot;, ...],
-    series=[[8.2, 55.0, 23.5, 10.0, 4.3, 0.0, ...], [6.3, 24.1, 42.0, 18.0, 7.7, 3.3, ...], [13.2, 38.1, 63.1, 88.0, 37.6, 16.1, ...], [0.0, 0.0, 5.2, 20.1, 35.0, 15.0, ...], [0.0, 0.0, 10.8, 31.2, 51.6, 72.0, ...], [0.0, 0.0, 0.0, 0.0, 4.5, 17.2, ...], ...],
-    palette=[14037868, 3120708, 1087661, 7358696, 15764480, 1667522, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>chronicle</code></h3><p>The same straight ribbons, toned by category.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-chronicle.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Chronicle 3D&quot;,
-    variant=&quot;chronicle&quot;,
-    axes=[&quot;2000&quot;, &quot;2001&quot;, &quot;2002&quot;, &quot;2003&quot;, &quot;2004&quot;, &quot;2005&quot;, ...],
-    series_names=[&quot;Paradigm&quot;, &quot;Society&quot;, &quot;Finance&quot;, &quot;Politics&quot;, &quot;Ecology&quot;, &quot;Technology&quot;, ...],
-    series=[[2, 0, 0, 0, 2, 0, ...], [0, 4, 0, 0, 0, 0, ...], [0, 0, 0, 1, 0, 0, ...], [2, 0, 0, 4, 3, 0, ...], [0, 4, 0, 0, 0, 1, ...], [4, 0, 0, 0, 1, 4, ...], ...],
-    palette=[14037868, 3120708, 1087661, 7358696, 15764480, 1667522, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -292,94 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un ruban en segments droits par ligne, teinté selon son propre indice.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>smooth</code></h3><p>Les mêmes rubans, densifiés en une courbe lisse.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-smooth.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Smooth 3D&quot;,
-    variant=&quot;smooth&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>categorical</code></h3><p>Les mêmes rubans droits, teintés par catégorie plutôt que par indice de ligne.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-categorical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Categorical 3D&quot;,
-    variant=&quot;categorical&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>highlight</code></h3><p>Les mêmes rubans droits ; la ligne mise en avant se lit vive, toutes les autres s&#x27;estompent.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-highlight.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Highlight 3D&quot;,
-    variant=&quot;highlight&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>density</code></h3><p>Les mêmes rubans droits, tous ramenés à une lecture uniforme et estompée.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Density 3D&quot;,
-    variant=&quot;density&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>Les mêmes rubans lisses et colorés que smooth.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>Les mêmes rubans droits, visiblement plus épais.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;],
-    series=[[80, 65, 70, 40], [60, 80, 55, 60], [40, 70, 90, 75]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lineage</code></h3><p>Les mêmes rubans droits, teintés par catégorie.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-lineage.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Lineage 3D&quot;,
-    variant=&quot;lineage&quot;,
-    axes=[&quot;1880&quot;, &quot;1890&quot;, &quot;1900&quot;, &quot;1910&quot;, &quot;1920&quot;, &quot;1930&quot;, ...],
-    series_names=[&quot;Art Nouveau&quot;, &quot;Arts and Crafts&quot;, &quot;Constructivism&quot;, &quot;Art Deco&quot;, &quot;Bauhaus&quot;, &quot;Surrealism&quot;, ...],
-    series=[[8.2, 55.0, 23.5, 10.0, 4.3, 0.0, ...], [6.3, 24.1, 42.0, 18.0, 7.7, 3.3, ...], [13.2, 38.1, 63.1, 88.0, 37.6, 16.1, ...], [0.0, 0.0, 5.2, 20.1, 35.0, 15.0, ...], [0.0, 0.0, 10.8, 31.2, 51.6, 72.0, ...], [0.0, 0.0, 0.0, 0.0, 4.5, 17.2, ...], ...],
-    palette=[14037868, 3120708, 1087661, 7358696, 15764480, 1667522, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>chronicle</code></h3><p>Les mêmes rubans droits, teintés par catégorie.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/parallel3d-chronicle.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.parallel3d(
-    &quot;Chronicle 3D&quot;,
-    variant=&quot;chronicle&quot;,
-    axes=[&quot;2000&quot;, &quot;2001&quot;, &quot;2002&quot;, &quot;2003&quot;, &quot;2004&quot;, &quot;2005&quot;, ...],
-    series_names=[&quot;Paradigm&quot;, &quot;Society&quot;, &quot;Finance&quot;, &quot;Politics&quot;, &quot;Ecology&quot;, &quot;Technology&quot;, ...],
-    series=[[2, 0, 0, 0, 2, 0, ...], [0, 4, 0, 0, 0, 0, ...], [0, 0, 0, 1, 0, 0, ...], [2, 0, 0, 4, 3, 0, ...], [0, 4, 0, 0, 0, 1, ...], [4, 0, 0, 0, 1, 4, ...], ...],
-    palette=[14037868, 3120708, 1087661, 7358696, 15764480, 1667522, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

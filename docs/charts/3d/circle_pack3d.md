@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,76 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Circles packed and stacked as cylinders at the pack&#x27;s own position; containers flatten to a thin base so the real leaves stand out on top.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>flat</code></h3><p>The same packed cylinders all pressed to one thin height, a flat schematic reading of the pack.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-flat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Flat 3D&quot;,
-    variant=&quot;flat&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[40, 30, 25, 20, 15],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>The same flattened packed cylinders as flat, from the outlined 2D pack.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bubble</code></h3><p>The same packed-with-flattened-containers treatment as basic, from the plain bubble 2D pack.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-bubble.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Bubble 3D&quot;,
-    variant=&quot;bubble&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;, &quot;Zeta&quot;, &quot;Eta&quot;],
-    values=[40, 30, 25, 20, 15, 12, 10],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>leaf_focus</code></h3><p>Only the true leaves are drawn, each a full-height cylinder at its packed position; every container circle is dropped.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-leaf_focus.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Leaf Focus 3D&quot;,
-    variant=&quot;leaf_focus&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>swarm</code></h3><p>The same packed-with-flattened-containers treatment as basic, from the commit-swarm styled 2D pack.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-swarm.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Swarm 3D&quot;,
-    variant=&quot;swarm&quot;,
-    labels=[&quot;other::0::2e9e0bb::17::feur25::first commit&quot;, &quot;feat::0::bea5ffb::17::feur25::feat(chart): image loader in hov..&quot;, &quot;style::0::249091b::18::feur25::style(chart): fix bar spacing&quot;, &quot;feat::0::2282a4a::18::feur25::feat: tranform plot selection&quot;, &quot;style::0::d20231a::18::feur25::style: remove useless border in ..&quot;, &quot;feat::0::dca63d7::18::feur25::feat: create generic method usin..&quot;, ...],
-    parents=[&quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, ...],
-    values=[0, 243, 25, 360, 65, 1291, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>matrix</code></h3><p>Only the leaves, moved off their packed position onto a uniform square grid, each cylinder still sized by its value.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-matrix.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Matrix 3D&quot;,
-    variant=&quot;matrix&quot;,
-    labels=[&quot;Lyra-190&quot;, &quot;Nimbus-552&quot;, &quot;Comet-631&quot;, &quot;Terra-31&quot;, &quot;Halo-5&quot;, &quot;Vega-261&quot;, ...],
-    parents=[&quot;China&quot;, &quot;Japan&quot;, &quot;Japan&quot;, &quot;W. Europe&quot;, &quot;Japan&quot;, &quot;W. Europe&quot;, ...],
-    categories=[&quot;Low Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, &quot;Medium Earth Orbit&quot;, &quot;Medium Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, ...],
-    categories2=[&quot;Research&quot;, &quot;Navigation&quot;, &quot;Communications&quot;, &quot;Research&quot;, &quot;Navigation&quot;, &quot;Communications&quot;, ...],
-    symbols=[&quot;star&quot;, &quot;circle&quot;, &quot;triangle&quot;, &quot;circle&quot;, &quot;circle&quot;, &quot;triangle&quot;, ...],
-    values=[476.7, 424.1, 57.9, 70.7, 240.9, 59.7, ...],
-    color_values=[2012, 1984, 2016, 1990, 1993, 1980, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -270,76 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Cercles empilés en cylindres à la position du pack ; les conteneurs s&#x27;aplatissent en base fine pour que les vraies feuilles ressortent au-dessus.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>flat</code></h3><p>Les mêmes cylindres empilés tous écrasés à une même hauteur fine, une lecture schématique plate du pack.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-flat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Flat 3D&quot;,
-    variant=&quot;flat&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;],
-    values=[40, 30, 25, 20, 15],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>Les mêmes cylindres empilés aplatis que flat, depuis le pack 2D contouré.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bubble</code></h3><p>Le même traitement empilé à conteneurs aplatis que basic, depuis le pack 2D bulle uni.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-bubble.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Bubble 3D&quot;,
-    variant=&quot;bubble&quot;,
-    labels=[&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;, &quot;Epsilon&quot;, &quot;Zeta&quot;, &quot;Eta&quot;],
-    values=[40, 30, 25, 20, 15, 12, 10],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>leaf_focus</code></h3><p>Seules les vraies feuilles sont dessinées, chacune un cylindre pleine hauteur à sa position empilée ; tout cercle conteneur est retiré.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-leaf_focus.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Leaf Focus 3D&quot;,
-    variant=&quot;leaf_focus&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>swarm</code></h3><p>Le même traitement empilé à conteneurs aplatis que basic, depuis le pack 2D façon essaim de commits.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-swarm.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Swarm 3D&quot;,
-    variant=&quot;swarm&quot;,
-    labels=[&quot;other::0::2e9e0bb::17::feur25::first commit&quot;, &quot;feat::0::bea5ffb::17::feur25::feat(chart): image loader in hov..&quot;, &quot;style::0::249091b::18::feur25::style(chart): fix bar spacing&quot;, &quot;feat::0::2282a4a::18::feur25::feat: tranform plot selection&quot;, &quot;style::0::d20231a::18::feur25::style: remove useless border in ..&quot;, &quot;feat::0::dca63d7::18::feur25::feat: create generic method usin..&quot;, ...],
-    parents=[&quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, &quot;2026-01&quot;, ...],
-    values=[0, 243, 25, 360, 65, 1291, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>matrix</code></h3><p>Seules les feuilles, déplacées de leur position empilée vers une grille carrée uniforme, chaque cylindre restant dimensionné par sa valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/circle_pack3d-matrix.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.circle_pack3d(
-    &quot;Matrix 3D&quot;,
-    variant=&quot;matrix&quot;,
-    labels=[&quot;Lyra-190&quot;, &quot;Nimbus-552&quot;, &quot;Comet-631&quot;, &quot;Terra-31&quot;, &quot;Halo-5&quot;, &quot;Vega-261&quot;, ...],
-    parents=[&quot;China&quot;, &quot;Japan&quot;, &quot;Japan&quot;, &quot;W. Europe&quot;, &quot;Japan&quot;, &quot;W. Europe&quot;, ...],
-    categories=[&quot;Low Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, &quot;Medium Earth Orbit&quot;, &quot;Medium Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, &quot;Low Earth Orbit&quot;, ...],
-    categories2=[&quot;Research&quot;, &quot;Navigation&quot;, &quot;Communications&quot;, &quot;Research&quot;, &quot;Navigation&quot;, &quot;Communications&quot;, ...],
-    symbols=[&quot;star&quot;, &quot;circle&quot;, &quot;triangle&quot;, &quot;circle&quot;, &quot;circle&quot;, &quot;triangle&quot;, ...],
-    values=[476.7, 424.1, 57.9, 70.7, 240.9, 59.7, ...],
-    color_values=[2012, 1984, 2016, 1990, 1993, 1980, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

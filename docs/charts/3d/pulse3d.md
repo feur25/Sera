@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -97,51 +92,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>One column per label around a ring, height following its value.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wave</code></h3><p>The same ring of columns plus a thin wire closing their tops into a loop.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-wave.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Wave 3D&quot;,
-    variant=&quot;wave&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot</code></h3><p>The same ring of columns, thinner, plus the same closing wire.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-dot.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Dot 3D&quot;,
-    variant=&quot;dot&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>The same ring of columns, visibly wider.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>The same ring of columns, thinner and understated.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -241,51 +191,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>Une colonne par libellé autour d&#x27;un anneau, la hauteur suivant sa valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wave</code></h3><p>Le même anneau de colonnes plus un fin fil fermant leurs sommets en boucle.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-wave.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Wave 3D&quot;,
-    variant=&quot;wave&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot</code></h3><p>Le même anneau de colonnes, plus fines, plus le même fil de fermeture.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-dot.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Dot 3D&quot;,
-    variant=&quot;dot&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>Le même anneau de colonnes, visiblement plus larges.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>Le même anneau de colonnes, plus fines et discrètes.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/pulse3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.pulse3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    values=[0.4, 0.7, 0.9, 0.6, 0.8, 0.3, 0.5],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

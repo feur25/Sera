@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -97,61 +92,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One marker per node on a line, one arc per edge above it.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bilateral</code></h3><p>The same line with arcs alternating above and below it.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-bilateral.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Bilateral 3D&quot;,
-    variant=&quot;bilateral&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>weighted</code></h3><p>The same arcs, thickness scaling with <code>edges_w</code>.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-weighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Weighted 3D&quot;,
-    variant=&quot;weighted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>The same arcs, thin and understated.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>The same arcs as basic; the source end reads from the marker order along the line.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -251,61 +191,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un repère par nœud sur une ligne, un arc par lien au-dessus.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bilateral</code></h3><p>La même ligne avec des arcs alternant au-dessus et en dessous.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-bilateral.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Bilateral 3D&quot;,
-    variant=&quot;bilateral&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>weighted</code></h3><p>Les mêmes arcs, l&#x27;épaisseur suivant <code>edges_w</code>.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-weighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Weighted 3D&quot;,
-    variant=&quot;weighted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>Les mêmes arcs, fins et discrets.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>Les mêmes arcs que basic ; l&#x27;extrémité source se lit dans l&#x27;ordre des repères le long de la ligne.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/arc_diagram3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.arc_diagram3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,88 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Leaf rectangles tiled edge to edge on the floor at the 2D pack&#x27;s own footprint, toned by top-level branch.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>flat</code></h3><p>The same tiled, branch-toned leaves as basic, from the flat-mosaic 2D pack.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-flat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Flat 3D&quot;,
-    variant=&quot;flat&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>The same tiled leaves pressed to a much lower height, a wireframe-like reading of the tree.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>A small margin shrinks every rectangle away from its neighbours, opening a visible gap between leaves.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>nested</code></h3><p>Leaf rectangles plus a thin frame plate under every parent group, so branches read as a shape of their own.</p><p class="sp-3d-uses">Uses: <code>labels, values, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-nested.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Nested 3D&quot;,
-    variant=&quot;nested&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heat</code></h3><p>Every leaf toned by its own value on a continuous ramp, brightest for the largest, independent of branch.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-heat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Heat 3D&quot;,
-    variant=&quot;heat&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mono</code></h3><p>Every leaf takes the same flat tone, leaving only the footprint to read the hierarchy.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-mono.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Mono 3D&quot;,
-    variant=&quot;mono&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Every leaf toned green or red by whether its value rose or fell against <code>comparisons</code>.</p><p class="sp-3d-uses">Uses: <code>labels, values, comparisons</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-    comparisons=[34, 27, 15, 12, 4, 10, 9],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>voronoi</code></h3><p>The same tiled, branch-toned leaves as basic, from the organic power-diagram 2D pack.</p><p class="sp-3d-uses">Uses: <code>labels, values, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-voronoi.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Voronoi 3D&quot;,
-    variant=&quot;voronoi&quot;,
-    labels=[&quot;Glyphosate&quot;, &quot;Glufosinate&quot;, &quot;Paraquat&quot;, &quot;Atrazine&quot;, &quot;Acetochlor&quot;, &quot;Epoxiconazole&quot;, ...],
-    parents=[&quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, ...],
-    values=[940.0, 336.0, 105.0, 210.0, 133.0, 191.0, ...],
-    categories=[&quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Fungicide&quot;, ...],
-    categories2=[&quot;Probable carcinogen&quot;, &quot;Reproductive toxicant&quot;, &quot;Acutely toxic&quot;, &quot;Endocrine disruptor&quot;, &quot;&quot;, &quot;Endocrine disruptor&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -286,88 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Rectangles feuilles pavés bord à bord au sol, à l&#x27;empreinte du pavage 2D, teintés par branche de premier niveau.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>flat</code></h3><p>Les mêmes feuilles pavées et teintées par branche que basic, depuis le pavage 2D en mosaïque plate.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-flat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Flat 3D&quot;,
-    variant=&quot;flat&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>Les mêmes feuilles pavées écrasées à une hauteur bien plus basse, une lecture filaire de l&#x27;arbre.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>Une petite marge rétrécit chaque rectangle loin de ses voisins, ouvrant un espace visible entre feuilles.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>nested</code></h3><p>Rectangles feuilles plus une fine dalle-cadre sous chaque groupe parent, pour que les branches se lisent comme une forme propre.</p><p class="sp-3d-uses">Utilise: <code>labels, values, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-nested.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Nested 3D&quot;,
-    variant=&quot;nested&quot;,
-    labels=[&quot;Root&quot;, &quot;A&quot;, &quot;B&quot;, &quot;A1&quot;, &quot;A2&quot;, &quot;B1&quot;],
-    parents=[&quot;&quot;, &quot;Root&quot;, &quot;Root&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;],
-    values=[0, 40, 30, 20, 20, 30],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heat</code></h3><p>Chaque feuille teintée selon sa propre valeur sur une rampe continue, la plus claire pour la plus grande, indépendamment de la branche.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-heat.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Heat 3D&quot;,
-    variant=&quot;heat&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mono</code></h3><p>Chaque feuille prend la même teinte plate, laissant seulement l&#x27;empreinte lire la hiérarchie.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-mono.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Mono 3D&quot;,
-    variant=&quot;mono&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Chaque feuille teintée en vert ou rouge selon que sa valeur a monté ou baissé face à <code>comparisons</code>.</p><p class="sp-3d-uses">Utilise: <code>labels, values, comparisons</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    values=[40, 25, 20, 10, 5, 8, 12],
-    comparisons=[34, 27, 15, 12, 4, 10, 9],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>voronoi</code></h3><p>Les mêmes feuilles pavées et teintées par branche que basic, depuis le pavage 2D organique en diagramme de puissance.</p><p class="sp-3d-uses">Utilise: <code>labels, values, parents</code></p><iframe class="sp-preview-frame" data-src="../../previews/treemap3d-voronoi.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.treemap3d(
-    &quot;Voronoi 3D&quot;,
-    variant=&quot;voronoi&quot;,
-    labels=[&quot;Glyphosate&quot;, &quot;Glufosinate&quot;, &quot;Paraquat&quot;, &quot;Atrazine&quot;, &quot;Acetochlor&quot;, &quot;Epoxiconazole&quot;, ...],
-    parents=[&quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, &quot;Highly Hazardous&quot;, ...],
-    values=[940.0, 336.0, 105.0, 210.0, 133.0, 191.0, ...],
-    categories=[&quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Herbicide&quot;, &quot;Fungicide&quot;, ...],
-    categories2=[&quot;Probable carcinogen&quot;, &quot;Reproductive toxicant&quot;, &quot;Acutely toxic&quot;, &quot;Endocrine disruptor&quot;, &quot;&quot;, &quot;Endocrine disruptor&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

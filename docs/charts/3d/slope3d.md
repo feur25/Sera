@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,83 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A thin ribbon from left to right per label, green for a rise and red for a fall.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>monochrome</code></h3><p>The same ribbons, every one the same flat tone instead of green/red.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-monochrome.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Monochrome 3D&quot;,
-    variant=&quot;monochrome&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>highlighted</code></h3><p>The three labels with the biggest change stand out at full tone; every other ribbon fades to a dim grey.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-highlighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Highlighted 3D&quot;,
-    variant=&quot;highlighted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bumps</code></h3><p>Ribbons positioned by rank instead of raw value, curved into a gentle S between the two ranks.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-bumps.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Bumps 3D&quot;,
-    variant=&quot;bumps&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>curved</code></h3><p>The same left-to-right ribbons eased into a smooth S-curve instead of a straight diagonal.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-curved.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Curved 3D&quot;,
-    variant=&quot;curved&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>thick</code></h3><p>Ribbon thickness scales with the size of the change: bigger moves stand out as chunkier bands.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-thick.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Thick 3D&quot;,
-    variant=&quot;thick&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>A centred bar per label, rising above zero for a gain and sinking below it for a loss.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>The ribbon turned into a right-angle elbow: flat, then a vertical rise or fall, then flat again.</p><p class="sp-3d-uses">Uses: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -279,83 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un fin ruban de gauche à droite par libellé, vert pour une hausse et rouge pour une baisse.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>monochrome</code></h3><p>Les mêmes rubans, tous dans la même teinte plate au lieu de vert/rouge.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-monochrome.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Monochrome 3D&quot;,
-    variant=&quot;monochrome&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>highlighted</code></h3><p>Les trois libellés au plus grand changement ressortent en teinte pleine ; tous les autres rubans s&#x27;estompent en gris terne.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-highlighted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Highlighted 3D&quot;,
-    variant=&quot;highlighted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bumps</code></h3><p>Rubans positionnés par rang plutôt que par valeur brute, incurvés en un doux S entre les deux rangs.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-bumps.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Bumps 3D&quot;,
-    variant=&quot;bumps&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>curved</code></h3><p>Les mêmes rubans gauche-droite adoucis en une courbe en S au lieu d&#x27;une diagonale droite.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-curved.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Curved 3D&quot;,
-    variant=&quot;curved&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>thick</code></h3><p>L&#x27;épaisseur du ruban suit l&#x27;ampleur du changement : les grands mouvements ressortent en bandes plus épaisses.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-thick.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Thick 3D&quot;,
-    variant=&quot;thick&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>diverging</code></h3><p>Une barre centrée par libellé, montant au-dessus de zéro pour un gain et descendant en dessous pour une perte.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-diverging.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Diverging 3D&quot;,
-    variant=&quot;diverging&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>Le ruban transformé en coude à angle droit : plat, puis une montée ou descente verticale, puis plat à nouveau.</p><p class="sp-3d-uses">Utilise: <code>labels, left, right</code></p><iframe class="sp-preview-frame" data-src="../../previews/slope3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.slope3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    left=[20, 35, 15, 42, 28],
-    right=[35, 28, 40, 55, 22],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

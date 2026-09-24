@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -97,56 +92,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Series stacked from the floor, each band&#x27;s bottom the running total of the ones before it.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>streamgraph</code></h3><p>The same stack centred around zero instead of the floor, so it reads as an organic flowing ribbon.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-streamgraph.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Streamgraph 3D&quot;,
-    variant=&quot;streamgraph&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>The stack normalised so every point&#x27;s total reads exactly 100%.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Normalized 3D&quot;,
-    variant=&quot;normalized&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>The stack wrapped around a ring: each x position becomes an angle, with a vertical stack of series rising from it.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[10, 14, 12, 18, 20, 16, 13, 17], [8, 9, 11, 10, 13, 12, 9, 10], [5, 6, 7, 9, 8, 7, 6, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The same floor-anchored stack with smoothed, spline-interpolated edges.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;],
-    series=[[10, 14, 12, 18, 20, 17], [8, 9, 11, 10, 13, 15], [5, 6, 7, 9, 8, 11]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -246,56 +191,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Séries empilées depuis le sol, le bas de chaque bande étant le cumul de celles qui la précèdent.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>streamgraph</code></h3><p>Le même empilement centré autour de zéro plutôt que sur le sol, pour une lecture en ruban organique.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-streamgraph.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Streamgraph 3D&quot;,
-    variant=&quot;streamgraph&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>L&#x27;empilement normalisé pour que le total de chaque point lise exactement 100 %.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Normalized 3D&quot;,
-    variant=&quot;normalized&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;],
-    series=[[10, 14, 12, 18, 20], [8, 9, 11, 10, 13], [5, 6, 7, 9, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>L&#x27;empilement enroulé autour d&#x27;un anneau : chaque position x devient un angle, avec une pile verticale de séries qui s&#x27;en élève.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[10, 14, 12, 18, 20, 16, 13, 17], [8, 9, 11, 10, 13, 12, 9, 10], [5, 6, 7, 9, 8, 7, 6, 8]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>Le même empilement ancré au sol avec des bords lissés, interpolés en spline.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/stackplot3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.stackplot3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;],
-    series=[[10, 14, 12, 18, 20, 17], [8, 9, 11, 10, 13, 15], [5, 6, 7, 9, 8, 11]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

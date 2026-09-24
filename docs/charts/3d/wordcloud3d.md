@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,75 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One column per word on a frequency spiral.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>image</code></h3><p>The same spiral as basic; the 2D chart&#x27;s mask silhouette has no 3D form of its own.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-image.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Image 3D&quot;,
-    variant=&quot;image&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>labelmap</code></h3><p>The same spiral as basic, from the 2D chart&#x27;s scatter-label reading.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-labelmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Labelmap 3D&quot;,
-    variant=&quot;labelmap&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>network</code></h3><p>The same spiral by default; switches to a node-link layout when real positions are supplied.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-network.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Network 3D&quot;,
-    variant=&quot;network&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bubble</code></h3><p>The same spiral as basic, from the 2D chart&#x27;s packed-circle reading.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-bubble.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Bubble 3D&quot;,
-    variant=&quot;bubble&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>context</code></h3><p>The same spiral by default; switches to a node-link layout when real positions are supplied.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-context.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Context 3D&quot;,
-    variant=&quot;context&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>neuron</code></h3><p>The same spiral by default; switches to a node-link layout when real positions are supplied.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-neuron.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Neuron 3D&quot;,
-    variant=&quot;neuron&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cosmos</code></h3><p>The same spiral by default; switches to a node-link layout when real positions are supplied.</p><p class="sp-3d-uses">Uses: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-cosmos.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Cosmos 3D&quot;,
-    variant=&quot;cosmos&quot;,
-    words=[&quot;transformer&quot;, &quot;attention&quot;, &quot;gpu&quot;, &quot;carbon&quot;, &quot;water&quot;, &quot;data&quot;, ...],
-    frequencies=[95, 88, 82, 76, 70, 64, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -271,75 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une colonne par mot sur une spirale de fréquence.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>image</code></h3><p>La même spirale que basic ; le masque-silhouette du graphique 2D n&#x27;a pas de forme 3D propre.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-image.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Image 3D&quot;,
-    variant=&quot;image&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>labelmap</code></h3><p>La même spirale que basic, depuis la lecture en nuage étiqueté du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-labelmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Labelmap 3D&quot;,
-    variant=&quot;labelmap&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>network</code></h3><p>La même spirale par défaut ; bascule vers une disposition nœuds-liens si de vraies positions sont fournies.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-network.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Network 3D&quot;,
-    variant=&quot;network&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bubble</code></h3><p>La même spirale que basic, depuis la lecture en cercles compactés du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-bubble.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Bubble 3D&quot;,
-    variant=&quot;bubble&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>context</code></h3><p>La même spirale par défaut ; bascule vers une disposition nœuds-liens si de vraies positions sont fournies.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-context.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Context 3D&quot;,
-    variant=&quot;context&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>neuron</code></h3><p>La même spirale par défaut ; bascule vers une disposition nœuds-liens si de vraies positions sont fournies.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-neuron.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Neuron 3D&quot;,
-    variant=&quot;neuron&quot;,
-    words=[&quot;rust&quot;, &quot;python&quot;, &quot;wasm&quot;, &quot;plot&quot;, &quot;data&quot;, &quot;viz&quot;, ...],
-    frequencies=[42, 38, 30, 28, 25, 22, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cosmos</code></h3><p>La même spirale par défaut ; bascule vers une disposition nœuds-liens si de vraies positions sont fournies.</p><p class="sp-3d-uses">Utilise: <code>words, frequencies</code></p><iframe class="sp-preview-frame" data-src="../../previews/wordcloud3d-cosmos.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.wordcloud3d(
-    &quot;Cosmos 3D&quot;,
-    variant=&quot;cosmos&quot;,
-    words=[&quot;transformer&quot;, &quot;attention&quot;, &quot;gpu&quot;, &quot;carbon&quot;, &quot;water&quot;, &quot;data&quot;, ...],
-    frequencies=[95, 88, 82, 76, 70, 64, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

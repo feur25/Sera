@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,47 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A half-circle dial with background threshold bands, a filled ring up to the value and a needle pointing at it.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Basic 3D&quot;, variant=&quot;basic&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>A full donut ring filled clockwise from the top up to the value&#x27;s fraction of the range.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Radial 3D&quot;, variant=&quot;radial&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc270</code></h3><p>A three-quarter (270°) sweep with the same threshold bands as basic, without a needle.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-arc270.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Arc270 3D&quot;, variant=&quot;arc270&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sleek</code></h3><p>A minimal half-circle: a plain track and a single-tone filled ring, no bands or needle.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-sleek.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Sleek 3D&quot;, variant=&quot;sleek&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>tick</code></h3><p>A half-circle with graduation ticks around the rim, longer every fifth mark.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-tick.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Tick 3D&quot;, variant=&quot;tick&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>segmented</code></h3><p>The fill broken into discrete chunky segments, like a battery or signal-strength meter.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-segmented.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Segmented 3D&quot;, variant=&quot;segmented&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>glow</code></h3><p>The filled ring sits on a wide, flat halo that makes it stand out.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-glow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Glow 3D&quot;, variant=&quot;glow&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>concentric</code></h3><p>Two rings: the value on the outer ring, the comparison value on an inner ring.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, comparison</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-concentric.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Concentric 3D&quot;, variant=&quot;concentric&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sparkline</code></h3><p>The dial plus a small ribbon tracing the value&#x27;s recent history.</p><p class="sp-3d-uses">Uses: <code>value, min_val, max_val, history</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-sparkline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(
-    &quot;Sparkline 3D&quot;,
-    variant=&quot;sparkline&quot;,
-    value=72,
-    min_val=0,
-    max_val=100,
-    label=&quot;Score&quot;,
-    history=[55, 58, 60, 57, 63, 66, ...],
-    base_style=&quot;tick&quot;,
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -245,47 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un cadran demi-cercle avec des bandes de seuil en fond, un anneau rempli jusqu&#x27;à la valeur et une aiguille qui la pointe.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Basic 3D&quot;, variant=&quot;basic&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>Un anneau donut complet rempli depuis le haut, dans le sens horaire, jusqu&#x27;à la fraction de la valeur dans la plage.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Radial 3D&quot;, variant=&quot;radial&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc270</code></h3><p>Un balayage aux trois quarts (270°) avec les mêmes bandes de seuil que basic, sans aiguille.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-arc270.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Arc270 3D&quot;, variant=&quot;arc270&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sleek</code></h3><p>Un demi-cercle minimal : une piste unie et un anneau rempli d&#x27;une seule teinte, sans bandes ni aiguille.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-sleek.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Sleek 3D&quot;, variant=&quot;sleek&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>tick</code></h3><p>Un demi-cercle avec des graduations sur le pourtour, plus longues tous les cinq traits.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-tick.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Tick 3D&quot;, variant=&quot;tick&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>segmented</code></h3><p>Le remplissage découpé en segments discrets et épais, comme une jauge de batterie ou de signal.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-segmented.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Segmented 3D&quot;, variant=&quot;segmented&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>glow</code></h3><p>L&#x27;anneau rempli repose sur un large halo plat qui le fait ressortir.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, label</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-glow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Glow 3D&quot;, variant=&quot;glow&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>concentric</code></h3><p>Deux anneaux : la valeur sur l&#x27;anneau extérieur, la valeur de comparaison sur un anneau intérieur.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, comparison</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-concentric.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(&quot;Concentric 3D&quot;, variant=&quot;concentric&quot;, value=72, min_val=0, max_val=100, label=&quot;Score&quot;)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sparkline</code></h3><p>Le cadran plus un petit ruban qui trace l&#x27;historique récent de la valeur.</p><p class="sp-3d-uses">Utilise: <code>value, min_val, max_val, history</code></p><iframe class="sp-preview-frame" data-src="../../previews/gauge3d-sparkline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gauge3d(
-    &quot;Sparkline 3D&quot;,
-    variant=&quot;sparkline&quot;,
-    value=72,
-    min_val=0,
-    max_val=100,
-    label=&quot;Score&quot;,
-    history=[55, 58, 60, 57, 63, 66, ...],
-    base_style=&quot;tick&quot;,
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

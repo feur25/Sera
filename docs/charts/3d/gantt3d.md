@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -95,42 +90,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One slab per task along the time axis, toned by category.</p><p class="sp-3d-uses">Uses: <code>labels, start, end, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 22],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>progress</code></h3><p>A raised fill over the completed part of each slab, sized by <code>color_values</code> (0 to 1).</p><p class="sp-3d-uses">Uses: <code>labels, start, end, categories, color_values</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-progress.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Progress 3D&quot;,
-    variant=&quot;progress&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 22],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-    color_values=[1.0, 0.6, 0.25, 0.0],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>milestone</code></h3><p>Zero-length tasks (start equals end) become rhombic gems while the other tasks stay slabs.</p><p class="sp-3d-uses">Uses: <code>labels, start, end, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-milestone.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Milestone 3D&quot;,
-    variant=&quot;milestone&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 18],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -228,42 +187,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une dalle par tâche le long de l&#x27;axe du temps, teintée par catégorie.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 22],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>progress</code></h3><p>Un remplissage surélevé sur la partie terminée de chaque dalle, dimensionné par <code>color_values</code> (0 à 1).</p><p class="sp-3d-uses">Utilise: <code>labels, start, end, categories, color_values</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-progress.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Progress 3D&quot;,
-    variant=&quot;progress&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 22],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-    color_values=[1.0, 0.6, 0.25, 0.0],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>milestone</code></h3><p>Les tâches de durée nulle (début égal à la fin) deviennent des gemmes rhombiques tandis que les autres tâches restent des dalles.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/gantt3d-milestone.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.gantt3d(
-    &quot;Milestone 3D&quot;,
-    variant=&quot;milestone&quot;,
-    labels=[&quot;Design&quot;, &quot;Build&quot;, &quot;Test&quot;, &quot;Launch&quot;],
-    start=[0, 5, 12, 18],
-    end=[6, 14, 19, 18],
-    categories=[&quot;Plan&quot;, &quot;Dev&quot;, &quot;Dev&quot;, &quot;Plan&quot;],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

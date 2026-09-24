@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,74 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A thin rod between the start and end values with a cube at each end: cyan for the start, magenta for the end.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arrow</code></h3><p>The end is a stepped arrowhead pointing in the direction of the change, up for a rise and down for a fall.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-arrow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Arrow 3D&quot;,
-    variant=&quot;arrow&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>delta</code></h3><p>The rod and the end head are toned by the direction of the change, green for a rise and red for a fall, while the start stays neutral.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-delta.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Delta 3D&quot;,
-    variant=&quot;delta&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>barbell</code></h3><p>A heavy rod with large head cubes, like a weighted bar.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-barbell.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Barbell 3D&quot;,
-    variant=&quot;barbell&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>glow</code></h3><p>Each head sits on a wide flat halo disc that makes both ends stand out.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-glow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Glow 3D&quot;,
-    variant=&quot;glow&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dotted</code></h3><p>The rod is cut into thin dashes with small heads, the lightest reading of a dumbbell.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-dotted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Dotted 3D&quot;,
-    variant=&quot;dotted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ranked</code></h3><p>Rows are ordered by their end value, highest first, and stand on tiles toned by rank.</p><p class="sp-3d-uses">Uses: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-ranked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Ranked 3D&quot;,
-    variant=&quot;ranked&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -268,74 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une fine tige entre les valeurs de début et de fin avec un cube à chaque extrémité : cyan pour le début, magenta pour la fin.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arrow</code></h3><p>La fin est une pointe de flèche en gradins orientée dans le sens du changement, vers le haut pour une hausse et vers le bas pour une baisse.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-arrow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Arrow 3D&quot;,
-    variant=&quot;arrow&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>delta</code></h3><p>La tige et la tête de fin sont teintées selon le sens du changement, vert pour une hausse et rouge pour une baisse, tandis que le début reste neutre.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-delta.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Delta 3D&quot;,
-    variant=&quot;delta&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>barbell</code></h3><p>Une tige épaisse avec de gros cubes en tête, comme une barre lestée.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-barbell.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Barbell 3D&quot;,
-    variant=&quot;barbell&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>glow</code></h3><p>Chaque tête repose sur un large disque plat en halo qui fait ressortir les deux extrémités.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-glow.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Glow 3D&quot;,
-    variant=&quot;glow&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dotted</code></h3><p>La tige est découpée en fins tirets avec de petites têtes, la lecture la plus légère d&#x27;un haltère.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-dotted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Dotted 3D&quot;,
-    variant=&quot;dotted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ranked</code></h3><p>Les lignes sont ordonnées par leur valeur de fin, la plus haute d&#x27;abord, et reposent sur des dalles teintées selon le rang.</p><p class="sp-3d-uses">Utilise: <code>labels, start, end</code></p><iframe class="sp-preview-frame" data-src="../../previews/dumbbell3d-ranked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.dumbbell3d(
-    &quot;Ranked 3D&quot;,
-    variant=&quot;ranked&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    start=[20, 35, 15, 42, 28],
-    end=[60, 52, 38, 68, 55],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

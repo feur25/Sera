@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,92 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A dark range band up to <code>ranges</code> (75% by default) on a lighter track, the value as a bar in front and a plate at the target.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals, ranges</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Three graded qualitative bands (0-40%, 40-75%, 75-100%) stand behind the value bar.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>thermo</code></h3><p>A thermometer: a slim rail, a red tube rising from a bulb up to the value, and the target plate.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-thermo.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Thermo 3D&quot;,
-    variant=&quot;thermo&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>segmented</code></h3><p>Traffic-light bands (red, amber, green) behind the value bar and the target plate.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-segmented.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Segmented 3D&quot;,
-    variant=&quot;segmented&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>Only the value bar and the target plate, with no background bands.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot</code></h3><p>The value is a single bead on a track instead of a bar, beside the target plate.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-dot.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Dot 3D&quot;,
-    variant=&quot;dot&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>progress</code></h3><p>A wide pill of progress filling the track up to the value, with no target.</p><p class="sp-3d-uses">Uses: <code>labels, values, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-progress.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Progress 3D&quot;,
-    variant=&quot;progress&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compare</code></h3><p>The value bar beside a ghost bar for the prior period (<code>comparisons</code>), plus the target plate.</p><p class="sp-3d-uses">Uses: <code>labels, values, targets, max_vals, comparisons</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-compare.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Compare 3D&quot;,
-    variant=&quot;compare&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-    comparisons=[70, 55, 3.8],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -288,92 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une bande de plage sombre jusqu&#x27;à <code>ranges</code> (75 % par défaut) sur une piste plus claire, la valeur en barre devant et une plaque à la cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals, ranges</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Trois bandes qualitatives graduées (0-40 %, 40-75 %, 75-100 %) se dressent derrière la barre de valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>thermo</code></h3><p>Un thermomètre : un rail fin, un tube rouge qui monte d&#x27;un bulbe jusqu&#x27;à la valeur, et la plaque cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-thermo.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Thermo 3D&quot;,
-    variant=&quot;thermo&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>segmented</code></h3><p>Des bandes de feu tricolore (rouge, ambre, vert) derrière la barre de valeur et la plaque cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-segmented.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Segmented 3D&quot;,
-    variant=&quot;segmented&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>Seulement la barre de valeur et la plaque cible, sans bandes de fond.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dot</code></h3><p>La valeur est une simple bille sur une piste au lieu d&#x27;une barre, à côté de la plaque cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-dot.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Dot 3D&quot;,
-    variant=&quot;dot&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>progress</code></h3><p>Une large pilule de progression qui remplit la piste jusqu&#x27;à la valeur, sans cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, max_vals</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-progress.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Progress 3D&quot;,
-    variant=&quot;progress&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>compare</code></h3><p>La barre de valeur à côté d&#x27;une barre fantôme pour la période précédente (<code>comparisons</code>), plus la plaque cible.</p><p class="sp-3d-uses">Utilise: <code>labels, values, targets, max_vals, comparisons</code></p><iframe class="sp-preview-frame" data-src="../../previews/bullet3d-compare.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bullet3d(
-    &quot;Compare 3D&quot;,
-    variant=&quot;compare&quot;,
-    labels=[&quot;Revenue&quot;, &quot;Profit&quot;, &quot;CSAT&quot;],
-    values=[80, 65, 4.2],
-    targets=[90, 70, 4.5],
-    max_vals=[120, 100, 5],
-    comparisons=[70, 55, 3.8],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

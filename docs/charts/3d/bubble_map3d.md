@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,74 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>proportional</code></h3><p>One marker per point or region, size and height following its value.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-proportional.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Proportional 3D&quot;,
-    variant=&quot;proportional&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>The same markers as proportional; the 2D chart&#x27;s region-fill styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>globe</code></h3><p>The same markers as proportional; the 2D globe-look projection has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-globe.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Globe 3D&quot;,
-    variant=&quot;globe&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;IN&quot;, &quot;ID&quot;, &quot;PK&quot;, &quot;BR&quot;, ...],
-    values=[331.9, 1412.0, 1380.0, 273.5, 220.9, 213.3, ...],
-    center_lat=15,
-    center_lon=10,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ring</code></h3><p>The same markers, visibly thinner.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-ring.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Ring 3D&quot;,
-    variant=&quot;ring&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;IL&quot;, &quot;PA&quot;, ...],
-    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pulse</code></h3><p>The same markers as proportional, from the 2D chart&#x27;s animated ripple styling.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-pulse.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Pulse 3D&quot;,
-    variant=&quot;pulse&quot;,
-    labels=[&quot;JP&quot;, &quot;ID&quot;, &quot;CL&quot;, &quot;TR&quot;, &quot;US&quot;, &quot;NZ&quot;, ...],
-    values=[9.1, 8.7, 8.9, 7.4, 7.2, 7.8, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>hexbin</code></h3><p>One marker per raw sampled point, from <code>lats</code>/<code>lons</code> directly.</p><p class="sp-3d-uses">Uses: <code>lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-hexbin.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Hexbin 3D&quot;,
-    variant=&quot;hexbin&quot;,
-    lats=[40.7, 40.75, 40.68, 34.0, 34.05, 33.9, ...],
-    lons=[-74.0, -73.95, -73.9, -118.2, -118.25, -118.3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pie_markers</code></h3><p>One marker per point, sized by the sum of its <code>series</code> row.</p><p class="sp-3d-uses">Uses: <code>lats, lons, series, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-pie_markers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Pie Markers 3D&quot;,
-    variant=&quot;pie_markers&quot;,
-    lats=[40.7, 51.5, 35.7, -23.5, -33.9, 30.0],
-    lons=[-74.0, -0.12, 139.7, -46.6, 18.4, 31.2],
-    series=[[40, 25, 35], [55, 15, 30], [30, 45, 25], [60, 10, 30], [35, 35, 30], [20, 55, 25]],
-    categories=[&quot;Wind&quot;, &quot;Solar&quot;, &quot;Hydro&quot;],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -268,74 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>proportional</code></h3><p>Un repère par point ou région, taille et hauteur suivant sa valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-proportional.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Proportional 3D&quot;,
-    variant=&quot;proportional&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>Les mêmes repères que proportional ; le style à remplissage de région du 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    labels=[&quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, ...],
-    values=[5.1, 0.73, 7.4, 3.0, 38.9, 5.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>globe</code></h3><p>Les mêmes repères que proportional ; la projection 2D façon globe n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-globe.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Globe 3D&quot;,
-    variant=&quot;globe&quot;,
-    labels=[&quot;US&quot;, &quot;CN&quot;, &quot;IN&quot;, &quot;ID&quot;, &quot;PK&quot;, &quot;BR&quot;, ...],
-    values=[331.9, 1412.0, 1380.0, 273.5, 220.9, 213.3, ...],
-    center_lat=15,
-    center_lon=10,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ring</code></h3><p>Les mêmes repères, visiblement plus fins.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-ring.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Ring 3D&quot;,
-    variant=&quot;ring&quot;,
-    labels=[&quot;CA&quot;, &quot;TX&quot;, &quot;NY&quot;, &quot;FL&quot;, &quot;IL&quot;, &quot;PA&quot;, ...],
-    values=[38.9, 30.5, 19.6, 22.6, 12.6, 12.9, ...],
-    map=&quot;usa_states&quot;,
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pulse</code></h3><p>Les mêmes repères que proportional, depuis le style en onde animée du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-pulse.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Pulse 3D&quot;,
-    variant=&quot;pulse&quot;,
-    labels=[&quot;JP&quot;, &quot;ID&quot;, &quot;CL&quot;, &quot;TR&quot;, &quot;US&quot;, &quot;NZ&quot;, ...],
-    values=[9.1, 8.7, 8.9, 7.4, 7.2, 7.8, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>hexbin</code></h3><p>Un repère par point brut échantillonné, depuis <code>lats</code>/<code>lons</code> directement.</p><p class="sp-3d-uses">Utilise: <code>lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-hexbin.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Hexbin 3D&quot;,
-    variant=&quot;hexbin&quot;,
-    lats=[40.7, 40.75, 40.68, 34.0, 34.05, 33.9, ...],
-    lons=[-74.0, -73.95, -73.9, -118.2, -118.25, -118.3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pie_markers</code></h3><p>Un repère par point, dimensionné par la somme de sa ligne <code>series</code>.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, series, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble_map3d-pie_markers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble_map3d(
-    &quot;Pie Markers 3D&quot;,
-    variant=&quot;pie_markers&quot;,
-    lats=[40.7, 51.5, 35.7, -23.5, -33.9, 30.0],
-    lons=[-74.0, -0.12, 139.7, -46.6, 18.4, 31.2],
-    series=[[40, 25, 35], [55, 15, 30], [30, 45, 25], [60, 10, 30], [35, 35, 30], [20, 55, 25]],
-    categories=[&quot;Wind&quot;, &quot;Solar&quot;, &quot;Hydro&quot;],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

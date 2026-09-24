@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,93 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A plain density silhouette per category, no overlay.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>box</code></h3><p>The silhouette plus a boxplot-style whisker, box and median slab through its centre.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-box.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Box 3D&quot;,
-    variant=&quot;box&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>quartile</code></h3><p>The silhouette plus three highlighted plates marking the first quartile, median and third quartile.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-quartile.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Quartile 3D&quot;,
-    variant=&quot;quartile&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mean</code></h3><p>The silhouette plus a single highlighted plate at the arithmetic mean.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-mean.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Mean 3D&quot;,
-    variant=&quot;mean&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>points</code></h3><p>A slim silhouette plus every raw sample as a small cube aligned on its category&#x27;s axis.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-points.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Points 3D&quot;,
-    variant=&quot;points&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>strip</code></h3><p>A slim silhouette plus every raw sample scattered sideways by a deterministic jitter.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-strip.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Strip 3D&quot;,
-    variant=&quot;strip&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 1.6, 1.9, 2.1, 2.4, 2.4, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The basic silhouette turned a quarter-turn onto the depth axis.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>split</code></h3><p>Neighbouring categories drawn as mirrored half-silhouettes, back to back.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-split.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Split 3D&quot;,
-    variant=&quot;split&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-    color_groups=[&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;R&quot;, &quot;R&quot;, &quot;R&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>half</code></h3><p>Only one side of the silhouette is drawn, the other collapsed flat against the centre line.</p><p class="sp-3d-uses">Uses: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-half.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Half 3D&quot;,
-    variant=&quot;half&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -291,93 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une simple silhouette de densité par catégorie, sans superposition.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>box</code></h3><p>La silhouette plus une moustache, une boîte et une dalle de médiane façon boxplot en son centre.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-box.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Box 3D&quot;,
-    variant=&quot;box&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>quartile</code></h3><p>La silhouette plus trois dalles mises en évidence marquant le premier quartile, la médiane et le troisième quartile.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-quartile.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Quartile 3D&quot;,
-    variant=&quot;quartile&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mean</code></h3><p>La silhouette plus une unique dalle mise en évidence à la moyenne arithmétique.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-mean.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Mean 3D&quot;,
-    variant=&quot;mean&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>points</code></h3><p>Une silhouette fine plus chaque échantillon brut en petit cube aligné sur l&#x27;axe de sa catégorie.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-points.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Points 3D&quot;,
-    variant=&quot;points&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>strip</code></h3><p>Une silhouette fine plus chaque échantillon brut dispersé sur le côté par un jitter déterministe.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-strip.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Strip 3D&quot;,
-    variant=&quot;strip&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 1.6, 1.9, 2.1, 2.4, 2.4, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>La silhouette de base tournée d&#x27;un quart de tour sur l&#x27;axe de profondeur.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>split</code></h3><p>Catégories voisines dessinées en demi-silhouettes mises en miroir, dos à dos.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-split.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Split 3D&quot;,
-    variant=&quot;split&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-    color_groups=[&quot;L&quot;, &quot;L&quot;, &quot;L&quot;, &quot;R&quot;, &quot;R&quot;, &quot;R&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>half</code></h3><p>Seul un côté de la silhouette est dessiné, l&#x27;autre effondré à plat contre la ligne centrale.</p><p class="sp-3d-uses">Utilise: <code>categories, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/violin3d-half.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.violin3d(
-    &quot;Half 3D&quot;,
-    variant=&quot;half&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;],
-    values=[1.2, 2.4, 2.7, 3.1, 3.5, 3.8, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

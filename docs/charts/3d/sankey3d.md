@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,91 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One column per node, one weighted ribbon per link.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[2, 3, 4, 4],
-    edges_w=[10, 5, 8, 7],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>The same layout as basic, from the 2D chart&#x27;s wider node spacing.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;In&quot;, &quot;Mid&quot;, &quot;Out1&quot;, &quot;Out2&quot;],
-    edges_i=[0, 0, 1, 1],
-    edges_j=[1, 2, 2, 3],
-    edges_w=[20, 5, 12, 8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The same layout as basic with visibly thicker ribbons.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;Source&quot;, &quot;A&quot;, &quot;B&quot;, &quot;Sink&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[1, 2, 3, 3],
-    edges_w=[15, 10, 15, 10],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>The same layout as basic with thin, understated ribbons.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[2, 3, 4, 4],
-    edges_w=[10, 5, 8, 7],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sorted</code></h3><p>The same nodes reordered within each layer by their own total flow.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-sorted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Sorted 3D&quot;,
-    variant=&quot;sorted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    edges_i=[0, 1, 0, 1],
-    edges_j=[2, 2, 3, 3],
-    edges_w=[5, 15, 3, 2],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>hourglass</code></h3><p>The same layout as basic, fed by the 2D chart&#x27;s radiant hub-and-spoke flow.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-hourglass.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Hourglass 3D&quot;,
-    variant=&quot;hourglass&quot;,
-    labels=[&quot;Spinach&quot;, &quot;Kale&quot;, &quot;Salmon&quot;, &quot;Beef Liver&quot;, &quot;Egg Yolk&quot;, &quot;Orange&quot;, ...],
-    edges_i=[0, 0, 0, 0, 1, 1, ...],
-    edges_j=[45, 46, 47, 48, 45, 49, ...],
-    edges_w=[180, 15, 49, 20, 684, 206, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>matrix</code></h3><p>The same layout as basic, fed by the 2D chart&#x27;s dense grid-of-flows data.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-matrix.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Matrix 3D&quot;,
-    variant=&quot;matrix&quot;,
-    labels=[&quot;S0&quot;, &quot;S1&quot;, &quot;S2&quot;, &quot;S3&quot;, &quot;S4&quot;, &quot;S5&quot;, ...],
-    edges_i=[0, 1, 2, 3, 4, 5, ...],
-    edges_j=[220, 221, 221, 222, 221, 222, ...],
-    edges_w=[120.6, 43.7, 21.2, 29.1, 48.9, 34.7, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>beacon</code></h3><p>The same layout as basic, fed by the 2D chart&#x27;s hub-and-route flow.</p><p class="sp-3d-uses">Uses: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-beacon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Beacon 3D&quot;,
-    variant=&quot;beacon&quot;,
-    labels=[&quot;ATL&quot;, &quot;MSP 06:10&quot;, &quot;JFK 07:05&quot;, &quot;CHS 07:35&quot;, &quot;BNA 07:45&quot;, &quot;PHL 08:00&quot;, ...],
-    edges_i=[0, 0, 0, 0, 0, 0, ...],
-    edges_j=[1, 2, 3, 4, 5, 6, ...],
-    edges_w=[143, 115, 72, 66, 119, 63, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -287,91 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une colonne par nœud, un ruban pondéré par lien.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[2, 3, 4, 4],
-    edges_w=[10, 5, 8, 7],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>La même disposition que basic, depuis l&#x27;espacement de nœuds plus large du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;In&quot;, &quot;Mid&quot;, &quot;Out1&quot;, &quot;Out2&quot;],
-    edges_i=[0, 0, 1, 1],
-    edges_j=[1, 2, 2, 3],
-    edges_w=[20, 5, 12, 8],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>La même disposition que basic avec des rubans visiblement plus épais.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;Source&quot;, &quot;A&quot;, &quot;B&quot;, &quot;Sink&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[1, 2, 3, 3],
-    edges_w=[15, 10, 15, 10],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>minimal</code></h3><p>La même disposition que basic avec des rubans fins et discrets.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-minimal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Minimal 3D&quot;,
-    variant=&quot;minimal&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;],
-    edges_i=[0, 0, 1, 2],
-    edges_j=[2, 3, 4, 4],
-    edges_w=[10, 5, 8, 7],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>sorted</code></h3><p>Les mêmes nœuds réordonnés au sein de chaque couche selon leur propre flux total.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-sorted.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Sorted 3D&quot;,
-    variant=&quot;sorted&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    edges_i=[0, 1, 0, 1],
-    edges_j=[2, 2, 3, 3],
-    edges_w=[5, 15, 3, 2],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>hourglass</code></h3><p>La même disposition que basic, alimentée par le flux rayonnant en moyeu du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-hourglass.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Hourglass 3D&quot;,
-    variant=&quot;hourglass&quot;,
-    labels=[&quot;Spinach&quot;, &quot;Kale&quot;, &quot;Salmon&quot;, &quot;Beef Liver&quot;, &quot;Egg Yolk&quot;, &quot;Orange&quot;, ...],
-    edges_i=[0, 0, 0, 0, 1, 1, ...],
-    edges_j=[45, 46, 47, 48, 45, 49, ...],
-    edges_w=[180, 15, 49, 20, 684, 206, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>matrix</code></h3><p>La même disposition que basic, alimentée par les données denses en grille de flux du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-matrix.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Matrix 3D&quot;,
-    variant=&quot;matrix&quot;,
-    labels=[&quot;S0&quot;, &quot;S1&quot;, &quot;S2&quot;, &quot;S3&quot;, &quot;S4&quot;, &quot;S5&quot;, ...],
-    edges_i=[0, 1, 2, 3, 4, 5, ...],
-    edges_j=[220, 221, 221, 222, 221, 222, ...],
-    edges_w=[120.6, 43.7, 21.2, 29.1, 48.9, 34.7, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>beacon</code></h3><p>La même disposition que basic, alimentée par le flux en moyeu et routes du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, edges_i, edges_j, edges_w</code></p><iframe class="sp-preview-frame" data-src="../../previews/sankey3d-beacon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.sankey3d(
-    &quot;Beacon 3D&quot;,
-    variant=&quot;beacon&quot;,
-    labels=[&quot;ATL&quot;, &quot;MSP 06:10&quot;, &quot;JFK 07:05&quot;, &quot;CHS 07:35&quot;, &quot;BNA 07:45&quot;, &quot;PHL 08:00&quot;, ...],
-    edges_i=[0, 0, 0, 0, 0, 0, ...],
-    edges_j=[1, 2, 3, 4, 5, 6, ...],
-    edges_w=[143, 115, 72, 66, 119, 63, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

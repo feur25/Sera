@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,67 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One floating bar per step between the running total before and after it; totals stand from the floor.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>Bars widened until they touch, so the steps read as a continuous staircase.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lollipop</code></h3><p>A thin stem across each step topped by a head cube at the new running total.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-lollipop.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Lollipop 3D&quot;,
-    variant=&quot;lollipop&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arrowed</code></h3><p>Floating bars with a small tip beyond the new total, pointing up for a rise and down for a fall.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-arrowed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Arrowed 3D&quot;,
-    variant=&quot;arrowed&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>delta</code></h3><p>Tones graded by the size of the change, so big moves stand out from small ones.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-delta.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Delta 3D&quot;,
-    variant=&quot;delta&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The basic layout turned a quarter-turn: steps run along the depth axis.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Floating bars plus a running-total track laid beside them.</p><p class="sp-3d-uses">Uses: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 12, 167],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -261,67 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une barre flottante par étape entre le cumul avant et après elle ; les totaux partent du plancher.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stepped</code></h3><p>Barres élargies jusqu&#x27;à se toucher : les étapes se lisent comme un escalier continu.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-stepped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Stepped 3D&quot;,
-    variant=&quot;stepped&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lollipop</code></h3><p>Une fine tige à travers chaque étape, coiffée d&#x27;un cube au nouveau cumul.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-lollipop.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Lollipop 3D&quot;,
-    variant=&quot;lollipop&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arrowed</code></h3><p>Barres flottantes avec une petite pointe au-delà du nouveau total, vers le haut pour une hausse et vers le bas pour une baisse.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-arrowed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Arrowed 3D&quot;,
-    variant=&quot;arrowed&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>delta</code></h3><p>Teintes graduées selon l&#x27;ampleur du changement : les gros mouvements se détachent des petits.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-delta.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Delta 3D&quot;,
-    variant=&quot;delta&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>La disposition de base tournée d&#x27;un quart de tour : les étapes courent le long de l&#x27;axe de profondeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 155],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>trend</code></h3><p>Barres flottantes plus une courbe de cumul posée à côté.</p><p class="sp-3d-uses">Utilise: <code>labels, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/waterfall3d-trend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.waterfall3d(
-    &quot;Trend 3D&quot;,
-    variant=&quot;trend&quot;,
-    labels=[&quot;Start&quot;, &quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;, &quot;End&quot;],
-    values=[100, 30, -15, 40, 12, 167],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

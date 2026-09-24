@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,92 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Each series its own sloped-top strip on a separate depth row, rising from the floor.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Series stacked on top of each other, each band&#x27;s floor the running total of the ones before it.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>percent</code></h3><p>The same stack normalised so every point&#x27;s total reads exactly 100%.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-percent.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Percent 3D&quot;,
-    variant=&quot;percent&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>spline</code></h3><p>A Catmull-Rom curve through the points, densified into many short strips, on separate rows.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-spline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Spline 3D&quot;,
-    variant=&quot;spline&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[8200, 7100, 9400, 12300, 15800, 19200, 21500, 20100]],
-    series_names=[&quot;Visitors&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>step</code></h3><p>A staircase profile filled down to the floor instead of a sloped one.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-step.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Step 3D&quot;,
-    variant=&quot;step&quot;,
-    x_labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    series=[[42, 42, 58, 58, 58, 71, 71]],
-    series_names=[&quot;Active servers&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gradient</code></h3><p>A smooth spline strip toned by height, fading from the floor to the peak.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-gradient.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Gradient 3D&quot;,
-    variant=&quot;gradient&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[8200, 7100, 9400, 12300, 15800, 19200, 21500, 20100]],
-    series_names=[&quot;Revenue&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The percent stack pressed to a thin, striped band, a lighter outlined reading of the stack.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    x_labels=[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, ...],
-    series=[[18, 22, 16, 25, 30, 21, ...], [15, 19, 24, 17, 20, 26, ...], [22, 17, 20, 23, 15, 19, ...], [12, 15, 18, 14, 17, 13, ...], [25, 21, 19, 26, 22, 28, ...], [10, 13, 11, 15, 12, 14, ...], [20, 18, 23, 19, 25, 16, ...]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wave</code></h3><p>Series stacked with signed values, so the whole band can swing above and below zero.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-wave.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Wave 3D&quot;,
-    variant=&quot;wave&quot;,
-    x_labels=[&quot;0.00&quot;, &quot;0.26&quot;, &quot;0.51&quot;, &quot;0.77&quot;, &quot;1.03&quot;, &quot;1.28&quot;, ...],
-    series=[[0.0, 0.254, 0.491, 0.696, 0.855, 0.959, ...], [1.0, 0.967, 0.871, 0.718, 0.519, 0.285, ...], [0.0, 0.247, 0.466, 0.644, 0.772, 0.843, ...]],
-    series_names=[&quot;Sin(x)&quot;, &quot;Cos(x)&quot;, &quot;Exp(-0.1*x)*Sin(x)&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>leader</code></h3><p>Every series as a faint thin band plus a highlighted ribbon that switches to whichever series currently leads.</p><p class="sp-3d-uses">Uses: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-leader.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Leader 3D&quot;,
-    variant=&quot;leader&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;, &quot;Q5&quot;, &quot;Q6&quot;, ...],
-    series=[[40, 46, 52, 58, 66, 70, ...], [38, 44, 55, 63, 68, 72, ...], [30, 36, 42, 49, 58, 86, ...]],
-    series_names=[&quot;Atlas&quot;, &quot;Nova&quot;, &quot;Vertex&quot;],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -290,92 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Chaque série sur sa propre bande à dessus incliné, sur une rangée de profondeur distincte, s&#x27;élevant depuis le sol.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Séries empilées les unes sur les autres, le plancher de chaque bande étant le cumul de celles qui la précèdent.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>percent</code></h3><p>Le même empilement normalisé pour que le total de chaque point lise exactement 100 %.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-percent.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Percent 3D&quot;,
-    variant=&quot;percent&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;],
-    series=[[11800, 11500, 12300, 12800], [10500, 10900, 11100, 11400], [10700, 10800, 10500, 11300]],
-    series_names=[&quot;North&quot;, &quot;South&quot;, &quot;East&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>spline</code></h3><p>Une courbe de Catmull-Rom à travers les points, densifiée en nombreuses bandes courtes, sur des rangées séparées.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-spline.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Spline 3D&quot;,
-    variant=&quot;spline&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[8200, 7100, 9400, 12300, 15800, 19200, 21500, 20100]],
-    series_names=[&quot;Visitors&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>step</code></h3><p>Un profil en escalier rempli jusqu&#x27;au sol plutôt qu&#x27;incliné.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-step.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Step 3D&quot;,
-    variant=&quot;step&quot;,
-    x_labels=[&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;],
-    series=[[42, 42, 58, 58, 58, 71, 71]],
-    series_names=[&quot;Active servers&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gradient</code></h3><p>Une bande lisse en spline teintée selon la hauteur, du sol jusqu&#x27;au sommet.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-gradient.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Gradient 3D&quot;,
-    variant=&quot;gradient&quot;,
-    x_labels=[&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;],
-    series=[[8200, 7100, 9400, 12300, 15800, 19200, 21500, 20100]],
-    series_names=[&quot;Revenue&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>L&#x27;empilement en pourcentage pressé en une bande fine et striée, une lecture contourée plus légère de l&#x27;empilement.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    x_labels=[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, ...],
-    series=[[18, 22, 16, 25, 30, 21, ...], [15, 19, 24, 17, 20, 26, ...], [22, 17, 20, 23, 15, 19, ...], [12, 15, 18, 14, 17, 13, ...], [25, 21, 19, 26, 22, 28, ...], [10, 13, 11, 15, 12, 14, ...], [20, 18, 23, 19, 25, 16, ...]],
-    series_names=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wave</code></h3><p>Séries empilées avec des valeurs signées : toute la bande peut osciller au-dessus et en dessous de zéro.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-wave.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Wave 3D&quot;,
-    variant=&quot;wave&quot;,
-    x_labels=[&quot;0.00&quot;, &quot;0.26&quot;, &quot;0.51&quot;, &quot;0.77&quot;, &quot;1.03&quot;, &quot;1.28&quot;, ...],
-    series=[[0.0, 0.254, 0.491, 0.696, 0.855, 0.959, ...], [1.0, 0.967, 0.871, 0.718, 0.519, 0.285, ...], [0.0, 0.247, 0.466, 0.644, 0.772, 0.843, ...]],
-    series_names=[&quot;Sin(x)&quot;, &quot;Cos(x)&quot;, &quot;Exp(-0.1*x)*Sin(x)&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>leader</code></h3><p>Chaque série en bande fine et pâle plus un ruban mis en évidence qui bascule vers la série actuellement en tête.</p><p class="sp-3d-uses">Utilise: <code>x_labels, series</code></p><iframe class="sp-preview-frame" data-src="../../previews/area3d-leader.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.area3d(
-    &quot;Leader 3D&quot;,
-    variant=&quot;leader&quot;,
-    x_labels=[&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;, &quot;Q5&quot;, &quot;Q6&quot;, ...],
-    series=[[40, 46, 52, 58, 66, 70, ...], [38, 44, 55, 63, 68, 72, ...], [30, 36, 42, 49, 58, 86, ...]],
-    series_names=[&quot;Atlas&quot;, &quot;Nova&quot;, &quot;Vertex&quot;],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -97,56 +92,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Flat tiers stacked by depth, each node a rectangle whose width is its share of its parent.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>The same tiers with a thin gap opening between neighbouring rectangles.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The tiers turned a quarter-turn: depth runs along the width axis instead of the row axis.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>The same tree wrapped around a ring instead of laid out on straight tiers.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rank</code></h3><p>Each rectangle toned by its percentile among same-depth siblings, brightest for the largest.</p><p class="sp-3d-uses">Uses: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-rank.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Rank 3D&quot;,
-    variant=&quot;rank&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -246,56 +191,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Des paliers plats empilés par profondeur, chaque nœud un rectangle dont la largeur est sa part dans son parent.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>gapped</code></h3><p>Les mêmes paliers avec un fin espace qui s&#x27;ouvre entre rectangles voisins.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-gapped.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Gapped 3D&quot;,
-    variant=&quot;gapped&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>Les paliers tournés d&#x27;un quart de tour : la profondeur court le long de l&#x27;axe de largeur au lieu de l&#x27;axe des lignes.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Horizontal 3D&quot;,
-    variant=&quot;horizontal&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial</code></h3><p>Le même arbre enroulé autour d&#x27;un anneau plutôt que posé sur des paliers droits.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-radial.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Radial 3D&quot;,
-    variant=&quot;radial&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>rank</code></h3><p>Chaque rectangle teinté selon son percentile parmi les frères et sœurs de même profondeur, le plus clair pour le plus grand.</p><p class="sp-3d-uses">Utilise: <code>labels, parents, values</code></p><iframe class="sp-preview-frame" data-src="../../previews/icicle3d-rank.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.icicle3d(
-    &quot;Rank 3D&quot;,
-    variant=&quot;rank&quot;,
-    labels=[&quot;Company&quot;, &quot;Engineering&quot;, &quot;Sales&quot;, &quot;Marketing&quot;, &quot;Operations&quot;, &quot;Backend&quot;, ...],
-    parents=[&quot;&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Company&quot;, &quot;Engineering&quot;, ...],
-    values=[0, 0, 0, 0, 0, 18, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

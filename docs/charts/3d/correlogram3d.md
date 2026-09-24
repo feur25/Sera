@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,67 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>circle</code></h3><p>A signed column per variable pair: up for a positive correlation, down for a negative one.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-circle.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Circle 3D&quot;,
-    variant=&quot;circle&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heatmap</code></h3><p>The same signed grid as circle, from the 2D chart&#x27;s shaded-square layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-heatmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Heatmap 3D&quot;,
-    variant=&quot;heatmap&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>text</code></h3><p>The same signed grid as circle, from the 2D chart&#x27;s printed-number layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-text.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Text 3D&quot;,
-    variant=&quot;text&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ellipse</code></h3><p>The same signed grid as circle, from the 2D chart&#x27;s tilted-ellipse layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-ellipse.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Ellipse 3D&quot;,
-    variant=&quot;ellipse&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, &quot;qsec&quot;],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, 0.42], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, -0.59], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, -0.43], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, -0.71], [0.68, -0.7, -0.71, -0.45, 1, -0.71, 0.09], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, -0.17], [0.42, -0.59, -0.43, -0.71, 0.09, -0.17, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mixed</code></h3><p>The same signed grid as circle, from the 2D chart&#x27;s split upper/lower-triangle layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-mixed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Mixed 3D&quot;,
-    variant=&quot;mixed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pie_square</code></h3><p>The same signed grid as circle, from the 2D chart&#x27;s pie-slice layout.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-pie_square.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Pie Square 3D&quot;,
-    variant=&quot;pie_square&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, ...],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, ...], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, ...], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, ...], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, ...], [0.68, -0.7, -0.71, -0.45, 1, -0.71, ...], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, ...], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>circle_legend</code></h3><p>The same signed grid as circle, plus a colour-scale legend in the 2D chart.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-circle_legend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Circle Legend 3D&quot;,
-    variant=&quot;circle_legend&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, &quot;qsec&quot;, &quot;vs&quot;],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, 0.42, 0.66], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, -0.59, -0.81], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, -0.43, -0.71], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, -0.71, -0.72], [0.68, -0.7, -0.71, -0.45, 1, -0.71, 0.09, 0.44], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, -0.17, -0.55], [0.42, -0.59, -0.43, -0.71, 0.09, -0.17, 1, 0.74], [0.66, -0.81, -0.71, -0.72, 0.44, -0.55, 0.74, 1]],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -261,67 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>circle</code></h3><p>Une colonne signée par paire de variables : vers le haut pour une corrélation positive, vers le bas pour une négative.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-circle.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Circle 3D&quot;,
-    variant=&quot;circle&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>heatmap</code></h3><p>La même grille signée que circle, depuis la disposition en carrés ombrés du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-heatmap.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Heatmap 3D&quot;,
-    variant=&quot;heatmap&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>text</code></h3><p>La même grille signée que circle, depuis la disposition en nombres imprimés du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-text.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Text 3D&quot;,
-    variant=&quot;text&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ellipse</code></h3><p>La même grille signée que circle, depuis la disposition en ellipses inclinées du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-ellipse.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Ellipse 3D&quot;,
-    variant=&quot;ellipse&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, &quot;qsec&quot;],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, 0.42], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, -0.59], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, -0.43], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, -0.71], [0.68, -0.7, -0.71, -0.45, 1, -0.71, 0.09], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, -0.17], [0.42, -0.59, -0.43, -0.71, 0.09, -0.17, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mixed</code></h3><p>La même grille signée que circle, depuis la disposition en triangles haut/bas séparés du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-mixed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Mixed 3D&quot;,
-    variant=&quot;mixed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[1, 0.8, -0.3, 0.5], [0.8, 1, 0.1, -0.2], [-0.3, 0.1, 1, 0.7], [0.5, -0.2, 0.7, 1]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>pie_square</code></h3><p>La même grille signée que circle, depuis la disposition en parts de camembert du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-pie_square.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Pie Square 3D&quot;,
-    variant=&quot;pie_square&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, ...],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, ...], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, ...], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, ...], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, ...], [0.68, -0.7, -0.71, -0.45, 1, -0.71, ...], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, ...], ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>circle_legend</code></h3><p>La même grille signée que circle, plus une légende d&#x27;échelle de couleur dans le graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/correlogram3d-circle_legend.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.correlogram3d(
-    &quot;Circle Legend 3D&quot;,
-    variant=&quot;circle_legend&quot;,
-    labels=[&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;wt&quot;, &quot;qsec&quot;, &quot;vs&quot;],
-    matrix=[[1, -0.85, -0.85, -0.78, 0.68, -0.87, 0.42, 0.66], [-0.85, 1, 0.9, 0.83, -0.7, 0.78, -0.59, -0.81], [-0.85, 0.9, 1, 0.79, -0.71, 0.89, -0.43, -0.71], [-0.78, 0.83, 0.79, 1, -0.45, 0.66, -0.71, -0.72], [0.68, -0.7, -0.71, -0.45, 1, -0.71, 0.09, 0.44], [-0.87, 0.78, 0.89, 0.66, -0.71, 1, -0.17, -0.55], [0.42, -0.59, -0.43, -0.71, 0.09, -0.17, 1, 0.74], [0.66, -0.81, -0.71, -0.72, 0.44, -0.55, 0.74, 1]],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

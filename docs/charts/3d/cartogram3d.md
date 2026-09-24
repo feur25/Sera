@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -94,31 +89,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>dorling</code></h3><p>One column per point at its raw position, height following its value.</p><p class="sp-3d-uses">Uses: <code>labels, values, lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/cartogram3d-dorling.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.cartogram3d(
-    &quot;Dorling 3D&quot;,
-    variant=&quot;dorling&quot;,
-    labels=[&quot;USA&quot;, &quot;CHN&quot;, &quot;IND&quot;, &quot;BRA&quot;, &quot;RUS&quot;, &quot;DEU&quot;, ...],
-    values=[331, 1412, 1408, 215, 144, 84, ...],
-    lats=[39, 35, 21, -10, 61, 51, ...],
-    lons=[-98, 105, 78, -51, 90, 10, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>demers</code></h3><p>The same columns as dorling; the 2D chart&#x27;s square-packing styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>labels, values, lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/cartogram3d-demers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.cartogram3d(
-    &quot;Demers 3D&quot;,
-    variant=&quot;demers&quot;,
-    labels=[&quot;USA&quot;, &quot;CHN&quot;, &quot;IND&quot;, &quot;BRA&quot;, &quot;RUS&quot;, &quot;DEU&quot;, ...],
-    values=[331, 1412, 1408, 215, 144, 84, ...],
-    lats=[39, 35, 21, -10, 61, 51, ...],
-    lons=[-98, 105, 78, -51, 90, 10, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -215,31 +185,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>dorling</code></h3><p>Une colonne par point à sa position brute, la hauteur suivant sa valeur.</p><p class="sp-3d-uses">Utilise: <code>labels, values, lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/cartogram3d-dorling.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.cartogram3d(
-    &quot;Dorling 3D&quot;,
-    variant=&quot;dorling&quot;,
-    labels=[&quot;USA&quot;, &quot;CHN&quot;, &quot;IND&quot;, &quot;BRA&quot;, &quot;RUS&quot;, &quot;DEU&quot;, ...],
-    values=[331, 1412, 1408, 215, 144, 84, ...],
-    lats=[39, 35, 21, -10, 61, 51, ...],
-    lons=[-98, 105, 78, -51, 90, 10, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>demers</code></h3><p>Les mêmes colonnes que dorling ; le style en carrés compactés du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>labels, values, lats, lons</code></p><iframe class="sp-preview-frame" data-src="../../previews/cartogram3d-demers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.cartogram3d(
-    &quot;Demers 3D&quot;,
-    variant=&quot;demers&quot;,
-    labels=[&quot;USA&quot;, &quot;CHN&quot;, &quot;IND&quot;, &quot;BRA&quot;, &quot;RUS&quot;, &quot;DEU&quot;, ...],
-    values=[331, 1412, 1408, 215, 144, 84, ...],
-    lats=[39, 35, 21, -10, 61, 51, ...],
-    lons=[-98, 105, 78, -51, 90, 10, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

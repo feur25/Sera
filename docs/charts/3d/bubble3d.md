@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -100,97 +95,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A marker per bubble, size following <code>sizes</code>.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>categorical</code></h3><p>The same bubbles, one class (and colour) per category.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-categorical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Categorical 3D&quot;,
-    variant=&quot;categorical&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    categories=[&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;X&quot;, &quot;Z&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>labeled</code></h3><p>The same bubbles as basic; names show on hover in every variant.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-labeled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Labeled 3D&quot;,
-    variant=&quot;labeled&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>The same bubbles as basic, from the 2D chart&#x27;s hollow-ring styling.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>negative</code></h3><p>Bubbles rise above the floor for a positive size and sink below it for a negative one.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-negative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Negative 3D&quot;,
-    variant=&quot;negative&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>split</code></h3><p>Bubbles placed on an <code>x_categories</code> × <code>y_categories</code> grid, classed by their split group.</p><p class="sp-3d-uses">Uses: <code>x_categories, y_categories, categories, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-split.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Split 3D&quot;,
-    variant=&quot;split&quot;,
-    x_categories=[&quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, ...],
-    y_categories=[&quot;First&quot;, &quot;First&quot;, &quot;Second&quot;, &quot;Second&quot;, &quot;Third&quot;, &quot;Third&quot;, ...],
-    categories=[&quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;, &quot;no&quot;, ...],
-    sizes=[42, 26, 7, 8, 15, 41, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>burst</code></h3><p>Bubbles spread by category around a centre, radius growing with size.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-burst.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Burst 3D&quot;,
-    variant=&quot;burst&quot;,
-    labels=[&quot;commentaires&quot;, &quot;ci-cd&quot;, &quot;theme&quot;, &quot;push&quot;, &quot;python&quot;, &quot;build&quot;, ...],
-    categories=[&quot;apres&quot;, &quot;apres&quot;, &quot;avant&quot;, &quot;apres&quot;, &quot;avant&quot;, &quot;avant&quot;, ...],
-    x_values=[0.625, 0.461, 0.403, 0.568, 0.468, 0.064, ...],
-    sizes=[45.5, 20.8, 7.0, 13.9, 9.1, 5.9, ...],
-    x_categories=[&quot;collab&quot;, &quot;infra&quot;, &quot;&quot;, &quot;temps-reel&quot;, &quot;&quot;, &quot;&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial_rows</code></h3><p>Bubbles spread by category across a half-circle sweep, radius growing with size.</p><p class="sp-3d-uses">Uses: <code>x, y, sizes, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-radial_rows.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Radial Rows 3D&quot;,
-    variant=&quot;radial_rows&quot;,
-    labels=[&quot;Cheminee Rustique en Verre&quot;, &quot;Cheminee Moderne en Fer&quot;, &quot;Cheminee Moderne en Pierre&quot;, &quot;Cheminee Moderne en Bois&quot;, &quot;Cheminee Moderne en Charbon&quot;, &quot;Cheminee Moderne en Mousse&quot;, ...],
-    x_values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, ...],
-    sizes=[14.9, 18.8, 18.8, 24.1, 18.7, 13.0, ...],
-    categories=[&quot;Cheminee Rustique&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, ...],
-    x_categories=[&quot;Verre&quot;, &quot;Fer&quot;, &quot;Pierre&quot;, &quot;Bois&quot;, &quot;Charbon&quot;, &quot;Mousse&quot;, ...],
-    color_values=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ...],
-    min_size=1.6,
-    max_size=7,
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -293,97 +197,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un repère par bulle, la taille suivant <code>sizes</code>.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>categorical</code></h3><p>Les mêmes bulles, une classe (et une couleur) par catégorie.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-categorical.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Categorical 3D&quot;,
-    variant=&quot;categorical&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-    categories=[&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;X&quot;, &quot;Z&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>labeled</code></h3><p>Les mêmes bulles que basic ; les noms s&#x27;affichent au survol dans toutes les variantes.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-labeled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Labeled 3D&quot;,
-    variant=&quot;labeled&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>outlined</code></h3><p>Les mêmes bulles que basic, depuis le style en anneau creux du graphique 2D.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-outlined.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Outlined 3D&quot;,
-    variant=&quot;outlined&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>negative</code></h3><p>Les bulles s&#x27;élèvent au-dessus du sol pour une taille positive et s&#x27;enfoncent en dessous pour une négative.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-negative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Negative 3D&quot;,
-    variant=&quot;negative&quot;,
-    x=[1, 2, 3, 4, 5, 6, 7],
-    y=[3, 5, 2, 7, 6, 8, 4],
-    sizes=[20, 40, 15, 55, 30, 45, 25],
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>split</code></h3><p>Bulles placées sur une grille <code>x_categories</code> × <code>y_categories</code>, classées selon leur groupe de scission.</p><p class="sp-3d-uses">Utilise: <code>x_categories, y_categories, categories, sizes</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-split.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Split 3D&quot;,
-    variant=&quot;split&quot;,
-    x_categories=[&quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, &quot;Cherbourg&quot;, ...],
-    y_categories=[&quot;First&quot;, &quot;First&quot;, &quot;Second&quot;, &quot;Second&quot;, &quot;Third&quot;, &quot;Third&quot;, ...],
-    categories=[&quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;yes&quot;, &quot;no&quot;, ...],
-    sizes=[42, 26, 7, 8, 15, 41, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>burst</code></h3><p>Bulles réparties par catégorie autour d&#x27;un centre, le rayon croissant avec la taille.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-burst.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Burst 3D&quot;,
-    variant=&quot;burst&quot;,
-    labels=[&quot;commentaires&quot;, &quot;ci-cd&quot;, &quot;theme&quot;, &quot;push&quot;, &quot;python&quot;, &quot;build&quot;, ...],
-    categories=[&quot;apres&quot;, &quot;apres&quot;, &quot;avant&quot;, &quot;apres&quot;, &quot;avant&quot;, &quot;avant&quot;, ...],
-    x_values=[0.625, 0.461, 0.403, 0.568, 0.468, 0.064, ...],
-    sizes=[45.5, 20.8, 7.0, 13.9, 9.1, 5.9, ...],
-    x_categories=[&quot;collab&quot;, &quot;infra&quot;, &quot;&quot;, &quot;temps-reel&quot;, &quot;&quot;, &quot;&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>radial_rows</code></h3><p>Bulles réparties par catégorie sur un balayage en demi-cercle, le rayon croissant avec la taille.</p><p class="sp-3d-uses">Utilise: <code>x, y, sizes, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/bubble3d-radial_rows.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.bubble3d(
-    &quot;Radial Rows 3D&quot;,
-    variant=&quot;radial_rows&quot;,
-    labels=[&quot;Cheminee Rustique en Verre&quot;, &quot;Cheminee Moderne en Fer&quot;, &quot;Cheminee Moderne en Pierre&quot;, &quot;Cheminee Moderne en Bois&quot;, &quot;Cheminee Moderne en Charbon&quot;, &quot;Cheminee Moderne en Mousse&quot;, ...],
-    x_values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, ...],
-    sizes=[14.9, 18.8, 18.8, 24.1, 18.7, 13.0, ...],
-    categories=[&quot;Cheminee Rustique&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, &quot;Cheminee Moderne&quot;, ...],
-    x_categories=[&quot;Verre&quot;, &quot;Fer&quot;, &quot;Pierre&quot;, &quot;Bois&quot;, &quot;Charbon&quot;, &quot;Mousse&quot;, ...],
-    color_values=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ...],
-    min_size=1.6,
-    max_size=7,
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

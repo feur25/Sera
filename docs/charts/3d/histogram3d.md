@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -99,37 +94,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One column per bin; height is the sample count.</p><p class="sp-3d-uses">Uses: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Basic 3D&quot;, variant=&quot;basic&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>The basic layout turned a quarter-turn: bins run along the depth axis.</p><p class="sp-3d-uses">Uses: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Horizontal 3D&quot;, variant=&quot;horizontal&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>Heights are probability densities, so the columns integrate to one.</p><p class="sp-3d-uses">Uses: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Normalized 3D&quot;, variant=&quot;normalized&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cumulative</code></h3><p>Heights accumulate from the first bin to the last, ending at the sample count.</p><p class="sp-3d-uses">Uses: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-cumulative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Cumulative 3D&quot;, variant=&quot;cumulative&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Each bin stacks one segment per <code>color_groups</code> category.</p><p class="sp-3d-uses">Uses: <code>values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...],
-    color_groups=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>overlay</code></h3><p>A second sample set (<code>overlay</code>) drawn as a parallel row beside the first.</p><p class="sp-3d-uses">Uses: <code>values, overlay, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-overlay.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Overlay 3D&quot;, variant=&quot;overlay&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>step</code></h3><p>Only the top of every bin as a thin plate, giving the outlined staircase look.</p><p class="sp-3d-uses">Uses: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-step.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Step 3D&quot;, variant=&quot;step&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -231,37 +195,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une colonne par classe ; la hauteur est le nombre d&#x27;échantillons.</p><p class="sp-3d-uses">Utilise: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Basic 3D&quot;, variant=&quot;basic&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>horizontal</code></h3><p>La disposition de base tournée d&#x27;un quart de tour : les classes courent le long de l&#x27;axe de profondeur.</p><p class="sp-3d-uses">Utilise: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-horizontal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Horizontal 3D&quot;, variant=&quot;horizontal&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>normalized</code></h3><p>Les hauteurs sont des densités de probabilité : les colonnes s&#x27;intègrent à un.</p><p class="sp-3d-uses">Utilise: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-normalized.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Normalized 3D&quot;, variant=&quot;normalized&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>cumulative</code></h3><p>Les hauteurs s&#x27;accumulent de la première à la dernière classe, jusqu&#x27;au nombre d&#x27;échantillons.</p><p class="sp-3d-uses">Utilise: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-cumulative.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Cumulative 3D&quot;, variant=&quot;cumulative&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Chaque classe empile un segment par catégorie de <code>color_groups</code>.</p><p class="sp-3d-uses">Utilise: <code>values, color_groups</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...],
-    color_groups=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>overlay</code></h3><p>Un second jeu d&#x27;échantillons (<code>overlay</code>) dessiné en rangée parallèle à côté du premier.</p><p class="sp-3d-uses">Utilise: <code>values, overlay, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-overlay.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Overlay 3D&quot;, variant=&quot;overlay&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>step</code></h3><p>Seul le dessus de chaque classe en fine plaque, pour l&#x27;aspect d&#x27;escalier contouré.</p><p class="sp-3d-uses">Utilise: <code>values, bins</code></p><iframe class="sp-preview-frame" data-src="../../previews/histogram3d-step.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.histogram3d(&quot;Step 3D&quot;, variant=&quot;step&quot;, values=[2.1, 2.3, 2.7, 3.1, 3.4, 3.6, ...])</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -95,41 +90,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>arrows</code></h3><p>One direction segment per grid point, thickness and height following its magnitude.</p><p class="sp-3d-uses">Uses: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-arrows.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Arrows 3D&quot;,
-    variant=&quot;arrows&quot;,
-    lats=[-55, -55, -55, -55, -55, -55, ...],
-    lons=[-150, -90, -30, 30, 90, 150, ...],
-    u=[-12, -12, -12, -12, -12, -12, ...],
-    v=[3, 3, 3, 3, 3, 3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>streamlines</code></h3><p>The same segments as arrows; the 2D chart&#x27;s flowing-particle styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-streamlines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Streamlines 3D&quot;,
-    variant=&quot;streamlines&quot;,
-    lats=[-55, -55, -55, -55, -55, -55, ...],
-    lons=[-150, -90, -30, 30, 90, 150, ...],
-    u=[-12, -12, -12, -12, -12, -12, ...],
-    v=[3, 3, 3, 3, 3, 3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wind_barbs</code></h3><p>The same segments as arrows; the 2D chart&#x27;s meteorological barb styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-wind_barbs.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Wind Barbs 3D&quot;,
-    variant=&quot;wind_barbs&quot;,
-    lats=[40.7, 51.5, 35.7, -33.9, -33.9, -22.9],
-    lons=[-74.0, -0.12, 139.7, 151.2, 18.4, -43.2],
-    u=[8, 45, 0.01, -15, 20, -35],
-    v=[3, -30, 0.01, 8, 20, 25],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -227,41 +187,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>arrows</code></h3><p>Un segment de direction par point de grille, épaisseur et hauteur suivant sa magnitude.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-arrows.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Arrows 3D&quot;,
-    variant=&quot;arrows&quot;,
-    lats=[-55, -55, -55, -55, -55, -55, ...],
-    lons=[-150, -90, -30, 30, 90, 150, ...],
-    u=[-12, -12, -12, -12, -12, -12, ...],
-    v=[3, 3, 3, 3, 3, 3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>streamlines</code></h3><p>Les mêmes segments qu&#x27;arrows ; le style en particules animées du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-streamlines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Streamlines 3D&quot;,
-    variant=&quot;streamlines&quot;,
-    lats=[-55, -55, -55, -55, -55, -55, ...],
-    lons=[-150, -90, -30, 30, 90, 150, ...],
-    u=[-12, -12, -12, -12, -12, -12, ...],
-    v=[3, 3, 3, 3, 3, 3, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>wind_barbs</code></h3><p>Les mêmes segments qu&#x27;arrows ; le style en barbules météorologiques du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>lats, lons, u, v</code></p><iframe class="sp-preview-frame" data-src="../../previews/vector_field_map3d-wind_barbs.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.vector_field_map3d(
-    &quot;Wind Barbs 3D&quot;,
-    variant=&quot;wind_barbs&quot;,
-    lats=[40.7, 51.5, 35.7, -33.9, -33.9, -22.9],
-    lons=[-74.0, -0.12, 139.7, 151.2, 18.4, -43.2],
-    u=[8, 45, 0.01, -15, 20, -35],
-    v=[3, -30, 0.01, 8, 20, 25],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

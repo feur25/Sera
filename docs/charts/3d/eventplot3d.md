@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -95,35 +90,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A thin tick per event, rows placed on their own depth.</p><p class="sp-3d-uses">Uses: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>density</code></h3><p>The ticks plus a Gaussian KDE curve rising above each row.</p><p class="sp-3d-uses">Uses: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Density 3D&quot;,
-    variant=&quot;density&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>connected</code></h3><p>The ticks plus a thin band joining consecutive events along each row.</p><p class="sp-3d-uses">Uses: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-connected.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Connected 3D&quot;,
-    variant=&quot;connected&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -221,35 +187,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une fine marque par événement, les lignes posées sur leur propre profondeur.</p><p class="sp-3d-uses">Utilise: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>density</code></h3><p>Les marques plus une courbe de densité gaussienne s&#x27;élevant au-dessus de chaque ligne.</p><p class="sp-3d-uses">Utilise: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-density.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Density 3D&quot;,
-    variant=&quot;density&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>connected</code></h3><p>Les marques plus une fine bande reliant les événements consécutifs le long de chaque ligne.</p><p class="sp-3d-uses">Utilise: <code>x, categories</code></p><iframe class="sp-preview-frame" data-src="../../previews/eventplot3d-connected.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.eventplot3d(
-    &quot;Connected 3D&quot;,
-    variant=&quot;connected&quot;,
-    x=[1, 2, 2.5, 4, 5, 5.5, ...],
-    categories=[&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -101,93 +96,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>One closed loop per series, radius following its values around the axes.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lines</code></h3><p>The same loops as basic; the 2D chart&#x27;s stroke-only styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-lines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Lines 3D&quot;,
-    variant=&quot;lines&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>The same loops as basic; the 2D chart&#x27;s filled-area styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>markers</code></h3><p>The same loops as basic; the 2D chart&#x27;s per-vertex dot styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-markers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Markers 3D&quot;,
-    variant=&quot;markers&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dashed</code></h3><p>The same loops as basic; the 2D chart&#x27;s dashed-stroke styling has no separate 3D form.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-dashed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Dashed 3D&quot;,
-    variant=&quot;dashed&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>One ring of stacked columns per axis, series piled on top of each other.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>polar_bar</code></h3><p>One concentric ring of columns per series, height following its values.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-polar_bar.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Polar Bar 3D&quot;,
-    variant=&quot;polar_bar&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>band</code></h3><p>A band of columns between two series&#x27; values, one per axis.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-band.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Band 3D&quot;,
-    variant=&quot;band&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[55, 45, 50, 25, 50], [80, 70, 75, 45, 78], [30, 60, 35, 50, 40], [50, 85, 55, 70, 65]],
-    series_names=[&quot;A low&quot;, &quot;A high&quot;, &quot;B low&quot;, &quot;B high&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>petal</code></h3><p>The same rings as polar_bar, visibly wider.</p><p class="sp-3d-uses">Uses: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-petal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Petal 3D&quot;,
-    variant=&quot;petal&quot;,
-    axes=[&quot;1960&quot;, &quot;1970&quot;, &quot;1980&quot;, &quot;1990&quot;, &quot;2000&quot;, &quot;2010&quot;, ...],
-    series=[[102.26, 124.12, 126.79, 142.45, 134.01, 141.63, ...], [54.97, 48.53, 47.32, 49.62, 52.10, 54.33, ...]],
-    series_names=[&quot;Nacimientos&quot;, &quot;Muertes&quot;],
-    palette=[6274976, 4020864],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -291,93 +199,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Une boucle fermée par série, le rayon suivant ses valeurs autour des axes.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>lines</code></h3><p>Les mêmes boucles que basic ; le style en trait seul du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-lines.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Lines 3D&quot;,
-    variant=&quot;lines&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>filled</code></h3><p>Les mêmes boucles que basic ; le style à aire remplie du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-filled.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Filled 3D&quot;,
-    variant=&quot;filled&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>markers</code></h3><p>Les mêmes boucles que basic ; le style à points par sommet du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-markers.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Markers 3D&quot;,
-    variant=&quot;markers&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>dashed</code></h3><p>Les mêmes boucles que basic ; le style en trait pointillé du graphique 2D n&#x27;a pas de forme 3D séparée.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-dashed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Dashed 3D&quot;,
-    variant=&quot;dashed&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>stacked</code></h3><p>Un anneau de colonnes empilées par axe, les séries superposées.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-stacked.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Stacked 3D&quot;,
-    variant=&quot;stacked&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>polar_bar</code></h3><p>Un anneau concentrique de colonnes par série, la hauteur suivant ses valeurs.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-polar_bar.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Polar Bar 3D&quot;,
-    variant=&quot;polar_bar&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[80, 65, 70, 40, 75], [60, 80, 55, 60, 70]],
-    series_names=[&quot;A&quot;, &quot;B&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>band</code></h3><p>Une bande de colonnes entre les valeurs de deux séries, une par axe.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-band.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Band 3D&quot;,
-    variant=&quot;band&quot;,
-    axes=[&quot;Speed&quot;, &quot;Power&quot;, &quot;Range&quot;, &quot;Cost&quot;, &quot;Style&quot;],
-    series=[[55, 45, 50, 25, 50], [80, 70, 75, 45, 78], [30, 60, 35, 50, 40], [50, 85, 55, 70, 65]],
-    series_names=[&quot;A low&quot;, &quot;A high&quot;, &quot;B low&quot;, &quot;B high&quot;],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>petal</code></h3><p>Les mêmes anneaux que polar_bar, visiblement plus larges.</p><p class="sp-3d-uses">Utilise: <code>axes, series, series_names</code></p><iframe class="sp-preview-frame" data-src="../../previews/radar3d-petal.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.radar3d(
-    &quot;Petal 3D&quot;,
-    variant=&quot;petal&quot;,
-    axes=[&quot;1960&quot;, &quot;1970&quot;, &quot;1980&quot;, &quot;1990&quot;, &quot;2000&quot;, &quot;2010&quot;, ...],
-    series=[[102.26, 124.12, 126.79, 142.45, 134.01, 141.63, ...], [54.97, 48.53, 47.32, 49.62, 52.10, 54.33, ...]],
-    series_names=[&quot;Nacimientos&quot;, &quot;Muertes&quot;],
-    palette=[6274976, 4020864],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 

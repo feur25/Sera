@@ -4,11 +4,6 @@
 
 <style>
 .sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-3d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-top:14px}
-.sp-3d-card{border:1px solid rgba(128,128,128,.28);border-radius:12px;padding:6px 16px 14px}
-.sp-3d-card h3{margin:10px 0 6px}
-.sp-3d-uses{margin:4px 0;font-size:.9em;opacity:.85}
-.sp-3d-card details{margin-top:10px}
 </style>
 
 ## Signature
@@ -98,62 +93,6 @@ The viewpoint is independent from the variant: `orientation3d` picks the initial
 ## Auto-scaling zone
 
 The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
-
-## Gallery
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>A segmented ring plus a center-routed ribbon per non-zero cell.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>The same ring with visibly thicker ribbons.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>The same ring with thin, understated ribbons.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mono</code></h3><p>The same ring and ribbons painted a single uniform tone.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-mono.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Mono 3D&quot;,
-    variant=&quot;mono&quot;,
-    labels=[&quot;P&quot;, &quot;Q&quot;, &quot;R&quot;, &quot;S&quot;],
-    matrix=[[0, 8, 4, 6], [8, 0, 5, 2], [4, 5, 0, 9], [6, 2, 9, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>The same ring and ribbons; an asymmetric matrix already reads as asymmetric ribbons.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 15, 3, 6], [4, 0, 9, 2], [8, 5, 0, 11], [7, 3, 4, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bipartite</code></h3><p>The same matrix-driven ring; the 2D chart&#x27;s separate item/attribute grouping has no 3D form of its own.</p><p class="sp-3d-uses">Uses: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-bipartite.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Bipartite 3D&quot;,
-    variant=&quot;bipartite&quot;,
-    labels=[&quot;Jenny Slate&quot;, &quot;Jake Lacy&quot;, &quot;Obvious Child&quot;, &quot;Crazy Ex-Girlfriend&quot;, &quot;Rachel Bloom&quot;, &quot;Broad City&quot;, ...],
-    categories=[&quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, ...],
-    axes=[&quot;Promoted Feminism&quot;, &quot;Featured Millennial Malaise&quot;, &quot;Cited Girls as Inspiration&quot;, &quot;Depicted Realistic Sex&quot;, &quot;Collaborated with Dunham&quot;, &quot;Created Starring Women&quot;, &quot;Guest Starred on Girls&quot;],
-    edges_i=[0, 1, 2, 3, 4, 5, ...],
-    edges_j=[5, 5, 5, 5, 5, 5, ...],
-)</code></pre></details></div>
-</div>
 
 ## Parameters
 
@@ -254,62 +193,6 @@ Le point de vue est indépendant de la variante : `orientation3d` choisit le pla
 <h2>Zone auto-ajustée</h2>
 
 La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
-
-<h2>Galerie</h2>
-
-<div class="sp-3d-grid">
-<div class="sp-3d-card"><h3><code>basic</code></h3><p>Un anneau segmenté plus un ruban routé par le centre par cellule non nulle.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-basic.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Basic 3D&quot;,
-    variant=&quot;basic&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>ribbon</code></h3><p>Le même anneau avec des rubans visiblement plus épais.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-ribbon.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Ribbon 3D&quot;,
-    variant=&quot;ribbon&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>arc</code></h3><p>Le même anneau avec des rubans fins et discrets.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-arc.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Arc 3D&quot;,
-    variant=&quot;arc&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 10, 5, 8], [10, 0, 7, 3], [5, 7, 0, 12], [8, 3, 12, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>mono</code></h3><p>Le même anneau et les mêmes rubans peints d&#x27;une teinte uniforme.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-mono.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Mono 3D&quot;,
-    variant=&quot;mono&quot;,
-    labels=[&quot;P&quot;, &quot;Q&quot;, &quot;R&quot;, &quot;S&quot;],
-    matrix=[[0, 8, 4, 6], [8, 0, 5, 2], [4, 5, 0, 9], [6, 2, 9, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>directed</code></h3><p>Le même anneau et les mêmes rubans ; une matrice asymétrique se lit déjà comme des rubans asymétriques.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-directed.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Directed 3D&quot;,
-    variant=&quot;directed&quot;,
-    labels=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
-    matrix=[[0, 15, 3, 6], [4, 0, 9, 2], [8, 5, 0, 11], [7, 3, 4, 0]],
-)</code></pre></details></div>
-<div class="sp-3d-card"><h3><code>bipartite</code></h3><p>Le même anneau piloté par la matrice ; le groupement séparé objets/attributs du graphique 2D n&#x27;a pas de forme 3D propre.</p><p class="sp-3d-uses">Utilise: <code>labels, matrix</code></p><iframe class="sp-preview-frame" data-src="../../previews/chord3d-bipartite.html"></iframe><details><summary>Python</summary><pre><code class="language-python">import seraplot as sp
-
-chart = sp.chord3d(
-    &quot;Bipartite 3D&quot;,
-    variant=&quot;bipartite&quot;,
-    labels=[&quot;Jenny Slate&quot;, &quot;Jake Lacy&quot;, &quot;Obvious Child&quot;, &quot;Crazy Ex-Girlfriend&quot;, &quot;Rachel Bloom&quot;, &quot;Broad City&quot;, ...],
-    categories=[&quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, &quot;Groundbreakers&quot;, ...],
-    axes=[&quot;Promoted Feminism&quot;, &quot;Featured Millennial Malaise&quot;, &quot;Cited Girls as Inspiration&quot;, &quot;Depicted Realistic Sex&quot;, &quot;Collaborated with Dunham&quot;, &quot;Created Starring Women&quot;, &quot;Guest Starred on Girls&quot;],
-    edges_i=[0, 1, 2, 3, 4, 5, ...],
-    edges_j=[5, 5, 5, 5, 5, 5, ...],
-)</code></pre></details></div>
-</div>
 
 <h2>Paramètres</h2>
 
