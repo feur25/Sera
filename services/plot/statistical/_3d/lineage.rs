@@ -40,6 +40,27 @@ pub fn paths(links: &[Vec<Point>], size: f64, steps: usize, class_of: impl Fn(us
         .collect()
 }
 
+pub fn weighted_paths(
+    links: &[Vec<Point>],
+    weights: &[f64],
+    min_size: f64,
+    max_size: f64,
+    steps: usize,
+    class_of: impl Fn(usize) -> usize,
+    tone_of: impl Fn(usize) -> f64,
+) -> Vec<Bar3DBlock> {
+    let peak = weights.iter().copied().filter(|v| v.is_finite()).fold(0.0f64, f64::max).max(1e-12);
+    links
+        .iter()
+        .enumerate()
+        .flat_map(|(li, path)| {
+            let w = weights.get(li).copied().unwrap_or(0.0).max(0.0);
+            let size = min_size + (max_size - min_size) * (w / peak).clamp(0.0, 1.0);
+            paths(std::slice::from_ref(path), size, steps, |_| class_of(li), |_| tone_of(li))
+        })
+        .collect()
+}
+
 pub fn midpoints(children: &[Vec<usize>], order: &mut [f64], node: usize, next_leaf: &mut f64) {
     if children[node].is_empty() {
         order[node] = *next_leaf;
@@ -95,5 +116,16 @@ mod tests {
     fn a_single_point_path_and_an_empty_link_list_draw_nothing() {
         assert!(paths(&[vec![(0.0, 0.0, 0.0)]], 0.1, 4, |_| 0, |_| 0.0).is_empty());
         assert!(paths(&[], 0.1, 4, |_| 0, |_| 0.0).is_empty());
+    }
+
+    #[test]
+    fn weighted_paths_sizes_each_link_by_its_own_share_of_the_peak_weight() {
+        let a = vec![(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)];
+        let b = vec![(0.0, 1.0, 0.0), (1.0, 1.0, 0.0)];
+        let out = weighted_paths(&[a, b], &[1.0, 4.0], 0.1, 0.5, 3, |li| li, |_| 0.0);
+        let small = out.iter().find(|b| b.cy < 0.5).unwrap();
+        let big = out.iter().find(|b| b.cy > 0.5).unwrap();
+        assert!((small.hw - 0.2).abs() < 1e-9);
+        assert!((big.hw - 0.5).abs() < 1e-9);
     }
 }
