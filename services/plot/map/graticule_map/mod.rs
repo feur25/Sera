@@ -1,6 +1,7 @@
 pub mod common;
 pub mod config;
 pub mod globe;
+pub mod layout3d;
 pub mod lines;
 pub mod tissot;
 pub mod variant;
