@@ -2,7 +2,7 @@ use super::common::{prepare, Prepared};
 use super::config::SunburstConfig;
 use super::variant::SunburstVariant;
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::hierarchy::{depth_cap, faded_height, rings, BASE_HEIGHT, HOLE};
+use crate::plot::statistical::_3d::hierarchy::{depth_cap, descendant_groups, faded_height, rings, BASE_HEIGHT, HOLE};
 use crate::plot::statistical::bar::Bar3DBlock;
 
 pub const HEIGHT_RATIO: f64 = 0.7;
@@ -81,11 +81,11 @@ fn finite(values: &[f64]) -> Vec<f64> {
     values.iter().map(|v| if v.is_finite() { *v } else { 0.0 }).collect()
 }
 
-fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
+fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u32>>) {
     let values = finite(cfg.values);
     let sound = SunburstConfig { labels: cfg.labels, parents: cfg.parents, values: &values, palette: cfg.palette, ..SunburstConfig::default() };
     let Some(p) = prepare(&sound) else {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), Vec::new());
     };
     let plan = recipe(cfg.variant);
     let cap_depth = depth_cap(&p.depth, NODE_CAP);
@@ -100,16 +100,22 @@ fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
         |i| if plan.mono { MONO_TONE } else { branch_tone(&p, i) },
     );
     let names = p.bfs_order.iter().filter(|&&i| p.depth[i] <= cap_depth).map(|&i| p.labels[i].clone()).collect();
-    (blocks, names)
+    let groups = if matches!(cfg.variant, SunburstVariant::Zoomable) {
+        let block_ci: Vec<usize> = blocks.iter().map(|b| b.ci).collect();
+        descendant_groups(&p.depth, &p.ang, &block_ci)
+    } else {
+        Vec::new()
+    };
+    (blocks, names, groups)
 }
 
 pub fn layout_3d(cfg: &SunburstConfig, _budget: &Budget) -> Vec<Bar3DBlock> {
     layout_named(cfg, _budget).0
 }
 
-pub fn layout_named(cfg: &SunburstConfig, _budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+pub fn layout_named(cfg: &SunburstConfig, _budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u32>>) {
     if cfg.labels.is_empty() {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), Vec::new());
     }
     sunburst_3d(cfg)
 }
@@ -126,7 +132,7 @@ mod tests {
         )
     }
 
-    fn draw(variant: SunburstVariant) -> (Vec<Bar3DBlock>, Vec<String>) {
+    fn draw(variant: SunburstVariant) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u32>>) {
         let (labels, parents, values) = tree();
         let cfg = SunburstConfig { variant, labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
         layout_named(&cfg, &Budget::default())
@@ -135,7 +141,7 @@ mod tests {
     #[test]
     fn every_variant_draws_every_node_and_names_it() {
         for &variant in SunburstVariant::all() {
-            let (blocks, names) = draw(variant);
+            let (blocks, names, _groups) = draw(variant);
             assert_eq!(names.len(), 5, "{variant:?}");
             assert!(!blocks.is_empty(), "{variant:?}");
         }
@@ -143,7 +149,7 @@ mod tests {
 
     #[test]
     fn deeper_nodes_sit_at_a_larger_radius_than_the_root() {
-        let (blocks, _) = draw(SunburstVariant::Basic);
+        let (blocks, _, _) = draw(SunburstVariant::Basic);
         let root_radius = blocks.iter().filter(|b| b.ci == 0).map(|b| b.cx.hypot(b.cy)).fold(0.0, f64::max);
         let deepest_radius = blocks.iter().map(|b| b.cx.hypot(b.cy)).fold(0.0, f64::max);
         assert!(deepest_radius > root_radius);
@@ -194,15 +200,15 @@ mod tests {
             }
         }
         let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
-        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        let (blocks, names, _groups) = layout_named(&cfg, &Budget::default());
         assert!(!blocks.is_empty() && blocks.len() < labels.len() * 6);
         assert_eq!(names.len(), blocks.iter().map(|b| b.ci).collect::<std::collections::HashSet<_>>().len());
     }
 
     #[test]
     fn empty_input_draws_nothing() {
-        let (blocks, names) = layout_named(&SunburstConfig::default(), &Budget::default());
-        assert!(blocks.is_empty() && names.is_empty());
+        let (blocks, names, groups) = layout_named(&SunburstConfig::default(), &Budget::default());
+        assert!(blocks.is_empty() && names.is_empty() && groups.is_empty());
     }
 
     #[test]
@@ -211,7 +217,7 @@ mod tests {
         let parents = vec![String::new(), "Root".to_string()];
         let values = vec![f64::NAN, f64::INFINITY];
         let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
-        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        let (blocks, _, _) = layout_named(&cfg, &Budget::default());
         assert!(blocks.iter().all(|b| b.z0.is_finite() && b.z1.is_finite() && b.hw.is_finite()));
     }
 
@@ -221,8 +227,30 @@ mod tests {
         let parents = vec![String::new()];
         let values = vec![10.0];
         let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
-        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        let (blocks, names, _groups) = layout_named(&cfg, &Budget::default());
         assert!(!blocks.is_empty());
         assert_eq!(names, vec!["Root".to_string()]);
+    }
+
+    #[test]
+    fn zoomable_groups_a_parent_with_its_descendants_while_basic_emits_no_groups() {
+        let labels = vec!["Root".to_string(), "A".to_string(), "B".to_string()];
+        let parents = vec![String::new(), "Root".to_string(), "Root".to_string()];
+        let values = vec![0.0, 40.0, 60.0];
+        let draw_rooted = |variant| {
+            let cfg = SunburstConfig { variant, labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+            layout_named(&cfg, &Budget::default())
+        };
+
+        let (blocks, _names, groups) = draw_rooted(SunburstVariant::Zoomable);
+        assert_eq!(groups.len(), blocks.len());
+        let root_group_size = groups.iter().zip(blocks.iter()).find(|(_, b)| b.ci == 0).unwrap().0.len();
+        assert_eq!(root_group_size, blocks.len());
+        let a_ci = blocks.iter().find(|b| b.ci != 0).unwrap().ci;
+        let a_group_size = groups.iter().zip(blocks.iter()).find(|(_, b)| b.ci == a_ci).unwrap().0.len();
+        assert!(a_group_size < blocks.len());
+
+        let (_, _, basic_groups) = draw_rooted(SunburstVariant::Basic);
+        assert!(basic_groups.is_empty());
     }
 }
