@@ -63,7 +63,7 @@ fn compute_layout_impl(
     for k in 0..e {
         let s = sources[k] as usize;
         let t = targets[k] as usize;
-        if s < n && t < n {
+        if s < n && t < n && s != t {
             in_edges[t].push(s);
         }
     }
@@ -202,4 +202,18 @@ pub fn sankey_link_path(
     push_b(buf, b",");
     push_f2(buf, y0 + h0);
     push_b(buf, b"Z");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_self_loop_edge_does_not_deadlock_depth_propagation() {
+        let sources = vec![0, 0];
+        let targets = vec![0, 1];
+        let weights = vec![2.0, 3.0];
+        let layout = compute_layout(2, &sources, &targets, &weights, 0, 0, 600, 600, 18, 10);
+        assert_eq!(layout.layers, vec![0, 1]);
+    }
 }
