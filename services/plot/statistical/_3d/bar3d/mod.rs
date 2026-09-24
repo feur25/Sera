@@ -122,6 +122,51 @@ pub fn render_blocks3d_view_html(
     )
 }
 
+fn zoom_groups_script(kept: &[Bar3DBlock], blocks: &[Bar3DBlock], groups: &[Vec<u32>]) -> String {
+    if groups.is_empty() || kept.len() != blocks.len() {
+        return String::new();
+    }
+    let body = groups
+        .iter()
+        .map(|g| format!("[{}]", g.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(",")))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(";var ZKIDS=[{body}]")
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_blocks3d_view_html_zoomable(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    view: &BlockView,
+    axis_labels: (&str, &str, &str),
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+    zoom_groups: &[Vec<u32>],
+) -> String {
+    let kept = budget::thin(budget::sound(blocks), budget::HARD_BLOCKS);
+    let mut script = block_script(&kept, view);
+    script.push_str(&zoom_groups_script(&kept, blocks, zoom_groups));
+    crate::html::js_3d::render_3d_html_impl(
+        1,
+        title,
+        &[0.0],
+        &[0.0],
+        &[0.0],
+        axis_labels,
+        &[],
+        color_labels,
+        w,
+        h,
+        bg_color,
+        scene,
+        script.as_bytes(),
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use crate::plot::build_bar3d_chart;
