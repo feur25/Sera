@@ -3,6 +3,7 @@ pub mod config;
 pub mod extrema;
 pub mod filled;
 pub mod isolines;
+pub mod layout3d;
 pub mod variant;
 
 pub use config::ContourMapConfig;
