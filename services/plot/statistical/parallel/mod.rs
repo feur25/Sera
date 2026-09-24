@@ -8,6 +8,7 @@ pub mod config;
 pub mod deluxe;
 pub mod density;
 pub mod highlight;
+pub mod layout3d;
 pub mod lineage;
 pub mod ribbon;
 pub mod smooth;
