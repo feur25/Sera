@@ -12,6 +12,29 @@ pub const BASE_HEIGHT: f64 = 1.4;
 pub const FADE: f64 = 0.16;
 pub const FADE_FLOOR: f64 = 0.3;
 pub const MIN_SPAN: f64 = 1e-4;
+pub const ZOOM_GROUP_CAP: usize = 2000;
+
+pub fn descendant_groups(depth: &[usize], span: &[(f64, f64)], block_ci: &[usize]) -> Vec<Vec<u32>> {
+    let n = block_ci.len();
+    if n == 0 || n > ZOOM_GROUP_CAP {
+        return Vec::new();
+    }
+    (0..n)
+        .map(|k| {
+            let i = block_ci[k];
+            let (a0, a1) = span[i];
+            let di = depth[i];
+            (0..n)
+                .filter(|&k2| {
+                    let j = block_ci[k2];
+                    let (b0, b1) = span[j];
+                    b0 >= a0 - 1e-6 && b1 <= a1 + 1e-6 && depth[j] >= di
+                })
+                .map(|k2| k2 as u32)
+                .collect()
+        })
+        .collect()
+}
 
 pub fn depth_cap(depth: &[usize], cap: usize) -> usize {
     let max_d = depth.iter().copied().max().unwrap_or(0);
@@ -202,5 +225,39 @@ mod tests {
         assert_eq!(branch_tone(0, 3), 0.0);
         assert_eq!(branch_tone(2, 3), 2.0 / 3.0);
         assert_eq!(branch_tone(0, 1), 0.0);
+    }
+
+    #[test]
+    fn descendant_groups_keeps_a_leaf_alone_and_gathers_a_parent_with_its_children() {
+        let depth = vec![0, 1, 1, 2];
+        let span = vec![(0.0, 1.0), (0.0, 0.5), (0.5, 1.0), (0.0, 0.5)];
+        let block_ci = vec![0, 1, 2, 3];
+        let groups = descendant_groups(&depth, &span, &block_ci);
+        assert_eq!(groups.len(), 4);
+        assert_eq!(groups[0], vec![0, 1, 2, 3]);
+        assert_eq!(groups[1], vec![1, 3]);
+        assert_eq!(groups[2], vec![2]);
+        assert_eq!(groups[3], vec![3]);
+    }
+
+    #[test]
+    fn descendant_groups_follows_multiple_blocks_sharing_the_same_node() {
+        let depth = vec![0, 1];
+        let span = vec![(0.0, 1.0), (0.0, 0.5)];
+        let block_ci = vec![0, 0, 1];
+        let groups = descendant_groups(&depth, &span, &block_ci);
+        assert_eq!(groups[0], vec![0, 1, 2]);
+        assert_eq!(groups[1], vec![0, 1, 2]);
+        assert_eq!(groups[2], vec![2]);
+    }
+
+    #[test]
+    fn descendant_groups_is_empty_for_no_blocks_or_past_the_cap() {
+        assert!(descendant_groups(&[], &[], &[]).is_empty());
+        let n = ZOOM_GROUP_CAP + 1;
+        let depth = vec![0; n];
+        let span = vec![(0.0, 1.0); n];
+        let block_ci: Vec<usize> = (0..n).collect();
+        assert!(descendant_groups(&depth, &span, &block_ci).is_empty());
     }
 }
