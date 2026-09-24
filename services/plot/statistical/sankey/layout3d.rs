@@ -180,4 +180,19 @@ mod tests {
         let (blocks, names) = layout_named(&SankeyConfig::default(), &Budget::default());
         assert!(blocks.is_empty() && names.is_empty());
     }
+
+    #[test]
+    fn a_long_chain_of_nodes_stays_fast() {
+        let n = 4000;
+        let labels: Vec<String> = (0..n).map(|i| format!("N{i}")).collect();
+        let sources: Vec<i32> = (0..n as i32 - 1).collect();
+        let targets: Vec<i32> = (1..n as i32).collect();
+        let weights: Vec<f64> = vec![1.0; sources.len()];
+        let cfg = SankeyConfig { labels: &labels, sources: &sources, targets: &targets, weights: &weights, ..SankeyConfig::default() };
+        let t0 = std::time::Instant::now();
+        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        assert_eq!(names.len(), n);
+        assert!(!blocks.is_empty());
+        assert!(t0.elapsed().as_secs() < 5, "took {:?}", t0.elapsed());
+    }
 }
