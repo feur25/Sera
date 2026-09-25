@@ -67,8 +67,9 @@
   }
 
   function renderEffectsBadge(d) {
-    if (d.category !== "chart_method" || !window.SeraPlotMethodEffects) return "";
-    return window.SeraPlotMethodEffects.badge(d.name);
+    var fx = window.SeraPlotMethodEffects;
+    if (d.category !== "chart_method" || !fx) return "";
+    return fx.badge(d.name);
   }
 
   function renderCard(d, l) {
