@@ -4,19 +4,20 @@ use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
 
+const BAND_GAP_MULT: f64 = 2.4;
+
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n_cats = cfg.category_labels.len();
     let n_ser = cfg.series.len().max(1);
     if n_cats == 0 {
         return Vec::new();
     }
-    let gap_extra = 0.6;
     let mut positions = Vec::with_capacity(n_cats);
     let mut cx = 0.0;
     for ci in 0..n_cats {
         if ci > 0 {
             let same_band = cfg.super_categories.get(ci) == cfg.super_categories.get(ci - 1);
-            cx += if same_band { 1.0 } else { 1.0 + gap_extra };
+            cx += if same_band { 1.0 } else { 1.0 + BAND_GAP_MULT };
         }
         positions.push(cx);
     }
@@ -200,4 +201,44 @@ pub fn render(cfg: &BarConfig) -> String {
         f.legend_pos(&names, cfg.palette, cfg.legend_position);
     }
     f.html("[]")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_super_category_boundary_makes_the_3d_layout_visibly_distinct_from_plain_grouped() {
+        let category_labels: Vec<String> = ["Q1", "Q2", "Q3", "Q4"].iter().map(|s| s.to_string()).collect();
+        let super_categories: Vec<String> = ["H1", "H1", "H2", "H2"].iter().map(|s| s.to_string()).collect();
+        let values = [1.0, 1.0, 1.0, 1.0];
+        let cfg = BarConfig {
+            category_labels: &category_labels,
+            super_categories: &super_categories,
+            values: &values,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 4);
+        let same_band_step = blocks[1].cx - blocks[0].cx;
+        let cross_band_step = blocks[2].cx - blocks[1].cx;
+        assert!(
+            cross_band_step > same_band_step * 3.0,
+            "a super-category boundary ({cross_band_step}) must read as a clear break, not a slightly uneven step ({same_band_step})"
+        );
+    }
+
+    #[test]
+    fn without_super_categories_the_spacing_stays_perfectly_even() {
+        let category_labels: Vec<String> = ["Q1", "Q2", "Q3", "Q4"].iter().map(|s| s.to_string()).collect();
+        let values = [1.0, 1.0, 1.0, 1.0];
+        let cfg = BarConfig {
+            category_labels: &category_labels,
+            values: &values,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        let steps: Vec<f64> = blocks.windows(2).map(|w| w[1].cx - w[0].cx).collect();
+        assert!(steps.windows(2).all(|w| (w[0] - w[1]).abs() < 1e-9), "no super_categories means no band gaps: {steps:?}");
+    }
 }
