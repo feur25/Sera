@@ -200,16 +200,6 @@ pub fn radial_grouped_columns(values: &[f64], groups_of: &[String], radius: f64,
     out
 }
 
-pub fn radial_hierarchical_columns(
-    values: &[f64],
-    super_group_of: &[String],
-    radius: f64,
-    hw: f64,
-    hd: f64,
-) -> Vec<Bar3DBlock> {
-    radial_grouped_columns(values, super_group_of, radius, hw, hd)
-}
-
 pub fn spiral_turn_length(n: usize) -> usize {
     ((n as f64 / 3.2).ceil() as usize).clamp(12, 48)
 }
