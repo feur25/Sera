@@ -1,11 +1,109 @@
 use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
+use crate::plot::statistical::_3d::lineage::{paths, Point};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open_rescalable, svg_title, truncate};
 use std::collections::HashMap;
+use std::f64::consts::{FRAC_PI_2, TAU};
+
+const RING_RADIUS: f64 = 3.4;
+const HUB_RADIUS: f64 = 1.15;
+const BAR_HW: f64 = 0.22;
+const CITY_GAP: f64 = TAU * 0.018;
+const FLOW_SIZE: f64 = 0.055;
+const FLOW_STEPS: usize = 8;
+
+fn city_runs(super_categories: &[String], n: usize) -> Vec<(usize, usize)> {
+    let mut runs = Vec::new();
+    let mut start_i = 0usize;
+    while start_i < n {
+        let cur = super_categories.get(start_i).map(|s| s.as_str()).unwrap_or("");
+        let mut end_i = start_i + 1;
+        while end_i < n && super_categories.get(end_i).map(|s| s.as_str()).unwrap_or("") == cur {
+            end_i += 1;
+        }
+        runs.push((start_i, end_i));
+        start_i = end_i;
+    }
+    runs
+}
+
+fn ring_angles(runs: &[(usize, usize)], n: usize) -> Vec<f64> {
+    let n_cities = runs.len().max(1);
+    let usable = (TAU - CITY_GAP * n_cities as f64).max(0.1);
+    let mut angle_of = vec![0.0_f64; n];
+    let mut cursor = -FRAC_PI_2;
+    for &(s, e) in runs {
+        let count = (e - s).max(1);
+        let city_angle = usable / n_cities as f64;
+        let slot = city_angle / count as f64;
+        for (k, i) in (s..e).enumerate() {
+            angle_of[i] = cursor + slot * (k as f64 + 0.5);
+        }
+        cursor += city_angle + CITY_GAP;
+    }
+    angle_of
+}
+
+fn unique_in_order(values: &[String], n: usize) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for i in 0..n {
+        let v = values.get(i).cloned().unwrap_or_default();
+        if !out.contains(&v) {
+            out.push(v);
+        }
+    }
+    out
+}
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.labels.len().min(cfg.values.len());
-    crate::plot::statistical::_3d::generic::radial_hierarchical_columns(&cfg.values[..n], cfg.super_categories, 3.4, 0.22, 0.22)
+    if n == 0 {
+        return Vec::new();
+    }
+
+    let countries = unique_in_order(cfg.offset_groups, n);
+    let n_countries = countries.len().max(1);
+    let country_idx = |i: usize| -> usize {
+        let c = cfg.offset_groups.get(i).map(|s| s.as_str()).unwrap_or("");
+        countries.iter().position(|x| x == c).unwrap_or(0)
+    };
+
+    let runs = city_runs(cfg.super_categories, n);
+    let angle_of = ring_angles(&runs, n);
+
+    let mut blocks = Vec::with_capacity(n * (1 + FLOW_STEPS));
+    for i in 0..n {
+        let theta = angle_of[i];
+        let ci = country_idx(i);
+        blocks.push(Bar3DBlock::new(
+            RING_RADIUS * theta.cos(),
+            RING_RADIUS * theta.sin(),
+            0.0,
+            cfg.values[i].max(0.0),
+            BAR_HW,
+            BAR_HW,
+            ci,
+        ));
+    }
+
+    let hub_step = TAU / n_countries as f64;
+    let hub_at = |k: usize| -> Point {
+        let a = -FRAC_PI_2 + hub_step * k as f64;
+        (HUB_RADIUS * a.cos(), HUB_RADIUS * a.sin(), 0.0)
+    };
+    let links: Vec<Vec<Point>> = (0..n)
+        .map(|i| {
+            let theta = angle_of[i];
+            let from: Point = (RING_RADIUS * 0.6 * theta.cos(), RING_RADIUS * 0.6 * theta.sin(), 0.0);
+            let to = hub_at(country_idx(i));
+            let mid: Point = ((from.0 + to.0) * 0.5, (from.1 + to.1) * 0.5, 0.0);
+            vec![from, mid, to]
+        })
+        .collect();
+    let flow_tone_denom = n_countries.max(2) as f64;
+    blocks.extend(paths(&links, FLOW_SIZE, FLOW_STEPS, country_idx, |i| country_idx(i) as f64 / flow_tone_denom));
+
+    blocks
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -459,5 +557,39 @@ mod tests {
         let elapsed = start.elapsed();
         assert!(elapsed.as_millis() < 200, "rendering took too long: {elapsed:?}");
         assert!(!html.is_empty());
+    }
+
+    #[test]
+    fn layout_3d_draws_a_ray_bar_and_a_flow_curve_for_every_firm() {
+        let (labels, values, cities, countries) = synth();
+        let blocks = layout_3d(&cfg(&labels, &values, &cities, &countries));
+        assert!(blocks.len() > labels.len(), "flow curves must add blocks beyond the one ray bar per firm");
+        let ray_bars = blocks.iter().filter(|b| b.z0 == 0.0 && b.cx.hypot(b.cy) > HUB_RADIUS * 2.0).count();
+        assert_eq!(ray_bars, labels.len());
+    }
+
+    #[test]
+    fn layout_3d_no_longer_matches_circular_groupeds_geometry() {
+        let (labels, values, cities, countries) = synth();
+        let flow_blocks = layout_3d(&cfg(&labels, &values, &cities, &countries));
+        let grouped_blocks = crate::plot::statistical::_3d::generic::radial_grouped_columns(&values, &countries, RING_RADIUS, BAR_HW, BAR_HW);
+        assert_ne!(flow_blocks.len(), grouped_blocks.len(), "radial_flow must not collapse back onto circular_grouped's plain ring");
+    }
+
+    #[test]
+    fn layout_3d_groups_bars_by_city_not_by_country() {
+        let labels: Vec<String> = (0..4).map(|i| format!("Firm {i}")).collect();
+        let values = vec![10.0, 20.0, 30.0, 40.0];
+        let cities: Vec<String> = vec!["Paris".into(), "Paris".into(), "Tokyo".into(), "Tokyo".into()];
+        let countries: Vec<String> = vec!["France".into(), "Japan".into(), "France".into(), "Japan".into()];
+        let blocks = layout_3d(&cfg(&labels, &values, &cities, &countries));
+        let ray_bars: Vec<_> = blocks.iter().filter(|b| b.cx.hypot(b.cy) > HUB_RADIUS * 2.0).collect();
+        let angle_of = |b: &Bar3DBlock| b.cy.atan2(b.cx);
+        assert!((angle_of(ray_bars[0]) - angle_of(ray_bars[1])).abs() < (angle_of(ray_bars[0]) - angle_of(ray_bars[2])).abs());
+    }
+
+    #[test]
+    fn layout_3d_survives_empty_input() {
+        assert!(layout_3d(&cfg(&[], &[], &[], &[])).is_empty());
     }
 }
