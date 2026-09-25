@@ -4,6 +4,10 @@ use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
 
+const ICON_SIZE: f64 = 0.32;
+const ICON_GAP: f64 = 0.10;
+const ICON_COL_STEP: f64 = 0.62;
+
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     let n = cfg.values.len();
     if n == 0 {
@@ -11,15 +15,16 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
     }
     let upi = cfg.units_per_icon.max(1.0);
     let max_per_col = cfg.max_icons_per_column.max(1) as usize;
+    let half = ICON_SIZE / 2.0;
     let mut out = Vec::new();
     for i in 0..n {
         let count = ((cfg.values[i] / upi).round() as i64).max(0) as usize;
         for k in 0..count {
             let col = k / max_per_col;
             let row = k % max_per_col;
-            let cx = i as f64 + col as f64 * 0.55;
-            let z0 = row as f64 * 0.22;
-            out.push(Bar3DBlock::new(cx, 0.0, z0, z0 + 0.18, 0.12, 0.12, i));
+            let cx = i as f64 + col as f64 * ICON_COL_STEP;
+            let z0 = row as f64 * (ICON_SIZE + ICON_GAP);
+            out.push(Bar3DBlock::new(cx, 0.0, z0, z0 + ICON_SIZE, half, half, i));
         }
     }
     out
@@ -138,4 +143,46 @@ pub fn render(cfg: &BarConfig) -> String {
     }
 
     f.html("[]")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stacked_icon_units_are_cube_shaped_with_a_gap_wide_enough_to_stay_visible() {
+        let values = [3.0];
+        let cfg = BarConfig {
+            values: &values,
+            units_per_icon: 1.0,
+            max_icons_per_column: 10,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 3);
+        let height = blocks[0].z1 - blocks[0].z0;
+        let footprint = blocks[0].hw * 2.0;
+        assert!(
+            (height - footprint).abs() < 1e-9,
+            "an icon unit should be a cube, not a flat brick: height={height} footprint={footprint}"
+        );
+        let gap = blocks[1].z0 - blocks[0].z1;
+        assert!(gap / height > 0.25, "the gap between stacked icons ({gap}) must stay a clearly resolvable fraction of icon height ({height}), or they visually fuse together");
+    }
+
+    #[test]
+    fn overflow_into_a_second_column_never_overlaps_the_first() {
+        let values = [12.0];
+        let cfg = BarConfig {
+            values: &values,
+            units_per_icon: 1.0,
+            max_icons_per_column: 10,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 12);
+        let col0_x = blocks[0].cx;
+        let col1_x = blocks[10].cx;
+        assert!(col1_x - col0_x > blocks[0].hw * 2.0, "a second icon column must clear the first column's footprint");
+    }
 }
