@@ -18,41 +18,124 @@
     return max || 3;
   }
 
-  function sampleForType(ty, name, n) {
-    ty = String(ty || "").toLowerCase();
-    var nm = String(name || "").toLowerCase();
-    n = n || 3;
-    if (ty === "bool") return true;
-    if (ty === "int") return /idx|index/.test(nm) ? 0 : 5;
-    if (ty === "float") return /opacity|frac|ratio/.test(nm) ? 0.5 : 1.0;
-    if (ty === "str") {
-      if (/color/.test(nm)) return "#6366f1";
-      if (/kind|shape|position|align|mode/.test(nm)) return "rect";
-      return "Sample";
-    }
-    if (ty.indexOf("list[str]") === 0) return Array.from({ length: n }, function (_, i) { return "S" + i; });
-    if (ty.indexOf("list[float]") === 0 || ty.indexOf("list[int]") === 0) return Array.from({ length: n }, function (_, i) { return i + 1; });
-    if (ty.indexOf("list[") === 0) return [];
-    if (ty.indexOf("dict") === 0) return {};
-    return null;
+  function normalizedType(ty) {
+    return String(ty || "").replace(/\s*\|\s*none\s*$/i, "").trim().toLowerCase();
   }
 
-  function syntheticArgsFor(methodName, n) {
+  function sampleCandidates(ty, name, n) {
+    var t = normalizedType(ty);
+    var nm = String(name || "").toLowerCase();
+    n = n || 3;
+    if (t === "bool") return [true, false];
+    if (t === "int" || t === "i64" || t === "u64") {
+      if (/idx|index/.test(nm)) return [0, 1];
+      return [137, 253];
+    }
+    if (t === "float") {
+      if (/opacity|frac|ratio/.test(nm)) return [0.72, 0.28];
+      return [2.75, 0.35];
+    }
+    if (t === "str") {
+      if (/color/.test(nm)) return ["#6366f1", "#ef4444"];
+      if (/kind|shape|position|align|mode/.test(nm)) return ["rect", "circle"];
+      return ["Sample", "Alt"];
+    }
+    if (t.indexOf("list[str]") === 0) {
+      return [
+        Array.from({ length: n }, function (_, i) { return "S" + i; }),
+        Array.from({ length: n }, function (_, i) { return "T" + (n - i); }),
+      ];
+    }
+    if (t.indexOf("list[float]") === 0 || t.indexOf("list[int]") === 0) {
+      return [
+        Array.from({ length: n }, function (_, i) { return i + 1; }),
+        Array.from({ length: n }, function (_, i) { return (n - i) * 1.5; }),
+      ];
+    }
+    if (t.indexOf("list[") === 0) return [[]];
+    if (t.indexOf("dict") === 0) return [{}];
+    return [null];
+  }
+
+  function syntheticArgVariants(methodName, n) {
     var reg = window.SeraPlotMethodRegistry;
     var docs = (reg && reg.docs) || [];
     var doc = docs.filter(function (d) { return d.name === methodName; })[0];
-    var args = {};
-    (doc && doc.params || []).forEach(function (p) {
-      var v = sampleForType(p.ty, p.name, n);
-      if (v !== null) args[p.name] = v;
+    var params = (doc && doc.params) || [];
+    var variants = [{}, {}];
+    params.forEach(function (p) {
+      var candidates = sampleCandidates(p.ty, p.name, n);
+      if (candidates[0] !== null) variants[0][p.name] = candidates[0];
+      var alt = candidates.length > 1 ? candidates[1] : candidates[0];
+      if (alt !== null) variants[1][p.name] = alt;
     });
-    return args;
+    return variants;
+  }
+
+  var dispatchableCache = null;
+
+  function dispatchableSet() {
+    if (dispatchableCache) return dispatchableCache;
+    var sp = window.SeraplotWASM;
+    if (!sp || !sp.__ready) return {};
+    var result = {};
+    try { JSON.parse(sp.chartMethods()).forEach(function (n) { result[n] = true; }); } catch (e) {}
+    dispatchableCache = result;
+    return result;
+  }
+
+  function isDispatchable(methodName) {
+    return !!dispatchableSet()[methodName];
+  }
+
+  function whenWasmReady(cb, triesLeft) {
+    var sp = window.SeraplotWASM;
+    if (sp && sp.__ready) { cb(); return; }
+    if (triesLeft <= 0) { cb(); return; }
+    setTimeout(function () { whenWasmReady(cb, triesLeft - 1); }, 150);
   }
 
   function chartMethodNames() {
     var reg = window.SeraPlotMethodRegistry;
     var docs = (reg && reg.docs) || [];
-    return docs.filter(function (d) { return d.category === "chart_method"; }).map(function (d) { return d.name; });
+    var dispatchable = dispatchableSet();
+    return docs.filter(function (d) { return d.category === "chart_method" && dispatchable[d.name]; }).map(function (d) { return d.name; });
+  }
+
+  function nonTrivialSelectors(js) {
+    var out = [];
+    var re = /querySelectorAll?\(\s*(['"])((?:(?!\1)[\s\S])*)\1\s*\)/g;
+    var m;
+    while ((m = re.exec(js))) {
+      var sel = m[2];
+      if (sel && sel !== "svg" && sel !== "canvas") out.push(sel);
+    }
+    return out;
+  }
+
+  function injectedSuffix(baseline, after) {
+    var minLen = Math.min(baseline.length, after.length);
+    var i = 0;
+    while (i < minLen && baseline[i] === after[i]) i++;
+    var baselineTail = baseline.slice(i);
+    if (!baselineTail) return after.slice(i);
+    if (after.length - baselineTail.length >= i && after.slice(after.length - baselineTail.length) === baselineTail) {
+      return after.slice(i, after.length - baselineTail.length);
+    }
+    return null;
+  }
+
+  function isGenuineEffect(baselineDoc, baseline, after) {
+    if (!after || after === baseline) return false;
+    var injected = injectedSuffix(baseline, after);
+    if (injected === null || !baselineDoc) return true;
+    var selectors = nonTrivialSelectors(injected);
+    for (var i = 0; i < selectors.length; i++) {
+      try {
+        if (baselineDoc.querySelectorAll(selectors[i]).length === 0) return false;
+      } catch (e) {}
+    }
+    return true;
   }
 
   function notify() {
@@ -70,10 +153,19 @@
   }
 
   function runComputation() {
+    if (STATE.running || STATE.map || STATE.pending) return;
+    STATE.pending = true;
+    whenWasmReady(function () {
+      STATE.pending = false;
+      runComputationReady();
+    }, 120);
+  }
+
+  function runComputationReady() {
     if (STATE.running || STATE.map) return;
     var sp = window.SeraplotWASM;
     var parse = window.SeraPlotParseDemoInput;
-    if (!sp || !parse) { STATE.map = {}; notify(); return; }
+    if (!sp || !sp.__ready || !parse) { STATE.map = {}; notify(); return; }
 
     var families = {};
     try { families = JSON.parse(sp.chartVariants()) || {}; } catch (e) {}
@@ -101,12 +193,18 @@
           var baseline = sp.call(family, JSON.stringify(parsed.input));
           if (!baseline) continue;
           var n = inputCardinality(parsed.input);
+          var baselineDoc = null;
+          try { baselineDoc = new DOMParser().parseFromString(baseline, "text/html"); } catch (e3) {}
           for (var mi = 0; mi < methods.length; mi++) {
             var method = methods[mi];
-            var args = JSON.stringify(syntheticArgsFor(method, n));
-            var after;
-            try { after = sp.applyChartMethod(baseline, method, args); } catch (e2) { after = baseline; }
-            if (after && after !== baseline) map[method].push({ family: family, variant: variant });
+            var argVariants = syntheticArgVariants(method, n);
+            var found = false;
+            for (var ai = 0; ai < argVariants.length && !found; ai++) {
+              var after;
+              try { after = sp.applyChartMethod(baseline, method, JSON.stringify(argVariants[ai])); } catch (e2) { after = baseline; }
+              if (isGenuineEffect(baselineDoc, baseline, after)) found = true;
+            }
+            if (found) map[method].push({ family: family, variant: variant });
           }
         } catch (e) {}
       }
@@ -154,7 +252,7 @@
 
     function paint() {
       var entries = (STATE.map && STATE.map[methodName]) || [];
-      var busy = STATE.running && !STATE.map;
+      var busy = (STATE.running || STATE.pending) && !STATE.map;
       var count = STATE.map ? entries.length : "…";
       backdrop.innerHTML =
         '<div class="sp-fx-modal" role="dialog" aria-modal="true" aria-label="' + methodName + '">'
@@ -220,11 +318,21 @@
     return '<button type="button" class="cm-fx-badge" id="' + badgeId(methodName) + '" data-method="' + methodName + '">effects</button>';
   }
 
+  function pruneAndWire(root) {
+    whenWasmReady(function () {
+      var dispatchable = dispatchableSet();
+      (root || document).querySelectorAll(".cm-fx-badge").forEach(function (btn) {
+        if (!dispatchable[btn.getAttribute("data-method")]) btn.remove();
+      });
+      wireAll(root);
+    }, 120);
+  }
+
   STATE.listeners.push(refreshBadges);
 
   document.addEventListener("DOMContentLoaded", function () {
-    wireAll(document);
+    pruneAndWire(document);
   });
 
-  window.SeraPlotMethodEffects = { badge: badge, wireAll: wireAll };
+  window.SeraPlotMethodEffects = { badge: badge, wireAll: wireAll, isDispatchable: isDispatchable };
 })();
