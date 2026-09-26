@@ -3,7 +3,7 @@ use super::config::BulletConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, truncate};
 
-#[crate::chart_demo("labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5]")]
+#[crate::chart_demo("labels=[\"Revenue\",\"Profit\",\"Satisfaction\",\"NPS\",\"Speed\",\"Quality\"], values=[71,42,80,65,33,71], targets=[75,55,85,70,50,80], max_vals=[100,100,100,100,100,100]")]
 
 pub fn render(cfg: &BulletConfig) -> String {
     let p = match prepare(cfg) {
