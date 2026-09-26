@@ -103,7 +103,7 @@ pub fn build_circles(
             let c = node_children[0];
             circles[c].x = px;
             circles[c].y = py;
-            circles[c].r = avail * 0.88;
+            circles[c].r = (avail * 0.88).min(pr * 0.82);
             return;
         }
         let angles: Vec<f64> = (0..n)
@@ -115,11 +115,13 @@ pub fn build_circles(
             .map(|&c| weights[c].max(0.0).sqrt())
             .fold(0.0f64, f64::max)
             .max(1.0);
+        let min_r = avail * 0.2;
         for (k, &c) in node_children.iter().enumerate() {
             let a = angles[k];
             let ratio = (weights[c].max(0.0).sqrt() / max_w).clamp(0.42, 1.0);
-            let child_r = (base_r * ratio * 0.9).max(2.0);
-            let orbit_r = (avail - child_r - padding).max(0.0);
+            let child_r = (base_r * ratio * 0.9).max(min_r).min(pr * 0.8);
+            let gap = padding.min(avail * 0.25);
+            let orbit_r = (avail - child_r - gap).max(child_r * 0.1);
             circles[c].x = px + orbit_r * a.cos();
             circles[c].y = py + orbit_r * a.sin();
             circles[c].r = child_r;
@@ -305,4 +307,54 @@ pub fn pack_local(radii: &[f64], padding: f64) -> Vec<(f64, f64)> {
         });
     }
     pos
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn strs(items: &[&str]) -> Vec<String> {
+        items.iter().map(|s| s.to_string()).collect()
+    }
+
+    #[test]
+    fn nested_children_never_grow_as_large_as_their_own_parent() {
+        let labels = strs(&["Root", "A", "B", "C", "A1", "A2", "B1"]);
+        let parents = strs(&["", "Root", "Root", "Root", "A", "A", "B"]);
+        let values = vec![0.0, 40.0, 30.0, 20.0, 20.0, 20.0, 30.0];
+        let circles = build_circles(&labels, &parents, &values, 0.0, 0.0, 6.0, 2.0);
+        let by_label: std::collections::HashMap<&str, &Circle> = circles.iter().map(|c| (c.label.as_str(), c)).collect();
+        for (child, parent) in [("A", "Root"), ("B", "Root"), ("C", "Root"), ("A1", "A"), ("A2", "A"), ("B1", "B")] {
+            let (c, p) = (by_label[child], by_label[parent]);
+            assert!(c.r < p.r, "{child} (r={}) must be smaller than its parent {parent} (r={})", c.r, p.r);
+        }
+    }
+
+    #[test]
+    fn siblings_under_the_same_parent_never_collapse_to_the_same_point() {
+        let labels = strs(&["Root", "A", "B", "C"]);
+        let parents = strs(&["", "Root", "Root", "Root"]);
+        let values = vec![0.0, 40.0, 30.0, 20.0];
+        let circles = build_circles(&labels, &parents, &values, 0.0, 0.0, 6.0, 2.0);
+        let by_label: std::collections::HashMap<&str, &Circle> = circles.iter().map(|c| (c.label.as_str(), c)).collect();
+        let siblings = ["A", "B", "C"];
+        for i in 0..siblings.len() {
+            for j in (i + 1)..siblings.len() {
+                let (a, b) = (by_label[siblings[i]], by_label[siblings[j]]);
+                let dist = ((a.x - b.x).powi(2) + (a.y - b.y).powi(2)).sqrt();
+                assert!(dist > 1e-6, "{} and {} must not sit at the exact same point", siblings[i], siblings[j]);
+            }
+        }
+    }
+
+    #[test]
+    fn a_single_grandchild_stays_inside_its_own_parents_footprint() {
+        let labels = strs(&["Root", "A", "B", "B1"]);
+        let parents = strs(&["", "Root", "Root", "B"]);
+        let values = vec![0.0, 40.0, 30.0, 30.0];
+        let circles = build_circles(&labels, &parents, &values, 0.0, 0.0, 6.0, 2.0);
+        let by_label: std::collections::HashMap<&str, &Circle> = circles.iter().map(|c| (c.label.as_str(), c)).collect();
+        let (b, b1) = (by_label["B"], by_label["B1"]);
+        assert!(b1.r < b.r, "B1 (r={}) must be smaller than its parent B (r={})", b1.r, b.r);
+    }
 }
