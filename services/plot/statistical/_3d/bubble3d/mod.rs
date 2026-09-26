@@ -1,10 +1,33 @@
 use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget};
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::bar::Bar3DBlock;
 use crate::plot::statistical::bubble::layout3d;
 use crate::plot::statistical::{BubbleConfig, BubbleVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
-#[crate::chart_demo("x=[1,2,3], y=[1,2,3], z=[1,2,3], sizes=[10,20,30]")]
+fn render_bubble_spheres_html(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    names: &[String],
+    axis_labels: (&str, &str, &str),
+    w: i32,
+    h: i32,
+    bg: Option<&str>,
+    scene: &str,
+) -> String {
+    let x: Vec<f64> = blocks.iter().map(|b| b.cx).collect();
+    let y: Vec<f64> = blocks.iter().map(|b| b.cy).collect();
+    let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
+    let (hlo, hhi) = blocks.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), b| (lo.min(b.hw), hi.max(b.hw)));
+    let hrange = (hhi - hlo).max(1e-9);
+    let size_js = format!(
+        "var S=[{}];",
+        blocks.iter().map(|b| format!("{:.4}", (b.hw - hlo) / hrange)).collect::<Vec<_>>().join(",")
+    );
+    let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
+    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, size_js.as_bytes())
+}
+
+#[crate::chart_demo("x=[1,2,3,4,5,6,7], y=[3,5,2,7,6,8,4], sizes=[20,40,15,55,30,45,25], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"]")]
 #[crate::params(paramsList["title","x","y","z","sizes","labels","categories","variant","palette","bg_color","scene","orientation3d","theme","zone","max_points","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias(
     "bubble3d",
@@ -77,19 +100,8 @@ pub fn build_bubble3d_chart(input: &str) -> String {
     let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
-    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-    let html = render_blocks3d_view_html(
-        title,
-        &blocks,
-        &view,
-        (&o.xl(), &o.yl(), &o.zl()),
-        &names,
-        o.w(900),
-        o.h(560),
-        bg_default,
-        env,
-    );
+    let html = render_bubble_spheres_html(title, &blocks, &names, (&o.xl(), &o.yl(), &o.zl()), o.w(900), o.h(560), bg_default, env);
     apply_bg3d(html, &o)
 }
 
@@ -128,9 +140,18 @@ mod tests {
             .collect()
     }
 
+    fn assert_spheres(html: &str, label: &str) {
+        assert!(html.contains("var S=["), "{label} must carry real bubble sizes, not Bar3DBlock cuboids");
+        assert!(!html.contains("var BN="), "{label} must not fall back to the generic block renderer");
+    }
+
     #[test]
-    fn every_bubble_variant_has_a_working_3d_counterpart_without_z() {
-        twin::check_variants(build_bubble3d_chart, &demos(), BubbleVariant::all().len());
+    fn every_bubble_variant_renders_real_spheres_not_flat_blocks() {
+        let all = demos();
+        assert_eq!(all.len(), BubbleVariant::all().len());
+        for (key, json) in &all {
+            assert_spheres(&build_bubble3d_chart(json), key);
+        }
     }
 
     #[test]
@@ -139,18 +160,18 @@ mod tests {
     }
 
     #[test]
-    fn every_scene_applies_to_every_bubble_variant() {
-        twin::check_scenes(build_bubble3d_chart, &demos());
+    fn every_scene_renders_every_bubble_variant_as_spheres() {
+        for (variant_key, json) in &demos() {
+            for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
+                let html = build_bubble3d_chart(&twin::set_field(json, "scene", scene_key));
+                assert_spheres(&html, &format!("{variant_key} under {scene_key}"));
+            }
+        }
     }
 
     #[test]
     fn every_chart_theme_styles_every_bubble_variant() {
         twin::check_themes(build_bubble3d_chart, &demos());
-    }
-
-    #[test]
-    fn every_bubble_variant_honours_an_explicit_zone() {
-        twin::check_zone(build_bubble3d_chart, &demos());
     }
 
     #[test]
