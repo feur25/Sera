@@ -1,6 +1,7 @@
 use crate::html::js_3d::render_3d_html_impl;
 use crate::plot::map::world_data;
-use crate::plot::statistical::common::{push_b, push_i};
+use crate::plot::statistical::common::{push_b, push_hex, push_i};
+use std::collections::HashMap;
 
 pub fn render_globe3d_html(
     title: &str,
@@ -15,7 +16,7 @@ pub fn render_globe3d_html(
     bg_color: Option<&str>,
     scene: &str,
 ) -> String {
-    let map_js = build_globe_map_js();
+    let map_js = build_globe_map_js(None);
     render_3d_html_impl(
         15,
         title,
@@ -33,13 +34,48 @@ pub fn render_globe3d_html(
     )
 }
 
-fn build_globe_map_js() -> Vec<u8> {
+#[allow(clippy::too_many_arguments)]
+pub fn render_region_globe3d_html(
+    title: &str,
+    region_colors: &HashMap<&str, u32>,
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
+    axis_labels: (&str, &str, &str),
+    colors: &[f64],
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+) -> String {
+    let map_js = build_globe_map_js(Some(region_colors));
+    render_3d_html_impl(
+        15,
+        title,
+        x,
+        y,
+        z,
+        axis_labels,
+        colors,
+        color_labels,
+        w,
+        h,
+        bg_color,
+        scene,
+        &map_js,
+    )
+}
+
+fn build_globe_map_js(region_colors: Option<&HashMap<&str, u32>>) -> Vec<u8> {
     let countries = world_data::all_countries();
     let mut buf = Vec::with_capacity(120_000);
     push_b(&mut buf, b"var MAP=[");
     let mut first = true;
+    let mut fills: Vec<Option<u32>> = Vec::new();
     for country in countries {
         let polys = world_data::normalized_polygons(country);
+        let fill = region_colors.and_then(|m| m.get(country.id.as_str()).copied());
         for poly in &polys {
             if poly.len() < 3 {
                 continue;
@@ -72,8 +108,26 @@ fn build_globe_map_js() -> Vec<u8> {
                 push_i(&mut buf, (pt[1] * 10000.0).round() as i32);
             }
             buf.push(b']');
+            fills.push(fill);
         }
     }
     push_b(&mut buf, b"];\n");
+    if region_colors.is_some() {
+        push_b(&mut buf, b"var MAPCOL=[");
+        for (idx, fill) in fills.iter().enumerate() {
+            if idx > 0 {
+                buf.push(b',');
+            }
+            match fill {
+                Some(hex) => {
+                    buf.push(b'\'');
+                    push_hex(&mut buf, *hex);
+                    buf.push(b'\'');
+                }
+                None => push_b(&mut buf, b"null"),
+            }
+        }
+        push_b(&mut buf, b"];\n");
+    }
     buf
 }

@@ -18,5 +18,5 @@ pub use flow_map3d::build_flow_map3d_chart;
 pub use globe::*;
 pub use graticule_map3d::build_graticule_map3d_chart;
 pub use vector_field_map3d::build_vector_field_map3d_chart;
-pub use globe_html::render_globe3d_html;
+pub use globe_html::{render_globe3d_html, render_region_globe3d_html};
 pub use globe_types::register_map_3d_types;
