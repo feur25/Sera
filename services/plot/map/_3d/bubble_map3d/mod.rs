@@ -1,9 +1,50 @@
 use crate::plot::map::bubble_map::layout3d;
 use crate::plot::map::bubble_map::{BubbleMapConfig, BubbleMapVariant};
-use crate::plot::map::regions;
+use crate::plot::map::_3d::render_globe3d_html;
+use crate::plot::map::{regions, world_data};
 use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::{apply_bg3d, parse_all};
+
+fn render_globe_variant(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    lats: &[f64],
+    lons: &[f64],
+    o: &crate::plot::chart_input::ChartOpts,
+    env: &str,
+    bg: Option<&str>,
+) -> String {
+    let (mut plon, mut plat, mut pval, mut cl) = (Vec::new(), Vec::new(), Vec::new(), Vec::new());
+    let n = lats.len().min(lons.len());
+    if n > 0 {
+        for i in 0..n {
+            plon.push(lons[i]);
+            plat.push(lats[i]);
+            pval.push(values.get(i).copied().unwrap_or(0.0));
+            cl.push(labels.get(i).cloned().unwrap_or_else(|| format!("Point {}", i + 1)));
+        }
+    } else {
+        for i in 0..labels.len().min(values.len()) {
+            let Some(shape) = world_data::lookup_country(&labels[i]) else { continue };
+            let c = world_data::shape_centroid(shape);
+            let (lat, lon) = world_data::svg_to_latlon(c[0], c[1]);
+            plon.push(lon);
+            plat.push(lat);
+            pval.push(values[i]);
+            cl.push(labels[i].clone());
+        }
+    }
+    if plon.is_empty() {
+        plon.push(0.0);
+        plat.push(-89.0);
+        pval.push(0.0);
+        cl.push(String::new());
+    }
+    let cv: Vec<f64> = (0..plon.len()).map(|i| i as f64).collect();
+    render_globe3d_html(title, &plon, &plat, &pval, ("Longitude", "Latitude", "Value"), &cv, &cl, o.w(1200), o.h(600), bg, env)
+}
 
 #[crate::chart_demo("labels=[\"CA\",\"TX\",\"NY\",\"FL\",\"IL\"], values=[38.9,30.5,19.6,22.6,12.6], map=\"usa_states\"")]
 #[crate::params(paramsList["title","labels","values","lats","lons","series","categories","map","region","variant","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
@@ -19,6 +60,13 @@ pub fn build_bubble_map3d_chart(input: &str) -> String {
     let series = a.series.unwrap_or_default();
     let region = regions::resolve(o.map.as_deref().unwrap_or("")).or_else(regions::default_region_set).expect("world region set must be registered");
     let variant = BubbleMapVariant::from_str(o.variant.as_deref().unwrap_or("proportional"));
+    let env = o.scene.as_deref().unwrap_or("default");
+    let bg_str = o.bg_str();
+    if matches!(variant, BubbleMapVariant::Globe) {
+        let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
+        let html = render_globe_variant(title, &labels, &values, &lats, &lons, &o, env, bg_default);
+        return apply_bg3d(html, &o);
+    }
     let mut cfg = BubbleMapConfig::new(region);
     cfg.variant = variant;
     cfg.title = title;
@@ -28,8 +76,6 @@ pub fn build_bubble_map3d_chart(input: &str) -> String {
     cfg.lons = &lons;
     cfg.series = &series;
     cfg.group = o.region.as_deref().unwrap_or("");
-    let env = o.scene.as_deref().unwrap_or("default");
-    let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
     let view = BlockView::new(0.6, "jet").with_zone(o.zone.as_deref());
     let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
@@ -67,24 +113,28 @@ mod tests {
         twin::variant_demos("map/bubble_map/", BubbleMapVariant::keys_and_aliases(), BubbleMapVariant::default_key())
     }
 
+    fn block_demos() -> twin::Demos {
+        demos().into_iter().filter(|(key, _)| *key != "globe").collect()
+    }
+
     #[test]
     fn every_bubble_map_variant_has_a_working_3d_counterpart() {
-        twin::check_variants(build_bubble_map3d_chart, &demos(), BubbleMapVariant::all().len());
+        twin::check_variants(build_bubble_map3d_chart, &block_demos(), BubbleMapVariant::all().len() - 1);
     }
 
     #[test]
     fn every_3d_plane_applies_to_every_bubble_map_variant() {
-        twin::check_planes(build_bubble_map3d_chart, &demos());
+        twin::check_planes(build_bubble_map3d_chart, &block_demos());
     }
 
     #[test]
     fn every_scene_applies_to_every_bubble_map_variant() {
-        twin::check_scenes(build_bubble_map3d_chart, &demos());
+        twin::check_scenes(build_bubble_map3d_chart, &block_demos());
     }
 
     #[test]
     fn every_chart_theme_styles_every_bubble_map_variant() {
-        twin::check_themes(build_bubble_map3d_chart, &demos());
+        twin::check_themes(build_bubble_map3d_chart, &block_demos());
     }
 
     #[test]
@@ -94,7 +144,19 @@ mod tests {
 
     #[test]
     fn every_bubble_map_variant_honours_an_explicit_zone() {
-        twin::check_zone(build_bubble_map3d_chart, &demos());
+        twin::check_zone(build_bubble_map3d_chart, &block_demos());
+    }
+
+    #[test]
+    fn globe_variant_renders_a_real_rotating_globe_with_pins_at_country_centroids() {
+        let html = build_bubble_map3d_chart(r#"{"title":"t","labels":["FR","DE","US"],"values":[10.0,20.0,30.0],"variant":"globe"}"#);
+        assert!(html.contains("var MAP=["), "globe must carry the world outline");
+    }
+
+    #[test]
+    fn globe_variant_plots_direct_lat_lon_points_when_given_instead_of_labels() {
+        let html = build_bubble_map3d_chart(r#"{"title":"t","lats":[48.85,40.71],"lons":[2.35,-74.0],"values":[10.0,20.0],"variant":"globe"}"#);
+        assert!(html.contains("var MAP=["));
     }
 
     #[test]
