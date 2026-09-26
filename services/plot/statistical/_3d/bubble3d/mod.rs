@@ -14,6 +14,9 @@ fn render_bubble_spheres_html(
     bg: Option<&str>,
     scene: &str,
 ) -> String {
+    if blocks.is_empty() {
+        return crate::html::js_3d::render_3d_html_impl(16, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"var S=[];");
+    }
     let x: Vec<f64> = blocks.iter().map(|b| b.cx).collect();
     let y: Vec<f64> = blocks.iter().map(|b| b.cy).collect();
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
@@ -151,6 +154,17 @@ mod tests {
         assert_eq!(all.len(), BubbleVariant::all().len());
         for (key, json) in &all {
             assert_spheres(&build_bubble3d_chart(json), key);
+        }
+    }
+
+    #[test]
+    fn burst_and_radial_rows_render_without_any_x_or_y_field_at_all() {
+        for variant in ["burst", "radial_rows"] {
+            let json = format!(
+                r#"{{"title":"t","labels":["A","B","C","D"],"categories":["G1","G1","G2","G2"],"sizes":[5,8,3,6],"variant":"{variant}"}}"#
+            );
+            let html = build_bubble3d_chart(&json);
+            assert_spheres(&html, variant);
         }
     }
 

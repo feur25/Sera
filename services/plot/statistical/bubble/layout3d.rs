@@ -78,7 +78,10 @@ pub fn layout_named(cfg: &BubbleConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Ve
         return (blocks, names);
     }
 
-    let n = cfg.x_values.len().min(cfg.y_values.len()).min(cfg.sizes.len());
+    let n = match glyph {
+        Glyph::Burst | Glyph::RadialRows => cfg.sizes.len(),
+        _ => cfg.x_values.len().min(cfg.y_values.len()).min(cfg.sizes.len()),
+    };
     if n == 0 {
         return (Vec::new(), Vec::new());
     }
@@ -201,6 +204,18 @@ mod tests {
             let angle_a = blocks[0].cy.atan2(blocks[0].cx);
             let angle_b = blocks[2].cy.atan2(blocks[2].cx);
             assert!((angle_a - angle_b).abs() > 1e-6, "{variant:?}");
+        }
+    }
+
+    #[test]
+    fn burst_and_radial_rows_never_needed_x_or_y_in_the_first_place() {
+        let s = vec![5.0, 8.0, 3.0, 6.0];
+        let categories = vec!["A".to_string(), "A".to_string(), "B".to_string(), "B".to_string()];
+        for variant in [BubbleVariant::Burst, BubbleVariant::RadialRows] {
+            let cfg = BubbleConfig { variant, sizes: &s, categories: &categories, ..BubbleConfig::default() };
+            let (blocks, names) = layout_named(&cfg, &Budget::default());
+            assert_eq!(blocks.len(), 4, "{variant:?} must draw every point from sizes alone, x/y were never provided");
+            assert_eq!(names.len(), 4, "{variant:?}");
         }
     }
 
