@@ -2,7 +2,7 @@ use super::common::{prepare, Prepared};
 use super::config::SunburstConfig;
 use super::variant::SunburstVariant;
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::hierarchy::{depth_cap, descendant_groups, faded_height, rings, BASE_HEIGHT, HOLE};
+use crate::plot::statistical::_3d::hierarchy::{depth_cap, descendant_groups, faded_height, rings, BASE_HEIGHT, HOLE, MIN_SPAN};
 use crate::plot::statistical::bar::Bar3DBlock;
 
 pub const HEIGHT_RATIO: f64 = 0.7;
@@ -107,6 +107,66 @@ fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u
         Vec::new()
     };
     (blocks, names, groups)
+}
+
+pub struct Wedges {
+    pub pct: Vec<f64>,
+    pub depth: Vec<f64>,
+    pub value: Vec<f64>,
+    pub a0: Vec<f64>,
+    pub a1: Vec<f64>,
+    pub color_idx: Vec<f64>,
+    pub ring_height: Vec<f64>,
+    pub names: Vec<String>,
+    pub hole: f64,
+}
+
+fn wedge_plan(variant: SunburstVariant) -> (f64, f64, bool) {
+    use SunburstVariant::*;
+    match variant {
+        Donut => (0.32, 0.0, false),
+        Gapped => (0.09, GAP_RADIANS, false),
+        Mono => (0.09, 0.0, true),
+        Basic | Outlined | DepthFade | Zoomable => (0.09, 0.0, false),
+    }
+}
+
+fn ring_height_scale(variant: SunburstVariant, depth: usize) -> f64 {
+    use SunburstVariant::*;
+    match variant {
+        DepthFade => faded_height(depth, 1.0),
+        Outlined => 0.4,
+        _ => 1.0,
+    }
+}
+
+pub fn wedges(cfg: &SunburstConfig) -> Option<Wedges> {
+    let values = finite(cfg.values);
+    let sound = SunburstConfig { labels: cfg.labels, parents: cfg.parents, values: &values, palette: cfg.palette, ..SunburstConfig::default() };
+    let p = prepare(&sound)?;
+    let (hole, gap, mono) = wedge_plan(cfg.variant);
+    let cap_depth = depth_cap(&p.depth, NODE_CAP);
+    let spans = narrowed(&p.ang, gap);
+    let kept: Vec<usize> = p
+        .bfs_order
+        .iter()
+        .copied()
+        .filter(|&i| p.depth[i] <= cap_depth && spans[i].1 - spans[i].0 > MIN_SPAN)
+        .collect();
+    if kept.is_empty() {
+        return None;
+    }
+    Some(Wedges {
+        pct: kept.iter().map(|&i| p.values_eff[i] / p.grand_total * 100.0).collect(),
+        depth: kept.iter().map(|&i| p.depth[i] as f64).collect(),
+        value: kept.iter().map(|&i| p.values_eff[i]).collect(),
+        a0: kept.iter().map(|&i| spans[i].0).collect(),
+        a1: kept.iter().map(|&i| spans[i].1).collect(),
+        color_idx: kept.iter().map(|&i| if mono { 0.0 } else { p.cidx[i] as f64 }).collect(),
+        ring_height: kept.iter().map(|&i| ring_height_scale(cfg.variant, p.depth[i])).collect(),
+        names: kept.iter().map(|&i| p.labels[i].clone()).collect(),
+        hole,
+    })
 }
 
 pub fn layout_3d(cfg: &SunburstConfig, _budget: &Budget) -> Vec<Bar3DBlock> {
@@ -252,5 +312,82 @@ mod tests {
 
         let (_, _, basic_groups) = draw_rooted(SunburstVariant::Basic);
         assert!(basic_groups.is_empty());
+    }
+
+    fn draw_wedges(variant: SunburstVariant) -> Wedges {
+        let (labels, parents, values) = tree();
+        let cfg = SunburstConfig { variant, labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+        wedges(&cfg).unwrap()
+    }
+
+    #[test]
+    fn every_variant_draws_every_kept_node_with_matching_arrays_and_names() {
+        for &variant in SunburstVariant::all() {
+            let w = draw_wedges(variant);
+            assert!(!w.pct.is_empty(), "{variant:?}");
+            let n = w.pct.len();
+            for field in [w.depth.len(), w.value.len(), w.a0.len(), w.a1.len(), w.color_idx.len(), w.ring_height.len(), w.names.len()] {
+                assert_eq!(field, n, "{variant:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn wedge_angles_follow_bfs_order_and_match_the_prepared_hierarchy_span() {
+        let (labels, parents, values) = tree();
+        let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+        let p = prepare(&cfg).unwrap();
+        let w = wedges(&cfg).unwrap();
+        assert_eq!(w.a0.len(), p.bfs_order.len());
+        for (k, &i) in p.bfs_order.iter().enumerate() {
+            assert_eq!(w.a0[k], p.ang[i].0, "node {i} at position {k}");
+            assert_eq!(w.a1[k], p.ang[i].1, "node {i} at position {k}");
+            assert_eq!(w.names[k], p.labels[i]);
+        }
+    }
+
+    #[test]
+    fn donut_opens_a_wider_hole_than_basic() {
+        assert!(draw_wedges(SunburstVariant::Donut).hole > draw_wedges(SunburstVariant::Basic).hole);
+    }
+
+    #[test]
+    fn gapped_narrows_every_span_while_basic_keeps_the_full_prepared_span() {
+        let (labels, parents, values) = tree();
+        let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+        let p = prepare(&cfg).unwrap();
+        let basic = draw_wedges(SunburstVariant::Basic);
+        let gapped = draw_wedges(SunburstVariant::Gapped);
+        let root_span = p.ang[0].1 - p.ang[0].0;
+        assert_eq!(basic.a1[0] - basic.a0[0], root_span);
+        assert!(gapped.a1[0] - gapped.a0[0] < root_span);
+    }
+
+    #[test]
+    fn depth_fade_shrinks_ring_height_deeper_while_basic_stays_flat() {
+        let basic = draw_wedges(SunburstVariant::Basic);
+        assert!(basic.ring_height.iter().all(|&h| h == 1.0));
+        let faded = draw_wedges(SunburstVariant::DepthFade);
+        assert!(faded.ring_height.iter().zip(faded.depth.iter()).any(|(&h, &d)| d > 0.0 && h < 1.0));
+    }
+
+    #[test]
+    fn outlined_is_flatter_than_basic() {
+        let outlined = draw_wedges(SunburstVariant::Outlined);
+        assert!(outlined.ring_height.iter().all(|&h| h < 1.0));
+    }
+
+    #[test]
+    fn mono_collapses_every_color_index_while_basic_varies_by_branch() {
+        let mono = draw_wedges(SunburstVariant::Mono);
+        assert!(mono.color_idx.iter().all(|&c| c == 0.0));
+        let basic = draw_wedges(SunburstVariant::Basic);
+        let distinct: std::collections::HashSet<_> = basic.color_idx.iter().map(|c| c.to_bits()).collect();
+        assert!(distinct.len() >= 2);
+    }
+
+    #[test]
+    fn wedges_is_none_for_empty_input() {
+        assert!(wedges(&SunburstConfig::default()).is_none());
     }
 }
