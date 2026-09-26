@@ -1480,19 +1480,25 @@ function rFn(mx,my,sc){
 }
 function rSb(mx,my,sc){
   var rd=Math.min(W,H)*0.3,tiltF=Math.cos(pitch)*0.85+0.15;
+  var hasA=typeof A0!=='undefined';
+  var holeF=typeof HOLEF!=='undefined'?HOLEF:0.09;
+  var baseDepth=0.32*sc;
   var rings={};var maxRing=0;
   for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;var rn=Math.round(Y[i]);if(rn>maxRing)maxRing=rn;if(!rings[rn])rings[rn]=[];rings[rn].push(i);}
+  var nRings=maxRing+1,ringSpan=rd*(1-holeF)/nRings;
   for(var rn=0;rn<=maxRing;rn++){
     if(!rings[rn])continue;
     var idxs=rings[rn];
-    var total=0;for(var k=0;k<idxs.length;k++)total+=Z[idxs[k]];if(total<=0)continue;
-    var innerR=rd*rn/(maxRing+1)*0.88+rd*0.09;
-    var outerR=rd*(rn+1)/(maxRing+1)*0.88+rd*0.09;
-    var depth=(maxRing-rn+1)*0.19*sc;
+    var total=0;if(!hasA){for(var k=0;k<idxs.length;k++)total+=Z[idxs[k]];if(total<=0)continue;}
+    var innerR=rd*holeF+ringSpan*rn;
+    var outerR=innerR+ringSpan*0.96;
     var nLay=18,ca=0;
     for(var k=0;k<idxs.length;k++){
       var ii=idxs[k],ci=uc?C[ii]%PAL.length:ii%PAL.length;
-      var a0=ca,a1=ca+Z[ii]/total*TAU;ca=a1;
+      var a0,a1;
+      if(hasA){a0=A0[ii];a1=A1[ii];if(!(a1>a0))continue;}
+      else{a0=ca;a1=ca+Z[ii]/total*TAU;ca=a1;}
+      var depth=(typeof RH!=='undefined'?RH[ii]:1)*baseDepth;
       var col=PAL[ci],rgb=hx2rgb(col);
       var lr2=Math.min(255,rgb[0]+65),lg2=Math.min(255,rgb[1]+65),lb2=Math.min(255,rgb[2]+65);
       var dr2=Math.max(0,rgb[0]-65),dg2=Math.max(0,rgb[1]-65),db2=Math.max(0,rgb[2]-65);
@@ -1654,7 +1660,7 @@ function rGlb(mx,my,sc){
 function ht(ex,ey){if(typeof BN!=='undefined'&&!isEnvScene())return hitBlock(ex,ey);var bi=-1,bd=900;for(var i=pp.length-1;i>=0;i--){var dx=pp[i].sx-ex,dy=pp[i].sy-ey,d2=dx*dx+dy*dy,hr=(pp[i].r+10)*(pp[i].r+10);if(d2<bd&&d2<hr){bd=d2;bi=pp[i].i;}}return bi;}
 function sT(idx,ex,ey){
   var blk=typeof BN!=='undefined';
-  var lbl=blk?(CL.length>0?CL[BCI[idx]%CL.length]:'Block '+(idx+1)):(CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1));
+  var lbl=blk?(CL.length>0?CL[BCI[idx]%CL.length]:'Block '+(idx+1)):(typeof NM!=='undefined'&&NM[idx]!==undefined?NM[idx]:(CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1)));
   var vx=blk?BX[idx]:X[idx],vy=blk?BY[idx]:Y[idx],vz=blk?BZ1[idx]:Z[idx];
   var h='<b>'+lbl+'</b>';
   h+='<span>'+(xl||'X')+':</span> <span class="tv">'+vx.toFixed(3)+'</span><br>';
