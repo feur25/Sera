@@ -16,8 +16,8 @@ const BURST_MIN_R: f64 = 0.6;
 const BURST_MAX_R: f64 = 3.2;
 const BURST_SPREAD: f64 = PI * 0.42;
 const ROW_INNER: f64 = 1.0;
-const ROW_STEP: f64 = 0.85;
-const ROW_RISE: f64 = 0.55;
+const ROW_STEP: f64 = 1.3;
+const ROW_RISE: f64 = 0.85;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Glyph {
