@@ -72,9 +72,9 @@ fn narrowed(spans: &[(f64, f64)], gap: f64) -> Vec<(f64, f64)> {
         .collect()
 }
 
-fn branch_tone(p: &Prepared, i: usize) -> f64 {
-    let n = p.cidx.iter().copied().max().unwrap_or(0) + 1;
-    p.cidx[i] as f64 / n.max(2) as f64
+fn branch_tone(branch: &[usize], i: usize) -> f64 {
+    let n = branch.iter().copied().max().unwrap_or(0) + 1;
+    branch[i] as f64 / n.max(2) as f64
 }
 
 fn finite(values: &[f64]) -> Vec<f64> {
@@ -90,6 +90,7 @@ fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u
     let plan = recipe(cfg.variant);
     let cap_depth = depth_cap(&p.depth, NODE_CAP);
     let spans = narrowed(&p.ang, plan.gap);
+    let branch = branch_keys(&p);
     let blocks = rings(
         &p.bfs_order,
         &p.depth,
@@ -97,7 +98,7 @@ fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u
         cap_depth,
         plan.hole,
         |i| if plan.fade { faded_height(p.depth[i], plan.height) } else { plan.height },
-        |i| if plan.mono { MONO_TONE } else { branch_tone(&p, i) },
+        |i| if plan.mono { MONO_TONE } else { branch_tone(&branch, i) },
     );
     let names = p.bfs_order.iter().filter(|&&i| p.depth[i] <= cap_depth).map(|&i| p.labels[i].clone()).collect();
     let groups = if matches!(cfg.variant, SunburstVariant::Zoomable) {
@@ -140,6 +141,24 @@ fn ring_height_scale(variant: SunburstVariant, depth: usize) -> f64 {
     }
 }
 
+fn branch_keys(p: &Prepared) -> Vec<usize> {
+    let target_depth = if p.roots.len() <= 1 { 1 } else { 0 };
+    let mut key = vec![0usize; p.n];
+    for &i in &p.bfs_order {
+        key[i] = if p.depth[i] <= target_depth {
+            i
+        } else {
+            let (a0, a1) = p.ang[i];
+            p.bfs_order
+                .iter()
+                .copied()
+                .find(|&j| p.depth[j] == target_depth && p.ang[j].0 <= a0 + 1e-9 && p.ang[j].1 >= a1 - 1e-9)
+                .unwrap_or(i)
+        };
+    }
+    key
+}
+
 pub fn wedges(cfg: &SunburstConfig) -> Option<Wedges> {
     let values = finite(cfg.values);
     let sound = SunburstConfig { labels: cfg.labels, parents: cfg.parents, values: &values, palette: cfg.palette, ..SunburstConfig::default() };
@@ -147,6 +166,7 @@ pub fn wedges(cfg: &SunburstConfig) -> Option<Wedges> {
     let (hole, gap, mono) = wedge_plan(cfg.variant);
     let cap_depth = depth_cap(&p.depth, NODE_CAP);
     let spans = narrowed(&p.ang, gap);
+    let branch = branch_keys(&p);
     let kept: Vec<usize> = p
         .bfs_order
         .iter()
@@ -162,7 +182,7 @@ pub fn wedges(cfg: &SunburstConfig) -> Option<Wedges> {
         value: kept.iter().map(|&i| p.values_eff[i]).collect(),
         a0: kept.iter().map(|&i| spans[i].0).collect(),
         a1: kept.iter().map(|&i| spans[i].1).collect(),
-        color_idx: kept.iter().map(|&i| if mono { 0.0 } else { p.cidx[i] as f64 }).collect(),
+        color_idx: kept.iter().map(|&i| if mono { 0.0 } else { branch[i] as f64 }).collect(),
         ring_height: kept.iter().map(|&i| ring_height_scale(cfg.variant, p.depth[i])).collect(),
         names: kept.iter().map(|&i| p.labels[i].clone()).collect(),
         hole,
@@ -384,6 +404,28 @@ mod tests {
         let basic = draw_wedges(SunburstVariant::Basic);
         let distinct: std::collections::HashSet<_> = basic.color_idx.iter().map(|c| c.to_bits()).collect();
         assert!(distinct.len() >= 2);
+    }
+
+    #[test]
+    fn a_single_root_still_colors_its_top_level_children_differently() {
+        let labels = vec!["Root".to_string(), "A".to_string(), "B".to_string()];
+        let parents = vec![String::new(), "Root".to_string(), "Root".to_string()];
+        let values = vec![0.0, 40.0, 60.0];
+        let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+        let w = wedges(&cfg).unwrap();
+        let distinct: std::collections::HashSet<_> = w.color_idx.iter().map(|c| c.to_bits()).collect();
+        assert!(distinct.len() >= 2, "a single-root tree must still color A and B differently");
+    }
+
+    #[test]
+    fn a_grandchild_inherits_its_top_level_branch_color_not_its_own() {
+        let (labels, parents, values) = tree();
+        let cfg = SunburstConfig { labels: &labels, parents: &parents, values: &values, ..SunburstConfig::default() };
+        let p = prepare(&cfg).unwrap();
+        let w = wedges(&cfg).unwrap();
+        let a_pos = p.bfs_order.iter().position(|&i| labels[i] == "A").unwrap();
+        let a1_pos = p.bfs_order.iter().position(|&i| labels[i] == "A1").unwrap();
+        assert_eq!(w.color_idx[a_pos], w.color_idx[a1_pos], "A1 must share A's branch color");
     }
 
     #[test]
