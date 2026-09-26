@@ -1479,7 +1479,7 @@ function rFn(mx,my,sc){
   }
 }
 function rSb(mx,my,sc){
-  var rd=Math.min(W,H)*0.3,tiltF=Math.cos(pitch)*0.85+0.15;
+  var rd=Math.min(W,H)*0.3,tiltF=Math.cos(pitch)*0.85+0.15,rot=yaw-yaw0;
   var hasA=typeof A0!=='undefined';
   var holeF=typeof HOLEF!=='undefined'?HOLEF:0.09;
   var baseDepth=0.32*sc;
@@ -1496,8 +1496,8 @@ function rSb(mx,my,sc){
     for(var k=0;k<idxs.length;k++){
       var ii=idxs[k],ci=uc?C[ii]%PAL.length:ii%PAL.length;
       var a0,a1;
-      if(hasA){a0=A0[ii];a1=A1[ii];if(!(a1>a0))continue;}
-      else{a0=ca;a1=ca+Z[ii]/total*TAU;ca=a1;}
+      if(hasA){a0=A0[ii]+rot;a1=A1[ii]+rot;if(!(a1>a0))continue;}
+      else{a0=ca+rot;a1=ca+Z[ii]/total*TAU+rot;ca+=Z[ii]/total*TAU;}
       var depth=(typeof RH!=='undefined'?RH[ii]:1)*baseDepth;
       var col=PAL[ci],rgb=hx2rgb(col);
       var lr2=Math.min(255,rgb[0]+65),lg2=Math.min(255,rgb[1]+65),lb2=Math.min(255,rgb[2]+65);
