@@ -281,7 +281,8 @@
             });
             return;
         }
-        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm?v=' + (window.SP_WASM_BUILD || '0')).then(function () { state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }).catch(function (e) {
+        var buildTag = typeof window.SeraPlotWasmBuildTag === 'function' ? window.SeraPlotWasmBuildTag() : (window.SP_WASM_BUILD || '0');
+        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm?v=' + buildTag).then(function () { state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }).catch(function (e) {
             sp.__loading = null;
             setStatus('err', 'WASM load failed');
             showLoader('Failed to load WASM module.<br>' + (e && e.message ? e.message : ''));

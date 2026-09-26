@@ -1,7 +1,14 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
 (function () {
   var SP_SELF_SRC = (document.currentScript && document.currentScript.src) || "";
-  var SP_WASM_BUILD = window.SP_WASM_BUILD;
+  function wasmBuildTag() {
+    if (window.SP_WASM_BUILD) return window.SP_WASM_BUILD;
+    var el = document.querySelector('script[src*="seraplot-web"]');
+    var src = el ? el.getAttribute("src") : "";
+    var file = src.split("/").pop();
+    window.SP_WASM_BUILD = file || "unversioned";
+    return window.SP_WASM_BUILD;
+  }
+  window.SeraPlotWasmBuildTag = wasmBuildTag;
   var POS_KEY    = "sp_params_pos";
   var COL_KEY    = "sp_params_col";
   var H_KEY      = "sp_params_h";
@@ -1228,7 +1235,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260830d";
     if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
     if (sp.__ready) { cb(); return; }
     if (sp.__loading) { sp.__loading.then(cb, function () { sp.__loading = null; }); return; }
-    sp.__loading = sp.__init(themeBase() + "seraplot_bg.wasm?v=" + SP_WASM_BUILD).then(cb).catch(function () { sp.__loading = null; });
+    sp.__loading = sp.__init(themeBase() + "seraplot_bg.wasm?v=" + wasmBuildTag()).then(cb).catch(function () { sp.__loading = null; });
   }
 
   function registryJson(fn, input, fallback) {
