@@ -13,6 +13,7 @@ const BASE_HEIGHT: f64 = 1.4;
 const THIN_HEIGHT: f64 = BASE_HEIGHT * 0.16;
 const GRID_STEP: f64 = 1.3;
 const GRID_HW: f64 = 0.5;
+const REFERENCE_2D_R_MAX: f64 = 230.0;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Shape {
@@ -100,7 +101,8 @@ fn circle_pack_3d(cfg: &CirclePackConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     }
     let padded_parents: Vec<String> = (0..n).map(|i| cfg.parents.get(i).cloned().unwrap_or_default()).collect();
     let clean_values: Vec<f64> = cfg.values[..n].iter().map(|v| if v.is_finite() { v.max(0.0) } else { 0.0 }).collect();
-    let circles = build_circles(&cfg.labels[..n], &padded_parents, &clean_values, 0.0, 0.0, R_MAX, cfg.padding.max(0.4));
+    let padding_3d = (cfg.padding * (R_MAX / REFERENCE_2D_R_MAX)).max(R_MAX * 0.02);
+    let circles = build_circles(&cfg.labels[..n], &padded_parents, &clean_values, 0.0, 0.0, R_MAX, padding_3d);
     let cap = circles.len().min(NODE_CAP);
     let kept: Vec<Circle> = if circles.len() > cap {
         let mut order: Vec<usize> = (0..circles.len()).collect();
