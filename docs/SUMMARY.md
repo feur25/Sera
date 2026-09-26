@@ -131,7 +131,6 @@
   - [Contour Map 3D](charts/3d/contour_map3d.md)
   - [Graticule Map 3D](charts/3d/graticule_map3d.md)
   - [Vector Field Map 3D](charts/3d/vector_field_map3d.md)
-  - [Stacked Bar 3D](charts/3d/stacked-bar3d.md)
   - [Globe 3D](charts/3d/globe3d.md)
 - [Map Charts](charts/map/index.md)
   - [Bubble Map](charts/map/bubble-map.md)
