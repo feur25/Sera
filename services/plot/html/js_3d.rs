@@ -859,7 +859,7 @@ function rSgl(mx,my,sc){
   gl.uniform3f(b.uR,rx,ry,0);gl.uniform3f(b.uU,ux,uy,uz);
   gl.uniform1f(b.uT,Math.tan(fov/2));gl.uniform1f(b.uA,W/H);
   gl.uniform1f(b.uSX,2*sc/W);gl.uniform1f(b.uSY,2*sc/H);
-  gl.uniform1f(b.uPS,6*dpr);gl.uniform2f(b.uPN,panX/sc,panY/sc);
+  gl.uniform1f(b.uPS,9*dpr);gl.uniform2f(b.uPN,panX/sc,panY/sc);
   gl.bindBuffer(gl.ARRAY_BUFFER,b.pb);gl.enableVertexAttribArray(b.aP);gl.vertexAttribPointer(b.aP,3,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ARRAY_BUFFER,b.cb);gl.enableVertexAttribArray(b.aC);gl.vertexAttribPointer(b.aC,3,gl.FLOAT,false,0,0);
   gl.drawArrays(gl.POINTS,0,N);
