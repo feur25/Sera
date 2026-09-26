@@ -16,8 +16,9 @@ const BURST_MIN_R: f64 = 0.6;
 const BURST_MAX_R: f64 = 3.2;
 const BURST_SPREAD: f64 = PI * 0.42;
 const ROW_INNER: f64 = 1.0;
-const ROW_STEP: f64 = 1.3;
-const ROW_RISE: f64 = 0.85;
+const ROW_SPAN: f64 = 3.0;
+const ELEV_SPAN: f64 = 2.0;
+const ROW_FILL: f64 = 0.6;
 
 #[derive(Clone, Copy, PartialEq)]
 enum Glyph {
@@ -155,11 +156,16 @@ pub fn layout_named(cfg: &BubbleConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Ve
             let has_cols = !cols.is_empty();
             let (xlo, xhi) = x_extent(&x, keep.len());
             let xrange = (xhi - xlo).max(1e-9);
+            let n_rows = order.len().max(1) as f64;
+            let row_step = ROW_SPAN / n_rows;
+            let elev_step = ELEV_SPAN / n_rows;
+            let row_max_size = (row_step * ROW_FILL).min(SIZE_MAX).max(0.02);
+            let row_min_size = SIZE_MIN.min(row_max_size);
             (0..keep.len())
                 .map(|i| {
                     let ri = class_of(i);
-                    let radius = ROW_INNER + ri as f64 * ROW_STEP;
-                    let elev = ri as f64 * ROW_RISE;
+                    let radius = ROW_INNER + ri as f64 * row_step;
+                    let elev = ri as f64 * elev_step;
                     let t = if has_cols {
                         let ci = cols.iter().position(|c| Some(c) == x_categories.get(i)).unwrap_or(0);
                         ci as f64 / (cols.len().max(2) - 1) as f64
@@ -169,7 +175,7 @@ pub fn layout_named(cfg: &BubbleConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Ve
                     };
                     let angle = -PI / 2.0 + t * PI;
                     let frac = size_frac(&sizes, i, slo, srange);
-                    let size = SIZE_MIN + frac * (SIZE_MAX - SIZE_MIN);
+                    let size = row_min_size + frac * (row_max_size - row_min_size);
                     Bar3DBlock::new(radius * angle.cos(), radius * angle.sin(), elev, elev + HEIGHT, size, size, ri)
                 })
                 .collect()
@@ -324,6 +330,30 @@ mod tests {
         let a0 = blocks[0].cy.atan2(blocks[0].cx);
         let a1 = blocks[1].cy.atan2(blocks[1].cx);
         assert!((a0 - a1).abs() > 0.1);
+    }
+
+    #[test]
+    fn radial_rows_stays_within_a_camera_safe_extent_regardless_of_row_count() {
+        let n_rows = 85;
+        let s: Vec<f64> = (0..n_rows).map(|_| 15.0).collect();
+        let categories: Vec<String> = (0..n_rows).map(|i| format!("Cat{i}")).collect();
+        let cfg = BubbleConfig { variant: BubbleVariant::RadialRows, sizes: &s, categories: &categories, ..BubbleConfig::default() };
+        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        let max_radius = blocks.iter().map(|b| b.cx.hypot(b.cy)).fold(0.0, f64::max);
+        let max_elev = blocks.iter().map(|b| b.z1).fold(0.0, f64::max);
+        assert!(max_radius < 6.0, "radius grew unbounded with row count: {max_radius}");
+        assert!(max_elev < 4.0, "elevation grew unbounded with row count: {max_elev}");
+    }
+
+    #[test]
+    fn radial_rows_shrinks_sphere_size_to_fit_when_many_rows_share_the_span() {
+        let n_rows = 85;
+        let s: Vec<f64> = (0..n_rows).map(|_| 15.0).collect();
+        let categories: Vec<String> = (0..n_rows).map(|i| format!("Cat{i}")).collect();
+        let cfg = BubbleConfig { variant: BubbleVariant::RadialRows, sizes: &s, categories: &categories, ..BubbleConfig::default() };
+        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        let row_step = ROW_SPAN / n_rows as f64;
+        assert!(blocks.iter().all(|b| b.hw <= row_step * ROW_FILL + 1e-9));
     }
 
     #[test]
