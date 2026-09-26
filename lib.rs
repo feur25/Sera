@@ -84,10 +84,15 @@ const GEOMETRY_TWINS: &[(&str, &str)] = &[
     ("radar3d", "radar"),
 ];
 
+fn strip_3d_underscore(s: &str) -> std::borrow::Cow<'_, str> {
+    if s.contains("_3d") { s.replace("_3d", "3d").into() } else { s.into() }
+}
+
 fn geometry_base(family: &str) -> Option<&'static str> {
+    let target = strip_3d_underscore(family);
     GEOMETRY_TWINS
         .iter()
-        .find(|(twin, _)| *twin == family)
+        .find(|(twin, _)| strip_3d_underscore(twin) == target)
         .map(|(_, base)| *base)
 }
 
@@ -199,6 +204,25 @@ mod wrap_demo_kwargs_tests {
     fn never_wraps_inside_a_quoted_string_even_with_a_comma_in_it() {
         let s = "labels=[\"a, very, long, message, with, commas, that, keeps, going, and, going, and, going\"]";
         assert_eq!(wrap_demo_kwargs(s, 10), s);
+    }
+}
+
+#[cfg(test)]
+mod geometry_base_tests {
+    #[test]
+    fn bar_and_line_resolve_their_demo_the_same_whether_called_with_or_without_the_underscore() {
+        for (with_underscore, without) in [("bar_3d", "bar3d"), ("line_3d", "line3d")] {
+            let a = crate::demo_kwargs(with_underscore, "basic");
+            let b = crate::demo_kwargs(without, "basic");
+            assert!(a.is_some(), "{with_underscore} must resolve to a real demo");
+            assert_eq!(a, b, "{with_underscore} and {without} are the same family and must resolve identically");
+        }
+    }
+
+    #[test]
+    fn a_family_with_no_underscore_variant_is_unaffected() {
+        assert_eq!(crate::demo_kwargs("bubble3d", "basic"), crate::demo_kwargs("bubble3d", "basic"));
+        assert!(crate::demo_kwargs("bubble3d", "basic").is_some());
     }
 }
 
