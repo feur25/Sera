@@ -225,6 +225,55 @@ pub fn spiral_columns(values: &[f64], hw: f64, hd: f64) -> Vec<Bar3DBlock> {
         .collect()
 }
 
+pub fn phyllotaxis_columns(values: &[f64], hw: f64, hd: f64) -> Vec<Bar3DBlock> {
+    let n = values.len();
+    if n == 0 {
+        return Vec::new();
+    }
+    let golden_angle = std::f64::consts::PI * (3.0 - 5.0_f64.sqrt());
+    let scale = hw.max(hd) * 2.4 * (n as f64).sqrt();
+    values
+        .iter()
+        .enumerate()
+        .map(|(i, &v)| {
+            let t = if n > 1 { i as f64 / (n - 1) as f64 } else { 0.0 };
+            let r = scale * t.sqrt();
+            let theta = i as f64 * golden_angle;
+            Bar3DBlock::new(r * theta.cos(), r * theta.sin(), 0.0, v, hw, hd, i)
+        })
+        .collect()
+}
+
+pub fn packed_columns(radii: &[f64], heights: &[f64]) -> Vec<Bar3DBlock> {
+    let n = radii.len().min(heights.len());
+    if n == 0 {
+        return Vec::new();
+    }
+    let mut placed: Vec<(f64, f64, f64)> = Vec::with_capacity(n);
+    let step_a = 0.32_f64;
+    for i in 0..n {
+        let r = radii[i].max(0.02);
+        let step_r = r * 0.5;
+        let mut angle = 0.0_f64;
+        let mut radius = 0.0_f64;
+        let mut best = (0.0, 0.0);
+        let max_search = (n as f64).sqrt() * r * 8.0 + r * 8.0;
+        loop {
+            let px = radius * angle.cos();
+            let py = radius * angle.sin();
+            let ok = placed.iter().all(|&(ox, oy, or)| ((px - ox).powi(2) + (py - oy).powi(2)).sqrt() >= r + or + r.min(or) * 0.1);
+            if ok || radius > max_search {
+                best = (px, py);
+                break;
+            }
+            angle += step_a;
+            radius += step_r * step_a / TAU;
+        }
+        placed.push((best.0, best.1, r));
+    }
+    placed.iter().enumerate().map(|(i, &(x, y, r))| Bar3DBlock::new(x, y, 0.0, heights[i], r, r, i)).collect()
+}
+
 pub fn radial_band_columns(mins: &[f64], maxs: &[f64], radius: f64, hw: f64, hd: f64) -> Vec<Bar3DBlock> {
     let n = mins.len().min(maxs.len());
     if n == 0 {
@@ -333,5 +382,35 @@ mod tests {
     fn plates_hug_the_top_of_each_value() {
         let plates = plate_columns(&[3.0, 5.0], 0.5, 0.5, 0.4);
         assert_eq!((plates[1].z0, plates[1].z1, plates[1].cx), (4.5, 5.0, 1.0));
+    }
+
+    #[test]
+    fn phyllotaxis_spreads_items_farther_out_as_their_index_grows() {
+        let cols = phyllotaxis_columns(&[1.0; 40], 0.2, 0.2);
+        let radius = |b: &Bar3DBlock| b.cx.hypot(b.cy);
+        assert!(radius(&cols[39]) > radius(&cols[1]));
+        assert_eq!(cols.len(), 40);
+    }
+
+    #[test]
+    fn phyllotaxis_density_does_not_explode_with_more_items() {
+        let small = phyllotaxis_columns(&[1.0; 20], 0.2, 0.2);
+        let big = phyllotaxis_columns(&[1.0; 400], 0.2, 0.2);
+        let max_r = |cols: &[Bar3DBlock]| cols.iter().map(|b| b.cx.hypot(b.cy)).fold(0.0, f64::max);
+        let ratio = max_r(&big) / max_r(&small);
+        assert!(ratio < 6.0, "outer radius grew {ratio}x for 20x more items, density is exploding");
+    }
+
+    #[test]
+    fn packed_circles_never_overlap() {
+        let radii = [0.5, 0.4, 0.3, 0.3, 0.2, 0.2, 0.2];
+        let heights = [1.0; 7];
+        let packed = packed_columns(&radii, &heights);
+        for i in 0..packed.len() {
+            for j in (i + 1)..packed.len() {
+                let d = (packed[i].cx - packed[j].cx).hypot(packed[i].cy - packed[j].cy);
+                assert!(d >= packed[i].hw + packed[j].hw - 1e-6, "circles {i} and {j} overlap");
+            }
+        }
     }
 }
