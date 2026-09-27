@@ -61,6 +61,7 @@ pub mod timeline;
 pub(crate) mod twin;
 pub mod violin3d;
 pub mod waterfall3d;
+pub mod wedge;
 pub mod zone;
 
 pub use area3d::build_area3d_chart;
