@@ -8,6 +8,8 @@ const HW: f64 = 0.34;
 const NODE_HW: f64 = 0.2;
 const MIN_EDGE: f64 = 0.02;
 const MAX_EDGE: f64 = 0.1;
+const SIZE_MIN: f64 = 0.16;
+const SIZE_MAX: f64 = 0.6;
 
 fn positioned(cfg: &WordCloudConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     let n = cfg.words.len().min(cfg.points_x.len()).min(cfg.points_y.len());
@@ -46,9 +48,14 @@ fn spiraled(cfg: &WordCloudConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
         return (Vec::new(), Vec::new());
     }
     let mut blocks = spiral_columns(&cfg.frequencies[..n], HW, HW);
-    let peak = cfg.frequencies[..n].iter().copied().fold(0.0f64, f64::max).max(1e-9);
+    let (lo, hi) = cfg.frequencies[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
+    let range = (hi - lo).max(1e-9);
     for (i, b) in blocks.iter_mut().enumerate() {
-        b.tone = Some((cfg.frequencies[i] / peak).clamp(0.0, 1.0));
+        let frac = ((cfg.frequencies[i] - lo) / range).clamp(0.0, 1.0);
+        let size = SIZE_MIN + frac * (SIZE_MAX - SIZE_MIN);
+        b.hw = size;
+        b.hd = size;
+        b.tone = Some(frac);
     }
     (blocks, cfg.words[..n].to_vec())
 }
@@ -102,6 +109,14 @@ mod tests {
         let rust = blocks[names.iter().position(|n| n == "rust").unwrap()];
         let graph = blocks[names.iter().position(|n| n == "graph").unwrap()];
         assert!(rust.z1 > graph.z1);
+    }
+
+    #[test]
+    fn a_more_frequent_word_gets_a_bigger_marker() {
+        let (blocks, names) = draw(WordCloudVariant::Basic);
+        let rust = blocks[names.iter().position(|n| n == "rust").unwrap()];
+        let graph = blocks[names.iter().position(|n| n == "graph").unwrap()];
+        assert!(rust.hw > graph.hw);
     }
 
     #[test]
