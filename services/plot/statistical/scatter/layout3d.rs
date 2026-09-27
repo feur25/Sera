@@ -10,6 +10,7 @@ const POINT_SIZE: f64 = 0.09;
 const POINT_HEIGHT: f64 = 0.12;
 const SIZED_MIN: f64 = 0.05;
 const SIZED_MAX: f64 = 0.34;
+const DEPTH_SPAN: f64 = 2.6;
 const ROW_PITCH: f64 = 3.2;
 const RUG_TICK: f64 = 0.06;
 const RUG_HW: f64 = 0.03;
@@ -126,6 +127,15 @@ pub fn layout_named(cfg: &ScatterConfig, budget: &Budget) -> (Vec<Bar3DBlock>, V
     let (clo, chi) = color_values.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
     let crange = (chi - clo).max(1e-9);
     let has_colors = color_values.len() == keep.len() && clo.is_finite();
+    let class_count = {
+        let mut order: Vec<&str> = Vec::new();
+        for c in &categories {
+            if !order.contains(&c.as_str()) {
+                order.push(c.as_str());
+            }
+        }
+        order.len().max(1)
+    };
 
     let mut blocks: Vec<Bar3DBlock> = (0..keep.len())
         .map(|i| {
@@ -134,13 +144,18 @@ pub fn layout_named(cfg: &ScatterConfig, budget: &Budget) -> (Vec<Bar3DBlock>, V
                 Glyph::Sized if has_colors => {
                     let frac = ((color_values[i] - clo) / crange).clamp(0.0, 1.0);
                     let size = SIZED_MIN + frac * (SIZED_MAX - SIZED_MIN);
-                    Bar3DBlock::new(x[i], y[i], 0.0, POINT_HEIGHT, size, size, class).with_tone(frac)
+                    let cz = frac * DEPTH_SPAN;
+                    Bar3DBlock::new(x[i], y[i], cz, cz + POINT_HEIGHT, size, size, class).with_tone(frac)
                 }
                 Glyph::Hue if has_colors => {
                     let frac = ((color_values[i] - clo) / crange).clamp(0.0, 1.0);
-                    Bar3DBlock::new(x[i], y[i], 0.0, POINT_HEIGHT, POINT_SIZE, POINT_SIZE, class).with_tone(frac)
+                    let cz = frac * DEPTH_SPAN;
+                    Bar3DBlock::new(x[i], y[i], cz, cz + POINT_HEIGHT, POINT_SIZE, POINT_SIZE, class).with_tone(frac)
                 }
-                _ => Bar3DBlock::new(x[i], y[i], 0.0, POINT_HEIGHT, POINT_SIZE, POINT_SIZE, class),
+                _ => {
+                    let cz = if categories.is_empty() { 0.0 } else { class as f64 / class_count as f64 * DEPTH_SPAN };
+                    Bar3DBlock::new(x[i], y[i], cz, cz + POINT_HEIGHT, POINT_SIZE, POINT_SIZE, class)
+                }
             }
         })
         .collect();
@@ -205,6 +220,30 @@ mod tests {
         let (blocks, _) = layout_named(&cfg, &Budget::default());
         let classes: std::collections::BTreeSet<usize> = blocks.iter().map(|b| b.ci).collect();
         assert_eq!(classes.len(), 3);
+    }
+
+    #[test]
+    fn any_variant_carrying_a_real_extra_dimension_spreads_across_z_instead_of_a_flat_plane() {
+        let (x, y) = xy();
+        let cv = vec![0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+        let sized = ScatterConfig { variant: ScatterVariant::Sized, x_values: &x, y_values: &y, color_values: &cv, ..ScatterConfig::default() };
+        let (blocks, _) = layout_named(&sized, &Budget::default());
+        let zs: std::collections::BTreeSet<i64> = blocks.iter().map(|b| (b.z0 * 1000.0).round() as i64).collect();
+        assert!(zs.len() > 1, "sized points must not all sit on the same z plane");
+
+        let hue = ScatterConfig { variant: ScatterVariant::ContinuousHue, x_values: &x, y_values: &y, color_values: &cv, ..ScatterConfig::default() };
+        let (hue_blocks, _) = layout_named(&hue, &Budget::default());
+        let hue_zs: std::collections::BTreeSet<i64> = hue_blocks.iter().map(|b| (b.z0 * 1000.0).round() as i64).collect();
+        assert!(hue_zs.len() > 1, "hue points must not all sit on the same z plane");
+
+        let categories = vec!["A".to_string(), "A".to_string(), "B".to_string(), "B".to_string(), "C".to_string(), "C".to_string()];
+        let cat = ScatterConfig { variant: ScatterVariant::Categorical, x_values: &x, y_values: &y, categories: &categories, ..ScatterConfig::default() };
+        let (cat_blocks, _) = layout_named(&cat, &Budget::default());
+        let cat_zs: std::collections::BTreeSet<i64> = cat_blocks.iter().map(|b| (b.z0 * 1000.0).round() as i64).collect();
+        assert!(cat_zs.len() > 1, "categorical points must not all sit on the same z plane");
+
+        let (basic, _) = draw(ScatterVariant::Basic);
+        assert!(basic.iter().all(|b| b.z0 == 0.0), "plain x/y data with no extra dimension must stay an honest flat plane");
     }
 
     #[test]
