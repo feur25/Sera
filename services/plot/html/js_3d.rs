@@ -1206,19 +1206,22 @@ function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
   }
 }
 function rWedgeMesh(mx,my,sc){
-  var rot=yaw-yaw0,n2=A0.length,items=[];
+  var n2=A0.length,items=[];
+  var zg=(typeof ZKIDS!=='undefined'&&zHist.length>0&&piI>=0)?ZKIDS[piI]:null;
   for(var i=0;i<n2;i++){
     if(VIS&&!VIS[i])continue;
     if(!(A1[i]>A0[i]))continue;
-    var mid=(A0[i]+A1[i])/2+rot,mr=(IR[i]+OR[i])/2;
+    var mid=(A0[i]+A1[i])/2,mr=(IR[i]+OR[i])/2;
     var mp=wPt(CX[i],CY[i],mr,RH[i]/2,mid);
     if(!mp)continue;
     items.push({i:i,d:mp.d,ci:uc?C[i]%PAL.length:i%PAL.length,msx:mx+mp.x*sc,msy:my-mp.y*sc});
   }
   items.sort(function(a,b){return b.d-a.d;});
   for(var j=0;j<items.length;j++){
-    var it=items[j],i=it.i;
-    drawWedgeMesh3D(CX[i],CY[i],A0[i]+rot,A1[i]+rot,IR[i],OR[i],RH[i],faceCols(PAL[it.ci]));
+    var it=items[j],i=it.i,dim=zg&&zg.indexOf(i)===-1;
+    if(dim)g.globalAlpha=0.22;
+    drawWedgeMesh3D(CX[i],CY[i],A0[i],A1[i],IR[i],OR[i],RH[i],faceCols(PAL[it.ci]));
+    if(dim)g.globalAlpha=1;
     pp.push({sx:it.msx,sy:it.msy,i:i,r:10});
   }
 }
