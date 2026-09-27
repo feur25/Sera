@@ -36,8 +36,15 @@ fn render_wordcloud_text_html(
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
     let (hlo, hhi) = blocks.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), b| (lo.min(b.hw), hi.max(b.hw)));
     let hrange = (hhi - hlo).max(1e-9);
+    let padded: Vec<Bar3DBlock> = blocks
+        .iter()
+        .map(|b| {
+            let pad = b.hw.max(b.hd).max(0.05) * 1.2;
+            Bar3DBlock::new(b.cx, b.cy, b.z0 - pad, b.z1 + pad, b.hw + pad, b.hd + pad, b.ci)
+        })
+        .collect();
     let explicit = zone.and_then(|p| <[f64; 3]>::try_from(p).ok());
-    let fitted = zone_fit(blocks, 0.6, explicit, Fit::Uniform);
+    let fitted = zone_fit(&padded, 0.6, explicit, Fit::Uniform);
     let mut extra = format!(
         "var BFIT={};var S=[{}];",
         fitted.to_js(),
@@ -139,6 +146,21 @@ mod tests {
         let json = serde_json::json!({"words": words, "frequencies": frequencies}).to_string();
         let html = build_wordcloud3d_chart(&json);
         assert!(html.contains("var BFIT="), "a large word count must still emit a fitted camera zone");
+    }
+
+    #[test]
+    fn the_fitted_zone_is_padded_so_large_words_do_not_touch_its_own_floor() {
+        use crate::plot::statistical::_3d::zone::{fit as zone_fit, Fit};
+        use crate::plot::statistical::bar::Bar3DBlock;
+        let blocks = vec![
+            Bar3DBlock::new(0.0, 0.0, 0.0, 0.2, 0.2, 0.2, 0),
+            Bar3DBlock::new(1.0, 0.5, 0.0, 0.6, 0.6, 0.6, 1),
+            Bar3DBlock::new(-0.8, -0.4, 0.0, 0.4, 0.4, 0.4, 2),
+        ];
+        let names = vec!["a".to_string(), "b".to_string(), "c".to_string()];
+        let html = super::render_wordcloud_text_html("t", &blocks, &names, ("x", "y", "z"), 400, 300, None, "default", None);
+        let raw = zone_fit(&blocks, 0.6, None, Fit::Uniform);
+        assert!(!html.contains(&format!("\"dz\":{:.6}", raw.data[2])), "the fitted zone must not equal the unpadded raw extent");
     }
 
     #[test]
