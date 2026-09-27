@@ -56,7 +56,14 @@ fn branch_keys(p: &Prepared) -> Vec<usize> {
     key
 }
 
-pub fn wedges(cfg: &SunburstConfig) -> Option<(Wedges, Vec<Vec<u32>>)> {
+pub struct ZoomLayout {
+    pub groups: Vec<Vec<u32>>,
+    pub depth: Vec<f64>,
+    pub hole: f64,
+    pub ring_span: f64,
+}
+
+pub fn wedges(cfg: &SunburstConfig) -> Option<(Wedges, ZoomLayout)> {
     let values = finite(cfg.values);
     let sound = SunburstConfig { labels: cfg.labels, parents: cfg.parents, values: &values, palette: cfg.palette, ..SunburstConfig::default() };
     let p = prepare(&sound)?;
@@ -76,6 +83,7 @@ pub fn wedges(cfg: &SunburstConfig) -> Option<(Wedges, Vec<Vec<u32>>)> {
     let n_rings = kept.iter().map(|&i| p.depth[i]).max().unwrap_or(0) + 1;
     let ring_span = (1.0 - hole) / n_rings as f64;
     let mut w = Wedges::default();
+    let mut depth = Vec::with_capacity(kept.len());
     for &i in &kept {
         let (a0, a1) = spans[i];
         let inner_r = hole + ring_span * p.depth[i] as f64;
@@ -83,9 +91,10 @@ pub fn wedges(cfg: &SunburstConfig) -> Option<(Wedges, Vec<Vec<u32>>)> {
         let height = ring_height_scale(cfg.variant, p.depth[i]) * WEDGE_HEIGHT;
         let color_idx = if mono { 0.0 } else { branch[i] as f64 };
         w.push(a0, a1, inner_r, outer_r, 0.0, 0.0, height, p.values_eff[i], color_idx, p.labels[i].clone());
+        depth.push(p.depth[i] as f64);
     }
     let groups = if matches!(cfg.variant, SunburstVariant::Zoomable) { descendant_groups(&p.depth, &spans, &kept) } else { Vec::new() };
-    Some((w, groups))
+    Some((w, ZoomLayout { groups, depth, hole, ring_span }))
 }
 
 #[cfg(test)]
@@ -180,15 +189,18 @@ mod tests {
             wedges(&cfg).unwrap()
         };
 
-        let (w, groups) = draw_rooted(SunburstVariant::Zoomable);
-        assert_eq!(groups.len(), w.names.len());
+        let (w, zl) = draw_rooted(SunburstVariant::Zoomable);
+        assert_eq!(zl.groups.len(), w.names.len());
+        assert_eq!(zl.depth.len(), w.names.len());
         let root_pos = w.names.iter().position(|n| n == "Root").unwrap();
-        assert_eq!(groups[root_pos].len(), w.names.len());
+        assert_eq!(zl.groups[root_pos].len(), w.names.len());
+        assert_eq!(zl.depth[root_pos], 0.0);
         let a_pos = w.names.iter().position(|n| n == "A").unwrap();
-        assert!(groups[a_pos].len() < w.names.len());
+        assert!(zl.groups[a_pos].len() < w.names.len());
+        assert_eq!(zl.depth[a_pos], 1.0);
 
-        let (_, basic_groups) = draw_rooted(SunburstVariant::Basic);
-        assert!(basic_groups.is_empty());
+        let (_, basic_zl) = draw_rooted(SunburstVariant::Basic);
+        assert!(basic_zl.groups.is_empty());
     }
 
     #[test]

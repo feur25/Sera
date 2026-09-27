@@ -21,7 +21,7 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     let axis_labels = (o.xl(), o.yl(), o.zl());
     let axis_refs = (axis_labels.0.as_str(), axis_labels.1.as_str(), axis_labels.2.as_str());
     let html = match layout3d::wedges(&cfg) {
-        Some((w, groups)) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref(), &groups),
+        Some((w, zl)) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref(), &zl.groups, &zl.depth, zl.hole, zl.ring_span),
         None => String::new(),
     };
     apply_bg3d(html, &o)
@@ -109,8 +109,12 @@ mod tests {
         let base = r#"{"title":"t","labels":["Root","A","B"],"parents":["","Root","Root"],"values":[0,40,60],"variant":"#;
         let zoomable = build_sunburst3d_chart(&format!("{base}\"zoomable\"}}"));
         assert!(zoomable.contains("var ZKIDS="));
+        assert!(zoomable.contains("var ND="), "zoomable must carry per-node depth for the reflow animation");
+        assert!(zoomable.contains("var ZHOLE="));
+        assert!(zoomable.contains("var ZRSPAN="));
         let basic = build_sunburst3d_chart(&format!("{base}\"basic\"}}"));
         assert!(!basic.contains("var ZKIDS="));
+        assert!(!basic.contains("var ND="));
     }
 
     #[test]
