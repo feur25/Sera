@@ -722,7 +722,7 @@ function R(){
     g.fillText(ttl,W/2,10);
   }
   drawEnvironment();
-  var noAxes=M===7||M===12||M===13||M===15;
+  var noAxes=M===12||M===15;
   if(!noAxes){
   var or=pj(ZN.x0,ZN.y0,ZN.z0);
   arw(or,pj(ZN.x1+0.06,ZN.y0,ZN.z0),AX);arw(or,pj(ZN.x0,ZN.y1+0.06,ZN.z0),AY);arw(or,pj(ZN.x0,ZN.y0,ZN.z1+0.06),AZ);
@@ -740,7 +740,7 @@ function R(){
   pp=[];
   if(typeof BN!=='undefined'){rBarBlocks(mx,my,sc);}
   else if(SCENE==='terrain'||SCENE==='tower'||SCENE==='radial'||SCENE==='podium'){rEnvBars(mx,my,sc);}
-  else if(M===0)rSgl(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===7)rPie(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===13)rSb(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);else if(M===17)rMesh(mx,my,sc);else if(M===18)rWc(mx,my,sc);
+  else if(M===0)rSgl(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);else if(M===17)rMesh(mx,my,sc);else if(M===18)rWc(mx,my,sc);else if(M===19)rWedgeMesh(mx,my,sc);
   drawLgd();
   g.font='9.5px -apple-system,sans-serif';g.fillStyle=isDark?'rgba(100,116,139,0.4)':'rgba(0,0,0,0.18)';
   g.textAlign='center';g.textBaseline='bottom';
@@ -1173,66 +1173,50 @@ function rRdg(mx,my,sc){
     }
   }
 }
-function drawWedge3D(mx,my,a0,a1,innerR,outerR,depth,tiltF,col,ii){
-  var rgb=hx2rgb(col);
-  var lr2=Math.min(255,rgb[0]+65),lg2=Math.min(255,rgb[1]+65),lb2=Math.min(255,rgb[2]+65);
-  var dr2=Math.max(0,rgb[0]-65),dg2=Math.max(0,rgb[1]-65),db2=Math.max(0,rgb[2]-65);
-  var nLay=18;
-  for(var li=0;li<nLay;li++){
-    var frac=li/(nLay-1);
-    var offY2=-depth*frac;
-    var steps=24;
-    g.beginPath();
-    for(var st=0;st<=steps;st++){var a=a0+(a1-a0)*st/steps;g.lineTo(mx+Math.cos(a)*outerR,my+offY2+Math.sin(a)*outerR*tiltF);}
-    for(var st=steps;st>=0;st--){var a=a0+(a1-a0)*st/steps;g.lineTo(mx+Math.cos(a)*innerR,my+offY2+Math.sin(a)*innerR*tiltF);}
-    g.closePath();
-    var sA=0.1+0.9*frac;
-    g.fillStyle='rgba('+Math.round(dr2+(rgb[0]-dr2)*sA)+','+Math.round(dg2+(rgb[1]-dg2)*sA)+','+Math.round(db2+(rgb[2]-db2)*sA)+',0.9)';g.fill();
-  }
-  var topOff=-depth,botOff=0,stW=26;
-  g.beginPath();
-  for(var st=0;st<=stW;st++){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*outerR,my+topOff+Math.sin(a)*outerR*tiltF);}
-  for(var st=stW;st>=0;st--){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*outerR,my+botOff+Math.sin(a)*outerR*tiltF);}
-  g.closePath();g.fillStyle='rgba('+dr2+','+dg2+','+db2+',0.65)';g.fill();
-  g.beginPath();
-  for(var st=0;st<=stW;st++){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*innerR,my+topOff+Math.sin(a)*innerR*tiltF);}
-  for(var st=stW;st>=0;st--){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*innerR,my+botOff+Math.sin(a)*innerR*tiltF);}
-  g.closePath();g.fillStyle='rgba('+Math.round((dr2+rgb[0])/2)+','+Math.round((dg2+rgb[1])/2)+','+Math.round((db2+rgb[2])/2)+',0.45)';g.fill();
-  var mid=(a0+a1)/2,mr=(innerR+outerR)/2;
-  g.beginPath();
-  for(var st=0;st<=stW;st++){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*outerR,my+topOff+Math.sin(a)*outerR*tiltF);}
-  for(var st=stW;st>=0;st--){var a=a0+(a1-a0)*st/stW;g.lineTo(mx+Math.cos(a)*innerR,my+topOff+Math.sin(a)*innerR*tiltF);}
-  g.closePath();
-  var cxs=mx+Math.cos(mid)*mr,cys=my+topOff+Math.sin(mid)*mr*tiltF;
-  var sg2=g.createRadialGradient(cxs-mr*0.22,cys-10,0,cxs,cys,mr*0.65);
-  sg2.addColorStop(0,'rgb('+lr2+','+lg2+','+lb2+')');sg2.addColorStop(0.45,col);sg2.addColorStop(1,'rgb('+dr2+','+dg2+','+db2+')');
-  g.fillStyle=sg2;g.fill();g.strokeStyle='rgba(255,255,255,0.18)';g.lineWidth=0.8;g.stroke();
-  pp.push({sx:cxs,sy:cys,i:ii,r:10});
+function wPt(cx,cy,r,z,a){
+  var wx=cx+Math.cos(a)*r,wy=cy+Math.sin(a)*r;
+  var nx=(wx-xmn)/xr-0.5,ny=(wy-ymn)/yr-0.5,nz=(z-zmn)/zr-0.5;
+  return pj(nx,ny,nz);
 }
-function rPie(mx,my,sc){
-  var hasA=typeof A0!=='undefined';
-  var rd=Math.min(W,H)*0.28,tiltF=Math.cos(pitch)*0.85+0.15,sinP=Math.sin(pitch),rot=yaw-yaw0;
-  var baseDepth=0.21*sc;
-  var total=0;if(!hasA){for(var i=0;i<N;i++)total+=Z[i];if(total<=0)return;}
-  var items=[],ca=0;
-  for(var i=0;i<N;i++){
-    if(VIS&&!VIS[i])continue;
-    var ci=uc?C[i]%PAL.length:i%PAL.length;
-    var a0,a1;
-    if(hasA){a0=A0[i]+rot;a1=A1[i]+rot;if(!(a1>a0))continue;}
-    else{a0=ca+rot;a1=ca+Z[i]/total*TAU+rot;ca+=Z[i]/total*TAU;}
-    var innerR=(typeof IR!=='undefined'?IR[i]:0)*rd;
-    var outerR=(typeof OR!=='undefined'?OR[i]:1)*rd;
-    var ox=(typeof CX!=='undefined'?CX[i]:0)*rd;
-    var oy=(typeof CY!=='undefined'?CY[i]:0)*rd;
-    var depth=(typeof RH!=='undefined'?RH[i]:1)*baseDepth;
-    var mid=(a0+a1)/2;
-    items.push({i:i,ci:ci,a0:a0,a1:a1,innerR:innerR,outerR:outerR,ox:ox,oy:oy,depth:depth,front:-Math.sin(mid+yaw)*sinP+Math.cos(mid)*0.001});
+function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
+  var zBot=0,steps=Math.max(2,Math.min(48,Math.ceil((a1-a0)*10))),hasHole=ir>1e-6,k,aa,ab;
+  for(k=0;k<steps;k++){
+    aa=a0+(a1-a0)*k/steps;ab=a0+(a1-a0)*(k+1)/steps;
+    var p0=wPt(cx,cy,or,zBot,aa),p1=wPt(cx,cy,or,zBot,ab),p2=wPt(cx,cy,or,zTop,ab),p3=wPt(cx,cy,or,zTop,aa);
+    if(p0&&p1&&p2&&p3)fillFace(p0,p1,p2,p3,fc.right,0);
   }
-  items.sort(function(a,b){return a.front-b.front;});
-  for(var k=0;k<items.length;k++){
-    var it=items[k];
-    drawWedge3D(mx+it.ox,my+it.oy,it.a0,it.a1,it.innerR,it.outerR,it.depth,tiltF,PAL[it.ci],it.i);
+  if(hasHole){
+    for(k=0;k<steps;k++){
+      aa=a0+(a1-a0)*k/steps;ab=a0+(a1-a0)*(k+1)/steps;
+      var q0=wPt(cx,cy,ir,zBot,ab),q1=wPt(cx,cy,ir,zBot,aa),q2=wPt(cx,cy,ir,zTop,aa),q3=wPt(cx,cy,ir,zTop,ab);
+      if(q0&&q1&&q2&&q3)fillFace(q0,q1,q2,q3,fc.left,0);
+    }
+  }
+  var c0=wPt(cx,cy,ir,zBot,a0),c1=wPt(cx,cy,or,zBot,a0),c2=wPt(cx,cy,or,zTop,a0),c3=wPt(cx,cy,ir,zTop,a0);
+  if(c0&&c1&&c2&&c3)fillFace(c0,c1,c2,c3,fc.front,0);
+  var d0=wPt(cx,cy,or,zBot,a1),d1=wPt(cx,cy,ir,zBot,a1),d2=wPt(cx,cy,ir,zTop,a1),d3=wPt(cx,cy,or,zTop,a1);
+  if(d0&&d1&&d2&&d3)fillFace(d0,d1,d2,d3,fc.back,0);
+  for(k=0;k<steps;k++){
+    aa=a0+(a1-a0)*k/steps;ab=a0+(a1-a0)*(k+1)/steps;
+    var t0=wPt(cx,cy,ir,zTop,aa),t1=wPt(cx,cy,or,zTop,aa),t2=wPt(cx,cy,or,zTop,ab),t3=wPt(cx,cy,ir,zTop,ab);
+    if(t0&&t1&&t2&&t3)fillFace(t0,t1,t2,t3,fc.top,0);
+  }
+}
+function rWedgeMesh(mx,my,sc){
+  var rot=yaw-yaw0,n2=A0.length,items=[];
+  for(var i=0;i<n2;i++){
+    if(VIS&&!VIS[i])continue;
+    if(!(A1[i]>A0[i]))continue;
+    var mid=(A0[i]+A1[i])/2+rot,mr=(IR[i]+OR[i])/2;
+    var mp=wPt(CX[i],CY[i],mr,RH[i]/2,mid);
+    if(!mp)continue;
+    items.push({i:i,d:mp.d,ci:uc?C[i]%PAL.length:i%PAL.length,msx:mx+mp.x*sc,msy:my-mp.y*sc});
+  }
+  items.sort(function(a,b){return b.d-a.d;});
+  for(var j=0;j<items.length;j++){
+    var it=items[j],i=it.i;
+    drawWedgeMesh3D(CX[i],CY[i],A0[i]+rot,A1[i]+rot,IR[i],OR[i],RH[i],faceCols(PAL[it.ci]));
+    pp.push({sx:it.msx,sy:it.msy,i:i,r:10});
   }
 }
 function rVio(mx,my,sc){
@@ -1510,31 +1494,6 @@ function rFn(mx,my,sc){
     pp.push({sx:mx,sy:(cyT+cyB)/2,i:it.i,r:rTop*0.5});
   }
 }
-function rSb(mx,my,sc){
-  var rd=Math.min(W,H)*0.3,tiltF=Math.cos(pitch)*0.85+0.15,rot=yaw-yaw0;
-  var hasA=typeof A0!=='undefined';
-  var holeF=typeof HOLEF!=='undefined'?HOLEF:0.09;
-  var baseDepth=0.32*sc;
-  var rings={};var maxRing=0;
-  for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;var rn=Math.round(Y[i]);if(rn>maxRing)maxRing=rn;if(!rings[rn])rings[rn]=[];rings[rn].push(i);}
-  var nRings=maxRing+1,ringSpan=rd*(1-holeF)/nRings;
-  for(var rn=0;rn<=maxRing;rn++){
-    if(!rings[rn])continue;
-    var idxs=rings[rn];
-    var total=0;if(!hasA){for(var k=0;k<idxs.length;k++)total+=Z[idxs[k]];if(total<=0)continue;}
-    var innerR=rd*holeF+ringSpan*rn;
-    var outerR=innerR+ringSpan*0.96;
-    var ca=0;
-    for(var k=0;k<idxs.length;k++){
-      var ii=idxs[k],ci=uc?C[ii]%PAL.length:ii%PAL.length;
-      var a0,a1;
-      if(hasA){a0=A0[ii]+rot;a1=A1[ii]+rot;if(!(a1>a0))continue;}
-      else{a0=ca+rot;a1=ca+Z[ii]/total*TAU+rot;ca+=Z[ii]/total*TAU;}
-      var depth=(typeof RH!=='undefined'?RH[ii]:1)*baseDepth;
-      drawWedge3D(mx,my,a0,a1,innerR,outerR,depth,tiltF,PAL[ci],ii);
-    }
-  }
-}
 function rStk(mx,my,sc){
   var cats={};var catOrd=[];
   for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;
@@ -1661,11 +1620,15 @@ function ht(ex,ey){if(typeof BN!=='undefined'&&!isEnvScene())return hitBlock(ex,
 function sT(idx,ex,ey){
   var blk=typeof BN!=='undefined';
   var lbl=blk?(CL.length>0?CL[BCI[idx]%CL.length]:'Block '+(idx+1)):(typeof NM!=='undefined'&&NM[idx]!==undefined?NM[idx]:(CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1)));
-  var vx=blk?BX[idx]:X[idx],vy=blk?BY[idx]:Y[idx],vz=blk?BZ1[idx]:Z[idx];
   var h='<b>'+lbl+'</b>';
-  h+='<span>'+(xl||'X')+':</span> <span class="tv">'+vx.toFixed(3)+'</span><br>';
-  h+='<span>'+(yl||'Y')+':</span> <span class="tv">'+vy.toFixed(3)+'</span><br>';
-  h+='<span>'+(zl||'Z')+':</span> <span class="tv">'+vz.toFixed(3)+'</span>';
+  if(typeof VAL!=='undefined'&&VAL[idx]!==undefined){
+    h+='<span>Value:</span> <span class="tv">'+VAL[idx].toFixed(2)+'</span>';
+  } else {
+    var vx=blk?BX[idx]:X[idx],vy=blk?BY[idx]:Y[idx],vz=blk?BZ1[idx]:Z[idx];
+    h+='<span>'+(xl||'X')+':</span> <span class="tv">'+vx.toFixed(3)+'</span><br>';
+    h+='<span>'+(yl||'Y')+':</span> <span class="tv">'+vy.toFixed(3)+'</span><br>';
+    h+='<span>'+(zl||'Z')+':</span> <span class="tv">'+vz.toFixed(3)+'</span>';
+  }
   tip.innerHTML=h;tip.className='c3t v'+(pin?' p':'');
   var bx=wrap.getBoundingClientRect();
   var tx=ex-bx.left+16,ty=ey-bx.top-14;
