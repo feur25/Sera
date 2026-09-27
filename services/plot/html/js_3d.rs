@@ -1207,13 +1207,19 @@ function rWedgeMesh(mx,my,sc){
     var mp=wPt(CX[i],CY[i],mr,RH[i]/2,mid);
     var depth=mp?mp.d:1e18;
     var msx=mp?mx+mp.x*sc:mx,msy=mp?my-mp.y*sc:my;
-    items.push({i:i,d:depth,ci:uc?C[i]%PAL.length:i%PAL.length,msx:msx,msy:msy,rw:rw});
+    var hitR=10;
+    var ep=wPt(CX[i],CY[i],rw.or,RH[i]/2,rw.a1);
+    if(mp&&ep){
+      var esx=mx+ep.x*sc,esy=my-ep.y*sc;
+      hitR=Math.max(10,Math.hypot(esx-msx,esy-msy));
+    }
+    items.push({i:i,d:depth,ci:uc?C[i]%PAL.length:i%PAL.length,msx:msx,msy:msy,rw:rw,hitR:hitR});
   }
   items.sort(function(a,b){return b.d-a.d;});
   for(var j=0;j<items.length;j++){
     var it=items[j],i=it.i,rw=it.rw;
     drawWedgeMesh3D(CX[i],CY[i],rw.a0,rw.a1,rw.ir,rw.or,RH[i],faceCols(PAL[it.ci]));
-    pp.push({sx:it.msx,sy:it.msy,i:i,r:10});
+    pp.push({sx:it.msx,sy:it.msy,i:i,r:it.hitR});
   }
 }
 function rVio(mx,my,sc){
