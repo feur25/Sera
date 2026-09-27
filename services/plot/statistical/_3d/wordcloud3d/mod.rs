@@ -1,11 +1,23 @@
 use crate::plot::statistical::_3d::budget::Budget;
+use crate::plot::statistical::_3d::zone::{fit as zone_fit, Fit};
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::bar::Bar3DBlock;
 use crate::plot::statistical::wordcloud::layout3d;
 use crate::plot::statistical::{WordCloudConfig, WordCloudVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
-fn render_wordcloud_spheres_html(
+fn js_str_escape(out: &mut String, s: &str) {
+    for ch in s.chars() {
+        match ch {
+            '\'' => out.push_str("\\'"),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            c => out.push(c),
+        }
+    }
+}
+
+fn render_wordcloud_text_html(
     title: &str,
     blocks: &[Bar3DBlock],
     names: &[String],
@@ -14,21 +26,35 @@ fn render_wordcloud_spheres_html(
     h: i32,
     bg: Option<&str>,
     scene: &str,
+    zone: Option<&[f64]>,
 ) -> String {
     if blocks.is_empty() {
-        return crate::html::js_3d::render_3d_html_impl(16, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"var S=[];");
+        return crate::html::js_3d::render_3d_html_impl(18, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"var S=[];");
     }
     let x: Vec<f64> = blocks.iter().map(|b| b.cx).collect();
     let y: Vec<f64> = blocks.iter().map(|b| b.cy).collect();
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
     let (hlo, hhi) = blocks.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), b| (lo.min(b.hw), hi.max(b.hw)));
     let hrange = (hhi - hlo).max(1e-9);
-    let size_js = format!(
-        "var S=[{}];",
+    let explicit = zone.and_then(|p| <[f64; 3]>::try_from(p).ok());
+    let fitted = zone_fit(blocks, 0.6, explicit, Fit::Uniform);
+    let mut extra = format!(
+        "var BFIT={};var S=[{}];",
+        fitted.to_js(),
         blocks.iter().map(|b| format!("{:.4}", (b.hw - hlo) / hrange)).collect::<Vec<_>>().join(",")
     );
+    extra.push_str("var NM=[");
+    for (i, name) in names.iter().enumerate() {
+        if i > 0 {
+            extra.push(',');
+        }
+        extra.push('\'');
+        js_str_escape(&mut extra, name);
+        extra.push('\'');
+    }
+    extra.push_str("];");
     let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
-    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, size_js.as_bytes())
+    crate::html::js_3d::render_3d_html_impl(18, title, &x, &y, &z, axis_labels, &colors, &[], w, h, bg, scene, extra.as_bytes())
 }
 
 #[crate::chart_demo("words=[\"rust\",\"python\",\"wasm\",\"plot\",\"data\",\"viz\",\"chart\",\"graph\",\"fast\",\"native\"], frequencies=[42,38,30,28,25,22,18,15,12,10]")]
@@ -70,7 +96,7 @@ pub fn build_wordcloud3d_chart(input: &str) -> String {
         let view = BlockView::new(0.6, "jet").with_zone(o.zone.as_deref());
         render_blocks3d_view_html(title, &blocks, &view, axis_refs, &names, o.w(900), o.h(500), bg_default, env)
     } else {
-        render_wordcloud_spheres_html(title, &blocks, &names, axis_refs, o.w(900), o.h(500), bg_default, env)
+        render_wordcloud_text_html(title, &blocks, &names, axis_refs, o.w(900), o.h(500), bg_default, env, o.zone.as_deref())
     };
     apply_bg3d(html, &o)
 }
@@ -100,8 +126,19 @@ mod tests {
         for (key, json) in &demos() {
             let html = build_wordcloud3d_chart(json);
             assert!(!html.is_empty(), "{key} must render");
-            assert!(!html.contains("var BN="), "{key} must render as round spheres by default, not Bar3DBlock cuboids");
+            assert!(!html.contains("var BN="), "{key} must render real words by default, not Bar3DBlock cuboids");
+            assert!(html.contains("var NM="), "{key} must carry the actual word text");
+            assert!(html.contains("var BFIT="), "{key} must fit its camera to the actual word extent, like every other 3d chart");
         }
+    }
+
+    #[test]
+    fn many_words_still_fit_within_the_camera_frame() {
+        let words: Vec<String> = (0..40).map(|i| format!("word{i}")).collect();
+        let frequencies: Vec<f64> = (0..40).map(|i| 10.0 + i as f64).collect();
+        let json = serde_json::json!({"words": words, "frequencies": frequencies}).to_string();
+        let html = build_wordcloud3d_chart(&json);
+        assert!(html.contains("var BFIT="), "a large word count must still emit a fitted camera zone");
     }
 
     #[test]
