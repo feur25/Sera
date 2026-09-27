@@ -2,6 +2,8 @@ use super::config::PieConfig;
 use super::variant::PieVariant;
 use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::hierarchy::{branch_tone, MIN_SPAN};
+pub use crate::plot::statistical::_3d::wedge::Wedges;
+use crate::plot::statistical::_3d::wedge::HEIGHT as WEDGE_HEIGHT;
 use crate::plot::statistical::bar::Bar3DBlock;
 use std::f64::consts::{PI, TAU};
 
@@ -110,38 +112,19 @@ pub fn layout_named(cfg: &PieConfig, _budget: &Budget) -> (Vec<Bar3DBlock>, Vec<
     (waffle_cells(&values, HEIGHT), names)
 }
 
-#[derive(Default)]
-pub struct Wedges {
-    pub a0: Vec<f64>,
-    pub a1: Vec<f64>,
-    pub inner_r: Vec<f64>,
-    pub outer_r: Vec<f64>,
-    pub cx: Vec<f64>,
-    pub cy: Vec<f64>,
-    pub color_idx: Vec<f64>,
-    pub names: Vec<String>,
-}
-
-fn ring(w: &mut Wedges, spans: &[(f64, f64)], inner: f64, outer: f64, cx: f64, cy: f64, names: &[String]) {
+fn ring(w: &mut Wedges, spans: &[(f64, f64)], values: &[f64], inner: f64, outer: f64, cx: f64, cy: f64, names: &[String]) {
     for (i, &(a0, a1)) in spans.iter().enumerate() {
         if a1 - a0 <= MIN_SPAN {
             continue;
         }
-        w.a0.push(a0);
-        w.a1.push(a1);
-        w.inner_r.push(inner);
-        w.outer_r.push(outer);
-        w.cx.push(cx);
-        w.cy.push(cy);
-        w.color_idx.push(i as f64);
-        w.names.push(names.get(i).cloned().unwrap_or_default());
+        w.push(a0, a1, inner, outer, cx, cy, WEDGE_HEIGHT, values.get(i).copied().unwrap_or(0.0), i as f64, names.get(i).cloned().unwrap_or_default());
     }
 }
 
 fn nested(w: &mut Wedges, values: &[f64], secondary: &[f64], names: &[String], secondary_labels: &[String]) {
-    ring(w, &value_spans(values, 0.0, TAU), NESTED_INNER1, NESTED_OUTER1, 0.0, 0.0, names);
+    ring(w, &value_spans(values, 0.0, TAU), values, NESTED_INNER1, NESTED_OUTER1, 0.0, 0.0, names);
     let sec_names = names_for(secondary.len(), secondary_labels);
-    ring(w, &value_spans(secondary, 0.0, TAU), NESTED_INNER2, NESTED_OUTER2, 0.0, 0.0, &sec_names);
+    ring(w, &value_spans(secondary, 0.0, TAU), secondary, NESTED_INNER2, NESTED_OUTER2, 0.0, 0.0, &sec_names);
 }
 
 fn nightingale(w: &mut Wedges, values: &[f64], names: &[String]) {
@@ -155,14 +138,7 @@ fn nightingale(w: &mut Wedges, values: &[f64], names: &[String]) {
         let a0 = i as f64 * step;
         let a1 = a0 + step * NIGHT_GAP;
         let outer = (NIGHT_INNER + (values[i].max(0.0) / vmax) * (1.0 - NIGHT_INNER)).max(NIGHT_INNER + 0.05);
-        w.a0.push(a0);
-        w.a1.push(a1);
-        w.inner_r.push(NIGHT_INNER);
-        w.outer_r.push(outer);
-        w.cx.push(0.0);
-        w.cy.push(0.0);
-        w.color_idx.push(i as f64);
-        w.names.push(names.get(i).cloned().unwrap_or_default());
+        w.push(a0, a1, NIGHT_INNER, outer, 0.0, 0.0, WEDGE_HEIGHT, values[i], i as f64, names.get(i).cloned().unwrap_or_default());
     }
 }
 
@@ -215,7 +191,7 @@ fn subplot_wedges(w: &mut Wedges, cfg: &PieConfig) {
         let oy = -(row - (rows as f64 - 1.0) / 2.0) * cell_h;
         let local_scale = if proportional { (totals[pi] / max_total).sqrt().max(0.3) } else { 1.0 };
         let scale = local_scale * cell * SUBPLOT_FILL;
-        ring(w, &value_spans(vals, 0.0, TAU), 0.0, scale, ox, oy, &names);
+        ring(w, &value_spans(vals, 0.0, TAU), vals, 0.0, scale, ox, oy, &names);
     }
 }
 
@@ -231,16 +207,16 @@ pub fn wedges(cfg: &PieConfig) -> Option<Wedges> {
         let values = finite(&cfg.values[..n]);
         let names = names_for(n, cfg.labels);
         match cfg.variant {
-            PieVariant::Semi => ring(&mut w, &value_spans(&values, 0.0, PI), 0.0, 1.0, 0.0, 0.0, &names),
-            PieVariant::Donut | PieVariant::Kpi => ring(&mut w, &value_spans(&values, 0.0, TAU), DONUT_INNER, 1.0, 0.0, 0.0, &names),
+            PieVariant::Semi => ring(&mut w, &value_spans(&values, 0.0, PI), &values, 0.0, 1.0, 0.0, 0.0, &names),
+            PieVariant::Donut | PieVariant::Kpi => ring(&mut w, &value_spans(&values, 0.0, TAU), &values, DONUT_INNER, 1.0, 0.0, 0.0, &names),
             PieVariant::Nested => nested(&mut w, &values, &finite(cfg.secondary_values), &names, cfg.secondary_labels),
             PieVariant::Nightingale => nightingale(&mut w, &values, &names),
             PieVariant::Exploded => {
-                ring(&mut w, &value_spans(&values, 0.0, TAU), 0.0, 1.0, 0.0, 0.0, &names);
+                ring(&mut w, &value_spans(&values, 0.0, TAU), &values, 0.0, 1.0, 0.0, 0.0, &names);
                 let pull = if cfg.pull.is_empty() { auto_pull(&values) } else { finite(cfg.pull) };
                 apply_pull(&mut w, &pull);
             }
-            _ => ring(&mut w, &value_spans(&values, 0.0, TAU), 0.0, 1.0, 0.0, 0.0, &names),
+            _ => ring(&mut w, &value_spans(&values, 0.0, TAU), &values, 0.0, 1.0, 0.0, 0.0, &names),
         }
     }
     if w.a0.is_empty() {

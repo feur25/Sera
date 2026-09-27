@@ -1,51 +1,10 @@
 use crate::plot::statistical::_3d::budget::Budget;
+use crate::plot::statistical::_3d::wedge;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::common::apply_sort;
-use crate::plot::statistical::pie::layout3d::{self, Wedges};
+use crate::plot::statistical::pie::layout3d;
 use crate::plot::statistical::{PieConfig, PieVariant};
 use crate::plot::{apply_bg3d, parse_all};
-
-fn js_str_escape(out: &mut String, s: &str) {
-    for ch in s.chars() {
-        match ch {
-            '\'' => out.push_str("\\'"),
-            '\\' => out.push_str("\\\\"),
-            '\n' => out.push_str("\\n"),
-            c => out.push(c),
-        }
-    }
-}
-
-fn nums(values: &[f64], places: usize) -> String {
-    values.iter().map(|v| format!("{v:.places$}")).collect::<Vec<_>>().join(",")
-}
-
-fn render_wedges_html(title: &str, w: &Wedges, axis_labels: (&str, &str, &str), width: i32, height: i32, bg: Option<&str>, scene: &str) -> String {
-    if w.a0.is_empty() {
-        return crate::html::js_3d::render_3d_html_impl(7, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], width, height, bg, scene, b"");
-    }
-    let zeros = vec![0.0; w.a0.len()];
-    let mut extra = format!(
-        "var A0=[{}],A1=[{}],IR=[{}],OR=[{}],CX=[{}],CY=[{}];",
-        nums(&w.a0, 5),
-        nums(&w.a1, 5),
-        nums(&w.inner_r, 4),
-        nums(&w.outer_r, 4),
-        nums(&w.cx, 4),
-        nums(&w.cy, 4),
-    );
-    extra.push_str("var NM=[");
-    for (i, name) in w.names.iter().enumerate() {
-        if i > 0 {
-            extra.push(',');
-        }
-        extra.push('\'');
-        js_str_escape(&mut extra, name);
-        extra.push('\'');
-    }
-    extra.push_str("];");
-    crate::html::js_3d::render_3d_html_impl(7, title, &zeros, &zeros, &zeros, axis_labels, &w.color_idx, &[], width, height, bg, scene, extra.as_bytes())
-}
 
 #[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]")]
 #[crate::params(paramsList["title","labels","values","secondary_values","secondary_labels","pull","series","subplot_cols","proportional","sort_order","variant","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
@@ -86,7 +45,7 @@ pub fn build_pie3d_chart(input: &str) -> String {
         render_blocks3d_view_html(title, &blocks, &view, axis_refs, &names, o.w(700), o.h(560), bg_default, env)
     } else {
         match layout3d::wedges(&cfg) {
-            Some(w) => render_wedges_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env),
+            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env, o.zone.as_deref()),
             None => String::new(),
         }
     };
@@ -141,7 +100,13 @@ mod tests {
             assert!(!html.is_empty(), "{key} must render");
             assert!(!html.contains("var BN="), "{key} must render as round wedges, not Bar3DBlock cuboids");
             assert!(html.contains("var A0="), "{key} must carry precomputed wedge angles");
+            assert!(html.contains("var BFIT="), "{key} must fit its camera to the real wedge geometry like every other 3d chart");
         }
+    }
+
+    #[test]
+    fn every_pie_variant_honours_an_explicit_zone_and_lives_in_real_3d_space() {
+        twin::check_zone(build_pie3d_chart, &demos());
     }
 
     #[test]
@@ -168,11 +133,6 @@ mod tests {
     #[test]
     fn the_registry_exposes_the_pie_variants_and_the_view_axes() {
         twin::check_axes("pie3d", PieVariant::all().len());
-    }
-
-    #[test]
-    fn the_waffle_variant_honours_an_explicit_zone() {
-        twin::check_zone(build_pie3d_chart, &block_demos());
     }
 
     #[test]
