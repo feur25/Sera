@@ -1213,8 +1213,9 @@ function rWedgeMesh(mx,my,sc){
     if(!(A1[i]>A0[i]))continue;
     var mid=(A0[i]+A1[i])/2,mr=(IR[i]+OR[i])/2;
     var mp=wPt(CX[i],CY[i],mr,RH[i]/2,mid);
-    if(!mp)continue;
-    items.push({i:i,d:mp.d,ci:uc?C[i]%PAL.length:i%PAL.length,msx:mx+mp.x*sc,msy:my-mp.y*sc});
+    var depth=mp?mp.d:1e18;
+    var msx=mp?mx+mp.x*sc:mx,msy=mp?my-mp.y*sc:my;
+    items.push({i:i,d:depth,ci:uc?C[i]%PAL.length:i%PAL.length,msx:msx,msy:msy});
   }
   items.sort(function(a,b){return b.d-a.d;});
   for(var j=0;j<items.length;j++){
