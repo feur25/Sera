@@ -272,7 +272,7 @@ var pin=false,piI=-1,pp=[];
 var AX='#f472b6',AY='#22d3ee',AZ='#fbbf24';
 var autoR=false,velY=0,velP=0,panX=0,panY=0,keys={};
 var fric=0.95,kSpd=0.03;
-var zAnim=null,zHist=[];
+var zvState=null,zvHist=[],zvAnim=null;
 var TC=null,SHOWLEG=false,LPOS='right',HIDDEN={},VIS=null,legHit=[];
 var CMAP=typeof CMAP!=='undefined'&&CMAP?CMAP:'jet',CCAT=typeof CCAT!=='undefined'?CCAT:false;
 function recomputeVis(){VIS=new Array(N);for(var vi=0;vi<N;vi++){var vci=uc?C[vi]%PAL.length:vi%PAL.length;VIS[vi]=!HIDDEN[vci];}}
@@ -321,25 +321,6 @@ function frameZoom(){
   }
   panX=px;panY=py;
   return hi;
-}
-function frameZoomTo(pts){
-  var n=pts.length,cx=0,cy=0,cz=0;
-  for(var i=0;i<n;i++){cx+=pts[i][0];cy+=pts[i][1];cz+=pts[i][2];}
-  cx/=n;cy/=n;cz/=n;
-  var lim=[W/2/sc*0.88,H/2/sc*0.82],lo=0.4,hi=24;
-  var curZoom=zoom,curPanX=panX,curPanY=panY;
-  panX=0;panY=0;
-  for(var k=0;k<30;k++){
-    var mid=(lo+hi)/2,ok=true;
-    zoom=mid;camSet();
-    for(var i=0;i<n&&ok;i++){var p=pj(pts[i][0]-cx,pts[i][1]-cy,pts[i][2]-cz);ok=!!p&&Math.abs(p.x)<=lim[0]&&Math.abs(p.y)<=lim[1];}
-    if(ok)hi=mid;else lo=mid;
-  }
-  zoom=hi;camSet();
-  var cp=pj(cx,cy,cz);
-  var res={zoom:hi,panX:cp?-cp.x*sc:0,panY:cp?-cp.y*sc:0};
-  zoom=curZoom;panX=curPanX;panY=curPanY;camSet();
-  return res;
 }
 rebuildCorners();
 applyFit();
@@ -1205,24 +1186,33 @@ function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
     if(t0&&t1&&t2&&t3)fillFace(t0,t1,t2,t3,fc.top,0);
   }
 }
+function zRemap(i){
+  if(!zvState)return{a0:A0[i],a1:A1[i],ir:IR[i],or:OR[i],vis:A1[i]>A0[i]};
+  var span=zvState.a1-zvState.a0;
+  if(span<=1e-9)return{vis:false};
+  var t0=Math.max(0,Math.min(1,(A0[i]-zvState.a0)/span));
+  var t1=Math.max(0,Math.min(1,(A1[i]-zvState.a0)/span));
+  if(t1-t0<=1e-4)return{vis:false};
+  var ny=Math.max(0,ND[i]-zvState.vd);
+  var ir=ZHOLE+ny*ZRSPAN,or=ir+ZRSPAN*0.96;
+  return{a0:t0*TAU,a1:t1*TAU,ir:ir,or:or,vis:true};
+}
 function rWedgeMesh(mx,my,sc){
   var n2=A0.length,items=[];
-  var zg=(typeof ZKIDS!=='undefined'&&zHist.length>0&&piI>=0)?ZKIDS[piI]:null;
   for(var i=0;i<n2;i++){
     if(VIS&&!VIS[i])continue;
-    if(!(A1[i]>A0[i]))continue;
-    var mid=(A0[i]+A1[i])/2,mr=(IR[i]+OR[i])/2;
+    var rw=zRemap(i);
+    if(!rw.vis)continue;
+    var mid=(rw.a0+rw.a1)/2,mr=(rw.ir+rw.or)/2;
     var mp=wPt(CX[i],CY[i],mr,RH[i]/2,mid);
     var depth=mp?mp.d:1e18;
     var msx=mp?mx+mp.x*sc:mx,msy=mp?my-mp.y*sc:my;
-    items.push({i:i,d:depth,ci:uc?C[i]%PAL.length:i%PAL.length,msx:msx,msy:msy});
+    items.push({i:i,d:depth,ci:uc?C[i]%PAL.length:i%PAL.length,msx:msx,msy:msy,rw:rw});
   }
   items.sort(function(a,b){return b.d-a.d;});
   for(var j=0;j<items.length;j++){
-    var it=items[j],i=it.i,dim=zg&&zg.indexOf(i)===-1;
-    if(dim)g.globalAlpha=0.22;
-    drawWedgeMesh3D(CX[i],CY[i],A0[i],A1[i],IR[i],OR[i],RH[i],faceCols(PAL[it.ci]));
-    if(dim)g.globalAlpha=1;
+    var it=items[j],i=it.i,rw=it.rw;
+    drawWedgeMesh3D(CX[i],CY[i],rw.a0,rw.a1,rw.ir,rw.or,RH[i],faceCols(PAL[it.ci]));
     pp.push({sx:it.msx,sy:it.msy,i:i,r:10});
   }
 }
@@ -1659,40 +1649,32 @@ function tick(){
   if(keys.ArrowDown||keys.s||keys.S){pitch=Math.max(-1.47,pitch-kSpd);dirty=true;keep=true;}
   if(keys.q||keys.Q){zoom=Math.min(5,zoom*1.015);dirty=true;keep=true;}
   if(keys.e||keys.E){zoom=Math.max(0.3,zoom*0.985);dirty=true;keep=true;}
-  if(zAnim){
-    var now=performance.now();
-    if(zAnim.t0===null)zAnim.t0=now;
-    var zt=Math.min((now-zAnim.t0)/560,1),ze=zt<.5?2*zt*zt:(4-2*zt)*zt-1;
-    zoom=zAnim.fz+(zAnim.tz-zAnim.fz)*ze;
-    panX=zAnim.fx+(zAnim.tx-zAnim.fx)*ze;
-    panY=zAnim.fy+(zAnim.ty-zAnim.fy)*ze;
+  if(zvAnim){
+    var vnow=performance.now();
+    if(zvAnim.t0===null)zvAnim.t0=vnow;
+    var zvt=Math.min((vnow-zvAnim.t0)/680,1),zve=zvt<.5?2*zvt*zvt:(4-2*zvt)*zvt-1;
+    var zf=zvAnim.from,zto=zvAnim.to;
+    zvState={a0:zf.a0+(zto.a0-zf.a0)*zve,a1:zf.a1+(zto.a1-zf.a1)*zve,vd:zf.vd+(zto.vd-zf.vd)*zve};
     dirty=true;keep=true;
-    if(zt>=1)zAnim=null;
+    if(zvt>=1){zvState=zto;zvAnim=null;}
   }
   if(dirty){var t0=performance.now();R();adapt(performance.now()-t0);}
   if(keep)wake();
 }
-function zoomTo(z,px,py){zAnim={t0:null,fz:zoom,fx:panX,fy:panY,tz:z,tx:px,ty:py};wake();}
 function doZoomIn(idx){
   if(typeof ZKIDS==='undefined'||!ZKIDS[idx]||ZKIDS[idx].length<2||isEnvScene())return;
-  var pts;
-  if(typeof A0!=='undefined'){
-    pts=ZKIDS[idx].map(function(j){return wN(CX[j],CY[j],(IR[j]+OR[j])/2,RH[j]/2,(A0[j]+A1[j])/2);});
-  } else if(BP){
-    pts=ZKIDS[idx].map(function(j){return[BP.nx[j],BP.ny[j],(BP.z0[j]+BP.z1[j])/2];});
-  } else {
-    return;
-  }
-  var tgt=frameZoomTo(pts);
-  zHist.push({z:zoom,x:panX,y:panY});
+  var cur=zvState||{a0:0,a1:TAU,vd:0};
+  zvHist.push(cur);
   zBtn.classList.add('v');
-  zoomTo(tgt.zoom,tgt.panX,tgt.panY);
+  zvAnim={t0:null,from:cur,to:{a0:A0[idx],a1:A1[idx],vd:ND[idx]}};
+  wake();
 }
 function doZoomUp(){
-  if(!zHist.length)return;
-  var prev=zHist.pop();
-  if(!zHist.length)zBtn.classList.remove('v');
-  zoomTo(prev.z,prev.x,prev.y);
+  if(!zvHist.length)return;
+  var prev=zvHist.pop();
+  if(!zvHist.length)zBtn.classList.remove('v');
+  zvAnim={t0:null,from:zvState||{a0:0,a1:TAU,vd:0},to:prev};
+  wake();
 }
 recomputeVis();
 window['__sp3dCfg_'+cid]=function(opts){
@@ -1746,7 +1728,7 @@ window.addEventListener('mouseup',function(e){
   if(!mv){var bx=wrap.getBoundingClientRect(),sf=W/bx.width,ex=(e.clientX-bx.left)*sf,ey=(e.clientY-bx.top)*sf;var lci=legHt(ex,ey);if(lci>=0){HIDDEN[lci]=!HIDDEN[lci];recomputeVis();wake();return;}var idx=ht(ex,ey);if(idx>=0){pin=true;piI=idx;sT(idx,e.clientX,e.clientY);doZoomIn(idx);wake();}else{pin=false;piI=-1;tip.className='c3t';wake();}}
 });
 wrap.addEventListener('wheel',function(e){zoom=Math.max(0.3,Math.min(5,zoom*(e.deltaY>0?1.08:0.93)));wake();e.preventDefault();},{passive:false});
-wrap.addEventListener('dblclick',function(){yaw=yaw0;pitch=pitch0;zoom=zoom0;panX=0;panY=0;pin=false;piI=-1;tip.className='c3t';velY=0;velP=0;zAnim=null;zHist=[];zBtn.classList.remove('v');wake();});
+wrap.addEventListener('dblclick',function(){yaw=yaw0;pitch=pitch0;zoom=zoom0;panX=0;panY=0;pin=false;piI=-1;tip.className='c3t';velY=0;velP=0;zvAnim=null;zvState=null;zvHist=[];zBtn.classList.remove('v');wake();});
 wrap.addEventListener('mouseleave',function(){if(!pin)hT();});
 wrap.addEventListener('contextmenu',function(e){e.preventDefault();});
 document.addEventListener('keydown',function(e){
