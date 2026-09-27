@@ -667,7 +667,7 @@ function rBb(mx,my,sc){
     var p=pj(nx,ny,nz);if(!p)continue;
     var sf=su&&S[i]!==undefined?S[i]:0.5;
     var wr=0.02+sf*0.09;
-    var r=Math.max(2,wr*CAM.kx*sc/p.d);
+    var r=Math.max(2,Math.min(90,wr*CAM.kx*sc/p.d));
     pts.push({sx:mx+p.x*sc,sy:my-p.y*sc,d:p.d,ci:uc?C[i]%PAL.length:i%PAL.length,i:i,r:r});
   }
   pts.sort(function(a,b){return b.d-a.d;});
