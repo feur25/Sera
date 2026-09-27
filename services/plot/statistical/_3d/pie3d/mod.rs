@@ -45,7 +45,7 @@ pub fn build_pie3d_chart(input: &str) -> String {
         render_blocks3d_view_html(title, &blocks, &view, axis_refs, &names, o.w(700), o.h(560), bg_default, env)
     } else {
         match layout3d::wedges(&cfg) {
-            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env, o.zone.as_deref()),
+            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env, o.zone.as_deref(), &[]),
             None => String::new(),
         }
     };

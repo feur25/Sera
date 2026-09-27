@@ -1,6 +1,4 @@
-use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::wedge;
-use crate::plot::statistical::_3d::{render_blocks3d_view_html_zoomable, BlockView};
 use crate::plot::statistical::sunburst::layout3d;
 use crate::plot::statistical::{SunburstConfig, SunburstVariant};
 use crate::plot::{apply_bg3d, parse_all};
@@ -22,15 +20,9 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
     let axis_labels = (o.xl(), o.yl(), o.zl());
     let axis_refs = (axis_labels.0.as_str(), axis_labels.1.as_str(), axis_labels.2.as_str());
-    let html = if matches!(variant, SunburstVariant::Zoomable) {
-        let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
-        let (blocks, names, groups) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-        render_blocks3d_view_html_zoomable(title, &blocks, &view, axis_refs, &names, o.w(900), o.h(560), bg_default, env, &groups)
-    } else {
-        match layout3d::wedges(&cfg) {
-            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref()),
-            None => String::new(),
-        }
+    let html = match layout3d::wedges(&cfg) {
+        Some((w, groups)) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref(), &groups),
+        None => String::new(),
     };
     apply_bg3d(html, &o)
 }
@@ -55,22 +47,9 @@ mod tests {
         twin::variant_demos("statistical/sunburst/", SunburstVariant::keys_and_aliases(), SunburstVariant::default_key())
     }
 
-    fn is_block_variant(key: &str) -> bool {
-        key == "zoomable"
-    }
-
-    fn block_demos() -> twin::Demos {
-        demos().into_iter().filter(|(key, _)| is_block_variant(key)).collect()
-    }
-
-    fn wedge_demos() -> twin::Demos {
-        demos().into_iter().filter(|(key, _)| !is_block_variant(key)).collect()
-    }
-
     #[test]
     fn every_sunburst_variant_has_a_working_3d_counterpart() {
-        twin::check_variants(build_sunburst3d_chart, &block_demos(), 1);
-        for (key, json) in &wedge_demos() {
+        for (key, json) in &demos() {
             let html = build_sunburst3d_chart(json);
             assert!(!html.is_empty(), "{key} must render");
             assert!(!html.contains("var BN="), "{key} must render as round wedges, not Bar3DBlock cuboids");
@@ -91,8 +70,7 @@ mod tests {
 
     #[test]
     fn every_scene_applies_to_every_sunburst_variant() {
-        twin::check_scenes(build_sunburst3d_chart, &block_demos());
-        for (key, json) in &wedge_demos() {
+        for (key, json) in &demos() {
             for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
                 let html = build_sunburst3d_chart(&twin::set_field(json, "scene", scene_key));
                 assert!(!html.is_empty(), "{key} under {scene_key} must render");
