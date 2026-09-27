@@ -1,6 +1,7 @@
 use super::config::WordCloudConfig;
-use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::generic::spiral_columns;
+use super::variant::WordCloudVariant;
+use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget, SAMPLE_CAP};
+use crate::plot::statistical::_3d::generic::{packed_columns, phyllotaxis_columns, spiral_columns};
 use crate::plot::statistical::_3d::lineage::{markers, weighted_paths, Point};
 use crate::plot::statistical::bar::Bar3DBlock;
 
@@ -42,38 +43,50 @@ fn positioned(cfg: &WordCloudConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
     (blocks, cfg.words[..n].to_vec())
 }
 
-fn spiraled(cfg: &WordCloudConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
-    let n = cfg.words.len().min(cfg.frequencies.len());
-    if n == 0 {
+fn spiraled(cfg: &WordCloudConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+    let n_all = cfg.words.len().min(cfg.frequencies.len());
+    if n_all == 0 {
         return (Vec::new(), Vec::new());
     }
-    let mut blocks = spiral_columns(&cfg.frequencies[..n], HW, HW);
-    let (lo, hi) = cfg.frequencies[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
+    let cap = budget.points.min(SAMPLE_CAP);
+    let keep = even_indices(n_all, cap);
+    let words = pick(&cfg.words[..n_all], &keep);
+    let freqs = pick(&cfg.frequencies[..n_all], &keep);
+    let n = freqs.len();
+    let (lo, hi) = freqs.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &v| (lo.min(v), hi.max(v)));
     let range = (hi - lo).max(1e-9);
-    for (i, b) in blocks.iter_mut().enumerate() {
-        let frac = ((cfg.frequencies[i] - lo) / range).clamp(0.0, 1.0);
-        let size = SIZE_MIN + frac * (SIZE_MAX - SIZE_MIN);
-        b.hw = size;
-        b.hd = size;
+    let sizes: Vec<f64> = freqs.iter().map(|&v| SIZE_MIN + ((v - lo) / range).clamp(0.0, 1.0) * (SIZE_MAX - SIZE_MIN)).collect();
+    let packed = matches!(cfg.variant, WordCloudVariant::Bubble);
+    let mut blocks = match cfg.variant {
+        WordCloudVariant::Bubble => packed_columns(&sizes, &freqs),
+        WordCloudVariant::Cosmos | WordCloudVariant::Network | WordCloudVariant::Context | WordCloudVariant::Neuron => phyllotaxis_columns(&freqs, HW, HW),
+        _ => spiral_columns(&freqs, HW, HW),
+    };
+    for (i, b) in blocks.iter_mut().enumerate().take(n) {
+        let frac = ((freqs[i] - lo) / range).clamp(0.0, 1.0);
+        if !packed {
+            b.hw = sizes[i];
+            b.hd = sizes[i];
+        }
         b.tone = Some(frac);
     }
-    (blocks, cfg.words[..n].to_vec())
+    (blocks, words)
 }
 
-fn wordcloud_3d(cfg: &WordCloudConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
+fn wordcloud_3d(cfg: &WordCloudConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
     if cfg.points_x.len() >= 2 && cfg.points_x.len() == cfg.points_y.len() {
         positioned(cfg)
     } else {
-        spiraled(cfg)
+        spiraled(cfg, budget)
     }
 }
 
-pub fn layout_3d(cfg: &WordCloudConfig, _budget: &Budget) -> Vec<Bar3DBlock> {
-    layout_named(cfg, _budget).0
+pub fn layout_3d(cfg: &WordCloudConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    layout_named(cfg, budget).0
 }
 
-pub fn layout_named(cfg: &WordCloudConfig, _budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
-    wordcloud_3d(cfg)
+pub fn layout_named(cfg: &WordCloudConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+    wordcloud_3d(cfg, budget)
 }
 
 #[cfg(test)]
@@ -146,5 +159,47 @@ mod tests {
     fn empty_input_draws_nothing() {
         let (blocks, names) = layout_named(&WordCloudConfig::default(), &Budget::default());
         assert!(blocks.is_empty() && names.is_empty());
+    }
+
+    #[test]
+    fn bubble_packing_stays_fast_even_with_thousands_of_raw_words() {
+        let n = 6000;
+        let words: Vec<String> = (0..n).map(|i| format!("w{i}")).collect();
+        let frequencies: Vec<f64> = (0..n).map(|i| 1.0 + (i % 97) as f64).collect();
+        let cfg = WordCloudConfig { variant: WordCloudVariant::Bubble, words: &words, frequencies: &frequencies, ..WordCloudConfig::default() };
+        let started = std::time::Instant::now();
+        let (blocks, names) = layout_named(&cfg, &Budget::default());
+        assert!(started.elapsed().as_secs() < 5, "bubble packing took {:?} on {n} raw words", started.elapsed());
+        assert!(blocks.len() <= SAMPLE_CAP);
+        assert_eq!(blocks.len(), names.len());
+    }
+
+    #[test]
+    fn bubble_packs_words_into_non_overlapping_circles() {
+        let (blocks, _) = draw(WordCloudVariant::Bubble);
+        for i in 0..blocks.len() {
+            for j in (i + 1)..blocks.len() {
+                let d = (blocks[i].cx - blocks[j].cx).hypot(blocks[i].cy - blocks[j].cy);
+                assert!(d >= blocks[i].hw + blocks[j].hw - 1e-6, "bubble {i} and {j} overlap");
+            }
+        }
+    }
+
+    #[test]
+    fn cosmos_uses_a_genuinely_different_placement_than_basic() {
+        let (basic, _) = draw(WordCloudVariant::Basic);
+        let (cosmos, _) = draw(WordCloudVariant::Cosmos);
+        let differing = basic.iter().zip(cosmos.iter()).filter(|(a, b)| (a.cx - b.cx).abs() > 1e-6 || (a.cy - b.cy).abs() > 1e-6).count();
+        assert!(differing > 0, "cosmos must not reuse basic's exact word positions");
+    }
+
+    #[test]
+    fn every_variant_still_makes_a_more_frequent_word_bigger_or_taller() {
+        for &variant in WordCloudVariant::all() {
+            let (blocks, names) = draw(variant);
+            let rust = blocks[names.iter().position(|n| n == "rust").unwrap()];
+            let graph = blocks[names.iter().position(|n| n == "graph").unwrap()];
+            assert!(rust.z1 >= graph.z1, "{variant:?}");
+        }
     }
 }
