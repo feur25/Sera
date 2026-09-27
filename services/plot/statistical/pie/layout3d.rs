@@ -16,7 +16,8 @@ const NESTED_OUTER2: f64 = 1.0;
 const NIGHT_INNER: f64 = 0.15;
 const NIGHT_GAP: f64 = 0.94;
 const PULL_FRAC: f64 = 0.18;
-const SUBPLOT_GAP_FRAC: f64 = 2.3;
+const SUBPLOT_SPAN: f64 = 2.4;
+const SUBPLOT_FILL: f64 = 0.42;
 
 fn finite(values: &[f64]) -> Vec<f64> {
     values.iter().map(|v| if v.is_finite() { v.max(0.0) } else { 0.0 }).collect()
@@ -199,6 +200,10 @@ fn subplot_wedges(w: &mut Wedges, cfg: &PieConfig) {
         return;
     }
     let cols = (n_pies as f64).sqrt().ceil().max(1.0) as usize;
+    let rows = n_pies.div_ceil(cols);
+    let cell_w = SUBPLOT_SPAN / cols as f64;
+    let cell_h = SUBPLOT_SPAN / rows as f64;
+    let cell = cell_w.min(cell_h);
     let proportional = cfg.proportional || matches!(cfg.variant, PieVariant::Proportional);
     let totals: Vec<f64> = series.iter().map(|s| s.iter().filter(|v| v.is_finite() && **v >= 0.0).sum()).collect();
     let max_total = totals.iter().cloned().fold(0.0_f64, f64::max).max(1e-9);
@@ -206,9 +211,10 @@ fn subplot_wedges(w: &mut Wedges, cfg: &PieConfig) {
     for (pi, vals) in series.iter().enumerate() {
         let row = (pi / cols) as f64;
         let col = (pi % cols) as f64;
-        let ox = col * SUBPLOT_GAP_FRAC;
-        let oy = -row * SUBPLOT_GAP_FRAC;
-        let scale = if proportional { (totals[pi] / max_total).sqrt().max(0.3) } else { 1.0 };
+        let ox = (col - (cols as f64 - 1.0) / 2.0) * cell_w;
+        let oy = -(row - (rows as f64 - 1.0) / 2.0) * cell_h;
+        let local_scale = if proportional { (totals[pi] / max_total).sqrt().max(0.3) } else { 1.0 };
+        let scale = local_scale * cell * SUBPLOT_FILL;
         ring(w, &value_spans(vals, 0.0, TAU), 0.0, scale, ox, oy, &names);
     }
 }
@@ -359,12 +365,29 @@ mod tests {
     }
 
     #[test]
+    fn many_subplots_stay_within_a_camera_safe_extent_regardless_of_count() {
+        let n_pies = 30;
+        let labels: Vec<String> = vec!["A".to_string(), "B".to_string()];
+        let series: Vec<Vec<f64>> = (0..n_pies).map(|_| vec![40.0, 60.0]).collect();
+        let c = PieConfig { variant: PieVariant::Subplots, labels: &labels, series: &series, ..PieConfig::default() };
+        let w = wedges(&c).unwrap();
+        let max_extent = w
+            .cx
+            .iter()
+            .zip(w.cy.iter())
+            .zip(w.outer_r.iter())
+            .map(|((&x, &y), &r)| x.hypot(y) + r)
+            .fold(0.0, f64::max);
+        assert!(max_extent < 3.0, "subplot grid grew unbounded with pie count: {max_extent}");
+    }
+
+    #[test]
     fn proportional_shrinks_a_smaller_total_series_ring() {
         let labels: Vec<String> = ["A", "B"].iter().map(|s| s.to_string()).collect();
         let series = vec![vec![90.0, 90.0], vec![5.0, 5.0]];
         let c = PieConfig { variant: PieVariant::Proportional, labels: &labels, series: &series, proportional: true, ..PieConfig::default() };
         let w = wedges(&c).unwrap();
-        let (big_total, small_total): (Vec<usize>, Vec<usize>) = (0..w.a0.len()).partition(|&i| w.cx[i] < SUBPLOT_GAP_FRAC / 2.0);
+        let (big_total, small_total): (Vec<usize>, Vec<usize>) = (0..w.a0.len()).partition(|&i| w.cx[i] < 0.0);
         assert!(w.outer_r[small_total[0]] < w.outer_r[big_total[0]]);
     }
 
