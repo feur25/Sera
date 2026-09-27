@@ -43,7 +43,7 @@ fn render_wedges_html(title: &str, w: &Wedges, axis_labels: (&str, &str, &str), 
     crate::html::js_3d::render_3d_html_impl(13, title, &w.pct, &w.depth, &w.value, axis_labels, &w.color_idx, &[], width, height, bg, scene, extra.as_bytes())
 }
 
-#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\"], parents=[\"\",\"Root\",\"Root\"], values=[0,40,60]")]
+#[crate::chart_demo("labels=[\"Root\",\"Engineering\",\"Sales\",\"Marketing\",\"Frontend\",\"Backend\",\"Enterprise\",\"SMB\",\"Digital\",\"Events\"], parents=[\"\",\"Root\",\"Root\",\"Root\",\"Engineering\",\"Engineering\",\"Sales\",\"Sales\",\"Marketing\",\"Marketing\"], values=[0,35,40,25,15,20,25,15,18,7]")]
 #[crate::params(paramsList["title","labels","parents","values","variant","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias("sunburst3d", "sunburst_3d", "sunburst3d_chart", "sunburst3d_family", "sunbursts3d")]
 #[crate::sera_builder]
