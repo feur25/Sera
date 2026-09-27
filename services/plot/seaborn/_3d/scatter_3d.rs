@@ -1,15 +1,9 @@
 use crate::plot::statistical::_3d::budget::{even_indices, pick, Budget};
-use crate::plot::statistical::_3d::zone::{fit as zone_fit, Fit};
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::bar::Bar3DBlock;
 use crate::plot::statistical::scatter::layout3d;
 use crate::plot::statistical::{ScatterConfig, ScatterVariant};
 use crate::plot::{apply_bg3d, parse_all};
-
-fn fitted_zone_js(blocks: &[Bar3DBlock], zone: Option<&[f64]>) -> String {
-    let explicit = zone.and_then(|p| <[f64; 3]>::try_from(p).ok());
-    format!("var BFIT={};", zone_fit(blocks, 0.7, explicit, Fit::Uniform).to_js())
-}
 
 fn render_scatter_points_html(
     title: &str,
@@ -20,7 +14,6 @@ fn render_scatter_points_html(
     h: i32,
     bg: Option<&str>,
     scene: &str,
-    zone: Option<&[f64]>,
 ) -> String {
     if blocks.is_empty() {
         return crate::html::js_3d::render_3d_html_impl(0, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"");
@@ -29,8 +22,7 @@ fn render_scatter_points_html(
     let y: Vec<f64> = blocks.iter().map(|b| b.cy).collect();
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
     let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
-    let extra = fitted_zone_js(blocks, zone);
-    crate::html::js_3d::render_3d_html_impl(0, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, extra.as_bytes())
+    crate::html::js_3d::render_3d_html_impl(0, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, b"")
 }
 
 fn render_scatter_spheres_html(
@@ -42,7 +34,6 @@ fn render_scatter_spheres_html(
     h: i32,
     bg: Option<&str>,
     scene: &str,
-    zone: Option<&[f64]>,
 ) -> String {
     if blocks.is_empty() {
         return crate::html::js_3d::render_3d_html_impl(16, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"var S=[];");
@@ -52,13 +43,12 @@ fn render_scatter_spheres_html(
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
     let (hlo, hhi) = blocks.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), b| (lo.min(b.hw), hi.max(b.hw)));
     let hrange = (hhi - hlo).max(1e-9);
-    let mut extra = fitted_zone_js(blocks, zone);
-    extra.push_str(&format!(
+    let size_js = format!(
         "var S=[{}];",
         blocks.iter().map(|b| format!("{:.4}", (b.hw - hlo) / hrange)).collect::<Vec<_>>().join(",")
-    ));
+    );
     let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
-    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, extra.as_bytes())
+    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, size_js.as_bytes())
 }
 
 #[crate::chart_demo("x=[1.4,1.33,0.78,-0.15,-1.2,-2.03,-2.33,-1.91,-0.82,0.67,2.13,3.07,3.15,2.25,0.56,-1.47,-3.21,-4.11,-3.81,-2.3,0.02,2.51], y=[0.0,0.82,1.53,1.87,1.65,0.84,-0.37,-1.64,-2.55,-2.76,-2.12,-0.73,1.03,2.65,3.6,3.51,2.32,0.31,-1.96,-3.8,-4.6,-4.05], z=[0.0,0.42,0.84,1.26,1.68,2.1,2.52,2.94,3.36,3.78,4.2,4.62,5.04,5.46,5.88,6.3,6.72,7.14,7.56,7.98,8.4,8.82]")]
@@ -135,8 +125,8 @@ pub fn build_scatter3d_chart(input: &str) -> String {
             let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
             render_blocks3d_view_html(title, &blocks, &view, (&axis_labels.0, &axis_labels.1, &axis_labels.2), &names, o.w(900), o.h(560), bg_default, env)
         }
-        ScatterVariant::Sized => render_scatter_spheres_html(title, &blocks, &names, (&axis_labels.0, &axis_labels.1, &axis_labels.2), o.w(900), o.h(560), bg_default, env, o.zone.as_deref()),
-        _ => render_scatter_points_html(title, &blocks, &names, (&axis_labels.0, &axis_labels.1, &axis_labels.2), o.w(900), o.h(560), bg_default, env, o.zone.as_deref()),
+        ScatterVariant::Sized => render_scatter_spheres_html(title, &blocks, &names, (&axis_labels.0, &axis_labels.1, &axis_labels.2), o.w(900), o.h(560), bg_default, env),
+        _ => render_scatter_points_html(title, &blocks, &names, (&axis_labels.0, &axis_labels.1, &axis_labels.2), o.w(900), o.h(560), bg_default, env),
     };
     apply_bg3d(html, &o)
 }
