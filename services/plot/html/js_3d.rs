@@ -665,15 +665,15 @@ function rBb(mx,my,sc){
   for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;
     var nx=(X[i]-xmn)/xr-0.5,ny=(Y[i]-ymn)/yr-0.5,nz=(Z[i]-zmn)/zr-0.5;
     var p=pj(nx,ny,nz);if(!p)continue;
-    var sz=su&&S[i]!==undefined?0.3+S[i]*0.7:0.5;
-    pts.push({sx:mx+p.x*sc,sy:my-p.y*sc,d:p.d,ci:uc?C[i]%PAL.length:i%PAL.length,i:i,sz:sz});
+    var sf=su&&S[i]!==undefined?S[i]:0.5;
+    var wr=0.02+sf*0.09;
+    var r=Math.max(2,wr*CAM.kx*sc/p.d);
+    pts.push({sx:mx+p.x*sc,sy:my-p.y*sc,d:p.d,ci:uc?C[i]%PAL.length:i%PAL.length,i:i,r:r});
   }
-  pts.sort(function(a,b){return a.d-b.d;});
-  var dlo=pts.length?pts[0].d:1,dhi=pts.length?pts[pts.length-1].d:2,dr=dhi-dlo||1;
+  pts.sort(function(a,b){return b.d-a.d;});
   var selSx=0,selSy=0,selR=0,selCol='';
   for(var j=0;j<pts.length;j++){
-    var p=pts[j],dn=(p.d-dlo)/dr;
-    var r=Math.max(6,Math.min(32,p.sz*28*(1-dn*0.3)));
+    var p=pts[j],r=p.r;
     var col=PAL[p.ci],rgb=hx2rgb(col);
     var lr2=Math.min(255,rgb[0]+80),lg2=Math.min(255,rgb[1]+80),lb2=Math.min(255,rgb[2]+80);
     g.globalAlpha=isDark?0.15:0.1;
