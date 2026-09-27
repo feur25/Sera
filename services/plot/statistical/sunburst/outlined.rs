@@ -4,7 +4,7 @@ use super::common::{
 use super::config::SunburstConfig;
 use crate::plot::statistical::common::{push_b, push_i};
 
-#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]")]
+#[crate::chart_demo("labels=[\"Root\",\"Engineering\",\"Sales\",\"Marketing\",\"Frontend\",\"Backend\",\"Enterprise\",\"SMB\",\"Digital\",\"Events\"], parents=[\"\",\"Root\",\"Root\",\"Root\",\"Engineering\",\"Engineering\",\"Sales\",\"Sales\",\"Marketing\",\"Marketing\"], values=[0,35,40,25,15,20,25,15,18,7]")]
 
 pub fn render(cfg: &SunburstConfig) -> String {
     let p = match prepare(cfg) {
