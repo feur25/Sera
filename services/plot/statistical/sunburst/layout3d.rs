@@ -3,6 +3,8 @@ use super::config::SunburstConfig;
 use super::variant::SunburstVariant;
 use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::hierarchy::{depth_cap, descendant_groups, faded_height, rings, BASE_HEIGHT, HOLE, MIN_SPAN};
+pub use crate::plot::statistical::_3d::wedge::Wedges;
+use crate::plot::statistical::_3d::wedge::HEIGHT as WEDGE_HEIGHT;
 use crate::plot::statistical::bar::Bar3DBlock;
 
 pub const HEIGHT_RATIO: f64 = 0.7;
@@ -110,18 +112,6 @@ fn sunburst_3d(cfg: &SunburstConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<Vec<u
     (blocks, names, groups)
 }
 
-pub struct Wedges {
-    pub pct: Vec<f64>,
-    pub depth: Vec<f64>,
-    pub value: Vec<f64>,
-    pub a0: Vec<f64>,
-    pub a1: Vec<f64>,
-    pub color_idx: Vec<f64>,
-    pub ring_height: Vec<f64>,
-    pub names: Vec<String>,
-    pub hole: f64,
-}
-
 fn wedge_plan(variant: SunburstVariant) -> (f64, f64, bool) {
     use SunburstVariant::*;
     match variant {
@@ -176,17 +166,18 @@ pub fn wedges(cfg: &SunburstConfig) -> Option<Wedges> {
     if kept.is_empty() {
         return None;
     }
-    Some(Wedges {
-        pct: kept.iter().map(|&i| p.values_eff[i] / p.grand_total * 100.0).collect(),
-        depth: kept.iter().map(|&i| p.depth[i] as f64).collect(),
-        value: kept.iter().map(|&i| p.values_eff[i]).collect(),
-        a0: kept.iter().map(|&i| spans[i].0).collect(),
-        a1: kept.iter().map(|&i| spans[i].1).collect(),
-        color_idx: kept.iter().map(|&i| if mono { 0.0 } else { branch[i] as f64 }).collect(),
-        ring_height: kept.iter().map(|&i| ring_height_scale(cfg.variant, p.depth[i])).collect(),
-        names: kept.iter().map(|&i| p.labels[i].clone()).collect(),
-        hole,
-    })
+    let n_rings = kept.iter().map(|&i| p.depth[i]).max().unwrap_or(0) + 1;
+    let ring_span = (1.0 - hole) / n_rings as f64;
+    let mut w = Wedges::default();
+    for &i in &kept {
+        let (a0, a1) = spans[i];
+        let inner_r = hole + ring_span * p.depth[i] as f64;
+        let outer_r = inner_r + ring_span * 0.96;
+        let height = ring_height_scale(cfg.variant, p.depth[i]) * WEDGE_HEIGHT;
+        let color_idx = if mono { 0.0 } else { branch[i] as f64 };
+        w.push(a0, a1, inner_r, outer_r, 0.0, 0.0, height, p.values_eff[i], color_idx, p.labels[i].clone());
+    }
+    Some(w)
 }
 
 pub fn layout_3d(cfg: &SunburstConfig, _budget: &Budget) -> Vec<Bar3DBlock> {
@@ -344,9 +335,9 @@ mod tests {
     fn every_variant_draws_every_kept_node_with_matching_arrays_and_names() {
         for &variant in SunburstVariant::all() {
             let w = draw_wedges(variant);
-            assert!(!w.pct.is_empty(), "{variant:?}");
-            let n = w.pct.len();
-            for field in [w.depth.len(), w.value.len(), w.a0.len(), w.a1.len(), w.color_idx.len(), w.ring_height.len(), w.names.len()] {
+            assert!(!w.a0.is_empty(), "{variant:?}");
+            let n = w.a0.len();
+            for field in [w.a1.len(), w.inner_r.len(), w.outer_r.len(), w.cx.len(), w.cy.len(), w.height.len(), w.value.len(), w.color_idx.len(), w.names.len()] {
                 assert_eq!(field, n, "{variant:?}");
             }
         }
@@ -368,7 +359,7 @@ mod tests {
 
     #[test]
     fn donut_opens_a_wider_hole_than_basic() {
-        assert!(draw_wedges(SunburstVariant::Donut).hole > draw_wedges(SunburstVariant::Basic).hole);
+        assert!(draw_wedges(SunburstVariant::Donut).inner_r[0] > draw_wedges(SunburstVariant::Basic).inner_r[0]);
     }
 
     #[test]
@@ -386,15 +377,16 @@ mod tests {
     #[test]
     fn depth_fade_shrinks_ring_height_deeper_while_basic_stays_flat() {
         let basic = draw_wedges(SunburstVariant::Basic);
-        assert!(basic.ring_height.iter().all(|&h| h == 1.0));
+        assert!(basic.height.iter().all(|&h| (h - WEDGE_HEIGHT).abs() < 1e-9));
         let faded = draw_wedges(SunburstVariant::DepthFade);
-        assert!(faded.ring_height.iter().zip(faded.depth.iter()).any(|(&h, &d)| d > 0.0 && h < 1.0));
+        assert!(faded.height.iter().any(|&h| (h - WEDGE_HEIGHT).abs() < 1e-9), "the root ring must keep full height");
+        assert!(faded.height.iter().any(|&h| h < WEDGE_HEIGHT - 1e-9), "a deeper ring must shrink");
     }
 
     #[test]
     fn outlined_is_flatter_than_basic() {
         let outlined = draw_wedges(SunburstVariant::Outlined);
-        assert!(outlined.ring_height.iter().all(|&h| h < 1.0));
+        assert!(outlined.height.iter().all(|&h| h < WEDGE_HEIGHT));
     }
 
     #[test]
