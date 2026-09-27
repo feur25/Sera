@@ -1173,10 +1173,13 @@ function rRdg(mx,my,sc){
     }
   }
 }
-function wPt(cx,cy,r,z,a){
+function wN(cx,cy,r,z,a){
   var wx=cx+Math.cos(a)*r,wy=cy+Math.sin(a)*r;
-  var nx=(wx-BFIT.cx)/BFIT.sx,ny=(wy-BFIT.cy)/BFIT.sy,nz=(z-BFIT.ext[4])/BFIT.sz-BFIT.dz/2;
-  return pj(nx,ny,nz);
+  return [(wx-BFIT.cx)/BFIT.sx,(wy-BFIT.cy)/BFIT.sy,(z-BFIT.ext[4])/BFIT.sz-BFIT.dz/2];
+}
+function wPt(cx,cy,r,z,a){
+  var n=wN(cx,cy,r,z,a);
+  return pj(n[0],n[1],n[2]);
 }
 function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
   var zBot=0,steps=Math.max(2,Math.min(48,Math.ceil((a1-a0)*10))),hasHole=ir>1e-6,k,aa,ab;
@@ -1667,8 +1670,15 @@ function tick(){
 }
 function zoomTo(z,px,py){zAnim={t0:null,fz:zoom,fx:panX,fy:panY,tz:z,tx:px,ty:py};wake();}
 function doZoomIn(idx){
-  if(typeof ZKIDS==='undefined'||!ZKIDS[idx]||ZKIDS[idx].length<2||!BP||isEnvScene())return;
-  var pts=ZKIDS[idx].map(function(j){return[BP.nx[j],BP.ny[j],(BP.z0[j]+BP.z1[j])/2];});
+  if(typeof ZKIDS==='undefined'||!ZKIDS[idx]||ZKIDS[idx].length<2||isEnvScene())return;
+  var pts;
+  if(typeof A0!=='undefined'){
+    pts=ZKIDS[idx].map(function(j){return wN(CX[j],CY[j],(IR[j]+OR[j])/2,RH[j]/2,(A0[j]+A1[j])/2);});
+  } else if(BP){
+    pts=ZKIDS[idx].map(function(j){return[BP.nx[j],BP.ny[j],(BP.z0[j]+BP.z1[j])/2];});
+  } else {
+    return;
+  }
   var tgt=frameZoomTo(pts);
   zHist.push({z:zoom,x:panX,y:panY});
   zBtn.classList.add('v');
