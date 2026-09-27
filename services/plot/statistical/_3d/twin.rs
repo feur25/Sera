@@ -144,10 +144,24 @@ pub fn point_count(html: &str) -> usize {
         .unwrap_or(0)
 }
 
-fn scene_script(html: &str) -> &str {
-    let start = html.find("var BN=").unwrap_or(0);
-    let end = html.find("var N=X.length").unwrap_or(html.len());
-    &html[start..end.max(start)]
+fn strip_label_arrays(html: &str) -> String {
+    let mut out = html.to_string();
+    for marker in ["CL=[", "NM=["] {
+        while let Some(start) = out.find(marker) {
+            match out[start..].find("];") {
+                Some(rel_end) => out.replace_range(start..start + rel_end + 2, ""),
+                None => break,
+            }
+        }
+    }
+    out
+}
+
+fn scene_script(html: &str) -> String {
+    let cleaned = strip_label_arrays(html);
+    let start = cleaned.find("var BN=").unwrap_or(0);
+    let end = cleaned.find("var N=X.length").unwrap_or(cleaned.len());
+    cleaned[start..end.max(start)].to_string()
 }
 
 pub fn check_robust(build: fn(&str) -> String, demos: &Demos) {
