@@ -1175,7 +1175,7 @@ function rRdg(mx,my,sc){
 }
 function wPt(cx,cy,r,z,a){
   var wx=cx+Math.cos(a)*r,wy=cy+Math.sin(a)*r;
-  var nx=(wx-xmn)/xr-0.5,ny=(wy-ymn)/yr-0.5,nz=(z-zmn)/zr-0.5;
+  var nx=(wx-BFIT.cx)/BFIT.sx,ny=(wy-BFIT.cy)/BFIT.sy,nz=(z-BFIT.ext[4])/BFIT.sz-BFIT.dz/2;
   return pj(nx,ny,nz);
 }
 function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
