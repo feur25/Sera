@@ -134,7 +134,7 @@ impl Chart {
         fr = "Désactive l'infobulle au survol et supprime le surlignage des éléments au survol."
     )]
     pub fn no_hover(&self) -> Chart {
-        let html = crate::html::hover::inject_before_head(&self.html, "<style>#sp-tip{display:none!important}div[id^=\"sptip\"]{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>");
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>#sp-tip{display:none!important}div[id^=\"sptip\"]{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}.c3t.v{opacity:0!important;pointer-events:none!important}</style></head>");
         let html = crate::html::hover::inject_before_body(&html, "<script>document.querySelectorAll('canvas[id^=\"spcv\"]').forEach(function(c){c.parentNode.replaceChild(c.cloneNode(true),c);});</script></body>");
         self.propagate(html)
     }
@@ -158,7 +158,9 @@ impl Chart {
         fr = "Masque les axes X et Y ainsi que leurs graduations et étiquettes."
     )]
     pub fn no_axes(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>"))
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>");
+        let html = crate::html::hover::inject_before_body(&html, "<script>Object.keys(window).filter(function(k){return k.indexOf('__sp3dCfg_')===0;}).forEach(function(k){window[k]({noAxes:true});});</script></body>");
+        self.propagate(html)
     }
 
     #[sera_doc(
@@ -1028,10 +1030,12 @@ impl Chart {
         fr = "Masque la légende du graphique."
     )]
     pub fn no_legend(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(
+        let html = crate::html::hover::inject_before_head(
             &self.html,
             "<style>g[data-legend],g.sp-leg-grp{display:none!important}</style></head>",
-        ))
+        );
+        let html = crate::html::hover::inject_before_body(&html, "<script>Object.keys(window).filter(function(k){return k.indexOf('__sp3dCfg_')===0;}).forEach(function(k){window[k]({noLegend:true});});</script></body>");
+        self.propagate(html)
     }
 
     #[sera_doc(
@@ -1042,7 +1046,9 @@ impl Chart {
         fr = "Masque le titre du graphique."
     )]
     pub fn no_title(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ttl{display:none!important}</style></head>"))
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-ttl{display:none!important}</style></head>");
+        let html = crate::html::hover::inject_before_body(&html, "<script>Object.keys(window).filter(function(k){return k.indexOf('__sp3dCfg_')===0;}).forEach(function(k){window[k]({noTitle:true});});</script></body>");
+        self.propagate(html)
     }
 
     #[sera_doc(
