@@ -45,6 +45,19 @@ pub fn floating_bars(steps: &[Step], hw: f64, depth: f64) -> Vec<Bar3DBlock> {
         .collect()
 }
 
+pub fn horizontal_bars(steps: &[Step], thickness: f64, row: f64, depth: f64) -> Vec<Bar3DBlock> {
+    let floor = span_of(steps) * 0.004;
+    steps
+        .iter()
+        .enumerate()
+        .map(|(i, s)| {
+            let cx = (s.low() + s.high()) / 2.0;
+            let half = ((s.high() - s.low()) / 2.0).max(floor);
+            Bar3DBlock::new(cx, i as f64 * row, 0.0, thickness, half, depth, i).with_tone(s.tone())
+        })
+        .collect()
+}
+
 pub fn stem_heads(steps: &[Step], stem_hw: f64, head: f64, depth: f64) -> Vec<Bar3DBlock> {
     steps
         .iter()
@@ -115,6 +128,16 @@ mod tests {
         assert_eq!(bars[1].tone, Some(UP));
         assert_eq!(bars[2].tone, Some(DOWN));
         assert_eq!(bars[3].tone, Some(TOTAL_TONE));
+    }
+
+    #[test]
+    fn horizontal_bars_put_the_value_span_on_x_and_the_step_index_on_y_with_a_flat_z() {
+        let bars = horizontal_bars(&steps(), 0.1, 1.0, 0.3);
+        assert_eq!((bars[2].cx, bars[2].hw), (122.5, 7.5));
+        assert_eq!((bars[0].cy, bars[1].cy, bars[2].cy), (0.0, 1.0, 2.0));
+        assert_eq!((bars[2].z0, bars[2].z1), (0.0, 0.1));
+        assert_eq!(bars[1].tone, Some(UP));
+        assert_eq!(bars[2].tone, Some(DOWN));
     }
 
     #[test]
