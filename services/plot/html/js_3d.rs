@@ -599,7 +599,17 @@ function rBlocksFast(){
   }
   var view=ord.subarray(0,live);
   view.sort(function(a,c){return dep[c]-dep[a];});
-  for(var k=0;k<live;k++){var i=view[k];drawCuboidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],BP.e0[i],BP.e1[i]);}
+  var alwaysLbl=typeof ALWAYSLABEL!=='undefined'&&ALWAYSLABEL&&typeof NM!=='undefined';
+  for(var k=0;k<live;k++){
+    var i=view[k];
+    drawCuboidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],BP.e0[i],BP.e1[i]);
+    if(alwaysLbl&&NM[i]!==undefined){
+      g.save();g.font='600 9px -apple-system,sans-serif';g.textAlign='center';g.textBaseline='bottom';
+      g.strokeStyle='rgba(15,23,42,0.9)';g.lineWidth=3;g.strokeText(NM[i],BP.psx[i],BP.psy[i]-6);
+      g.fillStyle='#e2e8f0';g.fillText(NM[i],BP.psx[i],BP.psy[i]-6);
+      g.restore();
+    }
+  }
   BP.live=live;BP.view=view;
 }
 function hitBlock(ex,ey){
