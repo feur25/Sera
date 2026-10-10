@@ -111,6 +111,8 @@ pub fn layout_named(cfg: &BubbleConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Ve
     let sizes = pick(cfg.sizes, &keep);
     let categories = pick(cfg.categories, &keep);
     let x_categories = pick(cfg.x_categories, &keep);
+    let color_values = pick(cfg.color_values, &keep);
+    let has_record_flag = color_values.len() == keep.len();
     let labels = pick(cfg.labels, &keep);
     let names: Vec<String> = if labels.len() == keep.len() { labels } else { (0..keep.len()).map(|i| format!("Point {}", i + 1)).collect() };
     let order = order_of(&categories);
@@ -176,7 +178,8 @@ pub fn layout_named(cfg: &BubbleConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Ve
                     let angle = -PI / 2.0 + t * PI;
                     let frac = size_frac(&sizes, i, slo, srange);
                     let size = row_min_size + frac * (row_max_size - row_min_size);
-                    Bar3DBlock::new(radius * angle.cos(), radius * angle.sin(), elev, elev + HEIGHT, size, size, ri)
+                    let ci = if has_record_flag { if color_values[i] >= 0.5 { 1 } else { 0 } } else { ri };
+                    Bar3DBlock::new(radius * angle.cos(), radius * angle.sin(), elev, elev + HEIGHT, size, size, ci)
                 })
                 .collect()
         }
@@ -308,6 +311,29 @@ mod tests {
         let heights: Vec<f64> = blocks.iter().map(|b| b.z0).collect();
         assert!(radii[0] < radii[1] && radii[1] < radii[2]);
         assert!(heights[0] < heights[1] && heights[1] < heights[2]);
+    }
+
+    #[test]
+    fn radial_rows_colors_by_color_values_record_flag_when_present_not_by_row() {
+        let s = vec![5.0, 5.0, 5.0, 5.0];
+        let categories = vec!["A".to_string(), "A".to_string(), "B".to_string(), "B".to_string()];
+        let colv = vec![0.0, 1.0, 0.0, 1.0];
+        let cfg = BubbleConfig { variant: BubbleVariant::RadialRows, sizes: &s, categories: &categories, color_values: &colv, ..BubbleConfig::default() };
+        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        assert_eq!(blocks[0].ci, 0, "non-record point in row A must be class 0");
+        assert_eq!(blocks[1].ci, 1, "record point in row A must be class 1, not the row class");
+        assert_eq!(blocks[2].ci, 0, "non-record point in row B must also be class 0");
+        assert_eq!(blocks[3].ci, 1, "record point in row B must also be class 1");
+    }
+
+    #[test]
+    fn radial_rows_falls_back_to_row_based_color_without_color_values() {
+        let s = vec![5.0, 5.0, 5.0];
+        let categories = vec!["A".to_string(), "B".to_string(), "C".to_string()];
+        let cfg = BubbleConfig { variant: BubbleVariant::RadialRows, sizes: &s, categories: &categories, ..BubbleConfig::default() };
+        let (blocks, _) = layout_named(&cfg, &Budget::default());
+        let classes: std::collections::BTreeSet<usize> = blocks.iter().map(|b| b.ci).collect();
+        assert_eq!(classes.len(), 3, "without color_values, each row must keep its own distinct color class");
     }
 
     #[test]
