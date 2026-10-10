@@ -131,7 +131,8 @@ fn recipe(variant: HeatmapVariant) -> Recipe {
         Log => rect.logarithmic(),
         Discrete => rect.stepped(5),
         Correlation => rect.signed(),
-        Density | Temporal => rect.blended().colormap("viridis"),
+        Density => rect.blended().colormap("viridis"),
+        Temporal => rect.blended().colormap("mono"),
         Contour => rect.blended().stepped(5),
         Cluster => rect.clustered(),
         Bubble => Recipe::on(Shape::Bubble),
@@ -148,6 +149,16 @@ fn recipe(variant: HeatmapVariant) -> Recipe {
 
 pub fn colormap(variant: HeatmapVariant) -> &'static str {
     recipe(variant).cmap
+}
+
+pub fn annotated_labels(cfg: &HeatmapConfig, budget: &Budget) -> Vec<String> {
+    let (n_rows, n_cols) = dims(cfg);
+    if n_rows == 0 || n_cols == 0 {
+        return Vec::new();
+    }
+    let cells = cells_of(cfg, n_rows, n_cols);
+    let (_, _, cells) = pooled_grid(n_rows, n_cols, &cells, budget.cells());
+    cells.iter().map(|v| format!("{v:.1}")).collect()
 }
 
 fn dims(cfg: &HeatmapConfig) -> (usize, usize) {
@@ -325,6 +336,22 @@ mod tests {
     fn smoothing_variants_densify_the_grid() {
         assert!(blocks_for(HeatmapVariant::Density, 4, 5).len() > 20);
         assert_eq!(blocks_for(HeatmapVariant::Basic, 4, 5).len(), 20);
+    }
+
+    #[test]
+    fn density_and_temporal_no_longer_share_a_colormap() {
+        assert_ne!(colormap(HeatmapVariant::Density), colormap(HeatmapVariant::Temporal));
+    }
+
+    #[test]
+    fn annotated_labels_match_the_pooled_cell_count_and_values() {
+        let rows = labels(2, "r");
+        let cols = labels(2, "c");
+        let values = vec![5.0, 9.0, 7.0, 3.0];
+        let cfg = HeatmapConfig { variant: HeatmapVariant::Annotated, row_labels: &rows, col_labels: &cols, flat_matrix: &values, ..HeatmapConfig::default() };
+        let out = annotated_labels(&cfg, &Budget::default());
+        assert_eq!(out, vec!["5.0".to_string(), "9.0".to_string(), "7.0".to_string(), "3.0".to_string()]);
+        assert_eq!(out.len(), blocks_for(HeatmapVariant::Annotated, 2, 2).len());
     }
 
     #[test]

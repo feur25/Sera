@@ -128,8 +128,8 @@ pub use gantt::{render_gantt_html, GanttConfig, GanttVariant};
 pub use gauge::{render_gauge_html, GaugeConfig, GaugeVariant};
 pub use grouped_bar::{render_grouped_bar_html, GroupedBar, GroupedBarConfig};
 pub use heatmap::{
-    colormap_3d, layout_3d as heatmap_layout_3d, render_heatmap_html, render_heatmap_native, Heatmap, HeatmapConfig,
-    HeatmapVariant, HEIGHT_RATIO_3D,
+    annotated_labels, colormap_3d, layout_3d as heatmap_layout_3d, render_heatmap_html, render_heatmap_native, Heatmap,
+    HeatmapConfig, HeatmapVariant, HEIGHT_RATIO_3D,
 };
 pub use histogram::{
     compute_bins, render_histogram_html, Histogram, HistogramConfig, HistogramVariant,

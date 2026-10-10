@@ -26,7 +26,7 @@ pub mod unequal;
 pub mod variant;
 
 pub use config::HeatmapConfig;
-pub use layout3d::{colormap as colormap_3d, layout_3d, HEIGHT_RATIO as HEIGHT_RATIO_3D};
+pub use layout3d::{annotated_labels, colormap as colormap_3d, layout_3d, HEIGHT_RATIO as HEIGHT_RATIO_3D};
 pub use native::render_heatmap_native;
 pub use variant::HeatmapVariant;
 
