@@ -1195,10 +1195,18 @@ function drawWedgeMesh3D(cx,cy,a0,a1,ir,or,zTop,fc){
   if(c0&&c1&&c2&&c3)fillFace(c0,c1,c2,c3,fc.front,0);
   var d0=wPt(cx,cy,or,zBot,a1),d1=wPt(cx,cy,ir,zBot,a1),d2=wPt(cx,cy,ir,zTop,a1),d3=wPt(cx,cy,or,zTop,a1);
   if(d0&&d1&&d2&&d3)fillFace(d0,d1,d2,d3,fc.back,0);
+  var pat=typeof PAT!=='undefined'&&PAT;
   for(k=0;k<steps;k++){
     aa=a0+(a1-a0)*k/steps;ab=a0+(a1-a0)*(k+1)/steps;
     var t0=wPt(cx,cy,ir,zTop,aa),t1=wPt(cx,cy,or,zTop,aa),t2=wPt(cx,cy,or,zTop,ab),t3=wPt(cx,cy,ir,zTop,ab);
-    if(t0&&t1&&t2&&t3)fillFace(t0,t1,t2,t3,fc.top,0);
+    if(t0&&t1&&t2&&t3){
+      fillFace(t0,t1,t2,t3,fc.top,0);
+      if(pat){
+        g.save();g.strokeStyle='rgba(13,17,23,0.55)';g.lineWidth=1.1;
+        g.beginPath();g.moveTo(mx+t0.x*sc,my-t0.y*sc);g.lineTo(mx+t2.x*sc,my-t2.y*sc);g.stroke();
+        g.restore();
+      }
+    }
   }
 }
 function zRemap(i){
