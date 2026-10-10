@@ -1,5 +1,5 @@
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::_3d::{render_blocks3d_view_html_tipped, BlockView};
 use crate::plot::statistical::waterfall::layout3d;
 use crate::plot::statistical::{WaterfallConfig, WaterfallVariant};
 use crate::plot::{apply_bg3d, parse_all};
@@ -31,10 +31,11 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
         bg_str.as_deref()
     };
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
-    let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-    let html = render_blocks3d_view_html(
+    let (blocks, names, tip_count) = layout3d::layout_named_tips(&cfg, &Budget::new(o.max_points));
+    let html = render_blocks3d_view_html_tipped(
         title,
         &blocks,
+        tip_count,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
         &names,
@@ -69,6 +70,15 @@ mod tests {
     #[test]
     fn every_waterfall_variant_has_a_working_3d_counterpart() {
         twin::check_variants(build_waterfall3d_chart, &demos(), WaterfallVariant::all().len());
+    }
+
+    #[test]
+    fn only_arrowed_marks_its_trailing_blocks_as_real_pyramid_tips() {
+        let base = r#"{"title":"t","labels":["Start","Q1","Q2","End"],"values":[100,30,-15,115],"variant":"#;
+        let arrowed = build_waterfall3d_chart(&format!("{base}\"arrowed\"}}"));
+        assert!(arrowed.contains("var ARTIP="), "arrowed must mark its tip blocks for pyramid rendering, or it reads as a plain bar with a box on top, not a real arrow");
+        let basic = build_waterfall3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var ARTIP="));
     }
 
     #[test]
