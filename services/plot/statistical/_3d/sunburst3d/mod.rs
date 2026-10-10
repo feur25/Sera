@@ -21,7 +21,7 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     let axis_labels = (o.xl(), o.yl(), o.zl());
     let axis_refs = (axis_labels.0.as_str(), axis_labels.1.as_str(), axis_labels.2.as_str());
     let html = match layout3d::wedges(&cfg) {
-        Some((w, zl)) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref(), &zl.groups, &zl.depth, zl.hole, zl.ring_span),
+        Some((w, zl)) => wedge::render_html(title, &w, axis_refs, o.w(900), o.h(560), bg_default, env, o.zone.as_deref(), &zl.groups, &zl.depth, zl.hole, zl.ring_span, false),
         None => String::new(),
     };
     apply_bg3d(html, &o)

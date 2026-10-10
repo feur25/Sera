@@ -76,6 +76,7 @@ pub fn render_html(
     depth: &[f64],
     hole: f64,
     ring_span: f64,
+    pattern: bool,
 ) -> String {
     if w.is_empty() {
         return crate::html::js_3d::render_3d_html_impl(MODE, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], width, height, bg, scene, b"");
@@ -108,6 +109,9 @@ pub fn render_html(
         extra.push('\'');
     }
     extra.push_str("];");
+    if pattern {
+        extra.push_str("var PAT=true;");
+    }
     if !groups.is_empty() {
         extra.push_str("var ZKIDS=[");
         for (i, g) in groups.iter().enumerate() {
@@ -142,14 +146,14 @@ mod tests {
 
     #[test]
     fn empty_wedges_render_nothing_but_do_not_panic() {
-        let html = render_html("t", &Wedges::default(), ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0);
+        let html = render_html("t", &Wedges::default(), ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0, false);
         assert!(!html.is_empty());
         assert!(!html.contains("var A0="));
     }
 
     #[test]
     fn a_real_wedge_set_carries_a_fitted_zone_and_every_array() {
-        let html = render_html("t", &sample(), ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0);
+        let html = render_html("t", &sample(), ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0, false);
         for key in ["var BFIT=", "var A0=", "A1=[", "IR=[", "OR=[", "CX=[", "CY=[", "RH=[", "VAL=[", "var NM="] {
             assert!(html.contains(key), "missing {key}");
         }
@@ -162,7 +166,7 @@ mod tests {
         for i in 0..40 {
             w.push(0.0, 0.2, 0.0, 1.0 + i as f64 * 0.3, i as f64 * 2.0, 0.0, HEIGHT, 1.0, i as f64, format!("n{i}"));
         }
-        let html = render_html("t", &w, ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0);
+        let html = render_html("t", &w, ("x", "y", "z"), 400, 300, None, "default", None, &[], &[], 0.0, 0.0, false);
         assert!(html.contains("var BFIT="));
     }
 }
