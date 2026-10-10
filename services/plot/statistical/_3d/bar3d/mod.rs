@@ -122,6 +122,47 @@ pub fn render_blocks3d_view_html(
     )
 }
 
+fn js_str_escape(out: &mut String, s: &str) {
+    for ch in s.chars() {
+        match ch {
+            '\'' => out.push_str("\\'"),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            c => out.push(c),
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_blocks3d_view_html_labeled(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    names: &[String],
+    view: &BlockView,
+    axis_labels: (&str, &str, &str),
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+) -> String {
+    let kept = budget::thin(blocks.to_vec(), budget::HARD_BLOCKS);
+    let mut extra = block_script(&kept, view);
+    if names.len() == blocks.len() && kept.len() == blocks.len() {
+        extra.push_str("var NM=[");
+        for (i, name) in names.iter().enumerate() {
+            if i > 0 {
+                extra.push(',');
+            }
+            extra.push('\'');
+            js_str_escape(&mut extra, name);
+            extra.push('\'');
+        }
+        extra.push_str("];var ALWAYSLABEL=true;");
+    }
+    crate::html::js_3d::render_3d_html_impl(1, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], color_labels, w, h, bg_color, scene, extra.as_bytes())
+}
+
 fn zoom_groups_script(kept: &[Bar3DBlock], blocks: &[Bar3DBlock], groups: &[Vec<u32>]) -> String {
     if groups.is_empty() || kept.len() != blocks.len() {
         return String::new();

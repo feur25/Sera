@@ -65,7 +65,7 @@ pub mod wedge;
 pub mod zone;
 
 pub use area3d::build_area3d_chart;
-pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, render_blocks3d_view_html_zoomable, BlockView};
+pub use bar3d::{render_bar3d_blocks_html, render_blocks3d_html, render_blocks3d_view_html, render_blocks3d_view_html_labeled, render_blocks3d_view_html_zoomable, BlockView};
 pub use boxplot3d::build_boxplot3d_chart;
 pub use bubble3d::build_bubble3d_chart;
 pub use bullet3d::build_bullet3d_chart;
