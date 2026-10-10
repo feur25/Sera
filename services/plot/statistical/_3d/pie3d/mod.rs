@@ -45,7 +45,7 @@ pub fn build_pie3d_chart(input: &str) -> String {
         render_blocks3d_view_html(title, &blocks, &view, axis_refs, &names, o.w(700), o.h(560), bg_default, env)
     } else {
         match layout3d::wedges(&cfg) {
-            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env, o.zone.as_deref(), &[], &[], 0.0, 0.0),
+            Some(w) => wedge::render_html(title, &w, axis_refs, o.w(700), o.h(560), bg_default, env, o.zone.as_deref(), &[], &[], 0.0, 0.0, matches!(variant, PieVariant::Pattern)),
             None => String::new(),
         }
     };
@@ -102,6 +102,15 @@ mod tests {
             assert!(html.contains("var A0="), "{key} must carry precomputed wedge angles");
             assert!(html.contains("var BFIT="), "{key} must fit its camera to the real wedge geometry like every other 3d chart");
         }
+    }
+
+    #[test]
+    fn only_pattern_carries_the_hatch_flag_matching_its_2d_parents_textured_fill() {
+        let base = r#"{"title":"t","labels":["A","B","C"],"values":[30,50,20],"variant":"#;
+        let pattern = build_pie3d_chart(&format!("{base}\"pattern\"}}"));
+        assert!(pattern.contains("var PAT=true;"), "pattern must mark its wedges as hatched, or it renders identically to basic");
+        let basic = build_pie3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var PAT=true;"));
     }
 
     #[test]
