@@ -4,6 +4,17 @@ use crate::plot::statistical::bubble::layout3d;
 use crate::plot::statistical::{BubbleConfig, BubbleVariant};
 use crate::plot::{apply_bg3d, parse_all};
 
+fn js_str_escape(out: &mut String, s: &str) {
+    for ch in s.chars() {
+        match ch {
+            '\'' => out.push_str("\\'"),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            c => out.push(c),
+        }
+    }
+}
+
 fn render_bubble_spheres_html(
     title: &str,
     blocks: &[Bar3DBlock],
@@ -32,7 +43,16 @@ fn render_bubble_spheres_html(
         extra.push_str("var HOLLOW=true;");
     }
     if always_label {
-        extra.push_str("var ALWAYSLABEL=true;");
+        extra.push_str("var NM=[");
+        for (i, name) in names.iter().enumerate() {
+            if i > 0 {
+                extra.push(',');
+            }
+            extra.push('\'');
+            js_str_escape(&mut extra, name);
+            extra.push('\'');
+        }
+        extra.push_str("];var ALWAYSLABEL=true;");
     }
     let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
     crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, extra.as_bytes())
@@ -172,6 +192,7 @@ mod tests {
         assert!(outlined_html.contains("var HOLLOW=true;"), "outlined must render as a hollow ring, matching its 2D parent's fill=\"none\" styling");
         assert!(!outlined_html.contains("var ALWAYSLABEL=true;"));
         assert!(labeled_html.contains("var ALWAYSLABEL=true;"), "labeled must show names permanently, matching its 2D parent's always-on <text> labels");
+        assert!(labeled_html.contains("var NM=["), "labeled's ALWAYSLABEL flag is useless without the per-point name array it reads");
         assert!(!labeled_html.contains("var HOLLOW=true;"));
         assert!(!basic_html.contains("var HOLLOW=true;") && !basic_html.contains("var ALWAYSLABEL=true;"));
     }
