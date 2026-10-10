@@ -5,7 +5,15 @@ use crate::plot::statistical::_3d::budget::{Budget, Buckets};
 use crate::plot::statistical::_3d::steps::{
     arrow_tips, floating_bars, horizontal_bars, running_track, stem_heads, Step, TOTAL_TONE,
 };
+use crate::plot::statistical::_3d::zone::Fit;
 use crate::plot::statistical::bar::Bar3DBlock;
+
+pub fn fit_3d(variant: WaterfallVariant) -> Fit {
+    match variant {
+        WaterfallVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
 
 pub const HEIGHT_RATIO: f64 = 0.8;
 pub const COLORMAP: &str = "updown";
@@ -187,6 +195,19 @@ mod tests {
         let plain = blocks_for(WaterfallVariant::Basic);
         assert_ne!(graded[1].tone, plain[1].tone);
         assert!(graded[3].tone.unwrap() > graded[1].tone.unwrap());
+    }
+
+    #[test]
+    fn horizontal_stretches_the_row_axis_so_steps_dont_collapse_into_each_other() {
+        use crate::plot::statistical::_3d::zone::fit;
+        let blocks = blocks_for(WaterfallVariant::Horizontal);
+        let uniform = fit(&blocks, HEIGHT_RATIO, None, Fit::Uniform);
+        let stretched = fit(&blocks, HEIGHT_RATIO, None, fit_3d(WaterfallVariant::Horizontal));
+        assert!(
+            stretched.data[1] > uniform.data[1] * 3.0,
+            "sharing one scale with the wide value axis crushes every row to the same spot"
+        );
+        assert_eq!(fit_3d(WaterfallVariant::Basic), Fit::Uniform);
     }
 
     #[test]

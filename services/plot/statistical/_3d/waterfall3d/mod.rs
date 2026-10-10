@@ -30,7 +30,9 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP)
+        .with_zone(o.zone.as_deref())
+        .with_fit(layout3d::fit_3d(variant));
     let (blocks, names, tip_count) = layout3d::layout_named_tips(&cfg, &Budget::new(o.max_points));
     let html = render_blocks3d_view_html_tipped(
         title,
