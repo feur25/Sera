@@ -1,7 +1,7 @@
 use crate::html::js_3d::render_3d_html;
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
-use crate::plot::statistical::{colormap_3d, heatmap_layout_3d, HeatmapConfig, HeatmapVariant, HEIGHT_RATIO_3D};
+use crate::plot::statistical::_3d::{render_blocks3d_view_html, render_blocks3d_view_html_labeled, BlockView};
+use crate::plot::statistical::{annotated_labels, colormap_3d, heatmap_layout_3d, HeatmapConfig, HeatmapVariant, HEIGHT_RATIO_3D};
 use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_heatmap3d_html(
@@ -71,17 +71,24 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
         bg_str.as_deref()
     };
     let view = BlockView::new(HEIGHT_RATIO_3D, colormap_3d(variant)).with_zone(o.zone.as_deref());
-    let html = render_blocks3d_view_html(
-        title,
-        &heatmap_layout_3d(&cfg, &Budget::new(o.max_points)),
-        &view,
-        (&o.xl(), &o.yl(), &o.zl()),
-        &[],
-        o.w(900),
-        o.h(560),
-        bg_default,
-        env,
-    );
+    let budget = Budget::new(o.max_points);
+    let blocks = heatmap_layout_3d(&cfg, &budget);
+    let html = if matches!(variant, HeatmapVariant::Annotated) {
+        render_blocks3d_view_html_labeled(
+            title,
+            &blocks,
+            &annotated_labels(&cfg, &budget),
+            &view,
+            (&o.xl(), &o.yl(), &o.zl()),
+            &[],
+            o.w(900),
+            o.h(560),
+            bg_default,
+            env,
+        )
+    } else {
+        render_blocks3d_view_html(title, &blocks, &view, (&o.xl(), &o.yl(), &o.zl()), &[], o.w(900), o.h(560), bg_default, env)
+    };
     apply_bg3d(html, &o)
 }
 
@@ -108,6 +115,26 @@ mod tests {
     #[test]
     fn every_heatmap_variant_has_a_working_3d_counterpart() {
         twin::check_variants(build_heatmap3d_chart, &demos(), HeatmapVariant::all().len());
+    }
+
+    #[test]
+    fn only_annotated_carries_a_per_cell_value_label_other_variants_stay_bare() {
+        let base = r#"{"title":"t","labels":["r1","r2"],"col_labels":["c1","c2"],"values":[5,9,7,3],"variant":"#;
+        let annotated = build_heatmap3d_chart(&format!("{base}\"annotated\"}}"));
+        assert!(annotated.contains("var ALWAYSLABEL=true;"), "annotated must show its cell values permanently, matching its 2D parent's always-on text");
+        assert!(annotated.contains("var NM=["));
+        let basic = build_heatmap3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var ALWAYSLABEL=true;"));
+    }
+
+    #[test]
+    fn density_and_temporal_pick_a_different_colormap_and_avoid_the_inf_substring_trap() {
+        let base = r#"{"title":"t","labels":["r1","r2"],"col_labels":["c1","c2"],"values":[5,9,7,3],"variant":"#;
+        let density = build_heatmap3d_chart(&format!("{base}\"density\"}}"));
+        let temporal = build_heatmap3d_chart(&format!("{base}\"temporal\"}}"));
+        assert!(density.contains("CMAP='viridis';"));
+        assert!(!temporal.contains("CMAP='viridis';"), "temporal must not render identically to density");
+        assert!(!temporal.contains("'inf"), "a colormap name containing the substring 'inf' reads as a non-finite number to twin::check_robust");
     }
 
     #[test]
