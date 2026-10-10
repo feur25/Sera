@@ -526,6 +526,19 @@ function drawCuboidBar(nx,ny,z0,z1,hw,hd,baseCol,e0,e1){
     drawGlowCap(nx,ny,z1,Math.min(hw,hd),baseCol);
   }
 }
+function drawPyramidBar(nx,ny,z0,z1,hw,hd,baseCol,up){
+  var baseZ=up?z0:z1,apexZ=up?z1:z0;
+  var apex=pj(nx,ny,apexZ);
+  var a0=pj(nx-hw,ny-hd,baseZ),a1=pj(nx+hw,ny-hd,baseZ),a2=pj(nx+hw,ny+hd,baseZ),a3=pj(nx-hw,ny+hd,baseZ);
+  if(!apex||!a0||!a1||!a2||!a3)return;
+  var lv=lod();
+  var fc=faceCols(baseCol);
+  fillFace(a0,a1,apex,apex,fc.front,lv);
+  fillFace(a1,a2,apex,apex,fc.right,lv);
+  fillFace(a2,a3,apex,apex,fc.back,lv);
+  fillFace(a3,a0,apex,apex,fc.left,lv);
+  fillFace(a0,a3,a2,a1,fc.bottom,lv);
+}
 function drawTowerBar(nx,ny,z0,z1,r,baseCol){
   var segs=10,topPts=[],botPts=[];
   for(var s=0;s<segs;s++){
@@ -600,9 +613,11 @@ function rBlocksFast(){
   var view=ord.subarray(0,live);
   view.sort(function(a,c){return dep[c]-dep[a];});
   var alwaysLbl=typeof ALWAYSLABEL!=='undefined'&&ALWAYSLABEL&&typeof NM!=='undefined';
+  var tipFrom=typeof ARTIP!=='undefined'?n-ARTIP:n;
   for(var k=0;k<live;k++){
     var i=view[k];
-    drawCuboidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],BP.e0[i],BP.e1[i]);
+    if(i>=tipFrom)drawPyramidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],typeof BCT!=='undefined'&&BCT[i]>=0.75);
+    else drawCuboidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],BP.e0[i],BP.e1[i]);
     if(alwaysLbl&&NM[i]!==undefined){
       g.save();g.font='600 9px -apple-system,sans-serif';g.textAlign='center';g.textBaseline='bottom';
       g.strokeStyle='rgba(15,23,42,0.9)';g.lineWidth=3;g.strokeText(NM[i],BP.psx[i],BP.psy[i]-6);
