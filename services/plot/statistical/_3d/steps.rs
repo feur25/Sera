@@ -71,14 +71,15 @@ pub fn stem_heads(steps: &[Step], stem_hw: f64, head: f64, depth: f64) -> Vec<Ba
         .collect()
 }
 
-pub fn arrow_tips(steps: &[Step], size: f64) -> Vec<Bar3DBlock> {
+pub fn arrow_tips(steps: &[Step], hw: f64) -> Vec<Bar3DBlock> {
+    let height = span_of(steps) * 0.05;
     steps
         .iter()
         .enumerate()
         .filter(|(_, s)| !s.total)
         .map(|(i, s)| {
-            let (from, to) = if s.end >= s.start { (s.end, s.end + size) } else { (s.end - size, s.end) };
-            Bar3DBlock::new(i as f64, 0.0, from, to, size * 0.5, size * 0.5, i).with_tone(s.tone())
+            let (from, to) = if s.end >= s.start { (s.end, s.end + height) } else { (s.end - height, s.end) };
+            Bar3DBlock::new(i as f64, 0.0, from, to, hw, hw, i).with_tone(s.tone())
         })
         .collect()
 }
