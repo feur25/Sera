@@ -13,6 +13,8 @@ fn render_bubble_spheres_html(
     h: i32,
     bg: Option<&str>,
     scene: &str,
+    hollow: bool,
+    always_label: bool,
 ) -> String {
     if blocks.is_empty() {
         return crate::html::js_3d::render_3d_html_impl(16, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], &[], w, h, bg, scene, b"var S=[];");
@@ -22,16 +24,22 @@ fn render_bubble_spheres_html(
     let z: Vec<f64> = blocks.iter().map(|b| (b.z0 + b.z1) / 2.0).collect();
     let (hlo, hhi) = blocks.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), b| (lo.min(b.hw), hi.max(b.hw)));
     let hrange = (hhi - hlo).max(1e-9);
-    let size_js = format!(
+    let mut extra = format!(
         "var S=[{}];",
         blocks.iter().map(|b| format!("{:.4}", (b.hw - hlo) / hrange)).collect::<Vec<_>>().join(",")
     );
+    if hollow {
+        extra.push_str("var HOLLOW=true;");
+    }
+    if always_label {
+        extra.push_str("var ALWAYSLABEL=true;");
+    }
     let colors: Vec<f64> = blocks.iter().map(|b| b.ci as f64).collect();
-    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, size_js.as_bytes())
+    crate::html::js_3d::render_3d_html_impl(16, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, extra.as_bytes())
 }
 
 #[crate::chart_demo("x=[1,2,3,4,5,6,7], y=[3,5,2,7,6,8,4], sizes=[20,40,15,55,30,45,25], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"]")]
-#[crate::params(paramsList["title","x","y","z","sizes","labels","categories","variant","palette","bg_color","scene","orientation3d","theme","zone","max_points","width","height","x_label","y_label","z_label"])]
+#[crate::params(paramsList["title","x","y","z","sizes","labels","categories","color_values","variant","palette","bg_color","scene","orientation3d","theme","zone","max_points","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias(
     "bubble3d",
     "bubble_3d",
@@ -87,6 +95,7 @@ pub fn build_bubble3d_chart(input: &str) -> String {
     let categories = a.categories.unwrap_or_default();
     let x_categories = a.x_categories.unwrap_or_default();
     let y_categories = a.y_categories.unwrap_or_default();
+    let color_values = o.color_values.clone().unwrap_or_default();
     let variant = BubbleVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let cfg = BubbleConfig {
         variant,
@@ -98,13 +107,16 @@ pub fn build_bubble3d_chart(input: &str) -> String {
         categories: &categories,
         x_categories: &x_categories,
         y_categories: &y_categories,
+        color_values: &color_values,
         ..BubbleConfig::default()
     };
     let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
     let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-    let html = render_bubble_spheres_html(title, &blocks, &names, (&o.xl(), &o.yl(), &o.zl()), o.w(900), o.h(560), bg_default, env);
+    let hollow = matches!(variant, BubbleVariant::Outlined);
+    let always_label = matches!(variant, BubbleVariant::Labeled);
+    let html = render_bubble_spheres_html(title, &blocks, &names, (&o.xl(), &o.yl(), &o.zl()), o.w(900), o.h(560), bg_default, env, hollow, always_label);
     apply_bg3d(html, &o)
 }
 
@@ -146,6 +158,22 @@ mod tests {
     fn assert_spheres(html: &str, label: &str) {
         assert!(html.contains("var S=["), "{label} must carry real bubble sizes, not Bar3DBlock cuboids");
         assert!(!html.contains("var BN="), "{label} must not fall back to the generic block renderer");
+    }
+
+    #[test]
+    fn outlined_and_labeled_carry_their_own_distinct_visual_flag_while_basic_carries_neither() {
+        let all = demos();
+        let outlined = all.iter().find(|(k, _)| *k == "outlined").unwrap();
+        let labeled = all.iter().find(|(k, _)| *k == "labeled").unwrap();
+        let basic = all.iter().find(|(k, _)| *k == "basic").unwrap();
+        let outlined_html = build_bubble3d_chart(&outlined.1);
+        let labeled_html = build_bubble3d_chart(&labeled.1);
+        let basic_html = build_bubble3d_chart(&basic.1);
+        assert!(outlined_html.contains("var HOLLOW=true;"), "outlined must render as a hollow ring, matching its 2D parent's fill=\"none\" styling");
+        assert!(!outlined_html.contains("var ALWAYSLABEL=true;"));
+        assert!(labeled_html.contains("var ALWAYSLABEL=true;"), "labeled must show names permanently, matching its 2D parent's always-on <text> labels");
+        assert!(!labeled_html.contains("var HOLLOW=true;"));
+        assert!(!basic_html.contains("var HOLLOW=true;") && !basic_html.contains("var ALWAYSLABEL=true;"));
     }
 
     #[test]
