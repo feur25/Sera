@@ -2,9 +2,8 @@ use super::common::prepare;
 use super::config::WaterfallConfig;
 use super::variant::WaterfallVariant;
 use crate::plot::statistical::_3d::budget::{Budget, Buckets};
-use crate::plot::statistical::_3d::generic::transposed;
 use crate::plot::statistical::_3d::steps::{
-    arrow_tips, floating_bars, running_track, stem_heads, Step, TOTAL_TONE,
+    arrow_tips, floating_bars, horizontal_bars, running_track, stem_heads, Step, TOTAL_TONE,
 };
 use crate::plot::statistical::bar::Bar3DBlock;
 
@@ -14,6 +13,8 @@ const BAR_HW: f64 = 0.32;
 const STEPPED_HW: f64 = 0.5;
 const STEM_HW: f64 = 0.05;
 const DEPTH: f64 = 0.35;
+const HORIZ_THICKNESS: f64 = 0.4;
+const HORIZ_ROW: f64 = 1.0;
 const TRACK_ROW: f64 = 1.2;
 const TRACK_TONE: f64 = 0.5;
 
@@ -93,6 +94,11 @@ pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
 }
 
 pub fn layout_named(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+    let (blocks, names, _) = layout_named_tips(cfg, budget);
+    (blocks, names)
+}
+
+pub fn layout_named_tips(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>, usize) {
     let n = cfg.labels.len().min(cfg.values.len());
     let buckets = Buckets::new(n, budget.points);
     if buckets.is_identity() {
@@ -109,32 +115,36 @@ pub fn layout_named(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>,
     })
 }
 
-fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
+fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>, usize) {
     let Some(prepared) = prepare(cfg) else {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), 0);
     };
     let steps: Vec<Step> = (0..prepared.n)
         .map(|i| Step { start: prepared.starts[i], end: prepared.ends[i], total: prepared.is_total[i] })
         .collect();
     let plan = recipe(cfg.variant);
-    let mut blocks = match plan.glyph {
-        Glyph::Bars => floating_bars(&steps, BAR_HW, DEPTH),
-        Glyph::Contiguous => floating_bars(&steps, STEPPED_HW, DEPTH),
-        Glyph::Lollipop => stem_heads(&steps, STEM_HW, BAR_HW * 0.8, DEPTH),
+    let mut blocks = if plan.swap {
+        horizontal_bars(&steps, HORIZ_THICKNESS, HORIZ_ROW, DEPTH)
+    } else {
+        match plan.glyph {
+            Glyph::Bars => floating_bars(&steps, BAR_HW, DEPTH),
+            Glyph::Contiguous => floating_bars(&steps, STEPPED_HW, DEPTH),
+            Glyph::Lollipop => stem_heads(&steps, STEM_HW, BAR_HW * 0.8, DEPTH),
+        }
     };
     if plan.graded {
         graded_tones(&mut blocks, &steps);
     }
+    let mut tip_count = 0;
     if plan.arrows {
-        blocks.extend(arrow_tips(&steps, BAR_HW * 0.9));
+        let tips = arrow_tips(&steps, BAR_HW * 0.9);
+        tip_count = tips.len();
+        blocks.extend(tips);
     }
     if plan.trend {
         blocks.extend(running_track(&steps, TRACK_ROW, 0.1, TRACK_TONE));
     }
-    if plan.swap {
-        blocks = transposed(blocks);
-    }
-    (blocks, prepared.labels)
+    (blocks, prepared.labels, tip_count)
 }
 
 #[cfg(test)]
@@ -180,10 +190,13 @@ mod tests {
     }
 
     #[test]
-    fn horizontal_turns_the_basic_layout_a_quarter_turn() {
-        let basic = blocks_for(WaterfallVariant::Basic);
+    fn horizontal_lays_each_step_out_as_a_flat_row_with_value_as_the_x_span() {
         let horizontal = blocks_for(WaterfallVariant::Horizontal);
-        assert_eq!(basic[2].cx, horizontal[2].cy);
+        let rows: std::collections::BTreeSet<i64> = horizontal.iter().map(|b| (b.cy * 1000.0).round() as i64).collect();
+        assert_eq!(rows.len(), horizontal.len(), "each step must sit on its own row, like the 2D horizontal bar chart");
+        assert!(horizontal.iter().all(|b| (b.z1 - b.z0) < 1.0), "horizontal bars must stay a flat slab, the value belongs on x not z");
+        let basic = blocks_for(WaterfallVariant::Basic);
+        assert!(basic.iter().any(|b| (b.z1 - b.z0) > 1.0), "basic must still stand tall for this comparison to mean anything");
     }
 
     #[test]
