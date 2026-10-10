@@ -163,6 +163,27 @@ pub fn render_blocks3d_view_html_labeled(
     crate::html::js_3d::render_3d_html_impl(1, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], color_labels, w, h, bg_color, scene, extra.as_bytes())
 }
 
+#[allow(clippy::too_many_arguments)]
+pub fn render_blocks3d_view_html_tipped(
+    title: &str,
+    blocks: &[Bar3DBlock],
+    tip_count: usize,
+    view: &BlockView,
+    axis_labels: (&str, &str, &str),
+    color_labels: &[String],
+    w: i32,
+    h: i32,
+    bg_color: Option<&str>,
+    scene: &str,
+) -> String {
+    let kept = budget::thin(blocks.to_vec(), budget::HARD_BLOCKS);
+    let mut extra = block_script(&kept, view);
+    if tip_count > 0 && kept.len() == blocks.len() {
+        extra.push_str(&format!("var ARTIP={tip_count};"));
+    }
+    crate::html::js_3d::render_3d_html_impl(1, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], color_labels, w, h, bg_color, scene, extra.as_bytes())
+}
+
 fn zoom_groups_script(kept: &[Bar3DBlock], blocks: &[Bar3DBlock], groups: &[Vec<u32>]) -> String {
     if groups.is_empty() || kept.len() != blocks.len() {
         return String::new();
