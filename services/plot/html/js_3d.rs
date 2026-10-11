@@ -484,10 +484,11 @@ function drawContactShadow(nx,ny,hw,hd){
   if(SCENE!=='default'||lod()>0)return;
   var psh=pj(nx,ny,ZN.z0);
   if(!psh)return;
+  g.save();
   g.globalAlpha=isDark?0.28:0.16;
   g.fillStyle='#000';
   g.beginPath();g.ellipse(mx+psh.x*sc,my-psh.y*sc+2,hw*sc*1.25,hd*sc*0.55,0,0,TAU);g.fill();
-  g.globalAlpha=1;
+  g.restore();
 }
 function drawGlowCap(nx,ny,z1,hw,baseCol){
   if(lod()>0)return;
