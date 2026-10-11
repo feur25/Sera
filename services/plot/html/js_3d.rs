@@ -263,7 +263,7 @@ var N=X.length,uc=C.length>=N;
 var xmn=1e18,xmx=-1e18,ymn=1e18,ymx=-1e18,zmn=1e18,zmx=-1e18;
 for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;if(X[i]<xmn)xmn=X[i];if(X[i]>xmx)xmx=X[i];if(Y[i]<ymn)ymn=Y[i];if(Y[i]>ymx)ymx=Y[i];if(Z[i]<zmn)zmn=Z[i];if(Z[i]>zmx)zmx=Z[i];}
 var xr=xmx-xmn||1,yr=ymx-ymn||1,zr=zmx-zmn||1;
-var yaw=0.785,pitch=0.6,zoom=1.0,TAU=6.2832,fov=0.8;
+var yaw=0.785,pitch=typeof IPITCH!=='undefined'?IPITCH:0.6,zoom=1.0,TAU=6.2832,fov=0.8;
 var yaw0=yaw,pitch0=pitch,zoom0=1.0;zoom=zoom0;
 var dg=false,lx=0,ly=0,mv=false,dwX=0,dwY=0,raf=0;
 var cv=document.getElementById(cid+'c'),g=cv.getContext('2d'),wrap=document.getElementById(cid),tip=document.getElementById(cid+'t');

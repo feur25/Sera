@@ -48,8 +48,14 @@ pub fn render_region_globe3d_html(
     h: i32,
     bg_color: Option<&str>,
     scene: &str,
+    initial_pitch: Option<f64>,
 ) -> String {
-    let map_js = build_globe_map_js(Some(region_colors));
+    let mut map_js = build_globe_map_js(Some(region_colors));
+    if let Some(pitch) = initial_pitch {
+        push_b(&mut map_js, b"var IPITCH=");
+        map_js.extend_from_slice(format!("{pitch:.4}").as_bytes());
+        push_b(&mut map_js, b";\n");
+    }
     render_3d_html_impl(
         15,
         title,
