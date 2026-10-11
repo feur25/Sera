@@ -33,11 +33,17 @@ pub fn build_waterfall3d_chart(input: &str) -> String {
     let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP)
         .with_zone(o.zone.as_deref())
         .with_fit(layout3d::fit_3d(variant));
-    let (blocks, names, tip_count) = layout3d::layout_named_tips(&cfg, &Budget::new(o.max_points));
+    let (blocks, names, tip_count, trend) = layout3d::layout_named_tips(&cfg, &Budget::new(o.max_points));
+    let block_opacity = match variant {
+        WaterfallVariant::Trend => Some(0.55),
+        _ => None,
+    };
     let html = render_blocks3d_view_html_tipped(
         title,
         &blocks,
         tip_count,
+        &trend,
+        block_opacity,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
         &names,
@@ -81,6 +87,17 @@ mod tests {
         assert!(arrowed.contains("var ARTIP="), "arrowed must mark its tip blocks for pyramid rendering, or it reads as a plain bar with a box on top, not a real arrow");
         let basic = build_waterfall3d_chart(&format!("{base}\"basic\"}}"));
         assert!(!basic.contains("var ARTIP="));
+    }
+
+    #[test]
+    fn only_trend_overlays_a_dimmed_running_total_line() {
+        let base = r#"{"title":"t","labels":["Start","Q1","Q2","End"],"values":[100,30,-15,115],"variant":"#;
+        let trend = build_waterfall3d_chart(&format!("{base}\"trend\"}}"));
+        assert!(trend.contains("var TRKZ="), "trend must carry the running-total points for the line overlay");
+        assert!(trend.contains("var BOP="), "trend must dim its bars so the line overlay reads clearly, like the 2D chart");
+        let basic = build_waterfall3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var TRKZ="));
+        assert!(!basic.contains("var BOP="));
     }
 
     #[test]

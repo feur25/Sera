@@ -168,6 +168,8 @@ pub fn render_blocks3d_view_html_tipped(
     title: &str,
     blocks: &[Bar3DBlock],
     tip_count: usize,
+    trend: &[f64],
+    block_opacity: Option<f64>,
     view: &BlockView,
     axis_labels: (&str, &str, &str),
     color_labels: &[String],
@@ -180,6 +182,13 @@ pub fn render_blocks3d_view_html_tipped(
     let mut extra = block_script(&kept, view);
     if tip_count > 0 && kept.len() == blocks.len() {
         extra.push_str(&format!("var ARTIP={tip_count};"));
+    }
+    if !trend.is_empty() && kept.len() == blocks.len() {
+        let trend_js = trend.iter().map(|v| format!("{v:.4}")).collect::<Vec<_>>().join(",");
+        extra.push_str(&format!("var TRKZ=[{trend_js}];"));
+    }
+    if let Some(op) = block_opacity {
+        extra.push_str(&format!("var BOP={op:.4};"));
     }
     crate::html::js_3d::render_3d_html_impl(1, title, &[0.0], &[0.0], &[0.0], axis_labels, &[], color_labels, w, h, bg_color, scene, extra.as_bytes())
 }

@@ -2,9 +2,7 @@ use super::common::prepare;
 use super::config::WaterfallConfig;
 use super::variant::WaterfallVariant;
 use crate::plot::statistical::_3d::budget::{Budget, Buckets};
-use crate::plot::statistical::_3d::steps::{
-    arrow_tips, floating_bars, horizontal_bars, running_track, stem_heads, Step, TOTAL_TONE,
-};
+use crate::plot::statistical::_3d::steps::{arrow_tips, floating_bars, horizontal_bars, stem_heads, Step, TOTAL_TONE};
 use crate::plot::statistical::_3d::zone::Fit;
 use crate::plot::statistical::bar::Bar3DBlock;
 
@@ -23,8 +21,6 @@ const STEM_HW: f64 = 0.05;
 const DEPTH: f64 = 0.35;
 const HORIZ_THICKNESS: f64 = 0.4;
 const HORIZ_ROW: f64 = 1.0;
-const TRACK_ROW: f64 = 1.2;
-const TRACK_TONE: f64 = 0.5;
 
 #[derive(Clone, Copy)]
 enum Glyph {
@@ -102,11 +98,11 @@ pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
 }
 
 pub fn layout_named(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
-    let (blocks, names, _) = layout_named_tips(cfg, budget);
+    let (blocks, names, _, _) = layout_named_tips(cfg, budget);
     (blocks, names)
 }
 
-pub fn layout_named_tips(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>, usize) {
+pub fn layout_named_tips(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>, usize, Vec<f64>) {
     let n = cfg.labels.len().min(cfg.values.len());
     let buckets = Buckets::new(n, budget.points);
     if buckets.is_identity() {
@@ -123,9 +119,9 @@ pub fn layout_named_tips(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBl
     })
 }
 
-fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>, usize) {
+fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>, usize, Vec<f64>) {
     let Some(prepared) = prepare(cfg) else {
-        return (Vec::new(), Vec::new(), 0);
+        return (Vec::new(), Vec::new(), 0, Vec::new());
     };
     let steps: Vec<Step> = (0..prepared.n)
         .map(|i| Step { start: prepared.starts[i], end: prepared.ends[i], total: prepared.is_total[i] })
@@ -149,10 +145,8 @@ fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>, usize) {
         tip_count = tips.len();
         blocks.extend(tips);
     }
-    if plan.trend {
-        blocks.extend(running_track(&steps, TRACK_ROW, 0.1, TRACK_TONE));
-    }
-    (blocks, prepared.labels, tip_count)
+    let trend = if plan.trend { steps.iter().map(|s| s.end).collect() } else { Vec::new() };
+    (blocks, prepared.labels, tip_count, trend)
 }
 
 #[cfg(test)]
@@ -186,7 +180,21 @@ mod tests {
         assert_eq!(base, 5);
         assert_eq!(blocks_for(WaterfallVariant::Lollipop).len(), 10);
         assert_eq!(blocks_for(WaterfallVariant::Arrowed).len(), 10);
-        assert_eq!(blocks_for(WaterfallVariant::Trend).len(), 10);
+        assert_eq!(blocks_for(WaterfallVariant::Trend).len(), 5, "trend overlays a line, it doesn't add extra blocks");
+    }
+
+    #[test]
+    fn trend_reports_the_running_total_at_each_step_for_the_line_overlay() {
+        let labels: Vec<String> = ["Start", "Q1", "Q2", "Q3", "End"].iter().map(|s| s.to_string()).collect();
+        let values = [100.0, 30.0, -15.0, 40.0, 155.0];
+        let cfg = WaterfallConfig { variant: WaterfallVariant::Trend, labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let (_, _, _, trend) = layout_named_tips(&cfg, &Budget::default());
+        assert_eq!(trend, vec![100.0, 130.0, 115.0, 155.0, 310.0]);
+        let (_, _, _, basic_trend) = layout_named_tips(
+            &WaterfallConfig { variant: WaterfallVariant::Basic, labels: &labels, values: &values, ..WaterfallConfig::default() },
+            &Budget::default(),
+        );
+        assert!(basic_trend.is_empty(), "only trend emits the line overlay points");
     }
 
     #[test]
