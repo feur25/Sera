@@ -1,4 +1,4 @@
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
+use crate::plot::statistical::_3d::{render_blocks3d_view_html_tipped, BlockView};
 use crate::plot::statistical::histogram::layout3d;
 use crate::plot::statistical::{HistogramConfig, HistogramVariant};
 use crate::plot::{apply_bg3d, parse_all};
@@ -33,11 +33,20 @@ pub fn build_histogram3d_chart(input: &str) -> String {
     } else {
         bg_str.as_deref()
     };
-    let view = BlockView::new(layout3d::HEIGHT_RATIO, "").with_zone(o.zone.as_deref());
-    let (blocks, series_names) = layout3d::layout_named(&cfg);
-    let html = render_blocks3d_view_html(
+    let view = BlockView::new(layout3d::HEIGHT_RATIO, "")
+        .with_zone(o.zone.as_deref())
+        .with_fit(layout3d::fit_3d(variant));
+    let (blocks, series_names, trend) = layout3d::layout_named(&cfg);
+    let block_opacity = match variant {
+        HistogramVariant::Overlay => Some(0.6),
+        _ => None,
+    };
+    let html = render_blocks3d_view_html_tipped(
         title,
         &blocks,
+        0,
+        &trend,
+        block_opacity,
         &view,
         (&o.xl(), &o.yl(), &o.zl()),
         &series_names,
@@ -72,6 +81,19 @@ mod tests {
     #[test]
     fn every_histogram_variant_has_a_working_3d_counterpart() {
         twin::check_variants(build_histogram3d_chart, &demos(), HistogramVariant::all().len());
+    }
+
+    #[test]
+    fn only_normalized_draws_the_kde_curve_and_only_overlay_dims_its_bars() {
+        let base = r#"{"title":"t","values":[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3],"variant":"#;
+        let normalized = build_histogram3d_chart(&format!("{base}\"normalized\"}}"));
+        assert!(normalized.contains("var TRKZ="), "normalized must overlay a KDE curve, like the 2D chart");
+        assert!(!normalized.contains("var BOP="));
+        let overlay = build_histogram3d_chart(&format!("{base}\"overlay\",\"overlay\":[2.0,3.0,4.0,5.0,6.0]}}"));
+        assert!(overlay.contains("var BOP="), "overlay must dim its bars so both series read through each other, like the 2D chart");
+        assert!(!overlay.contains("var TRKZ="));
+        let basic = build_histogram3d_chart(&format!("{base}\"basic\"}}"));
+        assert!(!basic.contains("var TRKZ=") && !basic.contains("var BOP="));
     }
 
     #[test]
