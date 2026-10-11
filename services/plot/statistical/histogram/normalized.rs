@@ -3,7 +3,7 @@ use super::config::HistogramConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{hex6, push_b, push_f2, push_i, Frame};
 
-fn gaussian_kde(values: &[f64], xs: &[f64]) -> Vec<f64> {
+pub(crate) fn gaussian_kde(values: &[f64], xs: &[f64]) -> Vec<f64> {
     let n = values.len();
     if n == 0 {
         return vec![0.0; xs.len()];
