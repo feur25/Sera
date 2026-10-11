@@ -1239,12 +1239,14 @@ pub fn chart_variants() -> serde_json::Value {
     ] {
         out.insert(family.to_string(), build(scene_keys, scene_default, "3d"));
     }
-    for family in ["radar3d", "pie3d", "globe"] {
+    for family in ["radar3d", "pie3d"] {
         out.insert(family.to_string(), build(default_only, "default", "3d"));
     }
+    out.insert("globe".to_string(), build(default_only, "default", "map"));
     for (twin, base) in GEOMETRY_TWINS {
         if let Some(entry) = crate::plot::family_macro::chart_families().find(|e| e.name == *base) {
-            let mut twin_entry = build((entry.keys_and_aliases)(), (entry.default_key)(), "3d");
+            let twin_kind = if entry.kind == "map" { "map" } else { "3d" };
+            let mut twin_entry = build((entry.keys_and_aliases)(), (entry.default_key)(), twin_kind);
             if let Value::Object(map) = &mut twin_entry {
                 map.insert("axes".to_string(), view_axes());
             }
