@@ -614,10 +614,13 @@ function rBlocksFast(){
   view.sort(function(a,c){return dep[c]-dep[a];});
   var alwaysLbl=typeof ALWAYSLABEL!=='undefined'&&ALWAYSLABEL&&typeof NM!=='undefined';
   var tipFrom=typeof ARTIP!=='undefined'?n-ARTIP:n;
+  var dimmed=typeof BOP!=='undefined';
   for(var k=0;k<live;k++){
     var i=view[k];
+    if(dimmed){g.save();g.globalAlpha=BOP;}
     if(i>=tipFrom)drawPyramidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],typeof BCT!=='undefined'&&BCT[i]>=0.75);
     else drawCuboidBar(BP.nx[i],BP.ny[i],BP.z0[i],BP.z1[i],BP.hw[i],BP.hd[i],BP.col[i],BP.e0[i],BP.e1[i]);
+    if(dimmed)g.restore();
     if(alwaysLbl&&NM[i]!==undefined){
       g.save();g.font='600 9px -apple-system,sans-serif';g.textAlign='center';g.textBaseline='bottom';
       g.strokeStyle='rgba(15,23,42,0.9)';g.lineWidth=3;g.strokeText(NM[i],BP.psx[i],BP.psy[i]-6);
@@ -626,6 +629,27 @@ function rBlocksFast(){
     }
   }
   BP.live=live;BP.view=view;
+  if(typeof TRKZ!=='undefined')drawTrendLine();
+}
+function drawTrendLine(){
+  var e=BFIT.ext,pts=[];
+  for(var i=0;i<TRKZ.length;i++){
+    var tnz=(TRKZ[i]-e[4])/BFIT.sz-BFIT.dz/2;
+    var p=pj(BP.nx[i],BP.ny[i],tnz);
+    if(p)pts.push({sx:mx+p.x*sc,sy:my-p.y*sc});
+  }
+  if(pts.length<2)return;
+  for(var pass=0;pass<2;pass++){
+    g.save();g.globalAlpha=pass===0?0.3:1;g.lineJoin='round';g.lineCap='round';
+    g.lineWidth=pass===0?7:2.4;g.strokeStyle=pass===0?'#ffffff':'#f59e0b';
+    g.beginPath();g.moveTo(pts[0].sx,pts[0].sy);
+    for(var k=1;k<pts.length;k++)g.lineTo(pts[k].sx,pts[k].sy);
+    g.stroke();g.restore();
+  }
+  for(var k=0;k<pts.length;k++){
+    g.beginPath();g.arc(pts[k].sx,pts[k].sy,4,0,TAU);g.fillStyle='#f59e0b';g.fill();
+    g.strokeStyle='#fff';g.lineWidth=1.2;g.stroke();
+  }
 }
 function hitBlock(ex,ey){
   if(!BP||!BP.view)return -1;
