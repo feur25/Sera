@@ -1,5 +1,5 @@
 use super::super::bar::Bar3DBlock;
-use super::ohlc::{track_blocks, DOWN, UP};
+use super::ohlc::{DOWN, UP};
 
 pub const TOTAL_TONE: f64 = 0.5;
 
@@ -84,11 +84,6 @@ pub fn arrow_tips(steps: &[Step], hw: f64) -> Vec<Bar3DBlock> {
         .collect()
 }
 
-pub fn running_track(steps: &[Step], row: f64, depth: f64, tone: f64) -> Vec<Bar3DBlock> {
-    let ends: Vec<f64> = steps.iter().map(|s| s.end).collect();
-    track_blocks(&ends, span_of(steps), depth, row, tone)
-}
-
 pub fn from_deltas(values: &[f64], is_total: &[bool]) -> Vec<Step> {
     let mut running = 0.0;
     values
@@ -147,10 +142,5 @@ mod tests {
         let tips = arrow_tips(&steps(), 0.3);
         assert_eq!(tips.len(), 3);
         assert!(tips[2].z1 <= 115.0);
-    }
-
-    #[test]
-    fn the_running_track_follows_every_step_end() {
-        assert_eq!(running_track(&steps(), 1.0, 0.1, 0.5).len(), 4);
     }
 }
