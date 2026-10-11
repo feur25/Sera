@@ -23,7 +23,7 @@ fn bounds_of(polys: &[Vec<[f32; 2]>]) -> Option<(f32, f32, f32, f32)> {
     (max_x > min_x && max_y > min_y).then_some((min_x, min_y, max_x, max_y))
 }
 
-fn scatter(polys: &[Vec<[f32; 2]>], count: usize, seed: u32) -> Vec<[f32; 2]> {
+pub(crate) fn scatter(polys: &[Vec<[f32; 2]>], count: usize, seed: u32) -> Vec<[f32; 2]> {
     let Some((min_x, min_y, max_x, max_y)) = bounds_of(polys) else {
         return Vec::new();
     };

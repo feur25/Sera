@@ -18,7 +18,7 @@ pub fn render(cfg: &ChoroplethConfig) -> String {
     })
 }
 
-fn quantile_edges(sorted: &[f64], bins: usize) -> Vec<f64> {
+pub(crate) fn quantile_edges(sorted: &[f64], bins: usize) -> Vec<f64> {
     if sorted.is_empty() {
         return Vec::new();
     }

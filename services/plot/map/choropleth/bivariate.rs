@@ -12,6 +12,10 @@ fn tercile(value: f64, min: f64, max: f64) -> usize {
     (((value - min) / span) * 3.0).floor().clamp(0.0, 2.0) as usize
 }
 
+pub(crate) fn color_for(a: f64, b: f64, a_min: f64, a_max: f64, b_min: f64, b_max: f64) -> (u8, u8, u8) {
+    GRID[tercile(b, b_min, b_max)][tercile(a, a_min, a_max)]
+}
+
 pub fn render_svg(cfg: &ChoroplethConfig) -> String {
     let n = cfg.values.len().min(cfg.labels.len()).min(cfg.secondary_values.len());
     if n == 0 {
