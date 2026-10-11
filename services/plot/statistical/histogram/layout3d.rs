@@ -1,15 +1,26 @@
 use super::common::{bin_to_edges, compute_bins};
 use super::config::HistogramConfig;
+use super::normalized::gaussian_kde;
 use super::variant::HistogramVariant;
-use crate::plot::statistical::_3d::generic::{grouped_columns, plate_columns, transposed};
+use crate::plot::statistical::_3d::generic::{grouped_columns, plate_columns};
+use crate::plot::statistical::_3d::zone::Fit;
 use crate::plot::statistical::bar::Bar3DBlock;
 use std::collections::HashMap;
 
 pub const HEIGHT_RATIO: f64 = 0.8;
-const BIN_HW: f64 = 0.46;
+const BIN_HW: f64 = 0.49;
 const BIN_DEPTH: f64 = 0.42;
+const HORIZ_THICKNESS: f64 = 0.4;
+const HORIZ_ROW: f64 = 1.0;
 const PLATE_SHARE: f64 = 0.02;
 const GROUP_LIMIT: usize = 60;
+
+pub fn fit_3d(variant: HistogramVariant) -> Fit {
+    match variant {
+        HistogramVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
 
 #[derive(Clone, Copy)]
 enum Measure {
@@ -117,18 +128,54 @@ fn measured(counts: &[u64], measure: Measure, width: f64) -> Vec<f64> {
     }
 }
 
+fn horizontal_columns(series: &[(String, Vec<f64>)], n_cats: usize, thickness: f64, row: f64, depth: f64) -> Vec<Bar3DBlock> {
+    let n_ser = series.len().max(1);
+    let mut out = Vec::with_capacity(n_cats * n_ser);
+    for ci in 0..n_cats {
+        for (si, (_, vals)) in series.iter().enumerate() {
+            let v = vals.get(ci).copied().unwrap_or(0.0).max(0.0);
+            let half = (v / 2.0).max(1e-6);
+            let sub = if n_ser > 1 { (si as f64 - (n_ser as f64 - 1.0) / 2.0) * row * 0.28 } else { 0.0 };
+            out.push(Bar3DBlock::new(half, ci as f64 * row + sub, 0.0, thickness, half, depth, si));
+        }
+    }
+    out
+}
+
+fn overlaid_columns(series: &[(String, Vec<f64>)], n_cats: usize, hw: f64, depth: f64) -> Vec<Bar3DBlock> {
+    let mut out = Vec::with_capacity(n_cats * series.len());
+    for ci in 0..n_cats {
+        for (si, (_, vals)) in series.iter().enumerate() {
+            let v = vals.get(ci).copied().unwrap_or(0.0);
+            if !v.is_finite() {
+                continue;
+            }
+            out.push(Bar3DBlock::new(ci as f64, 0.0, 0.0, v, hw, depth, si));
+        }
+    }
+    out
+}
+
+fn density_curve(cfg: &HistogramConfig, edges: &[f64], n_bins: usize) -> Vec<f64> {
+    if !matches!(cfg.variant, HistogramVariant::Normalized) {
+        return Vec::new();
+    }
+    let centers: Vec<f64> = (0..n_bins).map(|i| (edges[i] + edges[i + 1]) / 2.0).collect();
+    gaussian_kde(cfg.values, &centers)
+}
+
 pub fn layout_3d(cfg: &HistogramConfig) -> Vec<Bar3DBlock> {
     layout_named(cfg).0
 }
 
-pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
+pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<f64>) {
     if cfg.values.is_empty() {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), Vec::new());
     }
     let (_, edges) = compute_bins(cfg.values, cfg.bins);
     let n_bins = edges.len().saturating_sub(1);
     if n_bins == 0 {
-        return (Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new(), Vec::new());
     }
     let plan = recipe(cfg.variant);
     let width = (edges[n_bins] - edges[0]) / n_bins as f64;
@@ -136,7 +183,8 @@ pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
         .into_iter()
         .map(|(name, counts)| (name, measured(&counts, plan.measure, width)))
         .collect();
-    let mut blocks = if plan.plates {
+    let trend = density_curve(cfg, &edges, n_bins);
+    let blocks = if plan.plates {
         let peak = series.iter().flat_map(|(_, v)| v.iter().cloned()).fold(1e-12, f64::max);
         series
             .iter()
@@ -147,14 +195,15 @@ pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>) {
                     .map(move |b| Bar3DBlock { ci: s, ..b })
             })
             .collect()
+    } else if plan.swap {
+        horizontal_columns(&series, n_bins, HORIZ_THICKNESS, HORIZ_ROW, BIN_DEPTH)
+    } else if matches!(plan.arrangement, Arrangement::Overlay) {
+        overlaid_columns(&series, n_bins, BIN_HW, BIN_DEPTH)
     } else {
         let stacked = matches!(plan.arrangement, Arrangement::Stacked);
         grouped_columns(&series, n_bins, stacked, BIN_HW, BIN_DEPTH)
     };
-    if plan.swap {
-        blocks = transposed(blocks);
-    }
-    (blocks, series.into_iter().map(|(name, _)| name).collect())
+    (blocks, series.into_iter().map(|(name, _)| name).collect(), trend)
 }
 
 #[cfg(test)]
@@ -215,14 +264,48 @@ mod tests {
             ..HistogramConfig::default()
         });
         assert_eq!(overlay.len(), 8);
-        assert!(overlay.iter().any(|b| b.cy < 0.0) && overlay.iter().any(|b| b.cy > 0.0));
+        assert!(overlay.iter().all(|b| b.cy == 0.0), "overlay bars must share one footprint per bin, like the 2D chart's superimposed rects");
+        for bin in overlay.chunks(2) {
+            assert_eq!(bin[0].cx, bin[1].cx, "both series must land on the exact same bin position to truly overlap");
+            assert_ne!(bin[0].ci, bin[1].ci, "each series keeps its own color");
+        }
     }
 
     #[test]
-    fn step_is_a_row_of_thin_plates_and_horizontal_a_quarter_turn() {
+    fn step_is_a_row_of_thin_plates() {
         let plates = blocks_for(HistogramVariant::Step);
         assert!(plates.iter().all(|b| b.z1 - b.z0 < 0.5));
-        assert_eq!(blocks_for(HistogramVariant::Basic)[2].cx, blocks_for(HistogramVariant::Horizontal)[2].cy);
+    }
+
+    #[test]
+    fn horizontal_lays_each_bin_out_as_a_flat_row_with_count_as_the_x_span() {
+        let horizontal = blocks_for(HistogramVariant::Horizontal);
+        let rows: std::collections::BTreeSet<i64> = horizontal.iter().map(|b| (b.cy * 1000.0).round() as i64).collect();
+        assert_eq!(rows.len(), horizontal.len(), "each bin must sit on its own row, like the 2D horizontal histogram");
+        assert!(horizontal.iter().all(|b| (b.z1 - b.z0) < 1.0), "horizontal bars must stay a flat slab, the count belongs on x not z");
+        let basic = blocks_for(HistogramVariant::Basic);
+        assert!(basic.iter().any(|b| (b.z1 - b.z0) > 1.0), "basic must still stand tall for this comparison to mean anything");
+        assert_eq!(fit_3d(HistogramVariant::Horizontal), Fit::Stretch);
+        assert_eq!(fit_3d(HistogramVariant::Basic), Fit::Uniform);
+    }
+
+    #[test]
+    fn normalized_carries_a_kde_curve_that_other_variants_dont() {
+        let (_, _, trend) = layout_named(&HistogramConfig {
+            variant: HistogramVariant::Normalized,
+            values: &VALUES,
+            bins: 4,
+            ..HistogramConfig::default()
+        });
+        assert_eq!(trend.len(), 4);
+        assert!(trend.iter().all(|v| v.is_finite() && *v >= 0.0));
+        let (_, _, basic_trend) = layout_named(&HistogramConfig {
+            variant: HistogramVariant::Basic,
+            values: &VALUES,
+            bins: 4,
+            ..HistogramConfig::default()
+        });
+        assert!(basic_trend.is_empty());
     }
 
     #[test]
