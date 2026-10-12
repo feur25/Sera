@@ -866,12 +866,6 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     #[cfg(feature = "webapp")]
     m.add_class::<crate::webapp::App>()?;
     #[cfg(feature = "sera-pulse")]
-    m.add_function(wrap_pyfunction!(crate::plot::pulse::chart_methods::pulse_activate, m)?)?;
-    #[cfg(feature = "sera-pulse")]
-    m.add_function(wrap_pyfunction!(crate::plot::pulse::chart_methods::pulse_status, m)?)?;
-    #[cfg(feature = "sera-pulse")]
-    m.add_function(wrap_pyfunction!(crate::plot::pulse::chart_methods::pulse_machine_id, m)?)?;
-    #[cfg(feature = "sera-pulse")]
     m.add_function(wrap_pyfunction!(crate::plot::pulse::features::metrics::pulse_serve_metrics, m)?)?;
     #[cfg(feature = "sera-pulse")]
     m.add_function(wrap_pyfunction!(crate::plot::pulse::features::health::pulse_serve_health, m)?)?;

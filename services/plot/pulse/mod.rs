@@ -9,7 +9,6 @@ pub mod ffi_bridge;
 pub mod anomaly_registry;
 pub mod chart_source_registry;
 pub mod firehose_registry;
-pub mod license;
 pub mod live_marks;
 pub mod live_registry;
 pub mod ring_buffer;

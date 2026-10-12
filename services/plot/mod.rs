@@ -17,7 +17,7 @@ pub mod map;
 #[cfg(feature = "sera-pulse")]
 pub mod pulse;
 #[cfg(feature = "sera-pulse")]
-pub use pulse::{chart_source_registry, firehose_registry, license, now_ms, push_registry, record_registry};
+pub use pulse::{chart_source_registry, firehose_registry, now_ms, push_registry, record_registry};
 #[cfg(all(feature = "python", feature = "sera-pulse"))]
 pub use pulse::{anomaly_registry, features as pulse_features};
 pub mod models;
