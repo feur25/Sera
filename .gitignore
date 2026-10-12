@@ -18,5 +18,4 @@ python/seraplot/__pycache__/
 *.ipynb
 .ipynb_checkpoints/
 CAHIER_DES_CHARGES.md
-services/plot/pulse/
 services/data/dframe/secure/
