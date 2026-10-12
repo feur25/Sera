@@ -460,46 +460,14 @@ chart = cv.build()
 
 ## Real-world composition: a RéciTAC-style network
 
-A radial network diagram organizing a research program's disciplines,
-universities, actions and impact outcomes around a dense central network of
-"stories" and "people". None of it needs a dedicated "network chart" type:
-`wedge`+`polar` build the outer capsule-segment rings — angular width
-proportional to story count per discipline, so the ring itself carries data
-instead of just decorating — `polygon`+`rect` build the hexagon impact
-clusters and their pill-shaped outcome labels, `connector` draws every curved
-edge, and `link()` ties related elements — a hexagon cluster and every story
-it touches, a university and its disciplines, an action's color segments —
-into shared hover-glow, dim-the-rest groups (hovering any grouped element now
-fades everything outside its group to near-transparent, a `Canvas`-level
-generalization of `Chart.hover_family()`'s dim-the-rest effect, which only
-natively works on hierarchical/flow charts like icicle and sankey). The story
-nodes themselves are five real, `place()`d `sp.bubble()` charts — one per
-discipline, arranged in a rosette so each contributes its own color-clustered
-mass to a shared dense core instead of reading as one undifferentiated blob —
-rather than hand-drawn circles. Splitting the hairball this way also makes it
-addressable by `link()`: hovering a discipline's ring segment now dims every
-*other* discipline's cluster, isolating just its own. Each sub-chart's actual
-rendered positions are read back out of its own SVG (by `data-idx`, since
-`bubble()` reorders its DOM by category) so every connector line lands
-exactly on a real dot, with a fully transparent same-position `circle()` as
-the `link()` target `bubble()`'s own iframe can't expose directly, and
-`.no_hover()` disables each chart's own baked-in double-click zoom, which
-would otherwise shift a dot's position inside its iframe independently of the
-canvas-level connector lines drawn to its build-time coordinates. Three more
-real charts get `place()`d straight into the
-canvas's empty corners and lower edge rather than boxed on top of it: a
-`sp.bubble()` "story constellation" stripped of axes/background and
-circle-clipped so it reads as one more circular motif, a `sp.histogram()`
-"people per story" tilted into its own corner, and a `sp.barh()` "stories per
-discipline" sitting low and centered — all three summarizing the same dataset
-the diagram encodes, from different angles. Composition isn't an alternative
-to SeraPlot's chart functions, it's a way to combine them in one scene.
-
-The full, runnable version (with the synthetic dataset, the university/action
-hover groups, and both embedded charts) lives at
+A radial network diagram: `wedge`+`polar` build the outer rings (angular
+width proportional to story count per discipline), `polygon`+`rect` build
+the hexagon impact clusters, `connector` draws the edges, and `link()` groups
+related elements into shared hover-glow / dim-the-rest sets. The story nodes
+are five real `place()`d `sp.bubble()` charts arranged in a rosette, not
+hand-drawn circles — their actual rendered positions get read back by
+`data-idx` so every connector lands on a real dot. Full runnable version:
 [`notebook/canva/recitac_remake.ipynb`](https://github.com/feur25/Sera/blob/main/notebook/canva/recitac_remake.ipynb).
-The trimmed sketch below shows the core technique — outer ring, one hexagon
-cluster, a handful of hairball nodes:
 
 ```python
 import random
@@ -559,26 +527,7 @@ chart = cv.build().zoom()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=6c71919e" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
-The dataset is synthetic — the point is the *composition pattern*, not a
-literal port of Nadieh's real research-program data (which comes from a
-private Google Sheet). Everything scales with the data: add a discipline and
-every ring/legend/embedded chart picks it up automatically; add a story and a
-new node, a new set of connectors, and a new hover-group member appear on the
-next `build()`.
-
-**`.zoom()`** on the built `Chart` (called above, `cv.build().zoom()`) turns
-on mouse-wheel/pinch zoom and drag-to-pan for the whole composition — useful
-once a canvas is dense enough that hovering individual hexagons or story
-nodes benefits from zooming in first.
-
-**A tip for very large canvases**: `chart` on its own (or `chart.show()`)
-sizes its inline `<iframe>` via CSS `aspect-ratio`, which some notebook
-frontends resolve unreliably for big square canvases like this one (1700×1700),
-silently cropping the output instead of shrinking it to fit. `chart.save(path)`
-plus `IPython.display.IFrame(src=path, width=..., height=...)` sidesteps that
-by reserving an explicit pixel size upfront — the canvas's own internal
-viewport-fit script then scales the full composition down to whatever that
-turns out to be, so you always see it in full.
+`.zoom()` on the built `Chart` (`cv.build().zoom()`) turns on mouse-wheel/pinch zoom and drag-to-pan — useful once a canvas is dense. For very large canvases, prefer `chart.save(path)` + `IPython.display.IFrame(src=path, width=..., height=...)` over the bare inline `<iframe>`, which some notebooks crop via CSS `aspect-ratio` on big square canvases.
 
 ---
 
@@ -646,33 +595,20 @@ chart = cv.build()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-constellation.html?v=5bd7e57b" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
-The dataset for the live preview above is synthetic too — recreated from the
-same `ai_story` data-story project's `constellation.py`, whose original CSVs
-no longer exist. 14 architectures, not 6, and each satellite's event cloud is
-real per-model data (up to 60 events) rather than a Gaussian stand-in — the
-technique is identical, just with more rows and a second sidecar dataset
-joined in by `model_id`.
-
 ---
 
 ## Composing real charts: a mission-control dashboard
 
-`place()` embeds a full `Chart` — not just a primitive — inside a canvas,
-which means canvas composition isn't limited to hand-drawn shapes: real
-`sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()`, `sp.donut()`,
-`sp.barh()` panels can sit framed, connected, and annotated by the exact
-same primitives used everywhere else on this page. The part that actually
-sells "dashboard" over "charts in boxes" is the same trick as the RéciTAC
-network above: a **shared center every core panel connects to**. One
+`place()` embeds a full `Chart` — not just a primitive — inside a canvas:
+real `sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()`, `sp.donut()`,
+`sp.barh()` panels sit framed, connected, and annotated by the same
+primitives used everywhere else on this page. What sells "dashboard" over
+"charts in boxes" is a **shared center every core panel connects to**: one
 glowing hub, four color-matched spokes (`connector` + a `circle` anchor at
-each end), each spoke tinted to match the panel it comes from via the
-chart-level chainable methods (`palette()`, `gridlines()`,
-`width()`/`height()`, `title_color()` — see
+each end), each spoke tinted via the chart-level chainable methods
+(`palette()`, `gridlines()`, `title_color()` — see
 [Chart Methods](../getting-started/chart-methods.md)) applied before
-`place()`. Beyond the four hub panels, a KPI ribbon with its own inline
-`sp.line()` sparklines sits above the grid, two more real charts flank it
-on the right on a subtler `hover_group`-linked connection, and a full-width
-throughput panel closes the composition at the bottom:
+`place()`:
 
 ```python
 import random
@@ -835,45 +771,7 @@ chart = cv.build()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-dashboard.html?v=0e335555" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe></div>
 
-The hub itself is a small radial gauge in disguise — four `wedge` slices
-(one per panel, in that panel's color) inside two `ring` pulse tracks,
-built from exactly the same primitives as the "Composing micro-tools"
-dial and the RéciTAC donut rings above. Reusing one visual language across
-every worked example on this page is the actual point: primitives don't
-know or care whether they're drawing a progress dial, a discipline ring,
-or a dashboard hub.
-
-`panel_frame()` draws a rounded card plus a thin color-matched top border
-— that accent color is the same one used for that panel's spoke and
-`palette()`, so the eye connects "this line is orange" to "this panel is
-orange" to "this spoke is orange" without a legend. The one easy-to-miss
-detail behind all of it: any decoration meant to sit *behind* a placed
-chart (background fill, panel frames) needs `layer="bg"` explicitly —
-`rect()`'s default `layer="fg"` renders **on top of** placed charts by
-design (so connectors and callouts can cross over them), which will
-silently hide a panel's contents if the panel itself is drawn on the
-foreground layer.
-
-Two things needed fixing to get here from the original four-panel
-version. First, `title_color()`: `sp.bar()`/`sp.area()`/`sp.donut()`
-happily took an explicit title color, but `sp.line()`/`sp.gauge()`
-rendered their title in a barely visible default shade regardless —
-worked around by skipping the chart's own `title=` entirely for those two
-and drawing the panel name as a plain `cv.text()` at the same position
-instead, which also matches the KPI tiles' hand-drawn labels. Second, a
-chart's own y-axis tick generator reserves space proportional to the
-plot's own *requested* pixel size, not its `place()`d footprint — the
-bottom throughput strip's tick labels overlapped badly until its
-`sp.bar()` was requested at the strip's full native size (`width=W-120,
-height=STRIP_H`) rather than an undersized box meant to be stretched.
-
-The two right-hand panels (`Regional Split`, `Latency (ms)`) aren't wired
-into the hub — a fifth and sixth spoke would have overloaded the one
-visual idea the hub is supposed to communicate — but they're not
-orphaned either: a single `hover_group="side-link"` on both panels and
-their connecting line links them exactly like the RéciTAC satellites, so
-hovering either panel dims everything outside that pair via the same
-`Canvas`-level dim-the-rest hover behavior described above.
+The hub is a small radial gauge in disguise — four `wedge` slices inside two `ring` pulse tracks, the same primitives as the "Composing micro-tools" dial above. `panel_frame()` draws a rounded card plus a color-matched top border, matching that panel's spoke and `palette()` so the eye connects colors without a legend. One gotcha: decoration meant to sit *behind* a placed chart needs `layer="bg"` explicitly — `rect()`'s default `layer="fg"` renders on top of placed charts by design, so an undecorated panel frame will silently hide its chart. The two right-hand panels aren't wired into the hub, but share a `hover_group="side-link"` with their connecting line instead, dimming the other panels when hovered — same mechanism as the RéciTAC satellites.
 
 ---
 
@@ -1537,52 +1435,8 @@ chart = cv.build()
 
 ## Composition réelle : un réseau façon RéciTAC
 
-Un diagramme réseau radial qui organise les disciplines, les
-universités, les actions et les résultats d'impact d'un programme de
-recherche autour d'un réseau central dense de « stories » et de
-« personnes ». Rien de tout cela ne nécessite un type « graphique réseau »
-dédié : `wedge`+`polar` construisent les anneaux extérieurs en capsules —
-largeur angulaire proportionnelle au nombre de stories par discipline,
-donc l'anneau lui-même porte de la donnée au lieu de seulement décorer —
-`polygon`+`rect` construisent les clusters hexagonaux d'impact et leurs
-étiquettes en pilule, `connector` trace chaque arête courbe, et `link()`
-relie les éléments connexes — un cluster hexagonal et chaque story qui le
-touche, une université et ses disciplines, les segments de couleur d'une
-action — en groupes de survol partagés qui estompent aussi tout le reste
-(survoler un élément d'un groupe fait maintenant tomber l'opacité de tout
-ce qui n'en fait pas partie — une généralisation au niveau `Canvas` de
-l'effet d'atténuation de `Chart.hover_family()`, qui ne fonctionne
-nativement que sur les charts hiérarchiques/flux comme icicle et sankey).
-Les nœuds story sont eux-mêmes cinq vrais charts `sp.bubble()` `place()`és —
-un par discipline, disposés en rosace pour que chacun apporte sa propre
-masse colorée à un noyau dense commun au lieu de former un seul bloc
-indifférencié — plutôt que des cercles dessinés à la main. Découper le
-hairball ainsi le rend aussi adressable par `link()` : survoler le segment
-d'anneau d'une discipline estompe maintenant le cluster de chaque *autre*
-discipline, isolant le sien. Les positions réellement rendues de chaque
-sous-chart sont relues depuis son propre SVG (via `data-idx`, car
-`bubble()` réordonne son DOM par catégorie) pour que chaque ligne de
-connexion tombe exactement sur un vrai point, avec un `circle()`
-transparent à la même position comme cible de `link()`, ce que l'iframe
-propre de `bubble()` ne peut pas exposer directement, et `.no_hover()`
-désactive le zoom par double-clic intégré à chaque chart, qui sinon
-déplacerait un point à l'intérieur de son iframe indépendamment des lignes
-de connexion tracées au niveau du canvas vers ses coordonnées de
-construction. Trois autres vrais charts sont `place()`és directement dans
-les coins vides et le bas du canvas plutôt qu'encadrés par-dessus : un
-`sp.bubble()` « constellation de stories » débarrassé de ses axes/fond et
-rogné en cercle, un `sp.histogram()` « personnes par story » incliné dans
-son coin, et un `sp.barh()` « stories par discipline » posé bas et centré —
-les trois résumant le même jeu de données que le diagramme encode, sous des
-angles différents. La composition n'est pas une alternative aux fonctions
-de chart de SeraPlot, c'est un moyen de les combiner dans une seule scène.
-
-La version complète et exécutable (avec le jeu de données synthétique, les
-groupes de survol université/action, et les deux charts intégrés) se
-trouve dans
+Un diagramme réseau radial : `wedge`+`polar` construisent les anneaux extérieurs (largeur angulaire proportionnelle au nombre de stories par discipline), `polygon`+`rect` construisent les clusters hexagonaux d'impact, `connector` trace les arêtes, et `link()` regroupe les éléments liés en ensembles de survol partagés qui estompent le reste. Les nœuds story sont cinq vrais charts `sp.bubble()` `place()`és en rosace, pas des cercles dessinés à la main — leurs positions réellement rendues sont relues via `data-idx` pour que chaque connecteur tombe sur un vrai point. Version complète et exécutable :
 [`notebook/canva/recitac_remake.ipynb`](https://github.com/feur25/Sera/blob/main/notebook/canva/recitac_remake.ipynb).
-L'esquisse simplifiée ci-dessous montre la technique de base — anneau
-extérieur, un cluster hexagonal, une poignée de nœuds du réseau central :
 
 ```python
 import random
@@ -1642,29 +1496,7 @@ chart = cv.build().zoom()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=6c71919e" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
-Le jeu de données est synthétique — l'intérêt est le *motif de
-composition*, pas un portage littéral des vraies données du programme de
-recherche de Nadieh (issues d'une feuille Google Sheets privée). Tout
-s'adapte aux données : ajouter une discipline et chaque anneau/légende/
-chart intégré la prend en compte automatiquement ; ajouter une story fait
-apparaître un nouveau nœud, un nouveau jeu de connecteurs, et un nouveau
-membre de groupe de survol au prochain `build()`.
-
-**`.zoom()`** sur le `Chart` construit (appelé ci-dessus,
-`cv.build().zoom()`) active le zoom molette/pincement et le glisser-déposer
-pour toute la composition — utile dès qu'un canvas est assez dense pour que
-survoler un hexagone ou un nœud individuel bénéficie d'un zoom préalable.
-
-**Une astuce pour les très grands canvas** : `chart` seul (ou
-`chart.show()`) dimensionne son `<iframe>` en ligne via `aspect-ratio` CSS,
-que certains frontends de notebook résolvent de façon peu fiable pour de
-grands canvas carrés comme celui-ci (1700×1700), rognant silencieusement
-le rendu au lieu de le réduire pour qu'il tienne. `chart.save(path)`
-combiné à `IPython.display.IFrame(src=path, width=..., height=...)`
-contourne ce problème en réservant une taille en pixels explicite dès le
-départ — le script interne de mise à l'échelle du canvas réduit alors la
-composition complète à cette taille, donc vous la voyez toujours en
-intégralité.
+`.zoom()` sur le `Chart` construit (`cv.build().zoom()`) active le zoom molette/pincement et le glisser-déposer — utile dès qu'un canvas est dense. Pour les très grands canvas, préférez `chart.save(path)` + `IPython.display.IFrame(src=path, width=..., height=...)` plutôt que l'`<iframe>` en ligne, que certains notebooks rognent via `aspect-ratio` CSS sur de grands canvas carrés.
 
 ---
 
@@ -1733,36 +1565,21 @@ chart = cv.build()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-constellation.html?v=5bd7e57b" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
-Le jeu de données de l'aperçu ci-dessus est également synthétique — recréé
-à partir du même projet de data-story `ai_story`, dont le fichier
-`constellation.py` référençait des CSV qui n'existent plus. 14
-architectures au lieu de 6, et le nuage d'événements de chaque satellite
-provient de vraies données par modèle (jusqu'à 60 événements) plutôt que
-d'une approximation gaussienne — la technique est identique, juste avec
-plus de lignes et un second jeu de données jointu par `model_id`.
-
 ---
 
 ## Composer de vrais charts : un tableau de bord mission-control
 
 `place()` intègre un `Chart` complet — pas seulement une primitive — dans
-un canvas, ce qui signifie que la composition canvas ne se limite pas aux
-formes dessinées à la main : de vrais panneaux `sp.line()`, `sp.bar()`,
-`sp.gauge()`, `sp.area()`, `sp.donut()`, `sp.barh()` peuvent être encadrés,
-connectés et annotés par les mêmes primitives que partout ailleurs sur
-cette page. Ce qui fait vraiment la différence entre "tableau de bord" et
-"charts dans des boîtes", c'est la même astuce que le réseau RéciTAC
-ci-dessus : un **centre partagé auquel chaque panneau central se
-connecte**. Un hub lumineux, 4 rayons colorés (`connector` + une ancre
-`circle` à chaque bout), chaque rayon teinté pour correspondre à son
-panneau via les méthodes chainables de niveau chart (`palette()`,
-`gridlines()`, `width()`/`height()`, `title_color()` — voir
+un canvas : de vrais panneaux `sp.line()`, `sp.bar()`, `sp.gauge()`,
+`sp.area()`, `sp.donut()`, `sp.barh()` sont encadrés, connectés et
+annotés par les mêmes primitives que partout ailleurs sur cette page. Ce
+qui fait "tableau de bord" plutôt que "charts dans des boîtes" : un
+**centre partagé auquel chaque panneau se connecte** — un hub lumineux,
+4 rayons colorés (`connector` + une ancre `circle`), chaque rayon teinté
+via les méthodes chainables de niveau chart (`palette()`, `gridlines()`,
+`title_color()` — voir
 [Méthodes de graphique](../getting-started/chart-methods.md)) appliquées
-avant `place()`. Au-delà des quatre panneaux du hub, un ruban de KPI avec
-ses propres mini-graphiques `sp.line()` en ligne surplombe la grille, deux
-vrais charts supplémentaires l'encadrent à droite via une connexion plus
-subtile en `hover_group`, et un panneau de débit pleine largeur referme la
-composition en bas :
+avant `place()` :
 
 ```python
 import random
@@ -1925,50 +1742,7 @@ chart = cv.build()
 
 <div class="sp-preview-frame"><iframe src="../previews/canvas-dashboard.html?v=0e335555" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe></div>
 
-Le hub lui-même est une petite jauge radiale déguisée — 4 parts de `wedge`
-(une par panneau, dans sa couleur) à l'intérieur de deux pistes `ring`
-pulsées, construites avec exactement les mêmes primitives que le cadran
-"Composer les micro-outils" et les anneaux donut RéciTAC ci-dessus.
-Réutiliser un seul langage visuel sur chaque exemple travaillé de cette
-page est tout l'intérêt : les primitives ne savent pas et ne se soucient
-pas de dessiner un cadran de progression, un anneau de discipline, ou un
-hub de tableau de bord.
-
-`panel_frame()` dessine une carte arrondie plus une fine bordure supérieure
-teintée — cette couleur d'accent est la même utilisée pour le rayon de ce
-panneau et son `palette()`, pour que l'œil relie "cette ligne est orange"
-à "ce panneau est orange" à "ce rayon est orange" sans légende. Le détail
-facile à manquer derrière tout ça : toute décoration censée se trouver
-*derrière* un chart placé (fond, cadres de panneau) a besoin de
-`layer="bg"` explicitement — le `layer="fg"` par défaut de `rect()` se
-dessine **au-dessus** des charts placés par conception (pour que
-connecteurs et annotations puissent les traverser), ce qui masquera
-silencieusement le contenu d'un panneau si celui-ci est dessiné sur la
-couche de premier plan.
-
-Deux choses ont dû être corrigées pour arriver ici depuis la version à
-quatre panneaux d'origine. D'abord, `title_color()` : `sp.bar()`,
-`sp.area()` et `sp.donut()` acceptaient volontiers une couleur de titre
-explicite, mais `sp.line()`/`sp.gauge()` rendaient leur titre dans une
-teinte par défaut à peine visible quoi qu'il arrive — contourné en
-sautant complètement le `title=` propre au chart pour ces deux-là et en
-dessinant le nom du panneau comme un simple `cv.text()` à la même
-position, ce qui correspond aussi aux étiquettes dessinées à la main des
-tuiles KPI. Ensuite, le générateur de graduations Y d'un chart réserve un
-espace proportionnel à la taille en pixels *demandée* du plot, pas à son
-empreinte `place()`e — les étiquettes de graduation du bandeau de débit du
-bas se chevauchaient sérieusement jusqu'à ce que son `sp.bar()` soit
-demandé à la taille native complète du bandeau (`width=W-120,
-height=STRIP_H`) plutôt qu'une boîte sous-dimensionnée censée être étirée.
-
-Les deux panneaux de droite (`Regional Split`, `Latency (ms)`) ne sont pas
-câblés dans le hub — un cinquième et sixième rayon auraient surchargé
-l'unique idée visuelle que le hub est censé communiquer — mais ils ne sont
-pas orphelins pour autant : un seul `hover_group="side-link"` sur les deux
-panneaux et leur ligne de connexion les relie exactement comme les
-satellites RéciTAC, si bien que survoler l'un ou l'autre estompe tout ce
-qui est en dehors de cette paire via le même comportement de survol
-`Canvas` décrit plus haut.
+Le hub est une petite jauge radiale déguisée — 4 parts de `wedge` dans deux pistes `ring` pulsées, les mêmes primitives que le cadran "Composer les micro-outils" plus haut. `panel_frame()` dessine une carte arrondie plus une bordure supérieure teintée, assortie au rayon de ce panneau et à son `palette()`, pour que l'œil relie les couleurs sans légende. Un piège : toute décoration censée se trouver *derrière* un chart placé a besoin de `layer="bg"` explicitement — le `layer="fg"` par défaut de `rect()` se dessine au-dessus des charts placés par conception, donc un cadre de panneau non décoré masquera silencieusement son chart. Les deux panneaux de droite ne sont pas câblés dans le hub, mais partagent un `hover_group="side-link"` avec leur ligne de connexion, estompant les autres panneaux au survol — même mécanisme que les satellites RéciTAC.
 
 ---
 
