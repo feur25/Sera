@@ -117,6 +117,7 @@ mod tests {
         assert!(!js.contains("MAPCOL"));
     }
 
+
     #[test]
     fn build_flat_map_js_emits_a_color_per_ring_when_region_colors_are_given() {
         let region = regions::resolve("usa_states").unwrap();
@@ -124,7 +125,7 @@ mod tests {
         colors.insert("CA", 0xff0000);
         let js = String::from_utf8(build_flat_map_js(region, Some(&colors))).unwrap();
         assert!(js.contains("var MAPCOL=["));
-        assert!(js.contains("'ff0000'"));
+        assert!(js.contains("'#ff0000'"));
     }
 
     #[test]
