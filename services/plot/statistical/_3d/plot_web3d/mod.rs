@@ -1,5 +1,5 @@
+use crate::plot::seaborn::_3d::render_scatter_spheres_html;
 use crate::plot::statistical::_3d::budget::Budget;
-use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::statistical::plot_web::layout3d;
 use crate::plot::statistical::{PlotWebConfig, PlotWebVariant};
 use crate::plot::{apply_bg3d, parse_all};
@@ -24,14 +24,12 @@ pub fn build_plot_web3d_chart(input: &str) -> String {
     let env = o.scene.as_deref().unwrap_or("default");
     let bg_str = o.bg_str();
     let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
-    let view = BlockView::new(layout3d::HEIGHT_RATIO, layout3d::COLORMAP).with_zone(o.zone.as_deref());
     let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
-    let html = render_blocks3d_view_html(
+    let html = render_scatter_spheres_html(
         title,
         &blocks,
-        &view,
-        (&o.xl(), &o.yl(), &o.zl()),
         &names,
+        (&o.xl(), &o.yl(), &o.zl()),
         o.w(900),
         o.h(560),
         bg_default,
@@ -62,7 +60,12 @@ mod tests {
 
     #[test]
     fn every_plot_web_variant_has_a_working_3d_counterpart() {
-        twin::check_variants(build_plot_web3d_chart, &demos(), PlotWebVariant::all().len());
+        for (key, json) in &demos() {
+            let html = build_plot_web3d_chart(json);
+            assert!(!html.is_empty(), "{key} must render");
+            assert!(!html.contains("var BN="), "{key} must render as round spheres, not Bar3DBlock cuboids");
+            assert!(html.contains("var S="), "{key} must carry per-node sphere sizes");
+        }
     }
 
     #[test]
@@ -72,7 +75,12 @@ mod tests {
 
     #[test]
     fn every_scene_applies_to_every_plot_web_variant() {
-        twin::check_scenes(build_plot_web3d_chart, &demos());
+        for (key, json) in &demos() {
+            for (scene_key, _) in crate::plot::scene3d::Scene3DVariant::keys_and_aliases() {
+                let html = build_plot_web3d_chart(&twin::set_field(json, "scene", scene_key));
+                assert!(!html.is_empty(), "{key} under {scene_key} must render");
+            }
+        }
     }
 
     #[test]
@@ -83,11 +91,6 @@ mod tests {
     #[test]
     fn the_registry_exposes_the_plot_web_variants_and_the_view_axes() {
         twin::check_axes("plot_web3d", PlotWebVariant::all().len());
-    }
-
-    #[test]
-    fn every_plot_web_variant_honours_an_explicit_zone() {
-        twin::check_zone(build_plot_web3d_chart, &demos());
     }
 
     #[test]

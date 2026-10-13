@@ -25,7 +25,7 @@ fn render_scatter_points_html(
     crate::html::js_3d::render_3d_html_impl(0, title, &x, &y, &z, axis_labels, &colors, names, w, h, bg, scene, b"")
 }
 
-fn render_scatter_spheres_html(
+pub(crate) fn render_scatter_spheres_html(
     title: &str,
     blocks: &[Bar3DBlock],
     names: &[String],
