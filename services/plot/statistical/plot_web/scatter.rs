@@ -125,6 +125,10 @@ pub fn render(cfg: &PlotWebConfig) -> String {
     push_i(&mut buf, w);
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, h);
+    push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, w);
+    push_b(&mut buf, b" ");
+    push_i(&mut buf, h);
     push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
 
     for &(za, zb, col, zlbl) in &[
