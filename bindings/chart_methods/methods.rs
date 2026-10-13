@@ -68,7 +68,7 @@ impl Chart {
         fr = "Supprime toutes les couches d'arrière-plan du graphique et conserve une sortie transparente."
     )]
     pub fn no_background(&self) -> Chart {
-        let html = crate::html::hover::inject_before_head(&self.html, "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>");
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas,iframe{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>");
         let html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_NO_BG_DEEP_JS));
         self.propagate(html)
     }
