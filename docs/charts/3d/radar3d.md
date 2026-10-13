@@ -14,17 +14,17 @@ Aliases: `sp.build_radar3d_chart()`, `sp.radar_3d()`, `sp.radar3d_chart()`, `sp.
 
 ## Description
 
-`sp.radar3d()` is the 3D twin of `sp.radar()`: **all 9 radar variants share the same 3D form**, selected with the same `variant` keyword and fed with the same series. `basic`/`lines`/`filled`/`markers`/`dashed` each become a closed loop around the axes, one per series at its own depth row, radius following its values — a real spider shape, not a flat outline. `polar_bar`/`petal`/`band`/`stacked` keep their existing ring-of-columns forms, one concentric ring per series.
+`sp.radar3d()` is the 3D twin of `sp.radar()`: selected with the same `variant` keyword and fed with the same series. `basic`/`lines`/`filled`/`markers`/`dashed` each become a closed loop around the axes, one per series at its own depth row, radius following its values, carrying the same fill/stroke/marker treatment as their 2D sibling — a real spider shape, not a flat outline. `polar_bar`/`petal`/`band`/`stacked` keep their existing ring-of-columns forms, one concentric ring per series.
 
 ## Variants
 
 | Variant | Aliases | Uses | 3D form |
 |---|---|---|---|
-| `basic` | `default`, `classic` | `axes, series, series_names` | One closed loop per series, radius following its values around the axes. |
-| `lines` | `outline`, `stroke`, `no_fill` | `axes, series, series_names` | The same loops as basic; the 2D chart's stroke-only styling has no separate 3D form. |
-| `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | The same loops as basic; the 2D chart's filled-area styling has no separate 3D form. |
-| `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | The same loops as basic; the 2D chart's per-vertex dot styling has no separate 3D form. |
-| `dashed` | `dash`, `dotted` | `axes, series, series_names` | The same loops as basic; the 2D chart's dashed-stroke styling has no separate 3D form. |
+| `basic` | `default`, `classic` | `axes, series, series_names` | One closed loop per series, filled and outlined, with small vertex markers, radius following its values around the axes. |
+| `lines` | `outline`, `stroke`, `no_fill` | `axes, series, series_names` | The same loop with no fill, just its own stroke and small vertex markers — matching the 2D chart's outline-only look. |
+| `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | The same loop with a heavier fill and no stroke or vertex markers — matching the 2D chart's solid filled-area look. |
+| `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | The same loop with a thinner, faded stroke and large outlined vertex markers — matching the 2D chart's per-vertex marker look. |
+| `dashed` | `dash`, `dotted` | `axes, series, series_names` | The same loop with a dashed stroke and small vertex markers — matching the 2D chart's dashed-outline look. |
 | `stacked` | `stack`, `cumulative` | `axes, series, series_names` | One ring of stacked columns per axis, series piled on top of each other. |
 | `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | One concentric ring of columns per series, height following its values. |
 | `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | A band of columns between two series' values, one per axis. |
@@ -117,17 +117,17 @@ Alias : `sp.build_radar3d_chart()`, `sp.radar_3d()`, `sp.radar3d_chart()`, `sp.r
 
 <h2>Description</h2>
 
-`sp.radar3d()` est le jumeau 3D de `sp.radar()` : **les 9 variantes de radar partagent la même forme 3D**, choisie avec le même mot-clé `variant` et alimentée par les mêmes séries. `basic`/`lines`/`filled`/`markers`/`dashed` deviennent chacune une boucle fermée autour des axes, une par série à sa propre rangée de profondeur, le rayon suivant ses valeurs — une vraie forme d'araignée, pas un simple contour à plat. `polar_bar`/`petal`/`band`/`stacked` gardent leurs formes existantes en anneaux de colonnes, un anneau concentrique par série.
+`sp.radar3d()` est le jumeau 3D de `sp.radar()` : choisie avec le même mot-clé `variant` et alimentée par les mêmes séries. `basic`/`lines`/`filled`/`markers`/`dashed` deviennent chacune une boucle fermée autour des axes, une par série à sa propre rangée de profondeur, le rayon suivant ses valeurs, avec le même traitement de remplissage/trait/marqueurs que sa version 2D — une vraie forme d'araignée, pas un simple contour à plat. `polar_bar`/`petal`/`band`/`stacked` gardent leurs formes existantes en anneaux de colonnes, un anneau concentrique par série.
 
 <h2>Variantes</h2>
 
 | Variante | Alias | Utilise | Forme 3D |
 |---|---|---|---|
-| `basic` | `default`, `classic` | `axes, series, series_names` | Une boucle fermée par série, le rayon suivant ses valeurs autour des axes. |
-| `lines` | `outline`, `stroke`, `no_fill` | `axes, series, series_names` | Les mêmes boucles que basic ; le style en trait seul du graphique 2D n'a pas de forme 3D séparée. |
-| `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | Les mêmes boucles que basic ; le style à aire remplie du graphique 2D n'a pas de forme 3D séparée. |
-| `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | Les mêmes boucles que basic ; le style à points par sommet du graphique 2D n'a pas de forme 3D séparée. |
-| `dashed` | `dash`, `dotted` | `axes, series, series_names` | Les mêmes boucles que basic ; le style en trait pointillé du graphique 2D n'a pas de forme 3D séparée. |
+| `basic` | `default`, `classic` | `axes, series, series_names` | Une boucle fermée par série, remplie et contourée, avec de petits marqueurs de sommet, le rayon suivant ses valeurs autour des axes. |
+| `lines` | `outline`, `stroke`, `no_fill` | `axes, series, series_names` | La même boucle sans remplissage, juste son propre trait et de petits marqueurs de sommet — comme le style en trait seul du graphique 2D. |
+| `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | La même boucle avec un remplissage plus marqué et sans trait ni marqueurs de sommet — comme le style à aire remplie du graphique 2D. |
+| `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | La même boucle avec un trait plus fin et atténué et de grands marqueurs de sommet contourés — comme le style à points par sommet du graphique 2D. |
+| `dashed` | `dash`, `dotted` | `axes, series, series_names` | La même boucle avec un trait pointillé et de petits marqueurs de sommet — comme le style en trait pointillé du graphique 2D. |
 | `stacked` | `stack`, `cumulative` | `axes, series, series_names` | Un anneau de colonnes empilées par axe, les séries superposées. |
 | `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | Un anneau concentrique de colonnes par série, la hauteur suivant ses valeurs. |
 | `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | Une bande de colonnes entre les valeurs de deux séries, une par axe. |
