@@ -164,6 +164,11 @@ chart.export_video("session.mp4", "session.spls", format="mp4", fps=30)
 <button class="sp-code-btn" data-sp-code-target="sp-code-bar3d" data-sp-code-title="serastudio_smooth_bar3d_race_demo.py">View code</button>
 </div>
 
+<div class="sp-video-card">
+<img loading="lazy" src="videos/serastudio_smooth_line3d_wave_10s.gif" alt="SeraStudio export_gif demo - a traveling wave spiraling down a 3D line, fixed camera">
+<button class="sp-code-btn" data-sp-code-target="sp-code-line3d" data-sp-code-title="serastudio_smooth_line3d_wave_demo.py">View code</button>
+</div>
+
 </div>
 
 Full catalog of every variant's own `record()`/`push()`/`export_video()` snippet, generated live from the [Showcase](../showcase.md) registry:
@@ -343,6 +348,11 @@ chart.export_video("session.mp4", "session.spls", format="mp4", fps=30)
 <div class="sp-video-card">
 <img loading="lazy" src="videos/serastudio_smooth_bar3d_race_10s.gif" alt="Démo export_gif de SeraStudio - course de barres 3D">
 <button class="sp-code-btn" data-sp-code-target="sp-code-bar3d" data-sp-code-title="serastudio_smooth_bar3d_race_demo.py">Voir le code</button>
+</div>
+
+<div class="sp-video-card">
+<img loading="lazy" src="videos/serastudio_smooth_line3d_wave_10s.gif" alt="Démo export_gif de SeraStudio - une vague qui se déplace le long d'une ligne 3D, caméra fixe">
+<button class="sp-code-btn" data-sp-code-target="sp-code-line3d" data-sp-code-title="serastudio_smooth_line3d_wave_demo.py">Voir le code</button>
 </div>
 
 </div>
@@ -1027,6 +1037,90 @@ def main():
 
     images = [Image.open(p).convert("RGB") for p in frames]
     out_path = os.path.join(OUT_DIR, "serastudio_smooth_bar3d_race_10s.gif")
+    images[0].save(
+        out_path,
+        save_all=True,
+        append_images=images[1:],
+        duration=int(1000 / FPS),
+        loop=0,
+        optimize=True,
+    )
+    print("wrote", out_path, os.path.getsize(out_path), "bytes,", len(images), "frames")
+
+
+if __name__ == "__main__":
+    main()
+</script>
+
+<script type="text/plain" id="sp-code-line3d">
+import math
+import os
+
+import seraplot as sp
+from playwright.sync_api import sync_playwright
+from PIL import Image
+
+OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+FPS = 15
+DURATION_S = 10.0
+STEPS = int(DURATION_S * FPS)
+WIDTH = 640
+HEIGHT = 420
+
+N = 320
+SPAN = 10.0
+XS = [-SPAN + 2.0 * SPAN * i / (N - 1) for i in range(N)]
+AMPLITUDE = 3.0
+WAVELENGTH = 0.8
+SPEED = 2.0
+
+
+def curve_at(t):
+    ys = [AMPLITUDE * math.sin(WAVELENGTH * x - SPEED * t) for x in XS]
+    zs = [AMPLITUDE * math.cos(WAVELENGTH * x - SPEED * t) for x in XS]
+    return ys, zs
+
+
+def build_frame_html(t):
+    ys, zs = curve_at(t)
+    chart = sp.line_3d(
+        "SeraStudio smooth demo - a traveling wave spiraling down a 3D line",
+        x=XS,
+        y=ys,
+        z=zs,
+        show_points=False,
+        color_hex=0x7C3AED,
+        width=WIDTH,
+        height=HEIGHT,
+        bg_color="#ffffff",
+    )
+    return chart.html
+
+
+def main():
+    frame_dir = os.path.join(OUT_DIR, "line3d_frames")
+    os.makedirs(frame_dir, exist_ok=True)
+
+    frames = []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": WIDTH, "height": HEIGHT})
+        for step in range(STEPS):
+            t = step / FPS
+            html = build_frame_html(t)
+            html_path = os.path.join(frame_dir, f"frame_{step:04d}.html")
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(html)
+            page.goto("file:///" + html_path.replace("\\", "/"))
+            page.wait_for_timeout(120)
+            png_path = os.path.join(frame_dir, f"frame_{step:04d}.png")
+            page.screenshot(path=png_path)
+            frames.append(png_path)
+            os.remove(html_path)
+        browser.close()
+
+    images = [Image.open(p).convert("RGB") for p in frames]
+    out_path = os.path.join(OUT_DIR, "serastudio_smooth_line3d_wave_10s.gif")
     images[0].save(
         out_path,
         save_all=True,
