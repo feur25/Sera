@@ -1,11 +1,12 @@
 (function () {
     var queue = [];
     var draining = false;
+    var CACHE_BUST = Date.now().toString(36);
 
     function reallyActivate(el) {
         var src = el.getAttribute('data-src');
         if (!src || el.getAttribute('src')) return;
-        el.setAttribute('src', src);
+        el.setAttribute('src', src + (src.indexOf('?') === -1 ? '?' : '&') + 'v=' + CACHE_BUST);
         el.removeAttribute('data-src');
     }
     function drainQueue() {
