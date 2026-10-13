@@ -1,8 +1,13 @@
+use crate::plot::map::_3d::render_globe3d_html;
 use crate::plot::map::graticule_map::layout3d;
 use crate::plot::map::graticule_map::{GraticuleMapConfig, GraticuleMapVariant};
 use crate::plot::statistical::_3d::budget::Budget;
 use crate::plot::statistical::_3d::{render_blocks3d_view_html, BlockView};
 use crate::plot::{apply_bg3d, parse_all};
+
+fn render_globe_variant(title: &str, o: &crate::plot::chart_input::ChartOpts, env: &str, bg: Option<&str>) -> String {
+    render_globe3d_html(title, &[0.0], &[-89.0], &[0.0], ("Longitude", "Latitude", "Value"), &[0.0], &[String::new()], o.w(1200), o.h(650), bg, env)
+}
 
 #[crate::chart_demo("step=15")]
 #[crate::params(paramsList["title","step","variant","scene","orientation3d","theme","zone","max_points","bg_color","width","height","x_label","y_label","z_label"])]
@@ -12,13 +17,17 @@ pub fn build_graticule_map3d_chart(input: &str) -> String {
     let (title_s, _a, o) = parse_all(input);
     let title = title_s.as_str();
     let variant = GraticuleMapVariant::from_str(o.variant.as_deref().unwrap_or("lines"));
+    let env = o.scene.as_deref().unwrap_or("default");
+    let bg_str = o.bg_str();
+    let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
+    if variant == GraticuleMapVariant::Globe {
+        let html = render_globe_variant(title, &o, env, bg_default);
+        return apply_bg3d(html, &o);
+    }
     let mut cfg = GraticuleMapConfig::new();
     cfg.variant = variant;
     cfg.title = title;
     cfg.step = o.step.unwrap_or(15.0);
-    let env = o.scene.as_deref().unwrap_or("default");
-    let bg_str = o.bg_str();
-    let bg_default = if env == "default" && bg_str.is_none() { Some("#090d18") } else { bg_str.as_deref() };
     let view = BlockView::new(0.35, "jet").with_zone(o.zone.as_deref());
     let (blocks, names) = layout3d::layout_named(&cfg, &Budget::new(o.max_points));
     let html = render_blocks3d_view_html(
@@ -55,24 +64,28 @@ mod tests {
         twin::variant_demos("map/graticule_map/", GraticuleMapVariant::keys_and_aliases(), GraticuleMapVariant::default_key())
     }
 
+    fn block_demos() -> twin::Demos {
+        demos().into_iter().filter(|(key, _)| *key != "globe").collect()
+    }
+
     #[test]
     fn every_graticule_map_variant_has_a_working_3d_counterpart() {
-        twin::check_variants(build_graticule_map3d_chart, &demos(), GraticuleMapVariant::all().len());
+        twin::check_variants(build_graticule_map3d_chart, &block_demos(), GraticuleMapVariant::all().len() - 1);
     }
 
     #[test]
     fn every_3d_plane_applies_to_every_graticule_map_variant() {
-        twin::check_planes(build_graticule_map3d_chart, &demos());
+        twin::check_planes(build_graticule_map3d_chart, &block_demos());
     }
 
     #[test]
     fn every_scene_applies_to_every_graticule_map_variant() {
-        twin::check_scenes(build_graticule_map3d_chart, &demos());
+        twin::check_scenes(build_graticule_map3d_chart, &block_demos());
     }
 
     #[test]
     fn every_chart_theme_styles_every_graticule_map_variant() {
-        twin::check_themes(build_graticule_map3d_chart, &demos());
+        twin::check_themes(build_graticule_map3d_chart, &block_demos());
     }
 
     #[test]
@@ -82,7 +95,14 @@ mod tests {
 
     #[test]
     fn every_graticule_map_variant_honours_an_explicit_zone() {
-        twin::check_zone(build_graticule_map3d_chart, &demos());
+        twin::check_zone(build_graticule_map3d_chart, &block_demos());
+    }
+
+    #[test]
+    fn globe_variant_renders_a_real_rotating_globe() {
+        let html = build_graticule_map3d_chart(r#"{"title":"t","variant":"globe"}"#);
+        assert!(html.contains("var MAP=["), "globe must carry the world outline");
+        assert!(html.contains("var yaw="), "globe must be driven by the shared drag-to-rotate camera state");
     }
 
     #[test]
