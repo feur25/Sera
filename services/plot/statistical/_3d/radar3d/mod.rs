@@ -12,6 +12,7 @@ fn render_closed_loop_radar3d_html(
     title: &str,
     axes: &[String],
     series: &[(String, Vec<f64>)],
+    variant_key: &str,
     axis_labels: (&str, &str, &str),
     names: &[String],
     w: i32,
@@ -36,7 +37,7 @@ fn render_closed_loop_radar3d_html(
             cv.push(si as f64);
         }
     }
-    let extra_js = format!("var RG={:.4};{}", ring_gap, RING_GAP_CONTROL_JS);
+    let extra_js = format!("var RG={:.4};var RVAR='{}';{}", ring_gap, variant_key, RING_GAP_CONTROL_JS);
     let html = render_3d_html_impl(3, title, &xv, &yv, &zv, axis_labels, &cv, names, w, h, bg_color, scene, extra_js.as_bytes());
     html.replacen("<body>", &format!("<body><div height=\"{}\" style=\"display:none\"></div>", h + 60), 1)
 }
@@ -64,6 +65,7 @@ pub fn build_radar3d_chart(input: &str) -> String {
                 title,
                 &axes,
                 &series,
+                variant.name(),
                 (&o.xl(), &o.yl(), &o.zl()),
                 &names,
                 o.w(900),
@@ -173,6 +175,15 @@ mod tests {
         assert!(closed_loop.contains("ring gap"), "closed-loop variants must carry the ring-gap gauge");
         let polar_bar = build_radar3d_chart(r#"{"title":"t","axes":["A","B","C"],"series":[[1,2,3]],"variant":"polar_bar"}"#);
         assert!(!polar_bar.contains("ring gap"), "block-based variants have their own radial spacing, no ring-gap gauge");
+    }
+
+    #[test]
+    fn every_closed_loop_variant_carries_its_own_2d_styling_flag() {
+        for key in ["basic", "lines", "filled", "markers", "dashed"] {
+            let json = format!(r#"{{"title":"t","axes":["A","B","C"],"series":[[1,2,3]],"variant":"{key}"}}"#);
+            let html = build_radar3d_chart(&json);
+            assert!(html.contains(&format!("RVAR='{key}'")), "{key} must carry its own RVAR flag");
+        }
     }
 
     #[test]
