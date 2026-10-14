@@ -165,6 +165,17 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
+        aliases("hide_ring_gap", "disable_ring_gap", "no_ring_gap_control"),
+        file = "charts/chart.md",
+        en = "Hides the draggable ring-gap slider that radar3d's closed-loop, stacked, and band variants inject below the chart.",
+        fr = "Masque le curseur déplaçable de l'écart entre anneaux que les variantes radar3d en boucle fermée, empilée et bande injectent sous le graphique."
+    )]
+    pub fn no_ring_gap(&self) -> Chart {
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ring-gap-ctrl{display:none!important}</style></head>"))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
         aliases("grid"),
         file = "charts/chart.md",
         en = "Shows horizontal and vertical grid lines on the chart background.",
