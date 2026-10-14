@@ -770,16 +770,24 @@ function renderPreview(file) {
 // it lands in instead of overflowing the preview frame.
 function makeChartResponsive(html) {
     const css = `<style id="__sp_responsive__">
-html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;overflow:hidden;display:flex;align-items:center;justify-content:center}
+html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;overflow:auto}
+body{display:flex;align-items:center;justify-content:center}
 body>div{max-width:100%;max-height:100%;width:auto !important;height:auto !important;display:flex !important;align-items:center;justify-content:center}
 body>div>svg,body>div svg:first-of-type{width:auto !important;height:auto !important;max-width:100% !important;max-height:100% !important;display:block}
 canvas{max-width:100% !important;max-height:100% !important}
 </style>`;
+    const fitScript = `<script id="__sp_responsive_fit__">(function(){function fit(){var b=document.body;if(!b)return;var t=b.querySelector('svg,canvas')||b.firstElementChild;if(!t)return;t.style.transform="";var r=t.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight;if(r.width>vw||r.height>vh){var s=Math.min(vw/r.width,vh/r.height,1);if(s>0&&s<1){t.style.transformOrigin="center center";t.style.transform="scale("+s+")"}}}if(document.readyState==="complete")setTimeout(fit,60);else window.addEventListener("load",function(){setTimeout(fit,60)})})();</` + `script>`;
     if (/<\/head>/i.test(html))
-        return html.replace(/<\/head>/i, css + "</head>");
-    if (/<body[^>]*>/i.test(html))
-        return html.replace(/<body([^>]*)>/i, `<head>${css}</head><body$1>`);
-    return css + html;
+        html = html.replace(/<\/head>/i, css + "</head>");
+    else if (/<body[^>]*>/i.test(html))
+        html = html.replace(/<body([^>]*)>/i, `<head>${css}</head><body$1>`);
+    else
+        html = css + html;
+    if (/<\/body>/i.test(html))
+        html = html.replace(/<\/body>/i, fitScript + "</body>");
+    else
+        html = html + fitScript;
+    return html;
 }
 function wrapMultiHtml(charts, file) {
     const name = htmlEscape(path.basename(file));
