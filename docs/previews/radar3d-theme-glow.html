@@ -705,12 +705,13 @@ function rL(mx,my,sc){
   if(piI>=0&&selP)drawHalo(selP.sx,selP.sy,4.5,PAL[selP.ci]);
 }
 function rRdr(mx,my,sc){
+  var rvEarly=typeof RVAR==='undefined'?'basic':RVAR;
   var groups={};
   for(var i=0;i<N;i++){if(VIS&&!VIS[i])continue;var ci=uc?C[i]%PAL.length:0;if(!groups[ci])groups[ci]=[];groups[ci].push(i);}
   var gkeys=Object.keys(groups).sort(function(a,b){return parseInt(a)-parseInt(b);});
   for(var gi=0;gi<gkeys.length;gi++){
     var ci=parseInt(gkeys[gi]),idxs=groups[ci];
-    idxs.sort(function(a,b){return Math.atan2(Z[a],X[a])-Math.atan2(Z[b],X[b]);});
+    if(rvEarly!=='band')idxs.sort(function(a,b){return Math.atan2(Z[a],X[a])-Math.atan2(Z[b],X[b]);});
     var col=PAL[ci%PAL.length],rgb=hx2rgb(col);
     var pts2d=[],bpts=[];
     for(var k=0;k<idxs.length;k++){
@@ -732,7 +733,7 @@ function rRdr(mx,my,sc){
       }
     }
     var lr2=Math.min(255,rgb[0]+40),lg2=Math.min(255,rgb[1]+40),lb2=Math.min(255,rgb[2]+40);
-    var rv=typeof RVAR==='undefined'?'basic':RVAR;
+    var rv=rvEarly;
     var doFill=rv!=='lines'&&rv!=='dashed'&&rv!=='markers';
     var heavy=rv==='filled';
     var doStroke=rv!=='filled';
