@@ -25,10 +25,10 @@ Aliases: `sp.build_radar3d_chart()`, `sp.radar_3d()`, `sp.radar3d_chart()`, `sp.
 | `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | The same loop with a heavier fill and no stroke or vertex markers — matching the 2D chart's solid filled-area look. |
 | `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | The same loop with a thinner, faded stroke and large outlined vertex markers — matching the 2D chart's per-vertex marker look. |
 | `dashed` | `dash`, `dotted` | `axes, series, series_names` | The same loop with a dashed stroke and small vertex markers — matching the 2D chart's dashed-outline look. |
-| `stacked` | `stack`, `cumulative` | `axes, series, series_names` | One ring of stacked columns per axis, series piled on top of each other. |
-| `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | One concentric ring of columns per series, height following its values. |
-| `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | A band of columns between two series' values, one per axis. |
-| `petal` | `flower`, `bloom`, `petal_diagram`, `nightingale_petal` | `axes, series, series_names` | The same rings as polar_bar, visibly wider. |
+| `stacked` | `stack`, `cumulative` | `axes, series, series_names` | A closed loop per series at a cumulative radius shared across all series — each loop's radius is its own values plus every series before it, so later series nest around earlier ones, matching the 2D chart's stacked-area look. |
+| `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | A real pie-wedge per series within each axis's sector, evenly subdivided side by side, radius following its values — matching the 2D chart's radial bars. |
+| `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | A single ribbon-shaped loop per group, tracing the high values forward around the axes and the low values back — matching the 2D chart's filled range band. |
+| `petal` | `flower`, `bloom`, `petal_diagram`, `nightingale_petal` | `axes, series, series_names` | A wide wedge per series within each axis's sector, nested rather than subdivided and narrowing slightly for later series — matching the 2D chart's layered petal look. |
 
 ## Data
 
@@ -128,10 +128,10 @@ Alias : `sp.build_radar3d_chart()`, `sp.radar_3d()`, `sp.radar3d_chart()`, `sp.r
 | `filled` | `fill`, `solid`, `area` | `axes, series, series_names` | La même boucle avec un remplissage plus marqué et sans trait ni marqueurs de sommet — comme le style à aire remplie du graphique 2D. |
 | `markers` | `dots`, `points`, `marker` | `axes, series, series_names` | La même boucle avec un trait plus fin et atténué et de grands marqueurs de sommet contourés — comme le style à points par sommet du graphique 2D. |
 | `dashed` | `dash`, `dotted` | `axes, series, series_names` | La même boucle avec un trait pointillé et de petits marqueurs de sommet — comme le style en trait pointillé du graphique 2D. |
-| `stacked` | `stack`, `cumulative` | `axes, series, series_names` | Un anneau de colonnes empilées par axe, les séries superposées. |
-| `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | Un anneau concentrique de colonnes par série, la hauteur suivant ses valeurs. |
-| `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | Une bande de colonnes entre les valeurs de deux séries, une par axe. |
-| `petal` | `flower`, `bloom`, `petal_diagram`, `nightingale_petal` | `axes, series, series_names` | Les mêmes anneaux que polar_bar, visiblement plus larges. |
+| `stacked` | `stack`, `cumulative` | `axes, series, series_names` | Une boucle fermée par série à un rayon cumulatif partagé entre toutes les séries — chaque boucle a pour rayon ses propres valeurs plus celles de chaque série précédente, donc les séries suivantes s'emboîtent autour des précédentes, comme le style en aire empilée du graphique 2D. |
+| `polar_bar` | `polar`, `bar`, `radial_bar` | `axes, series, series_names` | Un vrai secteur en pointe de camembert par série dans le secteur angulaire de chaque axe, subdivisé également côte à côte, le rayon suivant ses valeurs — comme les barres radiales du graphique 2D. |
+| `band` | `range`, `uncertainty`, `minmax` | `axes, series, series_names` | Une seule boucle en forme de ruban par groupe, parcourant les valeurs hautes vers l'avant autour des axes puis les valeurs basses vers l'arrière — comme la bande de plage remplie du graphique 2D. |
+| `petal` | `flower`, `bloom`, `petal_diagram`, `nightingale_petal` | `axes, series, series_names` | Un large secteur par série dans le secteur angulaire de chaque axe, emboîté plutôt que subdivisé et légèrement plus étroit pour les séries suivantes — comme le style de pétales superposés du graphique 2D. |
 
 <h2>Données</h2>
 
