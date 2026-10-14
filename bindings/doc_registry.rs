@@ -27,5 +27,7 @@ pub fn all_docs() -> Vec<&'static FnDoc> {
 }
 
 pub fn doc_for(name: &str) -> Option<&'static FnDoc> {
-    inventory::iter::<FnDoc>().find(|d| d.name == name)
+    inventory::iter::<FnDoc>()
+        .find(|d| d.name == name)
+        .or_else(|| inventory::iter::<FnDoc>().find(|d| d.aliases.contains(&name)))
 }
