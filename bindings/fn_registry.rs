@@ -397,4 +397,19 @@ mod alias_dispatch_tests {
         let html = super::invoke(entry, r#"{"title":"T","labels":["a","b"],"values":[1,2]}"#);
         assert!(html.contains("<svg"));
     }
+
+    #[test]
+    fn a_builder_s_own_width_and_height_kwargs_are_not_reapplied_as_the_width_px_height_px_methods() {
+        let entry = find("build_bar").expect("build_bar is a registered fn");
+        let html = super::invoke(
+            entry,
+            r#"{"title":"T","labels":["a","b"],"values":[1,2],"width":500,"height":400}"#,
+        );
+        assert!(
+            html.contains("width=\"500\"") && html.contains("height=\"400\""),
+            "the chart's own width/height kwargs must size the svg directly, not get \
+             reinterpreted as the aliased width_px/height_px chart methods (whose 'px' \
+             param would be missing from {{\"width\":500}} and silently default to 0): {html}"
+        );
+    }
 }
