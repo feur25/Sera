@@ -4,7 +4,7 @@ use crate::plot::statistical::RadarVariant;
 use crate::plot::{apply_bg3d, parse_all};
 use std::f64::consts::TAU;
 
-const RING_GAP_CONTROL_JS: &str = "(function(){var wrap=document.getElementById(cid);if(!wrap)return;var outer=document.createElement('div');outer.style.cssText='display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%';wrap.parentElement.insertBefore(outer,wrap);outer.appendChild(wrap);var ctrl=document.createElement('div');ctrl.style.cssText='width:'+W+'px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;font:11px -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;color:#cbd5e1;background:rgba(15,23,42,.6);padding:7px 12px;border-radius:9px';var lbl=document.createElement('span');lbl.textContent='ring gap';lbl.style.cssText='white-space:nowrap;opacity:.75';var sl=document.createElement('input');sl.type='range';sl.min='0';sl.max='200';sl.step='1';sl.value=String(Math.round(RG*200));sl.style.cssText='flex:1;cursor:pointer';var val=document.createElement('span');val.textContent=RG.toFixed(2);val.style.cssText='width:32px;text-align:right;font-weight:700;color:#f1f5f9';sl.addEventListener('input',function(){RG=parseInt(sl.value,10)/200;val.textContent=RG.toFixed(2);R();});ctrl.appendChild(lbl);ctrl.appendChild(sl);ctrl.appendChild(val);outer.appendChild(ctrl);})();";
+const RING_GAP_CONTROL_JS: &str = "(function(){var wrap=document.getElementById(cid);if(!wrap)return;var outer=document.createElement('div');outer.style.cssText='display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%';wrap.parentElement.insertBefore(outer,wrap);outer.appendChild(wrap);var ctrl=document.createElement('div');ctrl.className='sp-ring-gap-ctrl';ctrl.style.cssText='position:relative;width:'+W+'px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;font:11px -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;color:#cbd5e1;background:rgba(15,23,42,.6);padding:7px 12px;border-radius:9px;touch-action:none';var lbl=document.createElement('span');lbl.textContent='ring gap';lbl.style.cssText='white-space:nowrap;opacity:.75;cursor:grab;user-select:none';var sl=document.createElement('input');sl.type='range';sl.min='0';sl.max='200';sl.step='1';sl.value=String(Math.round(RG*200));sl.style.cssText='flex:1;cursor:pointer';var val=document.createElement('span');val.textContent=RG.toFixed(2);val.style.cssText='width:32px;text-align:right;font-weight:700;color:#f1f5f9';sl.addEventListener('input',function(){RG=parseInt(sl.value,10)/200;val.textContent=RG.toFixed(2);R();});ctrl.appendChild(lbl);ctrl.appendChild(sl);ctrl.appendChild(val);outer.appendChild(ctrl);var dgX=0,dgY=0,dragging=false,startX=0,startY=0;lbl.addEventListener('mousedown',function(e){dragging=true;startX=e.clientX-dgX;startY=e.clientY-dgY;lbl.style.cursor='grabbing';e.preventDefault();});window.addEventListener('mousemove',function(e){if(!dragging)return;dgX=e.clientX-startX;dgY=e.clientY-startY;ctrl.style.transform='translate('+dgX+'px,'+dgY+'px)';});window.addEventListener('mouseup',function(){dragging=false;lbl.style.cursor='grab';});})();";
 
 fn wrap_pg_content_div(html: String, h: i32) -> String {
     html.replacen("<body>", &format!("<body><div height=\"{}\" style=\"display:none\"></div>", h + 60), 1)
@@ -323,6 +323,13 @@ mod tests {
         assert!(closed_loop.contains("ring gap"), "closed-loop variants must carry the ring-gap gauge");
         let polar_bar = build_radar3d_chart(r#"{"title":"t","axes":["A","B","C"],"series":[[1,2,3]],"variant":"polar_bar"}"#);
         assert!(!polar_bar.contains("ring gap"), "wedge-based variants have their own radial spacing, no ring-gap gauge");
+    }
+
+    #[test]
+    fn the_ring_gap_control_carries_a_disable_class_and_drag_handler() {
+        let html = build_radar3d_chart(r#"{"title":"t","axes":["A","B","C"],"series":[[1,2,3]],"variant":"basic"}"#);
+        assert!(html.contains("sp-ring-gap-ctrl"), "no_ring_gap() targets this class to hide the control");
+        assert!(html.contains("mousedown") && html.contains("mousemove") && html.contains("translate("), "the control must be draggable");
     }
 
     #[test]
