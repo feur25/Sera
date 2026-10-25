@@ -12,7 +12,7 @@ The goal is to avoid having a billion imports, be 2x to thousands of times faste
 
 I work on this alone in my spare time, so progress can take a while. If you want more information, feel free to check out the documentation — it’s available in both English and French and goes into much more detail about the tool. I still try to update the extension once a week.
 
-Documentation: : <https://feur25.github.io/seraplot/introduction.html>
+Documentation: : <https://feur25.github.io/Sera/introduction.html>
 
 ## Highlights
 
@@ -67,14 +67,14 @@ Documentation: : <https://feur25.github.io/seraplot/introduction.html>
 `spscatter3d`, `spbar3d`, `spglobe`, `spmap`, `spchoro`, `spkmeans`, `spdbscan`,
 `spauto`, `spdrift`, `spfacet`, `spgrid`, `sppipe`, `sptts`, …
 
-> Logo design by [SevenSoftware7](https://github.com/SevenSoftware7).
+> Logo design by [SevenSoftware7](https://github.com/AxelSevenS).
 
-> Extension make it by : feur25
+> Extension make it by : [feur25](https://github.com/feur25)
 
-> Documentation: : <https://feur25.github.io/seraplot/introduction.html>
+> Documentation : <https://feur25.github.io/Sera/introduction.html>
 
 <p align="center">
-  <a href="https://feur25.github.io/seraplot/introduction.html"><img src="https://i.ibb.co/WpF73657/logo-banner.png" alt="Seraplot Banner" border="0"></a>
+  <a href="https://feur25.github.io/Sera/introduction.html"><img src="https://i.ibb.co/WpF73657/logo-banner.png" alt="Seraplot Banner" border="0"></a>
 </p>
 
 ## License
