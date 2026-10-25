@@ -1,6 +1,6 @@
 {
   "name": "seraplot",
-  "version": "2.8.5",
+  "version": "2.8.7",
   "description": "High-performance data visualization -- HTML charts via Rust WASM, 60+ chart families and 400+ variants discovered live from the engine's own registry",
   "main": "index.js",
   "types": "index.d.ts",
