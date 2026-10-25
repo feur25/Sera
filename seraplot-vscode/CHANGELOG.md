@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 - 2026-10-25
+
+- **Home sidebar — rename sections**: every section (built-in or custom) now has a rename (pencil) control next to its name, not just delete. Deleting the last remaining section is blocked rather than leaving you with an empty sidebar.
+- **Chart Studio — the same favorites & folders as the Gallery**: the chart list on the left of Chart Studio now has its own ★/⊞ controls per chart, a ★ Favorites group, folder groups and a "+ Folder" button — backed by the exact same `globalState` data as the Gallery tree view, so starring or filing a chart from either place shows up instantly in the other. Persisted forever, across every future update.
+- **Live Preview — drag to reorder charts**: when a file produces more than one chart, a row of numbered chips now sits under the toolbar; drag them to change which chart is "1st", "2nd", etc. instead of only stepping through with Prev/Next. The currently-viewed chart follows its content when you reorder, rather than jumping to whatever ends up in that slot.
+
 ## 0.9.0 - 2026-10-25
 
 - **Fix — wrong color palette**: the Home sidebar, Live Preview toolbar and every other panel were recolored to an indigo/purple palette that was never the right reference. They now match the documentation site's actual warm brown/amber identity (`#2b211d`/`#3b2e2a` surfaces, `#e69f67`/`#d98a4a` accent) throughout.

@@ -269,6 +269,8 @@ function createHomeSection(name) {
 }
 function deleteHomeSection(id) {
     const layout = homeLayout();
+    if (layout.length <= 1)
+        return;
     const idx = layout.findIndex(s => s.id === id);
     if (idx === -1)
         return;
@@ -276,6 +278,14 @@ function deleteHomeSection(id) {
     const fallback = layout.find(s => !s.custom) || layout[0];
     if (fallback && removed.items.length)
         fallback.items.push(...removed.items);
+    setHomeLayout(layout);
+}
+function renameHomeSection(id, label) {
+    const layout = homeLayout();
+    const sec = layout.find(s => s.id === id);
+    if (!sec)
+        return;
+    sec.label = label;
     setHomeLayout(layout);
 }
 let gallerySearchQuery = "";
@@ -1258,15 +1268,44 @@ function wrapMultiHtml(charts, file) {
         </button>
       </div>`
         : "";
+    const dotsHtml = total > 1 ? `<div class="sp-dots" id="dots"></div>` : "";
     const pagerScript = total > 1 ? `
 let idx=0;
-const charts=${safeJson};
+let charts=${safeJson};
 const frm=document.getElementById('frm');
 const ctr=document.getElementById('ctr');
 const prev=document.getElementById('prev');
 const next=document.getElementById('next');
-function nav(d){idx=(idx+d+charts.length)%charts.length;frm.srcdoc=charts[idx];ctr.innerHTML='<b>'+(idx+1)+'</b> / '+charts.length;prev.disabled=idx===0;next.disabled=idx===charts.length-1;}
+const dots=document.getElementById('dots');
+let dragIdx=null;
+function buildDots(){
+  dots.innerHTML='';
+  charts.forEach(function(_,i){
+    const d=document.createElement('span');
+    d.className='sp-dot-chip'+(i===idx?' active':'');
+    d.draggable=true;
+    d.textContent=(i+1);
+    d.title='Chart '+(i+1)+' — drag to reorder';
+    d.addEventListener('click',function(){idx=i;refresh();});
+    d.addEventListener('dragstart',function(e){dragIdx=i;d.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',String(i));}catch(err){}});
+    d.addEventListener('dragend',function(){d.classList.remove('dragging');dragIdx=null;});
+    d.addEventListener('dragover',function(e){e.preventDefault();});
+    d.addEventListener('drop',function(e){
+      e.preventDefault();
+      if(dragIdx===null||dragIdx===i)return;
+      const current=charts[idx];
+      const moved=charts.splice(dragIdx,1)[0];
+      charts.splice(i,0,moved);
+      idx=charts.indexOf(current);
+      refresh();
+    });
+    dots.appendChild(d);
+  });
+}
+function refresh(){frm.srcdoc=charts[idx];ctr.innerHTML='<b>'+(idx+1)+'</b> / '+charts.length;prev.disabled=idx===0;next.disabled=idx===charts.length-1;buildDots();}
+function nav(d){idx=(idx+d+charts.length)%charts.length;refresh();}
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&!prev.disabled)nav(-1);else if(e.key==='ArrowRight'&&!next.disabled)nav(1);});
+buildDots();
 ` : "";
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
@@ -1359,6 +1398,22 @@ html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);f
 }
 .sp-counter b{color:var(--tx);font-weight:700}
 
+/* ── Chart dots (drag to reorder) ───────────────────────────────────────── */
+.sp-dots{
+  display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap;
+  padding:6px 14px;background:var(--bg-bar);border-bottom:1px solid var(--bd);
+}
+.sp-dot-chip{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;padding:0 5px;border-radius:5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--bd-hi);color:var(--tx-mu);
+  font-size:10px;font-weight:700;cursor:grab;user-select:none;
+  font-variant-numeric:tabular-nums;transition:all .15s;
+}
+.sp-dot-chip:hover{border-color:var(--ac);color:var(--tx)}
+.sp-dot-chip.active{background:linear-gradient(135deg,var(--ac-on),var(--ac));color:#fff;border-color:transparent}
+.sp-dot-chip.dragging{opacity:.35}
+
 /* ── Chart frame ─────────────────────────────────────────────────────── */
 .sp-frame{
   flex:1;min-height:0;position:relative;
@@ -1399,6 +1454,7 @@ html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);f
       </button>
     </div>
   </div>
+  ${dotsHtml}
   <div class="sp-frame"><iframe id="frm" srcdoc="${firstSrcdoc}" sandbox="allow-scripts"></iframe></div>
 </div>
 <script>const v=acquireVsCodeApi();
@@ -1876,6 +1932,14 @@ class HomeProvider {
                 deleteHomeSection(msg.id);
                 return;
             }
+            if (msg.type === "renameSection" && msg.id) {
+                const layout = homeLayout();
+                const sec = layout.find(s => s.id === msg.id);
+                const name = await vscode.window.showInputBox({ prompt: "Rename section", value: sec ? sec.label : "" });
+                if (name && name.trim())
+                    renameHomeSection(msg.id, name.trim());
+                return;
+            }
             if (msg.type === "createSection") {
                 const name = await vscode.window.showInputBox({ prompt: "New section name", placeHolder: "My shortcuts" });
                 if (name && name.trim())
@@ -1927,7 +1991,11 @@ body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size
 .section:first-of-type .lbl{margin-top:0}
 .lbl svg{opacity:.7}
 .lbl .lbl-main{display:flex;align-items:center;gap:6px}
-.lbl .secdel{cursor:pointer;opacity:.5;font-size:13px;padding:0 3px;text-transform:none;letter-spacing:0;font-weight:400}
+.lbl .lbl-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.lbl .secedit,.lbl .secdel{cursor:pointer;opacity:.4;text-transform:none;letter-spacing:0;font-weight:400;display:flex;align-items:center}
+.lbl .secedit{opacity:.35}
+.lbl .secedit:hover{opacity:1;color:var(--sp-accent)}
+.lbl .secdel{font-size:13px;padding:0 1px}
 .lbl .secdel:hover{opacity:1;color:var(--sp-danger)}
 .btnlist{min-height:4px;border-radius:7px;transition:outline-color .15s}
 .btnlist.dragover{outline:1px dashed var(--sp-accent);outline-offset:2px}
@@ -1952,21 +2020,25 @@ body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size
   <span class="ldot ${langOk ? "ok" : "no"}"></span>
   <span class="ltxt" id="langtxt">${langOk ? `Detected <b>${htmlEscape(langLabel(curLang))}</b> \u2014 live preview ready` : "Open a Python, C#, JS or TS file to enable live preview"}</span>
 </div>
-${homeLayout().map(sec => {
-            const btnsHtml = sec.items.map(bid => {
-                const b = HOME_BUTTONS[bid];
-                if (!b)
-                    return "";
-                const primaryCls = b.primary ? " primary" : "";
-                const iconSvg = ICON_MAP[b.icon] || "";
-                return `<button class="btn${primaryCls}" draggable="true" data-btnid="${bid}" data-cmd="${b.cmd}"><span class="drag-handle">\u22ee\u22ee</span>${iconSvg}<span class="btn-label">${htmlEscape(b.label)}</span></button>`;
-            }).join("\n");
-            const delBtn = sec.custom ? `<span class="secdel" data-delsec="${sec.id}" title="Delete section">\u00d7</span>` : "";
-            return `<div class="section" data-section-id="${sec.id}" data-label="${htmlEscape(sec.label)}" data-icon="${sec.icon}" data-custom="${sec.custom ? "1" : "0"}">
-<div class="lbl"><span class="lbl-main">${ICON_MAP[sec.icon] || ICON_GRID} ${htmlEscape(sec.label)}</span>${delBtn}</div>
+${(() => {
+            const layout = homeLayout();
+            return layout.map(sec => {
+                const btnsHtml = sec.items.map(bid => {
+                    const b = HOME_BUTTONS[bid];
+                    if (!b)
+                        return "";
+                    const primaryCls = b.primary ? " primary" : "";
+                    const iconSvg = ICON_MAP[b.icon] || "";
+                    return `<button class="btn${primaryCls}" draggable="true" data-btnid="${bid}" data-cmd="${b.cmd}"><span class="drag-handle">\u22ee\u22ee</span>${iconSvg}<span class="btn-label">${htmlEscape(b.label)}</span></button>`;
+                }).join("\n");
+                const renameBtn = `<span class="secedit" data-renamesec="${sec.id}" title="Rename section">${icon('<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>', 11)}</span>`;
+                const delBtn = layout.length > 1 ? `<span class="secdel" data-delsec="${sec.id}" title="Delete section">\u00d7</span>` : "";
+                return `<div class="section" data-section-id="${sec.id}" data-label="${htmlEscape(sec.label)}" data-icon="${sec.icon}" data-custom="${sec.custom ? "1" : "0"}">
+<div class="lbl"><span class="lbl-main">${ICON_MAP[sec.icon] || ICON_GRID} ${htmlEscape(sec.label)}</span><span class="lbl-actions">${renameBtn}${delBtn}</span></div>
 <div class="btnlist" data-section-id="${sec.id}">${btnsHtml}</div>
 </div>`;
-        }).join("\n")}
+            }).join("\n");
+        })()}
 <button class="addsection" id="addSection">+ New section\u2026</button>
 <div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically. Drag buttons to reorder or move between sections \u2014 saved forever.</div>
 <script nonce="${nonce}">
@@ -2023,6 +2095,9 @@ ${homeLayout().map(sec => {
   });
   document.querySelectorAll('[data-delsec]').forEach(function(x){
     x.addEventListener('click', function(ev){ ev.stopPropagation(); v.postMessage({ type: 'deleteSection', id: x.getAttribute('data-delsec') }); });
+  });
+  document.querySelectorAll('[data-renamesec]').forEach(function(x){
+    x.addEventListener('click', function(ev){ ev.stopPropagation(); v.postMessage({ type: 'renameSection', id: x.getAttribute('data-renamesec') }); });
   });
   const addSecBtn = document.getElementById('addSection');
   if (addSecBtn) addSecBtn.addEventListener('click', function(){ v.postMessage({ type: 'createSection' }); });
@@ -2872,6 +2947,8 @@ async function openChartStudio(context) {
         common_kwargs: cat.common_kwargs,
         chart_methods: cat.chart_methods || [],
         fav_methods: favMethods(),
+        fav_charts: favCharts(),
+        studio_folders: folders(),
         themes: cat.themes || [],
         aliases: mergedAliases,
         variants: cat.chart_variants || {},
@@ -2890,6 +2967,35 @@ async function openChartStudio(context) {
         if (msg.type === "toggleFavMethod" && msg.name) {
             toggleFavMethod(msg.name);
             panel.webview.postMessage({ type: "favMethods", names: favMethods() });
+            return;
+        }
+        if (msg.type === "toggleFavChart" && msg.id) {
+            toggleFavChart(msg.id);
+            panel.webview.postMessage({ type: "favSnapshot", fav_charts: favCharts(), folders: folders() });
+            return;
+        }
+        if (msg.type === "addToStudioFolder" && msg.id) {
+            const list = folders();
+            const picks = list.map(f => ({ label: f.name, id: f.id })).concat([{ label: "+ New Folder…", id: "" }]);
+            const picked = await vscode.window.showQuickPick(picks, { placeHolder: "Add to folder" });
+            if (picked) {
+                let targetId = picked.id;
+                if (!targetId) {
+                    const name = await vscode.window.showInputBox({ prompt: "Folder name" });
+                    if (name && name.trim())
+                        targetId = createFolder(name.trim());
+                }
+                if (targetId)
+                    addToFolder(targetId, msg.id);
+            }
+            panel.webview.postMessage({ type: "favSnapshot", fav_charts: favCharts(), folders: folders() });
+            return;
+        }
+        if (msg.type === "createStudioFolder") {
+            const name = await vscode.window.showInputBox({ prompt: "Folder name", placeHolder: "My dashboards" });
+            if (name && name.trim())
+                createFolder(name.trim());
+            panel.webview.postMessage({ type: "favSnapshot", fav_charts: favCharts(), folders: folders() });
             return;
         }
         if (msg.type === "render" && msg.id && msg.kind === "chart") {
@@ -3071,6 +3177,13 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .item:hover{background:#3a2d27}
 .item.sel{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12));border-left:2px solid #d98a4a;padding-left:10px}
 .item code{color:#a89686;font-size:10.5px;font-family:Consolas,monospace}
+.item-main{display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0}
+.item-main span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.istar,.ifold{opacity:.3;font-size:11px;cursor:pointer}
+.istar:hover,.ifold:hover{opacity:1}
+.istar.on{opacity:1;color:#e69f67}
+.item-empty{padding:4px 16px;font-size:10.5px;color:#6b5d50;font-style:italic}
 .head{padding:14px 18px;border-bottom:1px solid #45373a;display:flex;align-items:center;gap:10px}
 .head h1{margin:0;font-size:15px;background:linear-gradient(90deg,#d98a4a,#e6b088);-webkit-background-clip:text;background-clip:text;color:transparent}
 .head .tag{font-size:10px;padding:3px 8px;border-radius:10px;background:#3d2f28;color:#a89686;text-transform:uppercase;font-weight:600}
@@ -3158,7 +3271,7 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 </style></head><body>
 <div class="app">
 <div class="left" id="leftPanel">
-<div class="panel-bar"><span class="pb-title">Charts</span><button id="leftCollapse" title="Collapse / expand">\u25C0</button></div>
+<div class="panel-bar"><span class="pb-title">Charts</span><button id="newFolderBtn" title="New folder">+ Folder</button><button id="leftCollapse" title="Collapse / expand">\u25C0</button></div>
 <div class="search"><input id="q" type="text" placeholder="Filter\u2026" autofocus></div>
 <div class="list" id="list"></div>
 </div>
@@ -3187,6 +3300,9 @@ const THEMES = PAYLOAD.themes || [];
 const CHART_METHOD_MAP = {}; for (const m of CHART_METHODS) CHART_METHOD_MAP[m.name] = m;
 let FAV_METHODS = new Set(PAYLOAD.fav_methods || []);
 function toggleFavMethod(name){ v.postMessage({type:'toggleFavMethod', name}); if (FAV_METHODS.has(name)) FAV_METHODS.delete(name); else FAV_METHODS.add(name); }
+let FAV_CHART_KEYS = new Set(PAYLOAD.fav_charts || []);
+let STUDIO_FOLDERS = PAYLOAD.studio_folders || [];
+function isFavChartId(id){ if (FAV_CHART_KEYS.has(id)) return true; let found = false; FAV_CHART_KEYS.forEach(function(k){ if (k.indexOf(id + '::') === 0) found = true; }); return found; }
 
 const UI_STATE_DEFAULTS = { leftWidth:260, miniHeight:280, leftCollapsed:false, miniCollapsed:false, themeMode:'dark', sectionCollapsed:{}, lastChart:null, lastKwargs:{}, lastChain:[], lastTheme:'', lastTitle:'', lastLabels:'', lastValues:'' };
 let UI_STATE = Object.assign({}, UI_STATE_DEFAULTS, (v.getState && v.getState()) || {});
@@ -3262,8 +3378,37 @@ function commonKw(key) { return COMMON.find(k => k.key === key); }
 function chartKw(key) { if (!current || !current.kwargs) return null; return current.kwargs.find(k => k.key === key) || null; }
 function lookupKw(key) { return chartKw(key) || commonKw(key); }
 
+let lastListFilter = '';
+function makeItem(e){
+  const it = document.createElement('div'); it.className='item';
+  if (current && current.id === e.id && current.kind === e.kind) it.classList.add('sel');
+  const main = document.createElement('span'); main.className = 'item-main';
+  const label = document.createElement('span'); label.textContent = e.label;
+  const code = document.createElement('code'); code.textContent = e.id;
+  main.appendChild(label); main.appendChild(code);
+  it.appendChild(main);
+  if (e.kind === 'chart') {
+    const actions = document.createElement('span'); actions.className = 'item-actions';
+    const star = document.createElement('span');
+    star.className = 'istar' + (isFavChartId(e.id) ? ' on' : '');
+    star.title = 'Favorite this chart';
+    star.textContent = '★';
+    star.addEventListener('click', function(ev){ ev.stopPropagation(); v.postMessage({ type:'toggleFavChart', id: e.id }); });
+    actions.appendChild(star);
+    const fold = document.createElement('span');
+    fold.className = 'ifold';
+    fold.title = 'Add to folder';
+    fold.textContent = '⊞';
+    fold.addEventListener('click', function(ev){ ev.stopPropagation(); v.postMessage({ type:'addToStudioFolder', id: e.id }); });
+    actions.appendChild(fold);
+    it.appendChild(actions);
+  }
+  it.addEventListener('click', () => select(e));
+  return it;
+}
 function renderList(filter){
-  const f = (filter||'').toLowerCase();
+  lastListFilter = filter || '';
+  const f = lastListFilter.toLowerCase();
   const groups = {};
   for (const e of CATALOG) {
     const hay = (e.label + ' ' + e.id + ' ' + e.group).toLowerCase();
@@ -3272,15 +3417,29 @@ function renderList(filter){
     groups[e.group].push(e);
   }
   list.innerHTML = '';
+  if (!f && FAV_CHART_KEYS.size) {
+    const favEntries = [];
+    FAV_CHART_KEYS.forEach(function(key){
+      const id = key.split('::')[0];
+      const e = CATALOG.find(c => c.id === id && c.kind === 'chart');
+      if (e && !favEntries.includes(e)) favEntries.push(e);
+    });
+    if (favEntries.length) {
+      const h = document.createElement('div'); h.className='grp'; h.textContent = '★ Favorites'; list.appendChild(h);
+      favEntries.forEach(e => list.appendChild(makeItem(e)));
+    }
+  }
+  if (!f && STUDIO_FOLDERS.length) {
+    STUDIO_FOLDERS.forEach(function(folder){
+      const entries = folder.items.map(function(key){ return CATALOG.find(c => c.id === key.split('::')[0] && c.kind === 'chart'); }).filter(Boolean);
+      const h = document.createElement('div'); h.className='grp'; h.textContent = '⊞ ' + folder.name; list.appendChild(h);
+      if (!entries.length) { const empty = document.createElement('div'); empty.className='item-empty'; empty.textContent = 'Empty — use ' + String.fromCharCode(0x229e) + ' on a chart to add it here'; list.appendChild(empty); }
+      entries.forEach(e => list.appendChild(makeItem(e)));
+    });
+  }
   for (const g of Object.keys(groups)) {
     const h = document.createElement('div'); h.className='grp'; h.textContent = g; list.appendChild(h);
-    for (const e of groups[g]) {
-      const it = document.createElement('div'); it.className='item';
-      if (current && current.id === e.id && current.kind === e.kind) it.classList.add('sel');
-      it.innerHTML = '<span>'+e.label+'</span><code>'+e.id+'</code>';
-      it.addEventListener('click', () => select(e));
-      list.appendChild(it);
-    }
+    for (const e of groups[g]) list.appendChild(makeItem(e));
   }
 }
 
@@ -3682,6 +3841,7 @@ window.addEventListener('message', ev => {
   const m = ev.data;
   if (!m) return;
   if (m.type === 'favMethods') { FAV_METHODS = new Set(m.names || []); if (current && current.kind === 'chart') renderForm(); return; }
+  if (m.type === 'favSnapshot') { FAV_CHART_KEYS = new Set(m.fav_charts || []); STUDIO_FOLDERS = m.folders || []; renderList(lastListFilter); return; }
   if (m.type !== 'rendered') return;
   pbar.classList.remove('busy');
   if (m.error) {
@@ -3741,6 +3901,8 @@ resetBtn.addEventListener('click', () => { if (current) { kwargs = {}; chain = [
 insertBtn.addEventListener('click', () => { if (current) { const sendKwargs = Object.assign({}, kwargs); if (current.kind === 'chart' && current.variantKey) sendKwargs.variant = current.variantKey; v.postMessage({ type:'insert', id: current.callId || current.id, kind: current.kind, title, labels, values, kwargs: sendKwargs, chain, theme }); } });
 rerenderBtn.addEventListener('click', () => scheduleRender());
 q.addEventListener('input', () => renderList(q.value));
+const newFolderBtn = document.getElementById('newFolderBtn');
+if (newFolderBtn) newFolderBtn.addEventListener('click', () => v.postMessage({ type: 'createStudioFolder' }));
 
 function persistChart(){ if (!current) return; UI_STATE.lastChart = { id: current.id, kind: current.kind, callId: current.callId||null, variantKey: current.variantKey||null }; UI_STATE.lastKwargs = kwargs; UI_STATE.lastChain = chain; UI_STATE.lastTheme = theme; UI_STATE.lastTitle = title; UI_STATE.lastLabels = labels; UI_STATE.lastValues = values; saveUI(); }
 
