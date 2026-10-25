@@ -2275,7 +2275,7 @@ ${(() => {
             }).join("\n");
         })()}
 <button class="addsection" id="addSection">+ New section\u2026</button>
-<div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically. Drag buttons to reorder or move between sections \u2014 saved forever.</div>
+// <div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically. Drag buttons to reorder or move between sections \u2014 saved forever.</div>
 <script nonce="${nonce}">
 (function(){
   const v = acquireVsCodeApi();
@@ -2368,10 +2368,11 @@ async function openGallery(context) {
         if (!msg)
             return;
         if (msg.type === "float") {
-            panel.reveal(panel.viewColumn, false);
+            panel.dispose();
+            openGallery(context);
             setTimeout(() => {
                 vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
-            }, 150);
+            }, 250);
             return;
         }
         if (msg.type === "insert" && msg.id) {
@@ -2715,10 +2716,11 @@ function openThemeStudio(context) {
     panel.webview.html = themeStudioHtml(palette, bg, extColors());
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (msg.type === "float") {
-            panel.reveal(panel.viewColumn, false);
+            panel.dispose();
+            openThemeStudio(context);
             setTimeout(() => {
                 vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
-            }, 150);
+            }, 250);
             return;
         }
         if (msg.type === "copy" && typeof msg.code === "string") {
@@ -3228,7 +3230,7 @@ initMonaco();
 </script>
 </body></html>`;
 }
-async function openChartStudio(context) {
+async function openChartStudio(context, restoreState) {
     const cat = await (0, runtimeCatalog_1.loadCatalog)(context);
     const panel = vscode.window.createWebviewPanel("seraplotChartStudio", "SeraPlot Chart Studio", { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, { enableScripts: true, retainContextWhenHidden: true });
     try {
@@ -3254,6 +3256,7 @@ async function openChartStudio(context) {
         fav_charts: favCharts(),
         studio_folders: folders(),
         recent_charts: recentCharts(),
+        restore_state: restoreState || null,
         themes: cat.themes || [],
         aliases: mergedAliases,
         variants: cat.chart_variants || {},
@@ -3270,10 +3273,11 @@ async function openChartStudio(context) {
         if (!msg)
             return;
         if (msg.type === "float") {
-            panel.reveal(panel.viewColumn, false);
+            panel.dispose();
+            openChartStudio(context, msg.state || null);
             setTimeout(() => {
                 vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
-            }, 150);
+            }, 250);
             return;
         }
         if (msg.type === "openInBrowser" && typeof msg.html === "string") {
@@ -3680,7 +3684,7 @@ let showAllMethods = false;
 function isFavChartId(id){ if (FAV_CHART_KEYS.has(id)) return true; let found = false; FAV_CHART_KEYS.forEach(function(k){ if (k.indexOf(id + '::') === 0) found = true; }); return found; }
 
 const UI_STATE_DEFAULTS = { leftWidth:260, miniHeight:280, leftCollapsed:false, miniCollapsed:false, themeMode:'dark', sectionCollapsed:{}, lastChart:null, lastKwargs:{}, lastChain:[], lastTheme:'', lastTitle:'', lastLabels:'', lastValues:'' };
-let UI_STATE = Object.assign({}, UI_STATE_DEFAULTS, (v.getState && v.getState()) || {});
+let UI_STATE = Object.assign({}, UI_STATE_DEFAULTS, PAYLOAD.restore_state || (v.getState && v.getState()) || {});
 function saveUI(){ try{ v.setState(UI_STATE); }catch(e){} }
 function applyUIState(){
   const lp = document.getElementById('leftPanel');
@@ -3727,7 +3731,7 @@ function initStudioUI(){
   const tt = document.getElementById('themeToggle');
   if (tt) tt.addEventListener('click', function(){ UI_STATE.themeMode = UI_STATE.themeMode === 'light' ? 'dark' : 'light'; applyUIState(); saveUI(); });
   const fb = document.getElementById('floatBtn');
-  if (fb) fb.addEventListener('click', function(){ v.postMessage({ type: 'float' }); });
+  if (fb) fb.addEventListener('click', function(){ saveUI(); v.postMessage({ type: 'float', state: UI_STATE }); });
   document.addEventListener('click', function(e){
     const t = e.target;
     if (t && t.tagName === 'H2' && t.parentElement && t.parentElement.classList && t.parentElement.classList.contains('section')){

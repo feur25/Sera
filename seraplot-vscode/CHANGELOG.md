@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.1 - 2026-10-25
+
+- **Fix — Float didn't actually detach into a new window**: the 0.12.0 Float button just called `panel.reveal()` then fired `workbench.action.moveEditorToNewWindow`, which is NOT how Live Preview's own (working) float does it — Live Preview disposes its panel and creates a brand new one immediately before firing that command, so VS Code's "active editor" is completely unambiguous when the command runs. Chart Studio/Gallery/Theme Studio's Float now does the exact same thing. For Chart Studio specifically (where disposing would otherwise throw away your current chart selection, kwargs and chain), the webview now ships its live UI state over to the extension right before disposing and seeds the freshly-created panel with it, so floating doesn't lose your in-progress work.
+
 ## 0.13.0 - 2026-10-25
 
 - **Chart Studio — Chain methods now shows only what actually does something on the selected chart.** There is no per-chart compatibility list anywhere in the engine (confirmed by reading the Rust source: the ~480 chainable methods are flatly merged onto one generic `Chart` struct with zero per-family metadata), so a static list was never going to be accurate. Instead, selecting a chart now renders it once with its real documentation demo data and tries every method against that real instance, keeping only the ones that actually change the rendered output — empirical, not guessed. This caught a genuine upstream bug in the process: `.title()`/`.x_label()`/`.y_label()`/`color_hex` are complete no-ops on pie charts (verified directly against the engine, not a VS Code extension issue). Results are cached per chart+variant so this only costs anything on the first visit to a chart. A "N hidden — show all" link stays available in case the probe ever gets something wrong.
