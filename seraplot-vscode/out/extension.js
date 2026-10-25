@@ -43,10 +43,53 @@ const os = __importStar(require("os"));
 const runtimeCatalog_1 = require("./runtimeCatalog");
 const wheelLoader_1 = require("./wheelLoader");
 const RECENT_KEY = "seraplot.recentFiles";
+const SUPPORTED_LANGS = { python: "Python", csharp: "C#", javascript: "JavaScript", typescript: "TypeScript" };
+function isSupportedLang(id) { return !!id && Object.prototype.hasOwnProperty.call(SUPPORTED_LANGS, id); }
+function langLabel(id) { return SUPPORTED_LANGS[id] || id; }
+function langWhenClause() { return Object.keys(SUPPORTED_LANGS).map(id => `resourceLangId == ${id}`).join(" || "); }
+const SP_SHARED_CSS = [
+    ":root,body{",
+    "--sp-bg:#0a0f1c;--sp-surface:#0d1117;--sp-surface-2:#161b22;--sp-surface-hover:#1c2531;",
+    "--sp-border:#1f2733;--sp-border-hi:#2a3343;--sp-text:#e2e8f0;--sp-text-muted:#7e8a9c;",
+    "--sp-accent:#818cf8;--sp-accent-on:#6366f1;--sp-ok:#10b981;--sp-warn:#f59e0b;--sp-danger:#ef4444;--sp-important:#a78bfa;",
+    "}",
+    "@keyframes sp-spin{to{transform:rotate(360deg)}}",
+    "@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.45}}",
+    "@keyframes sp-ripple{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}100%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}",
+    ".sp-dot{width:7px;height:7px;border-radius:50%;background:var(--sp-text-muted);flex-shrink:0;transition:background .3s}",
+    ".sp-dot-lg{width:10px;height:10px;background:linear-gradient(135deg,var(--sp-accent),var(--sp-important));box-shadow:0 0 7px rgba(129,140,248,.65)}",
+    ".sp-dot-loading{background:var(--sp-warn)!important;animation:sp-pulse 1s infinite}",
+    ".sp-dot-ready{background:var(--sp-ok)!important;animation:sp-ripple 2.2s infinite}",
+    ".sp-dot-err{background:var(--sp-danger)!important;box-shadow:0 0 8px var(--sp-danger)}",
+    ".sp-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:12px;background:var(--sp-surface);border:1px solid var(--sp-border);color:var(--sp-text-muted)}",
+    ".sp-spinner{width:28px;height:28px;border:3px solid rgba(124,58,237,.15);border-top-color:#a78bfa;border-right-color:#67e8f9;border-radius:50%;animation:sp-spin .9s cubic-bezier(.5,.1,.5,.9) infinite;filter:drop-shadow(0 0 8px rgba(167,139,250,.5))}",
+].join("\n");
+function icon(inner, size = 14) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+const ICON_PLAY = icon('<polygon points="5,3 19,12 5,21"/>');
+const ICON_EYE = icon('<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>');
+const ICON_REFRESH = icon('<polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>');
+const ICON_BUILD = icon('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>');
+const ICON_SETTINGS = icon('<path d="M12 2l2.2 4.6 5 .7-3.6 3.6.9 5-4.5-2.4L7.5 16l.9-5L4.8 7.3l5-.7z"/>');
+const ICON_SNIPPET = icon('<polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/>');
+const ICON_GEAR = icon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.43.57.78.66"/>');
+const ICON_FILE = icon('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>');
+const ICON_TOOLS = icon('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>');
+const ICON_PALETTE = icon('<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.8 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-4.9-4.5-8.8-9.9-8.8z"/>');
+const ICON_GRID = icon('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>');
+const ICON_EXPORT = icon('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>');
+const ICON_SYNC = ICON_REFRESH;
+const ICON_PACKAGE = icon('<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>');
+const ICON_DOWNLOAD = icon('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,11 12,16 17,11"/><line x1="12" y1="16" x2="12" y2="3"/>');
+const ICON_TRASH = icon('<polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>');
+const ICON_HELP = icon('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
+const ICON_BOOK = icon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>');
 let previewPanel;
 let previewView;
 let lastPreviewHtml = "";
 let activeFile;
+let activeLang = "python";
 let statusItem;
 let wheelStatusItem;
 let recentProvider;
@@ -237,10 +280,12 @@ function activate(context) {
     }), vscode.window.onDidChangeActiveTextEditor(ed => {
         if (ed && ed.document.languageId === "python")
             lastPyEditor = ed;
+        if (homeProvider)
+            homeProvider.setLang(ed ? ed.document.languageId : null);
         const cfg = vscode.workspace.getConfiguration("seraplot");
         if (!cfg.get("previewOnOpen", false))
             return;
-        if (ed && ed.document.languageId === "python" && !hasPreviewSurface())
+        if (ed && isSupportedLang(ed.document.languageId) && !hasPreviewSurface())
             openPreview(context);
     }));
     (0, runtimeCatalog_1.loadCatalog)(context).then(cat => {
@@ -313,15 +358,15 @@ function attachWheelWatcher(context, galleryProvider) {
     });
     context.subscriptions.push(wheelWatcher);
 }
+const PREVIEW_COLUMNS = {
+    active: () => vscode.ViewColumn.Active,
+    one: () => vscode.ViewColumn.One,
+    two: () => vscode.ViewColumn.Two,
+    three: () => vscode.ViewColumn.Three,
+};
 function previewColumn() {
     const v = vscode.workspace.getConfiguration("seraplot").get("previewColumn", "beside");
-    switch (v) {
-        case "active": return vscode.ViewColumn.Active;
-        case "one": return vscode.ViewColumn.One;
-        case "two": return vscode.ViewColumn.Two;
-        case "three": return vscode.ViewColumn.Three;
-        default: return vscode.ViewColumn.Beside;
-    }
+    return (PREVIEW_COLUMNS[v] || (() => vscode.ViewColumn.Beside))();
 }
 function previewMode() {
     const v = vscode.workspace.getConfiguration("seraplot").get("previewMode", "panel");
@@ -330,6 +375,17 @@ function previewMode() {
     if (v === "window")
         return "window";
     return "panel";
+}
+const PREVIEW_MESSAGE_HANDLERS = {
+    refresh: () => { if (activeFile) renderPreview(activeFile); },
+    open: () => { if (activeFile) vscode.window.showTextDocument(vscode.Uri.file(activeFile)); },
+    switchMode: () => vscode.commands.executeCommand("seraplot.previewMode"),
+    float: () => vscode.commands.executeCommand("seraplot.previewFloat"),
+};
+function dispatchPreviewMessage(msg) {
+    const handler = msg && PREVIEW_MESSAGE_HANDLERS[msg.type];
+    if (handler)
+        handler();
 }
 function hasPreviewSurface() {
     return !!previewPanel || !!previewView;
@@ -354,16 +410,7 @@ class LivePreviewProvider {
         previewView = view;
         view.webview.options = { enableScripts: true };
         view.webview.html = lastPreviewHtml || idleHtml();
-        view.webview.onDidReceiveMessage(msg => {
-            if (msg && msg.type === "refresh" && activeFile)
-                renderPreview(activeFile);
-            if (msg && msg.type === "open" && activeFile)
-                vscode.window.showTextDocument(vscode.Uri.file(activeFile));
-            if (msg && msg.type === "switchMode")
-                vscode.commands.executeCommand("seraplot.previewMode");
-            if (msg && msg.type === "float")
-                vscode.commands.executeCommand("seraplot.previewFloat");
-        });
+        view.webview.onDidReceiveMessage(dispatchPreviewMessage);
         view.onDidDispose(() => { previewView = undefined; });
         view.onDidChangeVisibility(() => {
             if (view.visible && lastPreviewHtml)
@@ -388,47 +435,45 @@ function makeNonce() {
         s += chars.charAt(Math.floor(Math.random() * chars.length));
     return s;
 }
+const PY_LIT_KINDS = {
+    bool: (s, v) => (v === true || s === "true" || s === "True" ? "True" : "False"),
+    int: (s) => String(parseInt(s, 10)),
+    float: (s) => String(parseFloat(s)),
+    color: (s) => {
+        const hex = s.replace(/^#/, "").toUpperCase();
+        return /^[0-9A-F]{6}$/.test(hex) ? `0x${hex}` : JSON.stringify(s);
+    },
+    color_str: (s) => {
+        const hex = s.replace(/^#/, "").toUpperCase();
+        return JSON.stringify(/^[0-9A-F]{6}$/.test(hex) ? "#" + hex : s);
+    },
+    json: (s) => s,
+};
 function pyLit(f, v) {
     if (v === null || v === undefined)
         return "None";
     const s = String(v).trim();
     if (s === "")
         return "None";
-    if (f.kind === "bool")
-        return v === true || s === "true" || s === "True" ? "True" : "False";
-    if (f.kind === "int")
-        return String(parseInt(s, 10));
-    if (f.kind === "float")
-        return String(parseFloat(s));
-    if (f.kind === "color") {
-        const hex = s.replace(/^#/, "").toUpperCase();
-        return /^[0-9A-F]{6}$/.test(hex) ? `0x${hex}` : JSON.stringify(s);
-    }
-    if (f.kind === "color_str") {
-        const hex = s.replace(/^#/, "").toUpperCase();
-        if (/^[0-9A-F]{6}$/.test(hex))
-            return JSON.stringify("#" + hex);
-        return JSON.stringify(s);
-    }
-    if (f.kind === "json")
-        return s;
-    return JSON.stringify(s);
+    const fn = PY_LIT_KINDS[f.kind];
+    return fn ? fn(s, v) : JSON.stringify(s);
 }
+const KWARG_KIND_RULES = [
+    [/_hex$|color$/, "background", true, "color", ""],
+    [/^background|^bg$|_color$/, null, false, "color_str", ""],
+    [/^show_|^enable_|^is_|^has_|^use_/, null, false, "bool", false],
+    [/_size$|_width$|_height$|_margin$|_radius$|count$|^k$|^min_|^max_|^n_/, null, false, "int", 0],
+    [/_alpha$|_eps$|_threshold$|_ratio$|_rate$|opacity$/, null, false, "float", 0],
+];
 function inferKwargField(key, common) {
     const known = common.find(k => k.key === key);
     if (known)
         return known;
     const lower = key.toLowerCase();
-    if (/_hex$|color$/.test(lower) && !lower.includes("background"))
-        return { key, kind: "color", default: "" };
-    if (/^background|^bg$|_color$/.test(lower))
-        return { key, kind: "color_str", default: "" };
-    if (/^show_|^enable_|^is_|^has_|^use_/.test(lower))
-        return { key, kind: "bool", default: false };
-    if (/_size$|_width$|_height$|_margin$|_radius$|count$|^k$|^min_|^max_|^n_/.test(lower))
-        return { key, kind: "int", default: 0 };
-    if (/_alpha$|_eps$|_threshold$|_ratio$|_rate$|opacity$/.test(lower))
-        return { key, kind: "float", default: 0 };
+    for (const [re, excludeIfIncludes, exclude, kind, def] of KWARG_KIND_RULES) {
+        if (re.test(lower) && (!exclude || !lower.includes(excludeIfIncludes)))
+            return { key, kind, default: def };
+    }
     return { key, kind: "string", default: "" };
 }
 function renderKwargParts(values, common) {
@@ -641,11 +686,12 @@ async function ensureImport(ed, ctx) {
 }
 function openPreview(context) {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.languageId !== "python") {
-        vscode.window.showWarningMessage("SeraPlot: open a Python file first.");
+    if (!editor || !isSupportedLang(editor.document.languageId)) {
+        vscode.window.showWarningMessage("SeraPlot: open a Python, C#, JavaScript or TypeScript file first.");
         return;
     }
     activeFile = editor.document.fileName;
+    activeLang = editor.document.languageId;
     if (recentProvider)
         recentProvider.add(activeFile);
     if (previewMode() === "panel") {
@@ -668,16 +714,7 @@ function openPreview(context) {
             previewPanel.iconPath = vscode.Uri.file(path.join(context.extensionPath, "logo.png"));
         }
         catch (_e) { }
-        previewPanel.webview.onDidReceiveMessage(msg => {
-            if (msg && msg.type === "refresh" && activeFile)
-                renderPreview(activeFile);
-            if (msg && msg.type === "open" && activeFile)
-                vscode.window.showTextDocument(vscode.Uri.file(activeFile));
-            if (msg && msg.type === "switchMode")
-                vscode.commands.executeCommand("seraplot.previewMode");
-            if (msg && msg.type === "float")
-                vscode.commands.executeCommand("seraplot.previewFloat");
-        });
+        previewPanel.webview.onDidReceiveMessage(dispatchPreviewMessage);
         previewPanel.onDidDispose(() => { previewPanel = undefined; });
     }
     else {
@@ -692,6 +729,147 @@ function openPreview(context) {
     renderPreview(activeFile);
 }
 function renderPreview(file) {
+    if (statusItem)
+        statusItem.text = "$(sync~spin) SeraPlot";
+    if (activeLang === "javascript" || activeLang === "typescript") {
+        renderNodePreview(file);
+    }
+    else if (activeLang === "csharp") {
+        renderDotnetPreview(file);
+    }
+    else {
+        renderPythonPreview(file);
+    }
+}
+function finishPreview(file, err, charts) {
+    if (statusItem)
+        statusItem.text = "$(graph) SeraPlot";
+    if (!hasPreviewSurface())
+        return;
+    if (err) {
+        setPreviewHtml(errorHtml(err, file));
+        return;
+    }
+    const valid = (charts || []).filter(h => h && h.length > 32);
+    if (valid.length === 0) {
+        setPreviewHtml(noChartHtml(file));
+    }
+    else {
+        setPreviewHtml(wrapMultiHtml(valid, file));
+    }
+}
+function renderNodePreview(file) {
+    const cfg = vscode.workspace.getConfiguration("seraplot");
+    const node = cfg.get("nodePath", "node");
+    const timeout = cfg.get("timeout", 30000);
+    const tmpJson = path.join(os.tmpdir(), `seraplot_preview_${Date.now()}.json`);
+    const escFile = JSON.stringify(file);
+    const escOut = JSON.stringify(tmpJson);
+    const code = [
+        "const fs = require('fs');",
+        "const seen = new Set();",
+        "const captured = [];",
+        "function record(h) {",
+        "  if (!h || h.length <= 32) return;",
+        "  const key = h.length + ':' + h.slice(0, 80);",
+        "  if (seen.has(key)) return;",
+        "  seen.add(key); captured.push(h);",
+        "}",
+        "try {",
+        "  const sp = require('seraplot');",
+        "  const origSave = sp.Chart && sp.Chart.prototype && sp.Chart.prototype.save;",
+        "  if (origSave) {",
+        "    sp.Chart.prototype.save = function(p) { try { origSave.call(this, p); } catch (e) {} record(this.html); return this; };",
+        "  }",
+        "  delete require.cache[require.resolve(" + escFile + ")];",
+        "  const mod = require(" + escFile + ");",
+        "  if (mod && typeof mod.html === 'string') record(mod.html);",
+        "  if (mod && typeof mod === 'object') {",
+        "    for (const k of Object.keys(mod)) { const v = mod[k]; if (v && typeof v.html === 'string') record(v.html); }",
+        "  }",
+        "  fs.writeFileSync(" + escOut + ", JSON.stringify({ charts: captured }));",
+        "} catch (e) {",
+        "  fs.writeFileSync(" + escOut + ", JSON.stringify({ error: String((e && e.stack) || e) }));",
+        "}",
+    ].join("\n");
+    cp.execFile(node, ["-e", code], { timeout, cwd: path.dirname(file) }, (err, _stdout, stderr) => {
+        if (err) {
+            finishPreview(file, stderr || err.message, null);
+            return;
+        }
+        try {
+            const raw = fs.readFileSync(tmpJson, "utf-8");
+            try {
+                fs.unlinkSync(tmpJson);
+            }
+            catch (_e) { }
+            const parsed = JSON.parse(raw);
+            if (parsed.error) {
+                finishPreview(file, parsed.error + "\n\nJavaScript preview expects the file to export a Chart (module.exports = chart) or call chart.save(path).", null);
+            }
+            else {
+                finishPreview(file, null, parsed.charts);
+            }
+        }
+        catch (e) {
+            finishPreview(file, String(e), null);
+        }
+    });
+}
+function findNearestCsproj(file) {
+    let dir = path.dirname(file);
+    for (let i = 0; i < 12; i++) {
+        const entries = fs.readdirSync(dir, { withFileTypes: true }).filter(e => e.isFile() && e.name.toLowerCase().endsWith(".csproj"));
+        if (entries.length > 0)
+            return { csproj: path.join(dir, entries[0].name), root: dir };
+        const parent = path.dirname(dir);
+        if (parent === dir)
+            break;
+        dir = parent;
+    }
+    return null;
+}
+function renderDotnetPreview(file) {
+    const cfg = vscode.workspace.getConfiguration("seraplot");
+    const dotnet = cfg.get("dotnetPath", "dotnet");
+    const timeout = cfg.get("timeout", 30000);
+    const proj = findNearestCsproj(file);
+    if (!proj) {
+        finishPreview(file, "No .csproj found above this file — C# preview runs `dotnet run` against the nearest project, so this file needs to live inside one (e.g. the SeraPlot.Interop sample project).", null);
+        return;
+    }
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "seraplot_cs_"));
+    const before = new Date();
+    cp.execFile(dotnet, ["run", "--project", proj.csproj], { timeout, cwd: outDir }, (err, _stdout, stderr) => {
+        let htmls = [];
+        try {
+            htmls = fs.readdirSync(outDir).filter(f => f.toLowerCase().endsWith(".html"));
+        }
+        catch (_e) { }
+        if (htmls.length === 0) {
+            try {
+                htmls = fs.readdirSync(proj.root).filter(f => f.toLowerCase().endsWith(".html") && fs.statSync(path.join(proj.root, f)).mtime >= before).map(f => { const dest = path.join(outDir, f); fs.copyFileSync(path.join(proj.root, f), dest); return f; });
+            }
+            catch (_e) { }
+        }
+        const charts = htmls.map(f => { try {
+            return fs.readFileSync(path.join(outDir, f), "utf-8");
+        }
+        catch (_e) {
+            return null;
+        } }).filter(Boolean);
+        try {
+            fs.rmSync(outDir, { recursive: true, force: true });
+        }
+        catch (_e) { }
+        if (err && charts.length === 0) {
+            finishPreview(file, (stderr || err.message) + "\n\nC# preview runs `dotnet run --project " + path.basename(proj.csproj) + "` and looks for any chart.Save(\"*.html\") written during the run.", null);
+            return;
+        }
+        finishPreview(file, null, charts);
+    });
+}
+function renderPythonPreview(file) {
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const py = cfg.get("pythonPath", "python");
     const timeout = cfg.get("timeout", 30000);
@@ -726,8 +904,6 @@ function renderPreview(file) {
         "with open(r'" + escOut + "', 'w', encoding='utf-8') as _f:",
         "    json.dump(_captured, _f)"
     ].join("\n");
-    if (statusItem)
-        statusItem.text = "$(sync~spin) SeraPlot";
     cp.execFile(py, ["-c", code], { timeout }, (err, _stdout, stderr) => {
         if (statusItem)
             statusItem.text = "$(graph) SeraPlot";
@@ -861,6 +1037,11 @@ html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);f
   animation:sp-pulse 2s ease-in-out infinite;
 }
 @keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sp-lang{
+  display:inline-flex;align-items:center;font-size:9.5px;font-weight:700;letter-spacing:.5px;
+  color:var(--ac);text-transform:uppercase;padding:3px 8px;border-radius:10px;
+  background:rgba(129,140,248,.10);border:1px solid rgba(129,140,248,.22);flex-shrink:0;
+}
 .sp-name{
   flex:1;min-width:0;font-size:11.5px;color:var(--tx-mu);font-weight:500;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
@@ -920,6 +1101,7 @@ html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);f
   <div class="sp-bar">
     <div class="sp-brand"><span class="sp-logo">S</span><span>SeraPlot</span></div>
     <span class="sp-live">Live</span>
+    <span class="sp-lang">${htmlEscape(langLabel(activeLang))}</span>
     <span class="sp-name">${name}</span>
     ${pagerHtml}
     <div class="sp-act">
@@ -948,6 +1130,13 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='r'){
 ${pagerScript}</script>
 </body></html>`;
 }
+function noChartHint(langId) {
+    if (langId === "javascript" || langId === "typescript")
+        return "Add <code>module.exports = chart</code> or call <code>chart.save(\"out.html\")</code> to see it here.";
+    if (langId === "csharp")
+        return "Call <code>chart.Save(\"out.html\")</code> somewhere in this project to see it here.";
+    return "Add <code>chart = sp.bar(...)</code> or <code>chart.save(\"out.html\")</code> to see it here.";
+}
 function noChartHtml(file) {
     const name = htmlEscape(path.basename(file));
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
@@ -966,9 +1155,9 @@ button:active{transform:translateY(0)}
 <div class="card">
   <div class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg></div>
   <h2>No chart in this script</h2>
-  <p>The file ran successfully, but didn't create any <code>sp.Chart</code>.</p>
-  <p>Add <code>chart = sp.bar(...)</code> or <code>chart.save("out.html")</code> to see it here.</p>
-  <p><span class="fname">${name}</span></p>
+  <p>The file ran successfully, but didn't produce a chart.</p>
+  <p>${noChartHint(activeLang)}</p>
+  <p><span class="fname">${name}</span> <span class="fname">${htmlEscape(langLabel(activeLang))}</span></p>
   <button onclick="acquireVsCodeApi().postMessage({type:'refresh'})">Run again</button>
 </div></body></html>`;
 }
@@ -1320,42 +1509,68 @@ class HomeProvider {
         if (this._view)
             this._view.webview.postMessage({ type: "version", version, chartCount });
     }
+    setLang(langId) {
+        if (this._view)
+            this._view.webview.postMessage({ type: "lang", ok: isSupportedLang(langId), label: langLabel(langId) });
+    }
     html(webview) {
         const nonce = makeNonce();
         const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data: https:;`;
+        const ed = vscode.window.activeTextEditor;
+        const curLang = ed ? ed.document.languageId : null;
+        const langOk = isSupportedLang(curLang);
         return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="${csp}">
 <style>
+${SP_SHARED_CSS}
 *{box-sizing:border-box}
-body{margin:0;padding:10px;font-family:var(--vscode-font-family,system-ui,sans-serif);font-size:12px;color:var(--vscode-sideBar-foreground,#cccccc);background:var(--vscode-sideBar-background,#1e1e1e)}
-.title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;margin:0 0 10px}
-.dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a78bfa);box-shadow:0 0 6px rgba(99,102,241,.6);flex-shrink:0}
-.ver{font-size:10px;color:#6366f1;background:rgba(99,102,241,.12);border-radius:4px;padding:1px 5px;font-weight:500;display:none}
-.btn{display:block;width:100%;padding:7px 10px;margin-bottom:5px;background:var(--vscode-button-secondaryBackground,#2d2d2d);color:var(--vscode-button-secondaryForeground,#cccccc);border:1px solid var(--vscode-panel-border,#3c3c3c);border-radius:5px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit}
-.btn:hover{background:var(--vscode-button-secondaryHoverBackground,#3a3a3a);border-color:#6366f1}
-.btn.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:1px solid transparent;font-weight:600}
-.lbl{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--vscode-descriptionForeground,#888);margin:9px 0 4px;font-weight:600}
-.hint{font-size:11px;color:var(--vscode-descriptionForeground,#888);margin-top:10px;line-height:1.45;padding:7px 9px;border-radius:5px;background:rgba(99,102,241,.08);border-left:2px solid #6366f1}
+body{margin:0;padding:12px;font-family:var(--vscode-font-family,"Inter","Segoe UI",sans-serif);font-size:12px;color:var(--vscode-sideBar-foreground,#cccccc);background:var(--vscode-sideBar-background,#1e1e1e)}
+.title{display:flex;align-items:center;gap:7px;margin:0 0 4px}
+.title span.name{font-size:13px;font-weight:800;letter-spacing:.2px}
+.ver{font-size:10px;font-weight:700;background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;display:none}
+.tagline{font-size:10.5px;color:var(--vscode-descriptionForeground,#888);margin:0 0 12px;letter-spacing:.02em}
+.langcard{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--sp-border);background:var(--sp-surface);margin-bottom:14px}
+.langcard .ldot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.langcard .ldot.ok{background:var(--sp-ok);box-shadow:0 0 6px var(--sp-ok)}
+.langcard .ldot.no{background:var(--sp-text-muted)}
+.langcard .ltxt{font-size:11px;color:var(--sp-text-muted);line-height:1.4}
+.langcard .ltxt b{color:var(--sp-text);font-weight:700}
+.lbl{display:flex;align-items:center;gap:6px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--sp-text-muted);margin:14px 0 6px;font-weight:700}
+.lbl:first-of-type{margin-top:0}
+.lbl svg{opacity:.7}
+.btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
+.btn svg{flex-shrink:0;opacity:.75}
+.btn:hover{background:var(--sp-surface-hover);border-color:var(--sp-accent)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(135deg,var(--sp-accent-on),#7c3aed);color:#fff;border:1px solid transparent;font-weight:600;box-shadow:0 2px 10px -2px rgba(99,102,241,.45)}
+.btn.primary svg{opacity:1}
+.btn.primary:hover{filter:brightness(1.1)}
+.hint{font-size:11px;color:var(--sp-text-muted);margin-top:12px;line-height:1.5;padding:8px 10px;border-radius:7px;background:rgba(99,102,241,.08);border-left:2px solid var(--sp-accent)}
 </style></head><body>
-<div class="title"><span class="dot"></span><span>SeraPlot</span><span class="ver" id="ver"></span></div>
-<div class="lbl">Live preview</div>
-<button class="btn primary" data-cmd="seraplot.preview">Open Live Preview</button>
-<button class="btn" data-cmd="seraplot.refreshPreview">Refresh Preview</button>
-<div class="lbl">Build</div>
-<button class="btn primary" data-cmd="seraplot.chartStudio">Chart Studio</button>
-<button class="btn" data-cmd="seraplot.insertChart">Insert Chart\u2026</button>
-<button class="btn" data-cmd="seraplot.insertConfig">Insert sp.config(\u2026)</button>
-<button class="btn" data-cmd="seraplot.newDemo">New Demo File</button>
-<div class="lbl">Tools</div>
-<button class="btn" data-cmd="seraplot.themeStudio">Theme Studio</button>
-<button class="btn" data-cmd="seraplot.gallery">Open Gallery</button>
-<button class="btn" data-cmd="seraplot.exportHtml">Export as HTML</button>
-<button class="btn" data-cmd="seraplot.refreshCatalog">Refresh Framework Catalog</button>
-<div class="lbl">Manage</div>
-<button class="btn" data-cmd="seraplot.autoInstall">Install / Update SeraPlot</button>
-<button class="btn" data-cmd="seraplot.uninstall">Uninstall SeraPlot</button>
-<div class="lbl">Help</div>
-<button class="btn" data-cmd="seraplot.openDocs">Documentation</button>
+<div class="title"><span class="sp-dot sp-dot-lg"></span><span class="name">SeraPlot</span><span class="ver" id="ver"></span></div>
+<div class="tagline">Rust-native charts \u2014 Python, C#, JS/TS</div>
+<div class="langcard" id="langcard">
+  <span class="ldot ${langOk ? "ok" : "no"}"></span>
+  <span class="ltxt" id="langtxt">${langOk ? `Detected <b>${htmlEscape(langLabel(curLang))}</b> \u2014 live preview ready` : "Open a Python, C#, JS or TS file to enable live preview"}</span>
+</div>
+<div class="lbl">${ICON_PLAY} Live preview</div>
+<button class="btn primary" data-cmd="seraplot.preview">${ICON_EYE} Open Live Preview</button>
+<button class="btn" data-cmd="seraplot.refreshPreview">${ICON_REFRESH} Refresh Preview</button>
+<div class="lbl">${ICON_BUILD} Build</div>
+<button class="btn primary" data-cmd="seraplot.chartStudio">${ICON_SETTINGS} Chart Studio</button>
+<button class="btn" data-cmd="seraplot.insertChart">${ICON_SNIPPET} Insert Chart\u2026</button>
+<button class="btn" data-cmd="seraplot.insertConfig">${ICON_GEAR} Insert sp.config(\u2026)</button>
+<button class="btn" data-cmd="seraplot.newDemo">${ICON_FILE} New Demo File</button>
+<div class="lbl">${ICON_TOOLS} Tools</div>
+<button class="btn" data-cmd="seraplot.themeStudio">${ICON_PALETTE} Theme Studio</button>
+<button class="btn" data-cmd="seraplot.gallery">${ICON_GRID} Open Gallery</button>
+<button class="btn" data-cmd="seraplot.exportHtml">${ICON_EXPORT} Export as HTML</button>
+<button class="btn" data-cmd="seraplot.refreshCatalog">${ICON_SYNC} Refresh Framework Catalog</button>
+<div class="lbl">${ICON_PACKAGE} Manage</div>
+<button class="btn" data-cmd="seraplot.autoInstall">${ICON_DOWNLOAD} Install / Update SeraPlot</button>
+<button class="btn" data-cmd="seraplot.uninstall">${ICON_TRASH} Uninstall SeraPlot</button>
+<div class="lbl">${ICON_HELP} Help</div>
+<button class="btn" data-cmd="seraplot.openDocs">${ICON_BOOK} Documentation</button>
 <div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically.</div>
 <script nonce="${nonce}">
 (function(){
@@ -1370,6 +1585,12 @@ body{margin:0;padding:10px;font-family:var(--vscode-font-family,system-ui,sans-s
       if(el){ el.textContent = 'v' + m.version; el.style.display = 'inline'; }
       const h = document.getElementById('hint');
       if(h) h.textContent = m.chartCount + ' charts \u00b7 seraplot v' + m.version + ' \u2014 auto-updated from PyPI.';
+    }
+    if(m && m.type === 'lang'){
+      const dot = document.querySelector('#langcard .ldot');
+      const txt = document.getElementById('langtxt');
+      if (dot) dot.className = 'ldot ' + (m.ok ? 'ok' : 'no');
+      if (txt) txt.innerHTML = m.ok ? ('Detected <b>' + m.label + '</b> \u2014 live preview ready') : 'Open a Python, C#, JS or TS file to enable live preview';
     }
   });
 })();
