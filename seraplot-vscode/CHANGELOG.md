@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.1 - 2026-10-25
+
+- **Fix — Live Preview crashed on unsaved/untitled files** (`FileNotFoundError: ... Untitled-1`): the file path handed to Python/Node/dotnet was always the editor's on-disk `fileName`, which doesn't exist for an untitled buffer and doesn't reflect unsaved edits for a saved one either (despite `seraplot.liveType`'s own description promising "no need to save"). Live Preview (Python and JavaScript/TypeScript) now always mirrors the live editor buffer to a throwaway file right before rendering, so untitled files work and "live as you type" actually reflects what you're typing. C# still requires a saved file (it compiles the whole project via `dotnet run`, so a buffer copy can't safely sit in the same project without colliding on top-level `Main`).
+- **Fix — dead `SeraPlot: Check Installation` command**: declared in the command palette since forever, never had a handler, clicking it errored "command not found". Implemented it for real — checks Python, Node and .NET/dotnet availability for all three preview languages and reports back.
+- **Fix — stale `feur25.github.io/seraplot` / `github.com/feur25/seraplot` links**: the repo renamed to `Sera`; "Open Documentation" and the various package.json/README URLs now point at the real ones.
+- **Design**: the Home sidebar and Live Preview toolbar now match Chart Studio's actual hardcoded dark palette (`#0b1018`/`#30363d`/`#94a3b8`/`#a78bfa`/`#6366f1→#8b5cf6`) instead of deferring to the user's VS Code theme variables, which is why they looked inconsistent with the rest of the extension before. Also toned down "primary" button usage to one per section, matching Chart Studio's own restraint.
+- `seraplot.autoInstall`, `seraplot.uninstall` and the new `seraplot.checkInstall` are now in the command palette (they worked from the Home sidebar before, just weren't reachable via Ctrl+Shift+P).
+
 ## 0.8.0 - 2026-10-25
 
 - **Cross-language Live Preview**: detects and renders Python, C#, JavaScript and TypeScript files, not just Python. Live Preview, Gallery and the status bar all recognize the three new languages.
