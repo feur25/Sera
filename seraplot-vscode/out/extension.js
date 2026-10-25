@@ -49,9 +49,9 @@ function langLabel(id) { return SUPPORTED_LANGS[id] || id; }
 function langWhenClause() { return Object.keys(SUPPORTED_LANGS).map(id => `resourceLangId == ${id}`).join(" || "); }
 const SP_SHARED_CSS = [
     ":root,body{",
-    "--sp-bg:#0a0f1c;--sp-surface:#0d1117;--sp-surface-2:#161b22;--sp-surface-hover:#1c2531;",
-    "--sp-border:#1f2733;--sp-border-hi:#2a3343;--sp-text:#e2e8f0;--sp-text-muted:#7e8a9c;",
-    "--sp-accent:#818cf8;--sp-accent-on:#6366f1;--sp-ok:#10b981;--sp-warn:#f59e0b;--sp-danger:#ef4444;--sp-important:#a78bfa;",
+    "--sp-bg:#0b1018;--sp-surface:#0d1117;--sp-surface-2:#161b22;--sp-surface-hover:#1c2230;",
+    "--sp-border:#30363d;--sp-border-hi:#3d4552;--sp-text:#e6e6e6;--sp-text-muted:#94a3b8;",
+    "--sp-accent:#818cf8;--sp-accent-on:#6366f1;--sp-accent-2:#8b5cf6;--sp-ok:#10b981;--sp-warn:#f59e0b;--sp-danger:#f43f5e;--sp-important:#a78bfa;",
     "}",
     "@keyframes sp-spin{to{transform:rotate(360deg)}}",
     "@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.45}}",
@@ -85,11 +85,34 @@ const ICON_DOWNLOAD = icon('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/
 const ICON_TRASH = icon('<polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>');
 const ICON_HELP = icon('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
 const ICON_BOOK = icon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>');
+const ICON_CHECK = icon('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>');
 let previewPanel;
 let previewView;
 let lastPreviewHtml = "";
 let activeFile;
 let activeLang = "python";
+let activeDocument;
+const LANG_EXT = { python: ".py", csharp: ".cs", javascript: ".js", typescript: ".ts" };
+function mirrorPathFor(document) {
+    const ext = LANG_EXT[document.languageId] || ".txt";
+    if (!document.isUntitled) {
+        const dir = path.dirname(document.fileName);
+        const base = path.basename(document.fileName, path.extname(document.fileName));
+        return path.join(dir, `.${base}.sppreview${ext}`);
+    }
+    const folders = vscode.workspace.workspaceFolders;
+    const safeName = document.fileName.replace(/[^a-zA-Z0-9_-]/g, "_") || "untitled";
+    if (folders && folders.length > 0) {
+        return path.join(folders[0].uri.fsPath, ".seraplot", `${safeName}${ext}`);
+    }
+    return path.join(os.tmpdir(), `seraplot_${safeName}${ext}`);
+}
+function writeMirror(document) {
+    const dest = mirrorPathFor(document);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.writeFileSync(dest, document.getText(), "utf-8");
+    return dest;
+}
 let statusItem;
 let wheelStatusItem;
 let recentProvider;
@@ -123,7 +146,7 @@ function activate(context) {
     recentProvider = new RecentProvider(context);
     const livePreviewProvider = new LivePreviewProvider(context);
     context.subscriptions.push(statusItem, vscode.window.registerWebviewViewProvider("seraplotHome", homeProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerWebviewViewProvider("seraplotLivePreview", livePreviewProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerTreeDataProvider("seraplotGallery", galleryProvider), vscode.window.registerTreeDataProvider("seraplotPreviews", recentProvider), vscode.commands.registerCommand("seraplot.preview", () => openPreview(context)), vscode.commands.registerCommand("seraplot.refreshPreview", () => { if (activeFile)
-        renderPreview(activeFile); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/seraplot/"))), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.refreshCatalog", async () => {
+        renderPreview(); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/Sera/"))), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.checkInstall", () => checkInstallation()), vscode.commands.registerCommand("seraplot.refreshCatalog", async () => {
         const cat = await (0, runtimeCatalog_1.loadCatalog)(context, { force: true });
         galleryProvider.refresh();
         if (cat.error)
@@ -218,7 +241,7 @@ function activate(context) {
         if (next === "panel") {
             await vscode.commands.executeCommand("seraplotLivePreview.focus");
             if (activeFile)
-                renderPreview(activeFile);
+                renderPreview();
             else if (lastPreviewHtml && previewView)
                 previewView.webview.html = lastPreviewHtml;
         }
@@ -264,7 +287,7 @@ function activate(context) {
         if (!cfg.get("autoReload", true))
             return;
         if (hasPreviewSurface() && activeFile && doc.fileName === activeFile)
-            renderPreview(activeFile);
+            renderPreview();
     }), vscode.workspace.onDidChangeTextDocument(ev => {
         const cfg = vscode.workspace.getConfiguration("seraplot");
         if (!cfg.get("liveType", true))
@@ -276,7 +299,7 @@ function activate(context) {
         if (liveTypeTimer)
             clearTimeout(liveTypeTimer);
         liveTypeTimer = setTimeout(() => { if (activeFile)
-            renderPreview(activeFile); }, 800);
+            renderPreview(); }, 800);
     }), vscode.window.onDidChangeActiveTextEditor(ed => {
         if (ed && ed.document.languageId === "python")
             lastPyEditor = ed;
@@ -377,7 +400,7 @@ function previewMode() {
     return "panel";
 }
 const PREVIEW_MESSAGE_HANDLERS = {
-    refresh: () => { if (activeFile) renderPreview(activeFile); },
+    refresh: () => { if (activeFile) renderPreview(); },
     open: () => { if (activeFile) vscode.window.showTextDocument(vscode.Uri.file(activeFile)); },
     switchMode: () => vscode.commands.executeCommand("seraplot.previewMode"),
     float: () => vscode.commands.executeCommand("seraplot.previewFloat"),
@@ -690,9 +713,10 @@ function openPreview(context) {
         vscode.window.showWarningMessage("SeraPlot: open a Python, C#, JavaScript or TypeScript file first.");
         return;
     }
+    activeDocument = editor.document;
     activeFile = editor.document.fileName;
     activeLang = editor.document.languageId;
-    if (recentProvider)
+    if (recentProvider && !editor.document.isUntitled)
         recentProvider.add(activeFile);
     if (previewMode() === "panel") {
         if (previewPanel) {
@@ -700,11 +724,9 @@ function openPreview(context) {
             previewPanel = undefined;
         }
         Promise.resolve(vscode.commands.executeCommand("seraplotLivePreview.focus")).then(() => {
-            if (activeFile)
-                renderPreview(activeFile);
+            renderPreview();
         });
-        if (activeFile)
-            renderPreview(activeFile);
+        renderPreview();
         return;
     }
     const wantWindow = previewMode() === "window";
@@ -726,19 +748,42 @@ function openPreview(context) {
             vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
         }, 250);
     }
-    renderPreview(activeFile);
+    renderPreview();
 }
-function renderPreview(file) {
+function renderPreview() {
+    if (!activeDocument || activeDocument.isClosed) {
+        if (hasPreviewSurface())
+            setPreviewHtml(errorHtml("The source editor was closed.", activeFile || "?"));
+        return;
+    }
     if (statusItem)
         statusItem.text = "$(sync~spin) SeraPlot";
-    if (activeLang === "javascript" || activeLang === "typescript") {
-        renderNodePreview(file);
+    const display = activeFile || "?";
+    if (activeLang === "csharp") {
+        if (activeDocument.isUntitled) {
+            finishPreview(display, "C# preview needs a saved file inside a real project (it runs `dotnet run` against the nearest .csproj) \u2014 save this file first.", null);
+            return;
+        }
+        if (activeDocument.isDirty) {
+            finishPreview(display, "This file has unsaved changes. C# preview compiles the project from disk (a preview copy can't safely sit next to it \u2014 `dotnet run` would try to compile both), so save first to update the preview.", null);
+            return;
+        }
+        renderDotnetPreview(activeFile, display);
+        return;
     }
-    else if (activeLang === "csharp") {
-        renderDotnetPreview(file);
+    let mirrorFile;
+    try {
+        mirrorFile = writeMirror(activeDocument);
+    }
+    catch (e) {
+        finishPreview(display, "Couldn't write a preview copy of this file: " + String((e && e.message) || e), null);
+        return;
+    }
+    if (activeLang === "javascript" || activeLang === "typescript") {
+        renderNodePreview(mirrorFile, display);
     }
     else {
-        renderPythonPreview(file);
+        renderPythonPreview(mirrorFile, display);
     }
 }
 function finishPreview(file, err, charts) {
@@ -758,7 +803,13 @@ function finishPreview(file, err, charts) {
         setPreviewHtml(wrapMultiHtml(valid, file));
     }
 }
-function renderNodePreview(file) {
+function cleanupMirror(file) {
+    try {
+        fs.unlinkSync(file);
+    }
+    catch (_e) { }
+}
+function renderNodePreview(file, display) {
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const node = cfg.get("nodePath", "node");
     const timeout = cfg.get("timeout", 30000);
@@ -793,8 +844,9 @@ function renderNodePreview(file) {
         "}",
     ].join("\n");
     cp.execFile(node, ["-e", code], { timeout, cwd: path.dirname(file) }, (err, _stdout, stderr) => {
+        cleanupMirror(file);
         if (err) {
-            finishPreview(file, stderr || err.message, null);
+            finishPreview(display, stderr || err.message, null);
             return;
         }
         try {
@@ -805,14 +857,14 @@ function renderNodePreview(file) {
             catch (_e) { }
             const parsed = JSON.parse(raw);
             if (parsed.error) {
-                finishPreview(file, parsed.error + "\n\nJavaScript preview expects the file to export a Chart (module.exports = chart) or call chart.save(path).", null);
+                finishPreview(display, parsed.error + "\n\nJavaScript preview expects the file to export a Chart (module.exports = chart) or call chart.save(path).", null);
             }
             else {
-                finishPreview(file, null, parsed.charts);
+                finishPreview(display, null, parsed.charts);
             }
         }
         catch (e) {
-            finishPreview(file, String(e), null);
+            finishPreview(display, String(e), null);
         }
     });
 }
@@ -829,13 +881,13 @@ function findNearestCsproj(file) {
     }
     return null;
 }
-function renderDotnetPreview(file) {
+function renderDotnetPreview(file, display) {
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const dotnet = cfg.get("dotnetPath", "dotnet");
     const timeout = cfg.get("timeout", 30000);
     const proj = findNearestCsproj(file);
     if (!proj) {
-        finishPreview(file, "No .csproj found above this file — C# preview runs `dotnet run` against the nearest project, so this file needs to live inside one (e.g. the SeraPlot.Interop sample project).", null);
+        finishPreview(display, "No .csproj found above this file — C# preview runs `dotnet run` against the nearest project, so this file needs to live inside one (e.g. the SeraPlot.Interop sample project).", null);
         return;
     }
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "seraplot_cs_"));
@@ -863,13 +915,13 @@ function renderDotnetPreview(file) {
         }
         catch (_e) { }
         if (err && charts.length === 0) {
-            finishPreview(file, (stderr || err.message) + "\n\nC# preview runs `dotnet run --project " + path.basename(proj.csproj) + "` and looks for any chart.Save(\"*.html\") written during the run.", null);
+            finishPreview(display, (stderr || err.message) + "\n\nC# preview runs `dotnet run --project " + path.basename(proj.csproj) + "` and looks for any chart.Save(\"*.html\") written during the run.", null);
             return;
         }
-        finishPreview(file, null, charts);
+        finishPreview(display, null, charts);
     });
 }
-function renderPythonPreview(file) {
+function renderPythonPreview(file, display) {
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const py = cfg.get("pythonPath", "python");
     const timeout = cfg.get("timeout", 30000);
@@ -905,12 +957,13 @@ function renderPythonPreview(file) {
         "    json.dump(_captured, _f)"
     ].join("\n");
     cp.execFile(py, ["-c", code], { timeout }, (err, _stdout, stderr) => {
+        cleanupMirror(file);
         if (statusItem)
             statusItem.text = "$(graph) SeraPlot";
         if (!hasPreviewSurface())
             return;
         if (err) {
-            setPreviewHtml(errorHtml(stderr || err.message, file));
+            setPreviewHtml(errorHtml(stderr || err.message, display));
             return;
         }
         try {
@@ -921,20 +974,20 @@ function renderPythonPreview(file) {
             catch (_e) { }
             const charts = JSON.parse(raw);
             if (!charts || charts.length === 0) {
-                setPreviewHtml(noChartHtml(file));
+                setPreviewHtml(noChartHtml(display));
             }
             else {
                 const valid = charts.filter(h => h && h.length > 32);
                 if (valid.length === 0) {
-                    setPreviewHtml(errorHtml("The framework produced " + charts.length + " chart(s) but all were empty (0 bytes).\nThis usually means a parameter type is wrong (e.g. `x_values=` instead of `labels=`).", file));
+                    setPreviewHtml(errorHtml("The framework produced " + charts.length + " chart(s) but all were empty (0 bytes).\nThis usually means a parameter type is wrong (e.g. `x_values=` instead of `labels=`).", display));
                 }
                 else {
-                    setPreviewHtml(wrapMultiHtml(valid, file));
+                    setPreviewHtml(wrapMultiHtml(valid, display));
                 }
             }
         }
         catch (e) {
-            setPreviewHtml(errorHtml(String(e), file));
+            setPreviewHtml(errorHtml(String(e), display));
         }
     });
 }
@@ -995,8 +1048,8 @@ document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&!prev.disabled)n
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
 :root{
-  --bg:#0b0e14; --bg-bar:linear-gradient(180deg,#161b26 0%,#11151e 100%);
-  --bd:#1f2733; --bd-hi:#2a3343; --tx:#e2e8f0; --tx-mu:#7e8a9c;
+  --bg:#0b1018; --bg-bar:linear-gradient(180deg,#161b22 0%,#0b1018 100%);
+  --bd:#30363d; --bd-hi:#3d4552; --tx:#e6e6e6; --tx-mu:#94a3b8;
   --ac:#818cf8; --ac-on:#6366f1; --ac-glow:rgba(99,102,241,.35);
   --live:#10b981; --live-glow:rgba(16,185,129,.45);
   --frame:#0d1117;
@@ -1381,6 +1434,32 @@ function checkPyPIUpdate() {
         req.end();
     });
 }
+function checkInstallation() {
+    const cfg = vscode.workspace.getConfiguration("seraplot");
+    const py = cfg.get("pythonPath", "python");
+    const node = cfg.get("nodePath", "node");
+    const dotnet = cfg.get("dotnetPath", "dotnet");
+    const lines = [];
+    let pending = 3;
+    function done() {
+        pending -= 1;
+        if (pending > 0)
+            return;
+        vscode.window.showInformationMessage("SeraPlot installation check", { modal: true, detail: lines.join("\n") });
+    }
+    cp.execFile(py, ["-c", "import seraplot; print(seraplot.__version__)"], { timeout: 8000 }, (err, stdout) => {
+        lines.push(err ? `✗ Python (${py}): seraplot not found — run "Install / Update SeraPlot"` : `✓ Python (${py}): seraplot ${String(stdout).trim()}`);
+        done();
+    });
+    cp.execFile(node, ["-e", "try{require('seraplot');console.log(require('seraplot/package.json').version);}catch(e){process.exit(1);}"], { timeout: 8000 }, (err, stdout) => {
+        lines.push(err ? `✗ Node (${node}): 'seraplot' not resolvable from the current workspace — run npm install seraplot there` : `✓ Node (${node}): seraplot ${String(stdout).trim()} resolvable`);
+        done();
+    });
+    cp.execFile(dotnet, ["--version"], { timeout: 8000 }, (err, stdout) => {
+        lines.push(err ? `✗ .NET (${dotnet}): dotnet CLI not found` : `✓ .NET (${dotnet}): SDK ${String(stdout).trim()}`);
+        done();
+    });
+}
 function uninstallSeraplot() {
     const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
     vscode.window.showQuickPick(["Yes", "No"], { placeHolder: "Uninstall seraplot?" }).then(choice => {
@@ -1524,25 +1603,25 @@ class HomeProvider {
 <style>
 ${SP_SHARED_CSS}
 *{box-sizing:border-box}
-body{margin:0;padding:12px;font-family:var(--vscode-font-family,"Inter","Segoe UI",sans-serif);font-size:12px;color:var(--vscode-sideBar-foreground,#cccccc);background:var(--vscode-sideBar-background,#1e1e1e)}
+body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size:12px;color:var(--sp-text);background:var(--sp-bg)}
 .title{display:flex;align-items:center;gap:7px;margin:0 0 4px}
 .title span.name{font-size:13px;font-weight:800;letter-spacing:.2px}
-.ver{font-size:10px;font-weight:700;background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;display:none}
-.tagline{font-size:10.5px;color:var(--vscode-descriptionForeground,#888);margin:0 0 12px;letter-spacing:.02em}
+.ver{font-size:10px;font-weight:700;background:linear-gradient(90deg,var(--sp-accent-on),var(--sp-important));-webkit-background-clip:text;background-clip:text;color:transparent;display:none}
+.tagline{font-size:10.5px;color:var(--sp-text-muted);margin:0 0 12px;letter-spacing:.02em}
 .langcard{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--sp-border);background:var(--sp-surface);margin-bottom:14px}
 .langcard .ldot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .langcard .ldot.ok{background:var(--sp-ok);box-shadow:0 0 6px var(--sp-ok)}
 .langcard .ldot.no{background:var(--sp-text-muted)}
 .langcard .ltxt{font-size:11px;color:var(--sp-text-muted);line-height:1.4}
 .langcard .ltxt b{color:var(--sp-text);font-weight:700}
-.lbl{display:flex;align-items:center;gap:6px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--sp-text-muted);margin:14px 0 6px;font-weight:700}
+.lbl{display:flex;align-items:center;gap:6px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--sp-important);margin:14px 0 6px;font-weight:700}
 .lbl:first-of-type{margin-top:0}
 .lbl svg{opacity:.7}
-.btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
+.btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface-2);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
 .btn svg{flex-shrink:0;opacity:.75}
 .btn:hover{background:var(--sp-surface-hover);border-color:var(--sp-accent)}
 .btn:active{transform:scale(.98)}
-.btn.primary{background:linear-gradient(135deg,var(--sp-accent-on),#7c3aed);color:#fff;border:1px solid transparent;font-weight:600;box-shadow:0 2px 10px -2px rgba(99,102,241,.45)}
+.btn.primary{background:linear-gradient(135deg,var(--sp-accent-on),var(--sp-accent-2));color:#fff;border:1px solid transparent;font-weight:600;box-shadow:0 2px 10px -2px rgba(99,102,241,.45)}
 .btn.primary svg{opacity:1}
 .btn.primary:hover{filter:brightness(1.1)}
 .hint{font-size:11px;color:var(--sp-text-muted);margin-top:12px;line-height:1.5;padding:8px 10px;border-radius:7px;background:rgba(99,102,241,.08);border-left:2px solid var(--sp-accent)}
@@ -1557,7 +1636,7 @@ body{margin:0;padding:12px;font-family:var(--vscode-font-family,"Inter","Segoe U
 <button class="btn primary" data-cmd="seraplot.preview">${ICON_EYE} Open Live Preview</button>
 <button class="btn" data-cmd="seraplot.refreshPreview">${ICON_REFRESH} Refresh Preview</button>
 <div class="lbl">${ICON_BUILD} Build</div>
-<button class="btn primary" data-cmd="seraplot.chartStudio">${ICON_SETTINGS} Chart Studio</button>
+<button class="btn" data-cmd="seraplot.chartStudio">${ICON_SETTINGS} Chart Studio</button>
 <button class="btn" data-cmd="seraplot.insertChart">${ICON_SNIPPET} Insert Chart\u2026</button>
 <button class="btn" data-cmd="seraplot.insertConfig">${ICON_GEAR} Insert sp.config(\u2026)</button>
 <button class="btn" data-cmd="seraplot.newDemo">${ICON_FILE} New Demo File</button>
@@ -1567,6 +1646,7 @@ body{margin:0;padding:12px;font-family:var(--vscode-font-family,"Inter","Segoe U
 <button class="btn" data-cmd="seraplot.exportHtml">${ICON_EXPORT} Export as HTML</button>
 <button class="btn" data-cmd="seraplot.refreshCatalog">${ICON_SYNC} Refresh Framework Catalog</button>
 <div class="lbl">${ICON_PACKAGE} Manage</div>
+<button class="btn" data-cmd="seraplot.checkInstall">${ICON_CHECK} Check Installation</button>
 <button class="btn" data-cmd="seraplot.autoInstall">${ICON_DOWNLOAD} Install / Update SeraPlot</button>
 <button class="btn" data-cmd="seraplot.uninstall">${ICON_TRASH} Uninstall SeraPlot</button>
 <div class="lbl">${ICON_HELP} Help</div>
