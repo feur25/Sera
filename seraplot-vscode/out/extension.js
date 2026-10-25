@@ -314,7 +314,7 @@ function activate(context) {
     if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId === "python") {
         lastPyEditor = vscode.window.activeTextEditor;
     }
-    autoInstallSeraplot();
+    autoInstallSeraplotSilent();
     checkPyPIUpdate();
     statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusItem.text = "$(graph) SeraPlot";
@@ -1906,13 +1906,169 @@ async function exportHtml() {
         vscode.window.showInformationMessage("SeraPlot: exported to " + out.fsPath);
     });
 }
-function autoInstallSeraplot() {
+function fetchJson(url) {
+    return new Promise((resolve, reject) => {
+        const https = require("https");
+        const req = https.get(url, { headers: { "User-Agent": "seraplot-vscode" } }, (res) => {
+            let raw = "";
+            res.on("data", d => raw += d);
+            res.on("end", () => {
+                try {
+                    resolve(JSON.parse(raw));
+                }
+                catch (e) {
+                    reject(e);
+                }
+            });
+        });
+        req.on("error", reject);
+        req.end();
+    });
+}
+function sortVersionsDesc(versions) {
+    return versions.slice().sort((a, b) => {
+        const pa = String(a).split(/[.-]/).map(n => parseInt(n, 10));
+        const pb = String(b).split(/[.-]/).map(n => parseInt(n, 10));
+        for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+            const na = Number.isFinite(pa[i]) ? pa[i] : -1;
+            const nb = Number.isFinite(pb[i]) ? pb[i] : -1;
+            if (na !== nb)
+                return nb - na;
+        }
+        return 0;
+    });
+}
+async function fetchPyPIVersions() {
+    const data = await fetchJson("https://pypi.org/pypi/seraplot/json");
+    return sortVersionsDesc(Object.keys(data.releases || {}).filter(v => (data.releases[v] || []).length > 0 && !(data.releases[v] || []).every(f => f.yanked)));
+}
+async function fetchNpmVersions() {
+    const data = await fetchJson("https://registry.npmjs.org/seraplot");
+    return sortVersionsDesc(Object.keys(data.versions || {}));
+}
+async function fetchNuGetVersions() {
+    const data = await fetchJson("https://api.nuget.org/v3-flatcontainer/seraplot/index.json");
+    return sortVersionsDesc(data.versions || []);
+}
+async function pickNpmTargetDir() {
+    const folders = vscode.workspace.workspaceFolders || [];
+    if (!folders.length)
+        return null;
+    const withPkg = folders.filter(f => fs.existsSync(path.join(f.uri.fsPath, "package.json")));
+    const candidates = withPkg.length ? withPkg : folders;
+    if (candidates.length === 1)
+        return candidates[0].uri.fsPath;
+    const pick = await vscode.window.showQuickPick(candidates.map(f => ({ label: f.name, description: f.uri.fsPath, dir: f.uri.fsPath })), { placeHolder: "Install into which workspace folder?" });
+    return pick ? pick.dir : null;
+}
+async function pickCsprojTarget() {
+    const found = await vscode.workspace.findFiles("**/*.csproj", "**/node_modules/**", 25);
+    if (!found.length)
+        return null;
+    if (found.length === 1)
+        return found[0].fsPath;
+    const pick = await vscode.window.showQuickPick(found.map(u => ({ label: path.basename(u.fsPath), description: u.fsPath, file: u.fsPath })), { placeHolder: "Add the package to which .csproj?" });
+    return pick ? pick.file : null;
+}
+function autoInstallSeraplotSilent() {
     const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
     cp.execFile(py, ["-m", "pip", "install", "-q", "seraplot"], (err) => {
         if (!err)
             return;
         vscode.window.showErrorMessage("Failed to auto-install seraplot: " + err.message);
     });
+}
+async function autoInstallSeraplot() {
+    const source = await vscode.window.showQuickPick([
+        { label: "Python (PyPI)", description: "pip install seraplot", id: "pypi" },
+        { label: "Node.js / JS / TS (npm)", description: "npm install seraplot", id: "npm" },
+        { label: "C# (NuGet)", description: "dotnet add package SeraPlot", id: "nuget" },
+    ], { placeHolder: "Install / update SeraPlot for which language?" });
+    if (!source)
+        return;
+    let versions = [];
+    try {
+        versions = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: "SeraPlot: fetching available versions…" }, () => {
+            if (source.id === "pypi")
+                return fetchPyPIVersions();
+            if (source.id === "npm")
+                return fetchNpmVersions();
+            return fetchNuGetVersions();
+        });
+    }
+    catch (e) {
+        vscode.window.showErrorMessage("SeraPlot: couldn't fetch available versions — " + e.message);
+        return;
+    }
+    if (!versions.length) {
+        vscode.window.showErrorMessage("SeraPlot: no versions found on the registry.");
+        return;
+    }
+    const picks = [{ label: "Latest", description: versions[0], version: "" }, ...versions.map(v => ({ label: v, version: v }))];
+    const versionPick = await vscode.window.showQuickPick(picks, { placeHolder: `Which version? (latest is ${versions[0]})` });
+    if (!versionPick)
+        return;
+    const version = versionPick.version;
+    if (source.id === "pypi") {
+        const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
+        const spec = version ? `seraplot==${version}` : "seraplot";
+        await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: `SeraPlot: installing ${spec} via pip…` }, () => new Promise(resolve => {
+            cp.execFile(py, ["-m", "pip", "install", "-q", "--upgrade", spec], { timeout: 180000 }, (err, _stdout, stderr) => {
+                if (err) {
+                    vscode.window.showErrorMessage("SeraPlot: pip install failed — " + (stderr || err.message).toString().slice(0, 400));
+                    resolve();
+                    return;
+                }
+                (0, runtimeCatalog_1.invalidateCatalog)(extCtx);
+                (0, runtimeCatalog_1.loadCatalog)(extCtx, { force: true }).then(cat => {
+                    if (galleryProvider)
+                        galleryProvider.refresh();
+                    if (homeProvider)
+                        homeProvider.setVersion(cat.version, cat.charts.length);
+                    refreshWheelStatus();
+                    vscode.window.showInformationMessage(`SeraPlot: ${spec} installed.`);
+                    resolve();
+                });
+            });
+        }));
+        return;
+    }
+    if (source.id === "npm") {
+        const dir = await pickNpmTargetDir();
+        if (!dir) {
+            vscode.window.showWarningMessage("SeraPlot: open a workspace folder first.");
+            return;
+        }
+        const spec = version ? `seraplot@${version}` : "seraplot";
+        await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: `SeraPlot: npm install ${spec} in ${path.basename(dir)}…` }, () => new Promise(resolve => {
+            cp.execFile(process.platform === "win32" ? "npm.cmd" : "npm", ["install", spec], { cwd: dir, timeout: 180000 }, (err, _stdout, stderr) => {
+                if (err)
+                    vscode.window.showErrorMessage("SeraPlot: npm install failed — " + (stderr || err.message).toString().slice(0, 400));
+                else
+                    vscode.window.showInformationMessage(`SeraPlot: ${spec} installed in ${dir}.`);
+                resolve();
+            });
+        }));
+        return;
+    }
+    const csproj = await pickCsprojTarget();
+    if (!csproj) {
+        vscode.window.showWarningMessage("SeraPlot: no .csproj found in this workspace.");
+        return;
+    }
+    const dotnet = vscode.workspace.getConfiguration("seraplot").get("dotnetPath", "dotnet");
+    const args = ["add", csproj, "package", "SeraPlot"];
+    if (version)
+        args.push("--version", version);
+    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: `SeraPlot: dotnet add package SeraPlot in ${path.basename(csproj)}…` }, () => new Promise(resolve => {
+        cp.execFile(dotnet, args, { timeout: 180000 }, (err, _stdout, stderr) => {
+            if (err)
+                vscode.window.showErrorMessage("SeraPlot: dotnet add package failed — " + (stderr || err.message).toString().slice(0, 400));
+            else
+                vscode.window.showInformationMessage(`SeraPlot: added to ${path.basename(csproj)}.`);
+            resolve();
+        });
+    }));
 }
 function checkPyPIUpdate() {
     const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
@@ -2275,7 +2431,6 @@ ${(() => {
             }).join("\n");
         })()}
 <button class="addsection" id="addSection">+ New section\u2026</button>
-// <div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically. Drag buttons to reorder or move between sections \u2014 saved forever.</div>
 <script nonce="${nonce}">
 (function(){
   const v = acquireVsCodeApi();

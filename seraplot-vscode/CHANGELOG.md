@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.0 - 2026-10-25
+
+- **"Install / Update SeraPlot" now asks which language and which version.** It used to always run a silent `pip install seraplot` with no choice involved. It's now a two-step picker: pick Python (PyPI) / Node.js (npm) / C# (NuGet), then pick a version from the real list fetched live from that registry (PyPI JSON API, npm registry, NuGet flat-container index) — "Latest" is always the first option. npm installs into your workspace folder (asks which one if there are several with a `package.json`); NuGet adds the package to a `.csproj` in your workspace (asks which one if there are several). The quiet background install/update check that already ran on every VS Code startup is untouched — it's a separate, silent PyPI-only path and was never meant to interrupt you with pickers.
+
 ## 0.13.1 - 2026-10-25
 
 - **Fix — Float didn't actually detach into a new window**: the 0.12.0 Float button just called `panel.reveal()` then fired `workbench.action.moveEditorToNewWindow`, which is NOT how Live Preview's own (working) float does it — Live Preview disposes its panel and creates a brand new one immediately before firing that command, so VS Code's "active editor" is completely unambiguous when the command runs. Chart Studio/Gallery/Theme Studio's Float now does the exact same thing. For Chart Studio specifically (where disposing would otherwise throw away your current chart selection, kwargs and chain), the webview now ships its live UI state over to the extension right before disposing and seeds the freshly-created panel with it, so floating doesn't lose your in-progress work.

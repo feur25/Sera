@@ -2,7 +2,7 @@
   "name": "seraplot-vscode",
   "displayName": "SeraPlot",
   "description": "Live preview, gallery, theme studio and snippets for SeraPlot \u2014 high-performance Rust charts for Python, C# and JavaScript/TypeScript.",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "publisher": "feur25",
   "license": "MIT",
   "icon": "logo.png",
