@@ -2,7 +2,7 @@
   "name": "seraplot-vscode",
   "displayName": "SeraPlot",
   "description": "Live preview, gallery, theme studio and snippets for SeraPlot \u2014 high-performance Rust charts for Python, C# and JavaScript/TypeScript.",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "publisher": "feur25",
   "license": "MIT",
   "icon": "logo.png",
@@ -72,7 +72,15 @@
       { "command": "seraplot.previewFloat",   "title": "SeraPlot: Float Preview to New Window",                  "icon": "$(multiple-windows)" },
       { "command": "seraplot.togglePreview",  "title": "SeraPlot: Toggle Live Preview",                  "icon": "$(eye)" },
       { "command": "seraplot.sysmon",         "title": "SeraPlot: Monitor System (CPU / RAM / Disk)",     "icon": "$(pulse)" },
-      { "command": "seraplot.methodToggle",   "title": "SeraPlot: Method Toggle (chain builder)",          "icon": "$(symbol-method)" }
+      { "command": "seraplot.methodToggle",   "title": "SeraPlot: Method Toggle (chain builder)",          "icon": "$(symbol-method)" },
+      { "command": "seraplot.toggleFavoriteChart", "title": "Toggle Favorite", "icon": "$(star-full)" },
+      { "command": "seraplot.createFolder",   "title": "New Folder…", "icon": "$(new-folder)" },
+      { "command": "seraplot.deleteFolder",   "title": "Delete Folder", "icon": "$(trash)" },
+      { "command": "seraplot.renameFolder",   "title": "Rename Folder…", "icon": "$(edit)" },
+      { "command": "seraplot.addToFolder",    "title": "Add to Folder…", "icon": "$(add)" },
+      { "command": "seraplot.removeFromFolder", "title": "Remove from Folder", "icon": "$(dash)" },
+      { "command": "seraplot.gallerySearch",  "title": "SeraPlot: Search Gallery", "icon": "$(search)" },
+      { "command": "seraplot.clearGallerySearch", "title": "SeraPlot: Clear Gallery Search", "icon": "$(clear-all)" }
     ],
     "menus": {
       "editor/title": [
@@ -86,7 +94,17 @@
         { "command": "seraplot.refreshPreview", "when": "view == seraplotPreviews || view == seraplotLivePreview", "group": "navigation" },
         { "command": "seraplot.togglePreview",  "when": "view == seraplotLivePreview", "group": "navigation" },
         { "command": "seraplot.previewMode",    "when": "view == seraplotLivePreview", "group": "navigation" },
-        { "command": "seraplot.newDemo",        "when": "view == seraplotPreviews", "group": "navigation" }
+        { "command": "seraplot.newDemo",        "when": "view == seraplotPreviews", "group": "navigation" },
+        { "command": "seraplot.gallerySearch",       "when": "view == seraplotGallery", "group": "navigation@1" },
+        { "command": "seraplot.clearGallerySearch",  "when": "view == seraplotGallery", "group": "navigation@2" },
+        { "command": "seraplot.createFolder",        "when": "view == seraplotGallery", "group": "navigation@3" }
+      ],
+      "view/item/context": [
+        { "command": "seraplot.toggleFavoriteChart", "when": "view == seraplotGallery && (viewItem == chart || viewItem == variant || viewItem == folderChart || viewItem == folderVariant)", "group": "inline" },
+        { "command": "seraplot.addToFolder",         "when": "view == seraplotGallery && (viewItem == chart || viewItem == variant)", "group": "1" },
+        { "command": "seraplot.removeFromFolder",    "when": "view == seraplotGallery && (viewItem == folderChart || viewItem == folderVariant)", "group": "1" },
+        { "command": "seraplot.renameFolder",        "when": "view == seraplotGallery && viewItem == folder", "group": "1" },
+        { "command": "seraplot.deleteFolder",        "when": "view == seraplotGallery && viewItem == folder", "group": "1" }
       ],
       "explorer/context": [
         { "command": "seraplot.preview", "when": "resourceLangId == python || resourceLangId == csharp || resourceLangId == javascript || resourceLangId == typescript", "group": "navigation@9" }

@@ -47,23 +47,26 @@ const SUPPORTED_LANGS = { python: "Python", csharp: "C#", javascript: "JavaScrip
 function isSupportedLang(id) { return !!id && Object.prototype.hasOwnProperty.call(SUPPORTED_LANGS, id); }
 function langLabel(id) { return SUPPORTED_LANGS[id] || id; }
 function langWhenClause() { return Object.keys(SUPPORTED_LANGS).map(id => `resourceLangId == ${id}`).join(" || "); }
-const SP_SHARED_CSS = [
-    ":root,body{",
-    "--sp-bg:#0b1018;--sp-surface:#0d1117;--sp-surface-2:#161b22;--sp-surface-hover:#1c2230;",
-    "--sp-border:#30363d;--sp-border-hi:#3d4552;--sp-text:#e6e6e6;--sp-text-muted:#94a3b8;",
-    "--sp-accent:#818cf8;--sp-accent-on:#6366f1;--sp-accent-2:#8b5cf6;--sp-ok:#10b981;--sp-warn:#f59e0b;--sp-danger:#f43f5e;--sp-important:#a78bfa;",
-    "}",
-    "@keyframes sp-spin{to{transform:rotate(360deg)}}",
-    "@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.45}}",
-    "@keyframes sp-ripple{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}100%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}",
-    ".sp-dot{width:7px;height:7px;border-radius:50%;background:var(--sp-text-muted);flex-shrink:0;transition:background .3s}",
-    ".sp-dot-lg{width:10px;height:10px;background:linear-gradient(135deg,var(--sp-accent),var(--sp-important));box-shadow:0 0 7px rgba(129,140,248,.65)}",
-    ".sp-dot-loading{background:var(--sp-warn)!important;animation:sp-pulse 1s infinite}",
-    ".sp-dot-ready{background:var(--sp-ok)!important;animation:sp-ripple 2.2s infinite}",
-    ".sp-dot-err{background:var(--sp-danger)!important;box-shadow:0 0 8px var(--sp-danger)}",
-    ".sp-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:12px;background:var(--sp-surface);border:1px solid var(--sp-border);color:var(--sp-text-muted)}",
-    ".sp-spinner{width:28px;height:28px;border:3px solid rgba(124,58,237,.15);border-top-color:#a78bfa;border-right-color:#67e8f9;border-radius:50%;animation:sp-spin .9s cubic-bezier(.5,.1,.5,.9) infinite;filter:drop-shadow(0 0 8px rgba(167,139,250,.5))}",
-].join("\n");
+function spSharedCss() {
+    const c = extColors();
+    return [
+        ":root,body{",
+        `--sp-bg:${c.bg};--sp-surface:${c.surface};--sp-surface-2:${c.surface2};--sp-surface-hover:${c.surfaceHover};`,
+        `--sp-border:${c.border};--sp-border-hi:${c.borderHi};--sp-text:${c.text};--sp-text-muted:${c.textMuted};`,
+        `--sp-accent:${c.accent};--sp-accent-on:${c.accentOn};--sp-accent-2:${c.accent2};--sp-ok:#9cb36a;--sp-warn:#ff8e00;--sp-danger:#e5484d;--sp-important:${c.accent};`,
+        "}",
+        "@keyframes sp-spin{to{transform:rotate(360deg)}}",
+        "@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.45}}",
+        "@keyframes sp-ripple{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}100%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}",
+        ".sp-dot{width:7px;height:7px;border-radius:50%;background:var(--sp-text-muted);flex-shrink:0;transition:background .3s}",
+        ".sp-dot-lg{width:10px;height:10px;background:linear-gradient(135deg,var(--sp-accent),var(--sp-important));box-shadow:0 0 7px rgba(129,140,248,.65)}",
+        ".sp-dot-loading{background:var(--sp-warn)!important;animation:sp-pulse 1s infinite}",
+        ".sp-dot-ready{background:var(--sp-ok)!important;animation:sp-ripple 2.2s infinite}",
+        ".sp-dot-err{background:var(--sp-danger)!important;box-shadow:0 0 8px var(--sp-danger)}",
+        ".sp-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:12px;background:var(--sp-surface);border:1px solid var(--sp-border);color:var(--sp-text-muted)}",
+        ".sp-spinner{width:28px;height:28px;border:3px solid rgba(124,58,237,.15);border-top-color:#e6b088;border-right-color:#f0c178;border-radius:50%;animation:sp-spin .9s cubic-bezier(.5,.1,.5,.9) infinite;filter:drop-shadow(0 0 8px rgba(167,139,250,.5))}",
+    ].join("\n");
+}
 function icon(inner, size = 14) {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 }
@@ -86,6 +89,7 @@ const ICON_TRASH = icon('<polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 
 const ICON_HELP = icon('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
 const ICON_BOOK = icon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>');
 const ICON_CHECK = icon('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>');
+const ICON_MAP = { ICON_PLAY, ICON_EYE, ICON_REFRESH, ICON_BUILD, ICON_SETTINGS, ICON_SNIPPET, ICON_GEAR, ICON_FILE, ICON_TOOLS, ICON_PALETTE, ICON_GRID, ICON_EXPORT, ICON_SYNC, ICON_PACKAGE, ICON_DOWNLOAD, ICON_TRASH, ICON_HELP, ICON_BOOK, ICON_CHECK };
 let previewPanel;
 let previewView;
 let lastPreviewHtml = "";
@@ -113,6 +117,168 @@ function writeMirror(document) {
     fs.writeFileSync(dest, document.getText(), "utf-8");
     return dest;
 }
+const FAV_CHARTS_KEY = "seraplot.favoriteCharts";
+const FAV_METHODS_KEY = "seraplot.favoriteMethods";
+const FOLDERS_KEY = "seraplot.folders";
+function favCharts() { return extCtx ? extCtx.globalState.get(FAV_CHARTS_KEY, []) : []; }
+function setFavCharts(list) { if (extCtx) extCtx.globalState.update(FAV_CHARTS_KEY, list); }
+function chartKey(chartId, variantKey) { return variantKey ? `${chartId}::${variantKey}` : chartId; }
+function isFavChart(chartId, variantKey) { return favCharts().includes(chartKey(chartId, variantKey)); }
+function toggleFavChart(chartId, variantKey) {
+    const key = chartKey(chartId, variantKey);
+    const list = favCharts();
+    const i = list.indexOf(key);
+    if (i >= 0)
+        list.splice(i, 1);
+    else
+        list.push(key);
+    setFavCharts(list);
+    if (galleryProvider)
+        galleryProvider.refresh();
+}
+function favMethods() { return extCtx ? extCtx.globalState.get(FAV_METHODS_KEY, []) : []; }
+function setFavMethods(list) { if (extCtx) extCtx.globalState.update(FAV_METHODS_KEY, list); }
+function toggleFavMethod(name) {
+    const list = favMethods();
+    const i = list.indexOf(name);
+    if (i >= 0)
+        list.splice(i, 1);
+    else
+        list.push(name);
+    setFavMethods(list);
+}
+function folders() { return extCtx ? extCtx.globalState.get(FOLDERS_KEY, []) : []; }
+function setFolders(list) { if (extCtx) extCtx.globalState.update(FOLDERS_KEY, list); }
+function createFolder(name) {
+    const list = folders();
+    const id = "f" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    list.push({ id, name, items: [] });
+    setFolders(list);
+    if (galleryProvider)
+        galleryProvider.refresh();
+    return id;
+}
+function deleteFolder(id) {
+    setFolders(folders().filter(f => f.id !== id));
+    if (galleryProvider)
+        galleryProvider.refresh();
+}
+function addToFolder(folderId, chartId, variantKey) {
+    const list = folders();
+    const f = list.find(x => x.id === folderId);
+    if (!f)
+        return;
+    const key = chartKey(chartId, variantKey);
+    if (!f.items.includes(key))
+        f.items.push(key);
+    setFolders(list);
+    if (galleryProvider)
+        galleryProvider.refresh();
+}
+function removeFromFolder(folderId, key) {
+    const list = folders();
+    const f = list.find(x => x.id === folderId);
+    if (!f)
+        return;
+    f.items = f.items.filter(k => k !== key);
+    setFolders(list);
+    if (galleryProvider)
+        galleryProvider.refresh();
+}
+const EXT_COLORS_KEY = "seraplot.extColors";
+const DEFAULT_EXT_COLORS = {
+    bg: "#2b211d", surface: "#3b2e2a", surface2: "#45373a", surfaceHover: "#4e3f3a",
+    border: "#45373a", borderHi: "#5a4842", text: "#e8ded2", textMuted: "#a89686",
+    accent: "#e69f67", accentOn: "#d98a4a", accent2: "#c97a3a",
+};
+function extColors() { return Object.assign({}, DEFAULT_EXT_COLORS, extCtx ? extCtx.globalState.get(EXT_COLORS_KEY, {}) : {}); }
+function setExtColors(colors) {
+    if (!extCtx)
+        return;
+    extCtx.globalState.update(EXT_COLORS_KEY, Object.assign({}, extColors(), colors));
+    if (homeProvider)
+        homeProvider.refreshColors();
+}
+function resetExtColors() {
+    if (!extCtx)
+        return;
+    extCtx.globalState.update(EXT_COLORS_KEY, {});
+    if (homeProvider)
+        homeProvider.refreshColors();
+}
+const HOME_BUTTONS = {
+    preview: { icon: "ICON_EYE", label: "Open Live Preview", cmd: "seraplot.preview", primary: true },
+    refreshPreview: { icon: "ICON_REFRESH", label: "Refresh Preview", cmd: "seraplot.refreshPreview" },
+    chartStudio: { icon: "ICON_SETTINGS", label: "Chart Studio", cmd: "seraplot.chartStudio" },
+    insertChart: { icon: "ICON_SNIPPET", label: "Insert Chart…", cmd: "seraplot.insertChart" },
+    insertConfig: { icon: "ICON_GEAR", label: "Insert sp.config(…)", cmd: "seraplot.insertConfig" },
+    newDemo: { icon: "ICON_FILE", label: "New Demo File", cmd: "seraplot.newDemo" },
+    themeStudio: { icon: "ICON_PALETTE", label: "Theme Studio", cmd: "seraplot.themeStudio" },
+    gallery: { icon: "ICON_GRID", label: "Open Gallery", cmd: "seraplot.gallery" },
+    exportHtml: { icon: "ICON_EXPORT", label: "Export as HTML", cmd: "seraplot.exportHtml" },
+    refreshCatalog: { icon: "ICON_SYNC", label: "Refresh Framework Catalog", cmd: "seraplot.refreshCatalog" },
+    checkInstall: { icon: "ICON_CHECK", label: "Check Installation", cmd: "seraplot.checkInstall" },
+    autoInstall: { icon: "ICON_DOWNLOAD", label: "Install / Update SeraPlot", cmd: "seraplot.autoInstall" },
+    uninstall: { icon: "ICON_TRASH", label: "Uninstall SeraPlot", cmd: "seraplot.uninstall" },
+    docs: { icon: "ICON_BOOK", label: "Documentation", cmd: "seraplot.openDocs" },
+};
+const DEFAULT_HOME_LAYOUT = [
+    { id: "livepreview", label: "Live preview", icon: "ICON_PLAY", custom: false, items: ["preview", "refreshPreview"] },
+    { id: "build", label: "Build", icon: "ICON_BUILD", custom: false, items: ["chartStudio", "insertChart", "insertConfig", "newDemo"] },
+    { id: "tools", label: "Tools", icon: "ICON_TOOLS", custom: false, items: ["themeStudio", "gallery", "exportHtml", "refreshCatalog"] },
+    { id: "manage", label: "Manage", icon: "ICON_PACKAGE", custom: false, items: ["checkInstall", "autoInstall", "uninstall"] },
+    { id: "help", label: "Help", icon: "ICON_HELP", custom: false, items: ["docs"] },
+];
+const HOME_LAYOUT_KEY = "seraplot.homeLayout";
+function homeLayout() {
+    const stored = extCtx ? extCtx.globalState.get(HOME_LAYOUT_KEY, null) : null;
+    if (!stored || !Array.isArray(stored))
+        return DEFAULT_HOME_LAYOUT.map(s => ({ ...s, items: [...s.items] }));
+    const seen = new Set();
+    for (const s of stored)
+        for (const b of s.items)
+            seen.add(b);
+    const missing = Object.keys(HOME_BUTTONS).filter(id => !seen.has(id));
+    const layout = stored.map(s => ({ ...s, items: [...s.items] }));
+    if (missing.length) {
+        const fallback = layout.find(s => !s.custom) || layout[0];
+        if (fallback)
+            fallback.items.push(...missing);
+    }
+    return layout;
+}
+function setHomeLayout(layout) {
+    if (!extCtx)
+        return;
+    extCtx.globalState.update(HOME_LAYOUT_KEY, layout);
+    if (homeProvider)
+        homeProvider.refreshColors();
+}
+function resetHomeLayout() {
+    if (!extCtx)
+        return;
+    extCtx.globalState.update(HOME_LAYOUT_KEY, null);
+    if (homeProvider)
+        homeProvider.refreshColors();
+}
+function createHomeSection(name) {
+    const layout = homeLayout();
+    const id = "custom" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    layout.push({ id, label: name, icon: "ICON_GRID", custom: true, items: [] });
+    setHomeLayout(layout);
+}
+function deleteHomeSection(id) {
+    const layout = homeLayout();
+    const idx = layout.findIndex(s => s.id === id);
+    if (idx === -1)
+        return;
+    const [removed] = layout.splice(idx, 1);
+    const fallback = layout.find(s => !s.custom) || layout[0];
+    if (fallback && removed.items.length)
+        fallback.items.push(...removed.items);
+    setHomeLayout(layout);
+}
+let gallerySearchQuery = "";
 let statusItem;
 let wheelStatusItem;
 let recentProvider;
@@ -146,7 +312,63 @@ function activate(context) {
     recentProvider = new RecentProvider(context);
     const livePreviewProvider = new LivePreviewProvider(context);
     context.subscriptions.push(statusItem, vscode.window.registerWebviewViewProvider("seraplotHome", homeProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerWebviewViewProvider("seraplotLivePreview", livePreviewProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerTreeDataProvider("seraplotGallery", galleryProvider), vscode.window.registerTreeDataProvider("seraplotPreviews", recentProvider), vscode.commands.registerCommand("seraplot.preview", () => openPreview(context)), vscode.commands.registerCommand("seraplot.refreshPreview", () => { if (activeFile)
-        renderPreview(); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/Sera/"))), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.checkInstall", () => checkInstallation()), vscode.commands.registerCommand("seraplot.refreshCatalog", async () => {
+        renderPreview(); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/Sera/"))), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.checkInstall", () => checkInstallation()), vscode.commands.registerCommand("seraplot.toggleFavoriteChart", (item) => {
+        if (!item || !item.payload || !item.payload.chart)
+            return;
+        toggleFavChart(item.payload.chart.id, item.payload.variantKey);
+    }), vscode.commands.registerCommand("seraplot.createFolder", async () => {
+        const name = await vscode.window.showInputBox({ prompt: "Folder name", placeHolder: "My dashboards" });
+        if (name && name.trim())
+            createFolder(name.trim());
+    }), vscode.commands.registerCommand("seraplot.deleteFolder", async (item) => {
+        if (!item || !item.payload || !item.payload.folder)
+            return;
+        const choice = await vscode.window.showQuickPick(["Yes", "No"], { placeHolder: `Delete folder "${item.payload.folder.name}"?` });
+        if (choice === "Yes")
+            deleteFolder(item.payload.folder.id);
+    }), vscode.commands.registerCommand("seraplot.renameFolder", async (item) => {
+        if (!item || !item.payload || !item.payload.folder)
+            return;
+        const name = await vscode.window.showInputBox({ prompt: "Rename folder", value: item.payload.folder.name });
+        if (name && name.trim()) {
+            const list = folders();
+            const f = list.find(x => x.id === item.payload.folder.id);
+            if (f) {
+                f.name = name.trim();
+                setFolders(list);
+                galleryProvider.refresh();
+            }
+        }
+    }), vscode.commands.registerCommand("seraplot.addToFolder", async (item) => {
+        if (!item || !item.payload || !item.payload.chart)
+            return;
+        const list = folders();
+        const picks = list.map(f => ({ label: f.name, id: f.id })).concat([{ label: "+ New Folder…", id: "" }]);
+        const picked = await vscode.window.showQuickPick(picks, { placeHolder: "Add to folder" });
+        if (!picked)
+            return;
+        let targetId = picked.id;
+        if (!targetId) {
+            const name = await vscode.window.showInputBox({ prompt: "Folder name" });
+            if (!name || !name.trim())
+                return;
+            targetId = createFolder(name.trim());
+        }
+        addToFolder(targetId, item.payload.chart.id, item.payload.variantKey);
+    }), vscode.commands.registerCommand("seraplot.removeFromFolder", (item) => {
+        if (!item || !item.payload || !item.payload.inFolder)
+            return;
+        removeFromFolder(item.payload.inFolder, chartKey(item.payload.chart.id, item.payload.variantKey));
+    }), vscode.commands.registerCommand("seraplot.gallerySearch", async () => {
+        const q = await vscode.window.showInputBox({ prompt: "Search charts", value: gallerySearchQuery, placeHolder: "bar, heatmap, 3d…" });
+        if (q === undefined)
+            return;
+        gallerySearchQuery = q.trim();
+        galleryProvider.refresh();
+    }), vscode.commands.registerCommand("seraplot.clearGallerySearch", () => {
+        gallerySearchQuery = "";
+        galleryProvider.refresh();
+    }), vscode.commands.registerCommand("seraplot.refreshCatalog", async () => {
         const cat = await (0, runtimeCatalog_1.loadCatalog)(context, { force: true });
         galleryProvider.refresh();
         if (cat.error)
@@ -442,10 +664,10 @@ class LivePreviewProvider {
     }
 }
 function idleHtml() {
-    return `<!DOCTYPE html><html><body style="margin:0;font-family:system-ui;background:#0d1117;color:#94a3b8;padding:20px;line-height:1.6">
+    return `<!DOCTYPE html><html><body style="margin:0;font-family:system-ui;background:#1d1511;color:#a89686;padding:20px;line-height:1.6">
 <h3 style="margin:0 0 8px;color:#e6e6e6;font-size:14px">SeraPlot \u2014 Live Preview</h3>
 <p style="font-size:12px">Open a Python file and run <b>SeraPlot: Live Preview</b> to render charts here.</p>
-<p style="font-size:11px;color:#64748b">Drag this panel anywhere (bottom \u2194 side), or switch to an editor tab via <b>SeraPlot: Switch Preview Mode</b>.</p>
+<p style="font-size:11px;color:#8a7a6d">Drag this panel anywhere (bottom \u2194 side), or switch to an editor tab via <b>SeraPlot: Switch Preview Mode</b>.</p>
 </body></html>`;
 }
 function htmlEscape(s) {
@@ -1019,6 +1241,7 @@ canvas{max-width:100% !important;max-height:100% !important}
     return html;
 }
 function wrapMultiHtml(charts, file) {
+    const ec = extColors();
     const name = htmlEscape(path.basename(file));
     const total = charts.length;
     const responsive = charts.map(makeChartResponsive);
@@ -1048,11 +1271,11 @@ document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&!prev.disabled)n
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
 :root{
-  --bg:#0b1018; --bg-bar:linear-gradient(180deg,#161b22 0%,#0b1018 100%);
-  --bd:#30363d; --bd-hi:#3d4552; --tx:#e6e6e6; --tx-mu:#94a3b8;
-  --ac:#818cf8; --ac-on:#6366f1; --ac-glow:rgba(99,102,241,.35);
-  --live:#10b981; --live-glow:rgba(16,185,129,.45);
-  --frame:#0d1117;
+  --bg:${ec.bg}; --bg-bar:linear-gradient(180deg,${ec.surface2} 0%,${ec.bg} 100%);
+  --bd:${ec.border}; --bd-hi:${ec.borderHi}; --tx:${ec.text}; --tx-mu:${ec.textMuted};
+  --ac:${ec.accent}; --ac-on:${ec.accentOn}; --ac-glow:rgba(230,159,103,.35);
+  --live:#9cb36a; --live-glow:rgba(156,179,106,.45);
+  --frame:${ec.surface};
 }
 html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px}
 .sp-wrap{display:flex;flex-direction:column;height:100vh}
@@ -1071,7 +1294,7 @@ html,body{margin:0;padding:0;height:100vh;background:var(--bg);color:var(--tx);f
 }
 .sp-logo{
   width:18px;height:18px;border-radius:5px;
-  background:linear-gradient(135deg,#818cf8 0%,#6366f1 50%,#4338ca 100%);
+  background:linear-gradient(135deg,#e69f67 0%,#d98a4a 50%,#a8632e 100%);
   box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 2px 8px var(--ac-glow);
   display:flex;align-items:center;justify-content:center;
   font-size:10px;font-weight:900;color:#fff;
@@ -1194,14 +1417,14 @@ function noChartHtml(file) {
     const name = htmlEscape(path.basename(file));
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100vh;background:#0b0e14;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center}
-.card{max-width:480px;padding:36px;text-align:center;background:linear-gradient(180deg,#161b26 0%,#11151e 100%);border:1px solid #1f2733;border-radius:14px;box-shadow:0 20px 60px -20px rgba(0,0,0,.6)}
-.icon{width:56px;height:56px;margin:0 auto 18px;border-radius:14px;background:linear-gradient(135deg,#475569 0%,#334155 100%);display:flex;align-items:center;justify-content:center;color:#94a3b8}
-h2{margin:0 0 8px;font-size:17px;font-weight:700;color:#e2e8f0;letter-spacing:-.2px}
-p{margin:6px 0;font-size:13px;color:#7e8a9c;line-height:1.55}
-code{background:rgba(129,140,248,.10);color:#a5b4fc;padding:2px 7px;border-radius:4px;font-family:'SF Mono','Consolas',monospace;font-size:12px}
-.fname{display:inline-block;margin-top:4px;padding:3px 9px;background:rgba(255,255,255,.03);border:1px solid #1f2733;border-radius:5px;font-family:'SF Mono','Consolas',monospace;font-size:11px;color:#94a3b8}
-button{margin-top:22px;background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;border:none;padding:10px 22px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;letter-spacing:.2px;box-shadow:0 4px 14px -2px rgba(99,102,241,.4);transition:all .15s;font-family:inherit}
+html,body{margin:0;padding:0;height:100vh;background:#1a1310;color:#e8ded2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center}
+.card{max-width:480px;padding:36px;text-align:center;background:linear-gradient(180deg,#161b26 0%,#11151e 100%);border:1px solid #3a2d27;border-radius:14px;box-shadow:0 20px 60px -20px rgba(0,0,0,.6)}
+.icon{width:56px;height:56px;margin:0 auto 18px;border-radius:14px;background:linear-gradient(135deg,#6b5d50 0%,#4a3a33 100%);display:flex;align-items:center;justify-content:center;color:#a89686}
+h2{margin:0 0 8px;font-size:17px;font-weight:700;color:#e8ded2;letter-spacing:-.2px}
+p{margin:6px 0;font-size:13px;color:#a89686;line-height:1.55}
+code{background:rgba(129,140,248,.10);color:#e6b088;padding:2px 7px;border-radius:4px;font-family:'SF Mono','Consolas',monospace;font-size:12px}
+.fname{display:inline-block;margin-top:4px;padding:3px 9px;background:rgba(255,255,255,.03);border:1px solid #3a2d27;border-radius:5px;font-family:'SF Mono','Consolas',monospace;font-size:11px;color:#a89686}
+button{margin-top:22px;background:linear-gradient(135deg,#d98a4a,#a8632e);color:#fff;border:none;padding:10px 22px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;letter-spacing:.2px;box-shadow:0 4px 14px -2px rgba(99,102,241,.4);transition:all .15s;font-family:inherit}
 button:hover{transform:translateY(-1px);box-shadow:0 6px 20px -2px rgba(99,102,241,.55)}
 button:active{transform:translateY(0)}
 </style></head><body>
@@ -1219,13 +1442,13 @@ function errorHtml(msg, file) {
     const name = htmlEscape(path.basename(file));
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;min-height:100vh;background:#0b0e14;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px}
+html,body{margin:0;padding:0;min-height:100vh;background:#1a1310;color:#e8ded2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px}
 .wrap{padding:24px;max-width:920px;margin:0 auto}
 .head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(244,63,94,.10);color:#fb7185;border:1px solid rgba(244,63,94,.25);padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
-.fname{font-family:'SF Mono','Consolas',monospace;font-size:12px;color:#94a3b8;background:rgba(255,255,255,.03);padding:5px 10px;border-radius:6px;border:1px solid #1f2733}
-pre{background:#0d1219;border:1px solid #1f2733;border-left:3px solid #f43f5e;padding:16px 18px;border-radius:8px;white-space:pre-wrap;line-height:1.6;color:#fda4af;font-family:'SF Mono','Monaco','Consolas',monospace;font-size:12px;overflow-x:auto;box-shadow:0 4px 12px -4px rgba(0,0,0,.4)}
-button{margin-top:18px;background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;border:none;padding:9px 20px;border-radius:7px;cursor:pointer;font-weight:600;font-size:12px;box-shadow:0 4px 14px -2px rgba(99,102,241,.35);transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.fname{font-family:'SF Mono','Consolas',monospace;font-size:12px;color:#a89686;background:rgba(255,255,255,.03);padding:5px 10px;border-radius:6px;border:1px solid #3a2d27}
+pre{background:#1d1511;border:1px solid #3a2d27;border-left:3px solid #f43f5e;padding:16px 18px;border-radius:8px;white-space:pre-wrap;line-height:1.6;color:#fda4af;font-family:'SF Mono','Monaco','Consolas',monospace;font-size:12px;overflow-x:auto;box-shadow:0 4px 12px -4px rgba(0,0,0,.4)}
+button{margin-top:18px;background:linear-gradient(135deg,#d98a4a,#a8632e);color:#fff;border:none;padding:9px 20px;border-radius:7px;cursor:pointer;font-weight:600;font-size:12px;box-shadow:0 4px 14px -2px rgba(99,102,241,.35);transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
 button:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(99,102,241,.5)}
 button:active{transform:translateY(0)}
 </style></head><body>
@@ -1345,7 +1568,7 @@ async function insertConfig() {
     }
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const palette = cfg.get("defaultPalette", ["#6366F1", "#F43F5E", "#10B981", "#F59E0B", "#8B5CF6", "#06B6D4"]);
-    const bg = cfg.get("defaultBackground", "#0f172a");
+    const bg = cfg.get("defaultBackground", "#1d1511");
     const palHex = palette.map(c => "0x" + c.replace(/^#/, "").toUpperCase()).join(", ");
     const ctx = scanContext(ed.document);
     await ensureImport(ed, ctx);
@@ -1355,7 +1578,7 @@ async function insertConfig() {
     await ed.edit(eb => eb.insert(new vscode.Position(pos.line, startCol), body));
 }
 async function newDemo() {
-    const content = `import seraplot as sp\n\nsp.set_auto_display(False)\n\nchart = sp.bar("Demo", labels=["A","B","C","D"], values=[10, 20, 15, 25], background="#0f172a")\nchart.save("demo.html")\n`;
+    const content = `import seraplot as sp\n\nsp.set_auto_display(False)\n\nchart = sp.bar("Demo", labels=["A","B","C","D"], values=[10, 20, 15, 25], background="#1d1511")\nchart.save("demo.html")\n`;
     const doc = await vscode.workspace.openTextDocument({ language: "python", content });
     await vscode.window.showTextDocument(doc);
 }
@@ -1473,6 +1696,12 @@ function uninstallSeraplot() {
         });
     });
 }
+function chartMatchesQuery(c, q) {
+    if (!q)
+        return true;
+    const hay = (c.label + " " + c.id + " " + c.group).toLowerCase();
+    return hay.includes(q.toLowerCase());
+}
 class GalleryItem extends vscode.TreeItem {
     constructor(payload) {
         super("", vscode.TreeItemCollapsibleState.None);
@@ -1481,13 +1710,29 @@ class GalleryItem extends vscode.TreeItem {
             this.label = `${payload.group}  \u00b7  ${payload.children.length}`;
             this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
             this.contextValue = "group";
+            if (payload.icon)
+                this.iconPath = new vscode.ThemeIcon(payload.icon);
+        }
+        else if (payload.kind === "folder") {
+            this.label = `${payload.folder.name}  \u00b7  ${payload.folder.items.length}`;
+            this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            this.contextValue = "folder";
+            this.iconPath = new vscode.ThemeIcon("folder");
+        }
+        else if (payload.kind === "newFolder") {
+            this.label = "+ New Folder\u2026";
+            this.contextValue = "newFolder";
+            this.command = { command: "seraplot.createFolder", title: "New Folder" };
+            this.iconPath = new vscode.ThemeIcon("add");
         }
         else if (payload.kind === "chart") {
             const c = payload.chart;
+            const fav = isFavChart(c.id);
             this.label = c.label;
             this.description = `sp.${c.id}`;
             this.tooltip = `${c.label} (${c.group}) \u2014 click to insert`;
-            this.contextValue = "chart";
+            this.contextValue = payload.inFolder ? "folderChart" : "chart";
+            this.iconPath = new vscode.ThemeIcon(fav ? "star-full" : (payload.hasVariants ? "symbol-class" : "symbol-misc"));
             if (payload.hasVariants) {
                 this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
             }
@@ -1495,10 +1740,12 @@ class GalleryItem extends vscode.TreeItem {
         }
         else {
             const vk = payload.variantKey;
+            const fav = isFavChart(payload.chart.id, vk);
             this.label = vk[0].toUpperCase() + vk.slice(1).replace(/_/g, " ");
             this.description = `variant="${vk}"`;
             this.tooltip = `Insert ${payload.chart.id}(..., variant="${vk}")`;
-            this.contextValue = "variant";
+            this.contextValue = payload.inFolder ? "folderVariant" : "variant";
+            this.iconPath = new vscode.ThemeIcon(fav ? "star-full" : "symbol-misc");
             const entry = { ...payload.chart, variant: vk };
             this.command = { command: "seraplot.insertChart", title: "Insert", arguments: [entry] };
         }
@@ -1515,23 +1762,62 @@ class GalleryProvider {
         const cat = (0, runtimeCatalog_1.getCachedCatalog)(extCtx);
         if (!cat)
             return [new GalleryItem({ kind: "group", group: "Loading\u2026", children: [] })];
+        const findChart = (id) => cat.charts.find(c => c.id === id);
         if (!el) {
+            const out = [];
+            const favKeys = favCharts();
+            if (favKeys.length > 0) {
+                const favItems = [];
+                for (const key of favKeys) {
+                    const [id, vk] = key.split("::");
+                    const c = findChart(id);
+                    if (!c)
+                        continue;
+                    if (vk)
+                        favItems.push(new GalleryItem({ kind: "variant", chart: c, variantKey: vk }));
+                    else {
+                        const hasVariants = !!(cat.chart_variants && cat.chart_variants[c.id] && cat.chart_variants[c.id].variants.length > 0);
+                        favItems.push(new GalleryItem({ kind: "chart", chart: c, hasVariants }));
+                    }
+                }
+                out.push(new GalleryItem({ kind: "group", group: "\u2605 Favorites", children: favItems, icon: "star-full", prebuilt: true }));
+            }
+            for (const f of folders())
+                out.push(new GalleryItem({ kind: "folder", folder: f }));
+            out.push(new GalleryItem({ kind: "newFolder" }));
             const groups = new Map();
             for (const c of cat.charts) {
+                if (!chartMatchesQuery(c, gallerySearchQuery))
+                    continue;
                 if (!groups.has(c.group))
                     groups.set(c.group, []);
                 groups.get(c.group).push(c);
             }
-            const out = [];
             for (const [g, list] of groups)
                 out.push(new GalleryItem({ kind: "group", group: g, children: list }));
             return out;
         }
         if (el.payload.kind === "group") {
+            if (el.payload.prebuilt)
+                return el.payload.children;
             return el.payload.children.map(c => {
                 const hasVariants = !!(cat.chart_variants && cat.chart_variants[c.id] && cat.chart_variants[c.id].variants.length > 0);
                 return new GalleryItem({ kind: "chart", chart: c, hasVariants });
             });
+        }
+        if (el.payload.kind === "folder") {
+            const out = [];
+            for (const key of el.payload.folder.items) {
+                const [id, vk] = key.split("::");
+                const c = findChart(id);
+                if (!c)
+                    continue;
+                if (vk)
+                    out.push(new GalleryItem({ kind: "variant", chart: c, variantKey: vk, inFolder: el.payload.folder.id }));
+                else
+                    out.push(new GalleryItem({ kind: "chart", chart: c, hasVariants: false, inFolder: el.payload.folder.id }));
+            }
+            return out;
         }
         if (el.payload.kind === "chart" && el.payload.hasVariants) {
             const p = el.payload;
@@ -1575,9 +1861,27 @@ class HomeProvider {
         this._view = view;
         view.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.file(this.ctx.extensionPath)] };
         view.webview.html = this.html(view.webview);
-        view.webview.onDidReceiveMessage(msg => {
-            if (msg && msg.cmd)
+        view.webview.onDidReceiveMessage(async (msg) => {
+            if (!msg)
+                return;
+            if (msg.cmd) {
                 vscode.commands.executeCommand(msg.cmd);
+                return;
+            }
+            if (msg.type === "saveLayout" && Array.isArray(msg.layout)) {
+                setHomeLayout(msg.layout);
+                return;
+            }
+            if (msg.type === "deleteSection" && msg.id) {
+                deleteHomeSection(msg.id);
+                return;
+            }
+            if (msg.type === "createSection") {
+                const name = await vscode.window.showInputBox({ prompt: "New section name", placeHolder: "My shortcuts" });
+                if (name && name.trim())
+                    createHomeSection(name.trim());
+                return;
+            }
         });
         view.onDidDispose(() => { this._view = undefined; });
         const cat = (0, runtimeCatalog_1.getCachedCatalog)(this.ctx);
@@ -1592,6 +1896,10 @@ class HomeProvider {
         if (this._view)
             this._view.webview.postMessage({ type: "lang", ok: isSupportedLang(langId), label: langLabel(langId) });
     }
+    refreshColors() {
+        if (this._view)
+            this._view.webview.html = this.html(this._view.webview);
+    }
     html(webview) {
         const nonce = makeNonce();
         const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data: https:;`;
@@ -1601,7 +1909,7 @@ class HomeProvider {
         return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="${csp}">
 <style>
-${SP_SHARED_CSS}
+${spSharedCss()}
 *{box-sizing:border-box}
 body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size:12px;color:var(--sp-text);background:var(--sp-bg)}
 .title{display:flex;align-items:center;gap:7px;margin:0 0 4px}
@@ -1614,16 +1922,28 @@ body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size
 .langcard .ldot.no{background:var(--sp-text-muted)}
 .langcard .ltxt{font-size:11px;color:var(--sp-text-muted);line-height:1.4}
 .langcard .ltxt b{color:var(--sp-text);font-weight:700}
-.lbl{display:flex;align-items:center;gap:6px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--sp-important);margin:14px 0 6px;font-weight:700}
-.lbl:first-of-type{margin-top:0}
+.section{margin-bottom:2px}
+.lbl{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--sp-important);margin:14px 0 6px;font-weight:700}
+.section:first-of-type .lbl{margin-top:0}
 .lbl svg{opacity:.7}
-.btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface-2);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
+.lbl .lbl-main{display:flex;align-items:center;gap:6px}
+.lbl .secdel{cursor:pointer;opacity:.5;font-size:13px;padding:0 3px;text-transform:none;letter-spacing:0;font-weight:400}
+.lbl .secdel:hover{opacity:1;color:var(--sp-danger)}
+.btnlist{min-height:4px;border-radius:7px;transition:outline-color .15s}
+.btnlist.dragover{outline:1px dashed var(--sp-accent);outline-offset:2px}
+.btn{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface-2);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
 .btn svg{flex-shrink:0;opacity:.75}
 .btn:hover{background:var(--sp-surface-hover);border-color:var(--sp-accent)}
 .btn:active{transform:scale(.98)}
+.btn.dragging{opacity:.35}
+.btn .drag-handle{cursor:grab;opacity:.3;flex-shrink:0;font-size:10px;letter-spacing:-1px;line-height:1}
+.btn .drag-handle:hover{opacity:.7}
+.btn .btn-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn.primary{background:linear-gradient(135deg,var(--sp-accent-on),var(--sp-accent-2));color:#fff;border:1px solid transparent;font-weight:600;box-shadow:0 2px 10px -2px rgba(99,102,241,.45)}
 .btn.primary svg{opacity:1}
 .btn.primary:hover{filter:brightness(1.1)}
+.addsection{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px 10px;margin:12px 0 4px;background:transparent;color:var(--sp-text-muted);border:1px dashed var(--sp-border-hi);border-radius:7px;cursor:pointer;font-size:11px;text-align:center;font-family:inherit}
+.addsection:hover{color:var(--sp-text);border-color:var(--sp-accent)}
 .hint{font-size:11px;color:var(--sp-text-muted);margin-top:12px;line-height:1.5;padding:8px 10px;border-radius:7px;background:rgba(99,102,241,.08);border-left:2px solid var(--sp-accent)}
 </style></head><body>
 <div class="title"><span class="sp-dot sp-dot-lg"></span><span class="name">SeraPlot</span><span class="ver" id="ver"></span></div>
@@ -1632,32 +1952,80 @@ body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size
   <span class="ldot ${langOk ? "ok" : "no"}"></span>
   <span class="ltxt" id="langtxt">${langOk ? `Detected <b>${htmlEscape(langLabel(curLang))}</b> \u2014 live preview ready` : "Open a Python, C#, JS or TS file to enable live preview"}</span>
 </div>
-<div class="lbl">${ICON_PLAY} Live preview</div>
-<button class="btn primary" data-cmd="seraplot.preview">${ICON_EYE} Open Live Preview</button>
-<button class="btn" data-cmd="seraplot.refreshPreview">${ICON_REFRESH} Refresh Preview</button>
-<div class="lbl">${ICON_BUILD} Build</div>
-<button class="btn" data-cmd="seraplot.chartStudio">${ICON_SETTINGS} Chart Studio</button>
-<button class="btn" data-cmd="seraplot.insertChart">${ICON_SNIPPET} Insert Chart\u2026</button>
-<button class="btn" data-cmd="seraplot.insertConfig">${ICON_GEAR} Insert sp.config(\u2026)</button>
-<button class="btn" data-cmd="seraplot.newDemo">${ICON_FILE} New Demo File</button>
-<div class="lbl">${ICON_TOOLS} Tools</div>
-<button class="btn" data-cmd="seraplot.themeStudio">${ICON_PALETTE} Theme Studio</button>
-<button class="btn" data-cmd="seraplot.gallery">${ICON_GRID} Open Gallery</button>
-<button class="btn" data-cmd="seraplot.exportHtml">${ICON_EXPORT} Export as HTML</button>
-<button class="btn" data-cmd="seraplot.refreshCatalog">${ICON_SYNC} Refresh Framework Catalog</button>
-<div class="lbl">${ICON_PACKAGE} Manage</div>
-<button class="btn" data-cmd="seraplot.checkInstall">${ICON_CHECK} Check Installation</button>
-<button class="btn" data-cmd="seraplot.autoInstall">${ICON_DOWNLOAD} Install / Update SeraPlot</button>
-<button class="btn" data-cmd="seraplot.uninstall">${ICON_TRASH} Uninstall SeraPlot</button>
-<div class="lbl">${ICON_HELP} Help</div>
-<button class="btn" data-cmd="seraplot.openDocs">${ICON_BOOK} Documentation</button>
-<div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically.</div>
+${homeLayout().map(sec => {
+            const btnsHtml = sec.items.map(bid => {
+                const b = HOME_BUTTONS[bid];
+                if (!b)
+                    return "";
+                const primaryCls = b.primary ? " primary" : "";
+                const iconSvg = ICON_MAP[b.icon] || "";
+                return `<button class="btn${primaryCls}" draggable="true" data-btnid="${bid}" data-cmd="${b.cmd}"><span class="drag-handle">\u22ee\u22ee</span>${iconSvg}<span class="btn-label">${htmlEscape(b.label)}</span></button>`;
+            }).join("\n");
+            const delBtn = sec.custom ? `<span class="secdel" data-delsec="${sec.id}" title="Delete section">\u00d7</span>` : "";
+            return `<div class="section" data-section-id="${sec.id}" data-label="${htmlEscape(sec.label)}" data-icon="${sec.icon}" data-custom="${sec.custom ? "1" : "0"}">
+<div class="lbl"><span class="lbl-main">${ICON_MAP[sec.icon] || ICON_GRID} ${htmlEscape(sec.label)}</span>${delBtn}</div>
+<div class="btnlist" data-section-id="${sec.id}">${btnsHtml}</div>
+</div>`;
+        }).join("\n")}
+<button class="addsection" id="addSection">+ New section\u2026</button>
+<div class="hint" id="hint">Catalog auto-discovered from installed seraplot. Charts and ML models appear automatically. Drag buttons to reorder or move between sections \u2014 saved forever.</div>
 <script nonce="${nonce}">
 (function(){
   const v = acquireVsCodeApi();
   document.querySelectorAll('button[data-cmd]').forEach(function(b){
     b.addEventListener('click', function(){ v.postMessage({cmd: b.getAttribute('data-cmd')}); });
   });
+  let dragEl = null;
+  function getDragAfterElement(container, y){
+    const els = Array.prototype.slice.call(container.querySelectorAll('.btn:not(.dragging)'));
+    let closest = null, closestOffset = -Infinity;
+    els.forEach(function(child){
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height/2;
+      if (offset < 0 && offset > closestOffset){ closestOffset = offset; closest = child; }
+    });
+    return closest;
+  }
+  function persistLayout(){
+    const layout = [];
+    document.querySelectorAll('.section').forEach(function(sec){
+      const list = sec.querySelector('.btnlist');
+      const items = Array.prototype.slice.call(list.querySelectorAll('.btn')).map(function(b){ return b.getAttribute('data-btnid'); });
+      layout.push({ id: sec.getAttribute('data-section-id'), label: sec.getAttribute('data-label'), icon: sec.getAttribute('data-icon'), custom: sec.getAttribute('data-custom') === '1', items });
+    });
+    v.postMessage({ type: 'saveLayout', layout });
+  }
+  document.querySelectorAll('.btn[draggable="true"]').forEach(function(btn){
+    btn.addEventListener('dragstart', function(e){
+      dragEl = btn;
+      btn.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', btn.getAttribute('data-btnid') || ''); } catch(err){}
+    });
+    btn.addEventListener('dragend', function(){
+      btn.classList.remove('dragging');
+      document.querySelectorAll('.btnlist').forEach(function(l){ l.classList.remove('dragover'); });
+      if (dragEl) persistLayout();
+      dragEl = null;
+    });
+  });
+  document.querySelectorAll('.btnlist').forEach(function(list){
+    list.addEventListener('dragover', function(e){
+      if (!dragEl) return;
+      e.preventDefault();
+      list.classList.add('dragover');
+      const after = getDragAfterElement(list, e.clientY);
+      if (after == null) list.appendChild(dragEl);
+      else list.insertBefore(dragEl, after);
+    });
+    list.addEventListener('dragleave', function(){ list.classList.remove('dragover'); });
+    list.addEventListener('drop', function(e){ e.preventDefault(); list.classList.remove('dragover'); });
+  });
+  document.querySelectorAll('[data-delsec]').forEach(function(x){
+    x.addEventListener('click', function(ev){ ev.stopPropagation(); v.postMessage({ type: 'deleteSection', id: x.getAttribute('data-delsec') }); });
+  });
+  const addSecBtn = document.getElementById('addSection');
+  if (addSecBtn) addSecBtn.addEventListener('click', function(){ v.postMessage({ type: 'createSection' }); });
   window.addEventListener('message', function(e){
     const m = e.data;
     if(m && m.type === 'version'){
@@ -1742,24 +2110,24 @@ function galleryHtml(cat) {
     }
     const total = cat.charts.length + cat.ml_models.length + cat.ml_functions.length + (cat.ml_transformers ? cat.ml_transformers.length : 0);
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6e6e6;padding:24px;margin:0}
-h1{margin:0 0 4px;font-size:24px;background:linear-gradient(90deg,#6366f1,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:#94a3b8;font-size:13px;margin-bottom:24px}
-h3{margin-top:28px;margin-bottom:10px;color:#c084fc;font-weight:600;font-size:14px;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.count{color:#64748b;font-size:11px;font-weight:400;background:#1e293b;padding:2px 8px;border-radius:10px}
+body{font-family:system-ui,sans-serif;background:#1d1511;color:#e6e6e6;padding:24px;margin:0}
+h1{margin:0 0 4px;font-size:24px;background:linear-gradient(90deg,#d98a4a,#e6b088);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:#a89686;font-size:13px;margin-bottom:24px}
+h3{margin-top:28px;margin-bottom:10px;color:#e6b088;font-weight:600;font-size:14px;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.count{color:#8a7a6d;font-size:11px;font-weight:400;background:#3d2f28;padding:2px 8px;border-radius:10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
-.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;transition:all .15s}
-.card:hover{border-color:#6366f1;background:#1c2230}
-.card.ml{border-left:3px solid #a78bfa}
+.card{background:#2d231f;border:1px solid #45373a;border-radius:8px;padding:12px;transition:all .15s}
+.card:hover{border-color:#d98a4a;background:#3a2d27}
+.card.ml{border-left:3px solid #e6b088}
 .cn{font-weight:600;font-size:13px;margin-bottom:4px;cursor:pointer}
-.cn:hover{color:#a78bfa}
-code{font-family:Consolas,monospace;font-size:11px;color:#94a3b8;cursor:pointer;display:block;margin-bottom:6px}
+.cn:hover{color:#e6b088}
+code{font-family:Consolas,monospace;font-size:11px;color:#a89686;cursor:pointer;display:block;margin-bottom:6px}
 .variants{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.vbtn{background:#1e293b;border:1px solid #2d3748;color:#94a3b8;border-radius:4px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:inherit}
-.vbtn:hover{background:#6366f1;color:#fff;border-color:#6366f1}
+.vbtn{background:#3d2f28;border:1px solid #4a3a33;color:#a89686;border-radius:4px;padding:2px 7px;font-size:10px;cursor:pointer;font-family:inherit}
+.vbtn:hover{background:#d98a4a;color:#fff;border-color:#d98a4a}
 .act{display:flex;gap:8px;margin-bottom:18px}
-.act button{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit}
-input{background:#161b22;border:1px solid #30363d;color:#e6e6e6;padding:9px 14px;border-radius:6px;width:100%;box-sizing:border-box;margin-bottom:18px;font-size:13px}
+.act button{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit}
+input{background:#2d231f;border:1px solid #45373a;color:#e6e6e6;padding:9px 14px;border-radius:6px;width:100%;box-sizing:border-box;margin-bottom:18px;font-size:13px}
 </style></head><body>
 <h1>SeraPlot Gallery</h1>
 <div class="sub">${total} entries auto-discovered from seraplot ${htmlEscape(cat.version)} \u00b7 click a chart to insert \u00b7 click variant badge to insert with variant</div>
@@ -1795,14 +2163,14 @@ function sysmonFetchHtml(python) {
 function sysmonShellHtml(inner) {
     const esc = inner.replace(/`/g, "\\`").replace(/\$/g, "\\$");
     return `<!DOCTYPE html><html><head><meta charset="UTF-8">
-<style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:#08090e;font-family:system-ui,Arial,sans-serif}
-#toolbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#0d1117;border-bottom:1px solid #1e293b}
-#toolbar span{color:#94a3b8;font-size:12px;font-weight:600;letter-spacing:.04em;flex:1}
-button{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px}
-button:hover{background:#334155}
-button.active{background:#4f46e5;border-color:#6366f1;color:#fff}
+<style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:#1a1310;font-family:system-ui,Arial,sans-serif}
+#toolbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#1d1511;border-bottom:1px solid #3d2f28}
+#toolbar span{color:#a89686;font-size:12px;font-weight:600;letter-spacing:.04em;flex:1}
+button{background:#3d2f28;color:#e8ded2;border:1px solid #4a3a33;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px}
+button:hover{background:#4a3a33}
+button.active{background:#d98a4a;border-color:#d98a4a;color:#fff}
 #frame{width:100%;height:calc(100vh - 41px);border:none;display:block}
-#loading{position:absolute;inset:0;top:41px;display:flex;align-items:center;justify-content:center;background:#08090e;color:#475569;font-size:14px;pointer-events:none;transition:opacity .3s}
+#loading{position:absolute;inset:0;top:41px;display:flex;align-items:center;justify-content:center;background:#1a1310;color:#6b5d50;font-size:14px;pointer-events:none;transition:opacity .3s}
 </style></head>
 <body>
 <div id="toolbar">
@@ -1840,10 +2208,10 @@ window.addEventListener('message', ev => {
 </body></html>`;
 }
 function sysmonErrorHtml(msg) {
-    return `<!DOCTYPE html><html><body style="background:#0d1117;color:#f87171;font-family:system-ui;padding:24px">
+    return `<!DOCTYPE html><html><body style="background:#1d1511;color:#f87171;font-family:system-ui;padding:24px">
 <h3 style="margin-bottom:10px">SeraPlot sysmon failed</h3>
 <pre style="font-size:12px;color:#fca5a5;white-space:pre-wrap">${htmlEscape(msg)}</pre>
-<p style="color:#94a3b8;font-size:12px;margin-top:14px">Requires seraplot &ge; 2.4.48. Check your Python path in Settings.</p>
+<p style="color:#a89686;font-size:12px;margin-top:14px">Requires seraplot &ge; 2.4.48. Check your Python path in Settings.</p>
 </body></html>`;
 }
 function openSysmon(context) {
@@ -1925,25 +2293,25 @@ function methodToggleHtml() {
     return `<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#08090e;color:#e2e8f0;font-family:system-ui,Arial,sans-serif;height:100%;overflow:auto}
-#header{padding:14px 16px 10px;border-bottom:1px solid #1e293b}
-#header h1{font-size:15px;font-weight:700;color:#f1f5f9;margin-bottom:3px}
-#header p{font-size:11px;color:#64748b}
+html,body{background:#1a1310;color:#e8ded2;font-family:system-ui,Arial,sans-serif;height:100%;overflow:auto}
+#header{padding:14px 16px 10px;border-bottom:1px solid #3d2f28}
+#header h1{font-size:15px;font-weight:700;color:#faf7f2;margin-bottom:3px}
+#header p{font-size:11px;color:#8a7a6d}
 .group{padding:10px 14px 0}
-.glabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:8px}
+.glabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b5d50;margin-bottom:8px}
 .methods{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.toggle{display:flex;align-items:center;gap:7px;background:#0d1117;border:1px solid #1e293b;border-radius:7px;padding:5px 10px;cursor:pointer;user-select:none;font-size:12px;color:#94a3b8;transition:all .15s}
-.toggle:hover{border-color:#334155;color:#e2e8f0}
-.toggle.on{background:#1e1b4b;border-color:#6366f1;color:#a5b4fc}
-.toggle .dot{width:8px;height:8px;border-radius:50%;background:#1e293b;transition:background .15s;flex-shrink:0}
-.toggle.on .dot{background:#6366f1}
-#footer{position:sticky;bottom:0;background:#0d1117;border-top:1px solid #1e293b;padding:10px 14px;display:flex;gap:8px;align-items:center}
-#preview{flex:1;font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;white-space:pre-wrap;word-break:break-all;min-height:32px;background:#0b1018;border:1px solid #1e293b;border-radius:6px;padding:7px 10px;max-height:80px;overflow:auto}
-button{background:#4f46e5;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;flex-shrink:0}
-button:hover{background:#6366f1}
-button.ghost{background:#1e293b;color:#94a3b8;border:1px solid #334155}
-button.ghost:hover{background:#334155;color:#e2e8f0}
-#varname{background:#0d1117;border:1px solid #334155;color:#e2e8f0;padding:5px 8px;border-radius:5px;font-size:12px;font-family:Consolas,monospace;width:100px}
+.toggle{display:flex;align-items:center;gap:7px;background:#1d1511;border:1px solid #3d2f28;border-radius:7px;padding:5px 10px;cursor:pointer;user-select:none;font-size:12px;color:#a89686;transition:all .15s}
+.toggle:hover{border-color:#4a3a33;color:#e8ded2}
+.toggle.on{background:#2d1f16;border-color:#d98a4a;color:#e6b088}
+.toggle .dot{width:8px;height:8px;border-radius:50%;background:#3d2f28;transition:background .15s;flex-shrink:0}
+.toggle.on .dot{background:#d98a4a}
+#footer{position:sticky;bottom:0;background:#1d1511;border-top:1px solid #3d2f28;padding:10px 14px;display:flex;gap:8px;align-items:center}
+#preview{flex:1;font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;white-space:pre-wrap;word-break:break-all;min-height:32px;background:#1a1310;border:1px solid #3d2f28;border-radius:6px;padding:7px 10px;max-height:80px;overflow:auto}
+button{background:#d98a4a;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;flex-shrink:0}
+button:hover{background:#d98a4a}
+button.ghost{background:#3d2f28;color:#a89686;border:1px solid #4a3a33}
+button.ghost:hover{background:#4a3a33;color:#e8ded2}
+#varname{background:#1d1511;border:1px solid #4a3a33;color:#e8ded2;padding:5px 8px;border-radius:5px;font-size:12px;font-family:Consolas,monospace;width:100px}
 </style>
 </head><body>
 <div id="header">
@@ -2022,8 +2390,8 @@ function openThemeStudio(context) {
     catch (_e) { }
     const cfg = vscode.workspace.getConfiguration("seraplot");
     const palette = cfg.get("defaultPalette", ["#6366F1", "#F43F5E", "#10B981", "#F59E0B", "#8B5CF6", "#06B6D4"]);
-    const bg = cfg.get("defaultBackground", "#0f172a");
-    panel.webview.html = themeStudioHtml(palette, bg);
+    const bg = cfg.get("defaultBackground", "#1d1511");
+    panel.webview.html = themeStudioHtml(palette, bg, extColors());
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (msg.type === "copy" && typeof msg.code === "string") {
             await vscode.env.clipboard.writeText(msg.code);
@@ -2045,30 +2413,46 @@ function openThemeStudio(context) {
             await vscode.workspace.getConfiguration("seraplot").update("defaultBackground", msg.bg, vscode.ConfigurationTarget.Global);
             vscode.window.showInformationMessage("SeraPlot defaults saved.");
         }
+        if (msg.type === "saveExtColors" && msg.colors) {
+            setExtColors(msg.colors);
+            vscode.window.showInformationMessage("SeraPlot: extension colors saved — persists across updates.");
+        }
+        if (msg.type === "resetExtColors") {
+            resetExtColors();
+            panel.webview.html = themeStudioHtml(palette, bg, extColors());
+            vscode.window.showInformationMessage("SeraPlot: extension colors reset to default.");
+        }
     });
 }
-function themeStudioHtml(initialPalette, initialBg) {
+function themeStudioHtml(initialPalette, initialBg, extColorsInit) {
     const palJson = JSON.stringify(initialPalette);
+    const ext = extColorsInit || DEFAULT_EXT_COLORS;
+    const extJson = JSON.stringify(ext);
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6e6e6;padding:24px;margin:0;max-width:1100px}
-h1{margin:0 0 4px;font-size:24px;background:linear-gradient(90deg,#6366f1,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:#94a3b8;font-size:13px;margin-bottom:24px}
+body{font-family:system-ui,sans-serif;background:#1d1511;color:#e6e6e6;padding:24px;margin:0;max-width:1100px}
+h1{margin:0 0 4px;font-size:24px;background:linear-gradient(90deg,#d98a4a,#e6b088);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:#a89686;font-size:13px;margin-bottom:24px}
 .layout{display:grid;grid-template-columns:1fr 360px;gap:20px}
-.panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px}
-h2{margin:0 0 14px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#c084fc}
+.panel{background:#2d231f;border:1px solid #45373a;border-radius:10px;padding:18px}
+h2{margin:0 0 14px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#e6b088}
 .row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
-.row label{flex:1;font-size:13px;color:#cbd5e1}
-.row input[type=text],.row input[type=number]{background:#0d1117;border:1px solid #30363d;color:#e6e6e6;padding:6px 10px;border-radius:5px;font-family:Consolas,monospace;font-size:12px;width:120px}
+.row label{flex:1;font-size:13px;color:#d4c7b8}
+.row input[type=text],.row input[type=number]{background:#1d1511;border:1px solid #45373a;color:#e6e6e6;padding:6px 10px;border-radius:5px;font-family:Consolas,monospace;font-size:12px;width:120px}
 .row input[type=color]{width:40px;height:32px;border:none;background:none;cursor:pointer;padding:0}
 .palette{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
-.swatch{position:relative;width:42px;height:42px;border-radius:8px;border:2px solid #30363d;cursor:pointer}
+.swatch{position:relative;width:42px;height:42px;border-radius:8px;border:2px solid #45373a;cursor:pointer}
 .swatch input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.add,.del{width:42px;height:42px;border-radius:8px;border:1px dashed #30363d;background:transparent;color:#64748b;cursor:pointer;font-size:18px}
+.add,.del{width:42px;height:42px;border-radius:8px;border:1px dashed #45373a;background:transparent;color:#8a7a6d;cursor:pointer;font-size:18px}
 .preview{display:flex;gap:4px;margin:14px 0;height:100px;border-radius:8px;padding:8px}
 .preview .bar{flex:1;border-radius:4px}
-button.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:600;margin-right:8px}
-button.ghost{background:#21262d;color:#e6e6e6;border:1px solid #30363d;padding:9px 16px;border-radius:6px;cursor:pointer}
-pre{background:#0b1018;border:1px solid #30363d;padding:14px;border-radius:8px;font-family:Consolas,monospace;font-size:12px;line-height:1.5;color:#a5d6a7;white-space:pre-wrap}
+button.primary{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;font-weight:600;margin-right:8px}
+button.ghost{background:#352a24;color:#e6e6e6;border:1px solid #45373a;padding:9px 16px;border-radius:6px;cursor:pointer}
+pre{background:#1a1310;border:1px solid #45373a;padding:14px;border-radius:8px;font-family:Consolas,monospace;font-size:12px;line-height:1.5;color:#a5d6a7;white-space:pre-wrap}
+.hsub{font-size:10.5px;font-weight:400;text-transform:none;letter-spacing:0;color:#8a7a6d;display:block;margin-top:2px}
+.extgrid{display:grid;grid-template-columns:1fr 230px;gap:22px;align-items:start}
+.extmock{border-radius:9px;padding:10px;border:1px solid #45373a;transition:background .15s,border-color .15s}
+.extmock-title{font-size:11px;font-weight:800;margin-bottom:8px;letter-spacing:.2px;transition:color .15s}
+.extmock-row{padding:7px 9px;border-radius:6px;font-size:10.5px;margin-bottom:5px;transition:background .15s,color .15s,border-color .15s;border:1px solid transparent}
 </style></head><body>
 <h1>SeraPlot Theme Studio</h1>
 <div class="sub">Tune your palette and global config, copy or insert into your file.</div>
@@ -2085,6 +2469,23 @@ pre{background:#0b1018;border:1px solid #30363d;padding:14px;border-radius:8px;f
   <pre id="out"></pre>
   <div style="margin-top:14px"><button class="primary" id="copy">Copy</button><button class="ghost" id="insert">Insert at cursor</button><button class="ghost" id="save" style="float:right">Save defaults</button></div>
 </div>
+</div>
+<div class="panel" style="margin-top:20px">
+  <h2>Extension Appearance<span class="hsub">Recolors the Home sidebar &amp; Live Preview toolbar — saved forever, survives extension updates</span></h2>
+  <div class="extgrid">
+    <div>
+      <div class="row"><label>Sidebar background</label><input type="color" id="ext_bg" value="${ext.bg}"></div>
+      <div class="row"><label>Sidebar surface</label><input type="color" id="ext_surface" value="${ext.surface}"></div>
+      <div class="row"><label>Accent</label><input type="color" id="ext_accent" value="${ext.accent}"></div>
+      <div class="row"><label>Text</label><input type="color" id="ext_text" value="${ext.text}"></div>
+    </div>
+    <div class="extmock" id="extmock">
+      <div class="extmock-title" id="extmockTitle">SeraPlot</div>
+      <div class="extmock-row" id="extmockPrimary">Open Live Preview</div>
+      <div class="extmock-row" id="extmockPlain">Refresh Preview</div>
+    </div>
+  </div>
+  <div style="margin-top:14px"><button class="primary" id="extSave">Save &amp; Apply</button><button class="ghost" id="extReset">Reset to default</button></div>
 </div>
 <script>
 const vscode = acquireVsCodeApi();
@@ -2120,6 +2521,27 @@ document.getElementById('copy').onclick = ()=> vscode.postMessage({type:'copy', 
 document.getElementById('insert').onclick = ()=> vscode.postMessage({type:'insert', code: out.textContent});
 document.getElementById('save').onclick = ()=> vscode.postMessage({type:'saveDefaults', palette, bg: bg.value});
 paletteUI(); render();
+
+const extColors = ${extJson};
+const extInputs = { bg: document.getElementById('ext_bg'), surface: document.getElementById('ext_surface'), accent: document.getElementById('ext_accent'), text: document.getElementById('ext_text') };
+const extmock = document.getElementById('extmock');
+const extmockTitle = document.getElementById('extmockTitle');
+const extmockPrimary = document.getElementById('extmockPrimary');
+const extmockPlain = document.getElementById('extmockPlain');
+function renderExtMock(){
+  extmock.style.background = extColors.bg;
+  extmock.style.borderColor = extColors.surface2 || '#45373a';
+  extmockTitle.style.color = extColors.text;
+  extmockPrimary.style.background = extColors.accentOn || extColors.accent;
+  extmockPrimary.style.color = '#fff';
+  extmockPlain.style.background = extColors.surface;
+  extmockPlain.style.color = extColors.text;
+  extmockPlain.style.borderColor = extColors.surface2 || '#45373a';
+}
+Object.keys(extInputs).forEach(k => { extInputs[k].oninput = () => { extColors[k] = extInputs[k].value; renderExtMock(); }; });
+document.getElementById('extSave').onclick = () => vscode.postMessage({type:'saveExtColors', colors: extColors});
+document.getElementById('extReset').onclick = () => vscode.postMessage({type:'resetExtColors'});
+renderExtMock();
 </script>
 </body></html>`;
 }
@@ -2221,28 +2643,28 @@ function wasmPlaygroundHtml(wasmJsUri, wasmBinUri, monacoBase, initCode) {
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net ${wasmJsUri.split('/').slice(0,-1).join('/')}/ vscode-webview-resource: https://file+.vscode-resource.vscode-cdn.net; style-src 'unsafe-inline'; img-src data: blob: https:; connect-src blob: data: vscode-webview-resource: https:; worker-src blob: data:;">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6e6e6;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#161b22;border-bottom:1px solid #30363d;flex-shrink:0}
-.hdr-title{font-size:13px;font-weight:700;color:#818cf8;letter-spacing:.04em}
-.hdr-sub{font-size:11px;color:#64748b}
-.conn{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:11px;color:#94a3b8}
+body{font-family:system-ui,sans-serif;background:#1d1511;color:#e6e6e6;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hdr{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#2d231f;border-bottom:1px solid #45373a;flex-shrink:0}
+.hdr-title{font-size:13px;font-weight:700;color:#e69f67;letter-spacing:.04em}
+.hdr-sub{font-size:11px;color:#8a7a6d}
+.conn{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:11px;color:#a89686}
 .dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0}
-.dot.ready{background:#10b981}
+.dot.ready{background:#9cb36a}
 .dot.err{background:#ef4444}
 .main{display:flex;flex:1;min-height:0;overflow:hidden}
-.ecol{display:flex;flex-direction:column;width:50%;min-width:180px;border-right:1px solid #30363d;overflow:hidden}
-.ehdr{background:#1e2432;padding:4px 10px;font-size:11px;color:#818cf8;letter-spacing:.08em;font-weight:700;border-bottom:1px solid #30363d;flex-shrink:0}
+.ecol{display:flex;flex-direction:column;width:50%;min-width:180px;border-right:1px solid #45373a;overflow:hidden}
+.ehdr{background:#352a24;padding:4px 10px;font-size:11px;color:#e69f67;letter-spacing:.08em;font-weight:700;border-bottom:1px solid #45373a;flex-shrink:0}
 .ebody{flex:1;position:relative;overflow:hidden}
-.pcol{display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden;background:#0d1117}
-.phdr{background:#1e2432;padding:4px 10px;font-size:11px;color:#818cf8;letter-spacing:.08em;font-weight:700;border-bottom:1px solid #30363d;flex-shrink:0}
+.pcol{display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden;background:#1d1511}
+.phdr{background:#352a24;padding:4px 10px;font-size:11px;color:#e69f67;letter-spacing:.08em;font-weight:700;border-bottom:1px solid #45373a;flex-shrink:0}
 .pbody{flex:1;position:relative;overflow:hidden}
 iframe{width:100%;height:100%;border:none;display:block}
-.loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#0d1117;font-size:12px;color:#94a3b8;z-index:10}
-.spinner{width:28px;height:28px;border:3px solid #334155;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
+.loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#1d1511;font-size:12px;color:#a89686;z-index:10}
+.spinner{width:28px;height:28px;border:3px solid #4a3a33;border-top-color:#d98a4a;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .err-bar{position:absolute;bottom:0;left:0;right:0;background:#450a0a;border-top:1px solid #ef4444;color:#fca5a5;padding:6px 12px;font-size:11px;font-family:'Cascadia Code','Consolas',monospace;white-space:pre-wrap;max-height:100px;overflow-y:auto;z-index:20;display:none}
-.divider{width:5px;cursor:col-resize;background:#161b22;flex-shrink:0;transition:background .15s}
-.divider:hover{background:#6366f1}
+.divider{width:5px;cursor:col-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
+.divider:hover{background:#d98a4a}
 </style></head><body>
 <div class="hdr">
   <div class="hdr-title">SeraPlot · WASM Playground</div>
@@ -2449,6 +2871,7 @@ async function openChartStudio(context) {
         catalog: studioCat.entries,
         common_kwargs: cat.common_kwargs,
         chart_methods: cat.chart_methods || [],
+        fav_methods: favMethods(),
         themes: cat.themes || [],
         aliases: mergedAliases,
         variants: cat.chart_variants || {},
@@ -2464,6 +2887,11 @@ async function openChartStudio(context) {
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (!msg)
             return;
+        if (msg.type === "toggleFavMethod" && msg.name) {
+            toggleFavMethod(msg.name);
+            panel.webview.postMessage({ type: "favMethods", names: favMethods() });
+            return;
+        }
         if (msg.type === "render" && msg.id && msg.kind === "chart") {
             const rawLabels = String(msg.labels || "").trim();
             const rawValues = String(msg.values || "").trim();
@@ -2605,123 +3033,128 @@ async function openChartStudio(context) {
 function chartStudioHtml(payloadJson) {
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,sans-serif;background:#0d1117;color:#e6e6e6;height:100vh;overflow:hidden}
-body.theme-light{background:#f8fafc;color:#0f172a}
-body.theme-light .left,body.theme-light .mid{background:#ffffff;border-color:#e2e8f0}
-body.theme-light .search{border-color:#e2e8f0}
-body.theme-light .search input,body.theme-light .f input,body.theme-light .f select,body.theme-light .f textarea,body.theme-light .add-kw select,body.theme-light .add-kw input,body.theme-light .chain-grid,body.theme-light .chain-grid button,body.theme-light .chain-item,body.theme-light .chain-item input,body.theme-light .chain-item select,body.theme-light .snippet,body.theme-light .preview-bar,body.theme-light .foot,body.theme-light .aliases,body.theme-light .aliases select,body.theme-light .qchip,body.theme-light .theme-pick button,body.theme-light .btn{background:#f1f5f9;border-color:#cbd5e1;color:#0f172a}
-body.theme-light .grp,body.theme-light .head h1{color:#475569}
-body.theme-light .head h1{background:linear-gradient(90deg,#4f46e5,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
-body.theme-light .item{color:#0f172a}
-body.theme-light .item:hover{background:#e2e8f0}
-body.theme-light .item code,body.theme-light .f .hint,body.theme-light .preview-bar,body.theme-light .alias-hint,body.theme-light .alias-lbl{color:#64748b}
-body.theme-light .preview-msg{background:#ffffff;color:#475569}
-body.theme-light .f{background:#ffffff;border-color:#e2e8f0}
-body.theme-light .resizer-v,body.theme-light .resizer-h{background:#e2e8f0}
-body.theme-light .resizer-v:hover,body.theme-light .resizer-h:hover{background:#a78bfa}
-body.theme-light .panel-bar{background:#f8fafc;border-color:#e2e8f0;color:#475569}
+body{margin:0;font-family:system-ui,sans-serif;background:#1d1511;color:#e6e6e6;height:100vh;overflow:hidden}
+body.theme-light{background:#faf7f2;color:#1d1511}
+body.theme-light .left,body.theme-light .mid{background:#ffffff;border-color:#e8ded2}
+body.theme-light .search{border-color:#e8ded2}
+body.theme-light .search input,body.theme-light .f input,body.theme-light .f select,body.theme-light .f textarea,body.theme-light .add-kw select,body.theme-light .add-kw input,body.theme-light .chain-grid,body.theme-light .chain-grid button,body.theme-light .chain-item,body.theme-light .chain-item input,body.theme-light .chain-item select,body.theme-light .snippet,body.theme-light .preview-bar,body.theme-light .foot,body.theme-light .aliases,body.theme-light .aliases select,body.theme-light .qchip,body.theme-light .theme-pick button,body.theme-light .btn{background:#faf7f2;border-color:#d4c7b8;color:#1d1511}
+body.theme-light .grp,body.theme-light .head h1{color:#6b5d50}
+body.theme-light .head h1{background:linear-gradient(90deg,#d98a4a,#a8632e);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.theme-light .item{color:#1d1511}
+body.theme-light .item:hover{background:#e8ded2}
+body.theme-light .item code,body.theme-light .f .hint,body.theme-light .preview-bar,body.theme-light .alias-hint,body.theme-light .alias-lbl{color:#8a7a6d}
+body.theme-light .preview-msg{background:#ffffff;color:#6b5d50}
+body.theme-light .f{background:#ffffff;border-color:#e8ded2}
+body.theme-light .resizer-v,body.theme-light .resizer-h{background:#e8ded2}
+body.theme-light .resizer-v:hover,body.theme-light .resizer-h:hover{background:#e6b088}
+body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d50}
 .app{display:flex;flex-direction:row;height:100vh;width:100vw}
-.left,.mid{background:#0b1018;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
-.left{width:260px;flex-shrink:0;border-right:1px solid #30363d}
+.left,.mid{background:#1a1310;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.left{width:260px;flex-shrink:0;border-right:1px solid #45373a}
 .mid{flex:1}
 .left.collapsed{width:34px!important}
 .left.collapsed .search,.left.collapsed .list{display:none}
-.resizer-v{width:5px;cursor:col-resize;background:#161b22;flex-shrink:0;transition:background .15s}
-.resizer-v:hover{background:#6366f1}
-.resizer-h{height:5px;cursor:row-resize;background:#161b22;flex-shrink:0;transition:background .15s}
-.resizer-h:hover{background:#6366f1}
-.panel-bar{display:flex;align-items:center;gap:6px;padding:4px 8px;background:#0a0e15;border-bottom:1px solid #1f2733;font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;font-weight:700;user-select:none}
+.resizer-v{width:5px;cursor:col-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
+.resizer-v:hover{background:#d98a4a}
+.resizer-h{height:5px;cursor:row-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
+.resizer-h:hover{background:#d98a4a}
+.panel-bar{display:flex;align-items:center;gap:6px;padding:4px 8px;background:#1a1310;border-bottom:1px solid #3a2d27;font-size:10px;color:#a89686;text-transform:uppercase;letter-spacing:.5px;font-weight:700;user-select:none}
 .panel-bar .pb-title{flex:1}
-.panel-bar button{background:transparent;border:1px solid #30363d;color:#94a3b8;cursor:pointer;font-size:11px;padding:2px 7px;border-radius:4px;font-family:inherit;line-height:1}
-.panel-bar button:hover{border-color:#6366f1;color:#e2e8f0}
-.search{padding:10px;border-bottom:1px solid #30363d}
-.search input{width:100%;background:#161b22;border:1px solid #30363d;color:#e6e6e6;padding:7px 10px;border-radius:6px;font-size:12px;font-family:inherit}
-.search input:focus{outline:none;border-color:#6366f1}
+.panel-bar button{background:transparent;border:1px solid #45373a;color:#a89686;cursor:pointer;font-size:11px;padding:2px 7px;border-radius:4px;font-family:inherit;line-height:1}
+.panel-bar button:hover{border-color:#d98a4a;color:#e8ded2}
+.search{padding:10px;border-bottom:1px solid #45373a}
+.search input{width:100%;background:#2d231f;border:1px solid #45373a;color:#e6e6e6;padding:7px 10px;border-radius:6px;font-size:12px;font-family:inherit}
+.search input:focus{outline:none;border-color:#d98a4a}
 .list{flex:1;overflow-y:auto;padding:6px 4px}
-.grp{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;padding:10px 10px 4px;font-weight:700}
+.grp{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#a89686;padding:10px 10px 4px;font-weight:700}
 .item{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:5px;margin:1px 4px;display:flex;justify-content:space-between;align-items:center;gap:6px}
-.item:hover{background:#1c2230}
-.item.sel{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12));border-left:2px solid #6366f1;padding-left:10px}
-.item code{color:#94a3b8;font-size:10.5px;font-family:Consolas,monospace}
-.head{padding:14px 18px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:10px}
-.head h1{margin:0;font-size:15px;background:linear-gradient(90deg,#6366f1,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
-.head .tag{font-size:10px;padding:3px 8px;border-radius:10px;background:#1e293b;color:#94a3b8;text-transform:uppercase;font-weight:600}
+.item:hover{background:#3a2d27}
+.item.sel{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12));border-left:2px solid #d98a4a;padding-left:10px}
+.item code{color:#a89686;font-size:10.5px;font-family:Consolas,monospace}
+.head{padding:14px 18px;border-bottom:1px solid #45373a;display:flex;align-items:center;gap:10px}
+.head h1{margin:0;font-size:15px;background:linear-gradient(90deg,#d98a4a,#e6b088);-webkit-background-clip:text;background-clip:text;color:transparent}
+.head .tag{font-size:10px;padding:3px 8px;border-radius:10px;background:#3d2f28;color:#a89686;text-transform:uppercase;font-weight:600}
 .head .head-spacer{flex:1}
-.head .theme-toggle{background:#161b22;border:1px solid #30363d;color:#cbd5e1;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit}
-.head .theme-toggle:hover{border-color:#6366f1}
+.head .theme-toggle{background:#2d231f;border:1px solid #45373a;color:#d4c7b8;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit}
+.head .theme-toggle:hover{border-color:#d98a4a}
 .body{flex:1;overflow-y:auto;padding:14px}
-.empty{color:#64748b;text-align:center;margin-top:60px;font-size:13px;padding:0 20px;line-height:1.5}
+.empty{color:#8a7a6d;text-align:center;margin-top:60px;font-size:13px;padding:0 20px;line-height:1.5}
 .section{margin-bottom:14px}
-.section h2{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#c084fc;font-weight:600;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
-.section h2::before{content:'\u25BE';font-size:9px;color:#64748b;transition:transform .15s}
+.section h2{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#e6b088;font-weight:600;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.section h2::before{content:'\u25BE';font-size:9px;color:#8a7a6d;transition:transform .15s}
 .section.collapsed h2::before{transform:rotate(-90deg)}
 .section.collapsed > *:not(h2){display:none}
-.f{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px;margin-bottom:6px}
-.f label{display:block;font-size:11px;color:#cbd5e1;margin-bottom:6px;font-weight:500;font-family:Consolas,monospace}
-.f .hint{font-size:10px;color:#64748b;margin-top:4px}
-.f input[type=text],.f input[type=number],.f select,.f textarea{width:100%;background:#0b1018;border:1px solid #30363d;color:#e6e6e6;padding:6px 9px;border-radius:5px;font-size:12px;font-family:Consolas,monospace}
+.f{background:#2d231f;border:1px solid #45373a;border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.f label{display:block;font-size:11px;color:#d4c7b8;margin-bottom:6px;font-weight:500;font-family:Consolas,monospace}
+.f .hint{font-size:10px;color:#8a7a6d;margin-top:4px}
+.f input[type=text],.f input[type=number],.f select,.f textarea{width:100%;background:#1a1310;border:1px solid #45373a;color:#e6e6e6;padding:6px 9px;border-radius:5px;font-size:12px;font-family:Consolas,monospace}
 .f textarea{resize:vertical;min-height:50px}
-.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#6366f1}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#d98a4a}
 .f input[type=color]{width:38px;height:30px;border:none;background:none;cursor:pointer;padding:0}
 .f .row{display:flex;align-items:center;gap:8px}
-.f .switch{position:relative;width:36px;height:20px;background:#30363d;border-radius:10px;cursor:pointer;flex-shrink:0;transition:background .15s}
-.f .switch.on{background:#6366f1}
+.f .switch{position:relative;width:36px;height:20px;background:#45373a;border-radius:10px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.f .switch.on{background:#d98a4a}
 .f .switch::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .15s}
 .f .switch.on::after{left:19px}
-.f .x{cursor:pointer;color:#64748b;background:none;border:none;font-size:14px;font-family:inherit;padding:0 6px}
+.f .x{cursor:pointer;color:#8a7a6d;background:none;border:none;font-size:14px;font-family:inherit;padding:0 6px}
 .f .x:hover{color:#f43f5e}
 .add-kw{display:flex;gap:6px}
-.add-kw select{flex:1;background:#0b1018;border:1px solid #30363d;color:#e6e6e6;padding:6px;border-radius:5px;font-size:12px;font-family:inherit}
-.add-kw button{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:6px 14px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
-.qchip{background:#1e293b;color:#94a3b8;border:1px solid #30363d;padding:3px 9px;border-radius:12px;cursor:pointer;font-size:11px;font-family:inherit}
-.qchip:hover{border-color:#6366f1;color:#e2e8f0}
+.add-kw select{flex:1;background:#1a1310;border:1px solid #45373a;color:#e6e6e6;padding:6px;border-radius:5px;font-size:12px;font-family:inherit}
+.add-kw button{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border:none;padding:6px 14px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
+.qchip{background:#3d2f28;color:#a89686;border:1px solid #45373a;padding:3px 9px;border-radius:12px;cursor:pointer;font-size:11px;font-family:inherit}
+.qchip:hover{border-color:#d98a4a;color:#e8ded2}
 .right{display:none}
-.mini-preview{flex-shrink:0;background:#fff;border-bottom:1px solid #30363d;height:280px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-height:60px}
+.mini-preview{flex-shrink:0;background:#fff;border-bottom:1px solid #45373a;height:280px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-height:60px}
 .mini-preview.collapsed{height:30px!important}
 .mini-preview.collapsed .preview-wrap{display:none}
 .mini-preview .preview-wrap{flex:1;overflow:hidden;background:#fff;position:relative}
 .mini-preview iframe{border:none;background:#fff;transform-origin:top left;display:block;position:absolute;left:0;top:0}
 .preview-wrap{flex:1;overflow:hidden;min-height:0;background:#fff;position:relative}
 .preview-wrap iframe{display:block;border:none;background:#fff}
-.preview-msg{padding:24px;color:#94a3b8;font-size:13px;line-height:1.6;background:#0d1117;height:100%;box-sizing:border-box;overflow:auto}
-.preview-msg pre{background:#161b22;border:1px solid #30363d;padding:10px;border-radius:6px;color:#f48771;font-size:11px;font-family:Consolas,monospace;white-space:pre-wrap;max-height:340px;overflow:auto}
+.preview-msg{padding:24px;color:#a89686;font-size:13px;line-height:1.6;background:#1d1511;height:100%;box-sizing:border-box;overflow:auto}
+.preview-msg pre{background:#2d231f;border:1px solid #45373a;padding:10px;border-radius:6px;color:#f48771;font-size:11px;font-family:Consolas,monospace;white-space:pre-wrap;max-height:340px;overflow:auto}
 .preview-msg b{color:#f43f5e}
-.preview-bar{padding:8px 14px;border-bottom:1px solid #30363d;background:#0b1018;display:flex;align-items:center;gap:8px;font-size:11px;color:#94a3b8}
-.preview-bar .dot{width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.6)}
+.preview-bar{padding:8px 14px;border-bottom:1px solid #45373a;background:#1a1310;display:flex;align-items:center;gap:8px;font-size:11px;color:#a89686}
+.preview-bar .dot{width:8px;height:8px;border-radius:50%;background:#9cb36a;box-shadow:0 0 8px rgba(16,185,129,.6)}
 .preview-bar.busy .dot{background:#f59e0b;animation:pulse .9s infinite}
 .preview-bar.err .dot{background:#f43f5e}
-.preview-bar .seg{display:inline-flex;border:1px solid #30363d;border-radius:5px;overflow:hidden}
-.preview-bar .seg button{background:transparent;color:#94a3b8;border:none;padding:3px 9px;font-size:10px;cursor:pointer;font-family:inherit}
-.preview-bar .seg button.on{background:#6366f1;color:#fff}
-.preview-bar .bytes{color:#64748b;font-size:10px}
+.preview-bar .seg{display:inline-flex;border:1px solid #45373a;border-radius:5px;overflow:hidden}
+.preview-bar .seg button{background:transparent;color:#a89686;border:none;padding:3px 9px;font-size:10px;cursor:pointer;font-family:inherit}
+.preview-bar .seg button.on{background:#d98a4a;color:#fff}
+.preview-bar .bytes{color:#8a7a6d;font-size:10px}
 @keyframes pulse{50%{opacity:.4}}
-.foot{padding:12px 18px;border-top:1px solid #30363d;display:flex;gap:8px;align-items:center;background:#0b1018}
-.btn{background:#21262d;color:#e6e6e6;border:1px solid #30363d;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;font-family:inherit}
-.btn:hover{border-color:#6366f1}
-.btn.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;font-weight:600;padding:9px 20px}
+.foot{padding:12px 18px;border-top:1px solid #45373a;display:flex;gap:8px;align-items:center;background:#1a1310}
+.btn{background:#352a24;color:#e6e6e6;border:1px solid #45373a;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;font-family:inherit}
+.btn:hover{border-color:#d98a4a}
+.btn.primary{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border:none;font-weight:600;padding:9px 20px}
 .btn.primary:disabled{opacity:.4;cursor:not-allowed}
-.snippet{font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;background:#0b1018;border:1px solid #30363d;padding:10px;border-radius:6px;white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:10px}
+.snippet{font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;background:#1a1310;border:1px solid #45373a;padding:10px;border-radius:6px;white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:10px}
 .warn{margin:8px 12px;padding:8px 12px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:5px;color:#fca5a5;font-size:11px}
-.chain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:5px;margin-bottom:8px;max-height:180px;overflow-y:auto;padding:4px;background:#0b1018;border:1px solid #30363d;border-radius:6px}
-.chain-grid button{background:#161b22;border:1px solid #30363d;color:#cbd5e1;padding:5px 7px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chain-grid button:hover{border-color:#6366f1;color:#e0e7ff}
-.chain-grid button.on{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.15));border-color:#6366f1;color:#e0e7ff}
-.chain-item{background:#0b1018;border:1px solid #30363d;border-left:2px solid #a78bfa;border-radius:6px;padding:8px 10px;margin-bottom:5px}
+.chain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:5px;margin-bottom:8px;max-height:180px;overflow-y:auto;padding:4px;background:#1a1310;border:1px solid #45373a;border-radius:6px}
+.chain-grid button{background:#2d231f;border:1px solid #45373a;color:#d4c7b8;padding:5px 7px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chain-grid button:hover{border-color:#d98a4a;color:#f5ddc4}
+.chain-grid button.on{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.15));border-color:#d98a4a;color:#f5ddc4}
+.chain-grid .mchip{position:relative}
+.chain-grid .mchip button{width:100%;padding-right:16px}
+.chain-grid .mfav{position:absolute;top:3px;right:4px;font-size:9px;line-height:1;cursor:pointer;color:#5a4842;user-select:none}
+.chain-grid .mfav:hover{color:#e6b088}
+.chain-grid .mfav.on{color:#e69f67}
+.chain-item{background:#1a1310;border:1px solid #45373a;border-left:2px solid #e6b088;border-radius:6px;padding:8px 10px;margin-bottom:5px}
 .chain-item .chain-hd{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.chain-item .chain-hd code{flex:1;font-size:11px;color:#a78bfa;font-family:Consolas,monospace}
+.chain-item .chain-hd code{flex:1;font-size:11px;color:#e6b088;font-family:Consolas,monospace}
 .chain-item .chain-args{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:11px}
-.chain-item .chain-args label{color:#94a3b8;font-family:Consolas,monospace;align-self:center}
-.chain-item .chain-args input,.chain-item .chain-args select{background:#161b22;border:1px solid #30363d;color:#e6e6e6;padding:3px 6px;border-radius:4px;font-size:11px;font-family:Consolas,monospace}
-.chain-item .chain-doc{font-size:10px;color:#64748b;margin-top:4px;font-style:italic}
+.chain-item .chain-args label{color:#a89686;font-family:Consolas,monospace;align-self:center}
+.chain-item .chain-args input,.chain-item .chain-args select{background:#2d231f;border:1px solid #45373a;color:#e6e6e6;padding:3px 6px;border-radius:4px;font-size:11px;font-family:Consolas,monospace}
+.chain-item .chain-doc{font-size:10px;color:#8a7a6d;margin-top:4px;font-style:italic}
 .theme-pick{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
-.theme-pick button{background:#161b22;border:1px solid #30363d;color:#cbd5e1;padding:5px 11px;border-radius:14px;font-size:11px;cursor:pointer;font-family:inherit}
-.theme-pick button.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent;font-weight:600}
-.src-tag{font-size:9.5px;padding:2px 7px;border-radius:8px;background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-left:6px}
-.aliases{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 14px;background:#0a0e15;border-bottom:1px solid #1f2733}
-.aliases .alias-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:#64748b;font-weight:700}
-.aliases select{background:#161b22;border:1px solid #30363d;color:#a78bfa;padding:3px 8px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer}
-.aliases select:focus{outline:none;border-color:#a78bfa}
-.aliases .alias-hint{font-size:9.5px;color:#64748b;font-style:italic}
+.theme-pick button{background:#2d231f;border:1px solid #45373a;color:#d4c7b8;padding:5px 11px;border-radius:14px;font-size:11px;cursor:pointer;font-family:inherit}
+.theme-pick button.on{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border-color:transparent;font-weight:600}
+.src-tag{font-size:9.5px;padding:2px 7px;border-radius:8px;background:rgba(99,102,241,.15);color:#e6b088;border:1px solid rgba(99,102,241,.3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-left:6px}
+.aliases{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 14px;background:#1a1310;border-bottom:1px solid #3a2d27}
+.aliases .alias-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:#8a7a6d;font-weight:700}
+.aliases select{background:#2d231f;border:1px solid #45373a;color:#e6b088;padding:3px 8px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer}
+.aliases select:focus{outline:none;border-color:#e6b088}
+.aliases .alias-hint{font-size:9.5px;color:#8a7a6d;font-style:italic}
 </style></head><body>
 <div class="app">
 <div class="left" id="leftPanel">
@@ -2733,7 +3166,7 @@ body.theme-light .panel-bar{background:#f8fafc;border-color:#e2e8f0;color:#47556
 <div class="mid">
 <div class="mini-preview" id="miniPrev">
   <div class="preview-bar" id="pbar"><span class="dot"></span><span id="pstatus">Idle</span><span class="bytes" id="pbytes"></span><span style="flex:1"></span><button class="btn" id="rerender" style="padding:3px 9px;font-size:10px">Re-render</button><button class="btn" id="miniCollapse" style="padding:3px 9px;font-size:10px" title="Collapse / expand preview">\u25B2</button></div>
-  <div class="preview-wrap" id="pwrap"><div class="preview-msg" id="pmsg" style="padding:14px;font-size:11px;color:#94a3b8;text-align:center">Pick a chart on the left.</div></div>
+  <div class="preview-wrap" id="pwrap"><div class="preview-msg" id="pmsg" style="padding:14px;font-size:11px;color:#a89686;text-align:center">Pick a chart on the left.</div></div>
 </div>
 <div class="resizer-h" id="resizeMini"></div>
 <div class="head"><h1 id="title">Configuration</h1><span class="tag" id="tag">pick a chart</span><span class="src-tag" id="srcTag"></span><span class="head-spacer"></span><button class="theme-toggle" id="themeToggle" title="Toggle dark / light theme">\u263E Dark</button></div>
@@ -2752,6 +3185,8 @@ const COMMON = PAYLOAD.common_kwargs || [];
 const CHART_METHODS = PAYLOAD.chart_methods || [];
 const THEMES = PAYLOAD.themes || [];
 const CHART_METHOD_MAP = {}; for (const m of CHART_METHODS) CHART_METHOD_MAP[m.name] = m;
+let FAV_METHODS = new Set(PAYLOAD.fav_methods || []);
+function toggleFavMethod(name){ v.postMessage({type:'toggleFavMethod', name}); if (FAV_METHODS.has(name)) FAV_METHODS.delete(name); else FAV_METHODS.add(name); }
 
 const UI_STATE_DEFAULTS = { leftWidth:260, miniHeight:280, leftCollapsed:false, miniCollapsed:false, themeMode:'dark', sectionCollapsed:{}, lastChart:null, lastKwargs:{}, lastChain:[], lastTheme:'', lastTitle:'', lastLabels:'', lastValues:'' };
 let UI_STATE = Object.assign({}, UI_STATE_DEFAULTS, (v.getState && v.getState()) || {});
@@ -2888,7 +3323,7 @@ function select(e) {
         var lbl = vv.aliases && vv.aliases.length ? (vv.key + '  \u2014  ' + vv.aliases.join(', ')) : vv.key;
         return '<option value="' + vv.key + '"' + (vv.key === current.variantKey ? ' selected' : '') + '>' + lbl + '</option>';
       }).join('');
-      variantsEl.innerHTML = '<span class="alias-lbl" style="color:#a78bfa">variant</span><select id="variantSel">' + vopts + '</select><span class="alias-hint">' + variantSpec.variants.length + ' sub-types \u2014 different rendering, same family</span>';
+      variantsEl.innerHTML = '<span class="alias-lbl" style="color:#e6b088">variant</span><select id="variantSel">' + vopts + '</select><span class="alias-hint">' + variantSpec.variants.length + ' sub-types \u2014 different rendering, same family</span>';
       var vs = document.getElementById('variantSel');
       vs.addEventListener('change', function(){ current.variantKey = vs.value; updateSnippet(); scheduleRender(); });
     }
@@ -2977,7 +3412,7 @@ function renderChainJS() {
 function fieldInputHtml(f, value) {
   const id = 'fld_' + f.key;
   if (f.kind === 'bool') {
-    return '<div class="row"><div class="switch ' + (value ? 'on':'') + '" data-k="'+f.key+'" data-toggle="1"></div><span style="font-size:11px;color:#94a3b8">'+(value?'on':'off')+'</span></div>';
+    return '<div class="row"><div class="switch ' + (value ? 'on':'') + '" data-k="'+f.key+'" data-toggle="1"></div><span style="font-size:11px;color:#a89686">'+(value?'on':'off')+'</span></div>';
   }
   if (f.kind === 'enum') {
     const opts = (f.options||['']).map(o => '<option ' + (String(o) === String(value||'') ? 'selected':'') + '>'+o+'</option>').join('');
@@ -3003,7 +3438,7 @@ function renderForm() {
       const valName = PAYLOAD.detected_values_lit ? 'literal' : (PAYLOAD.detected_values || '\u2014');
       const lbl = lblName !== '\u2014' ? '<code>'+lblName+'</code>' : '\u2014';
       const val = valName !== '\u2014' ? '<code>'+valName+'</code>' : '\u2014';
-      html += '<div class="hint" style="margin-bottom:10px;background:rgba(99,102,241,.08);border-left:2px solid #6366f1;padding:6px 10px;border-radius:4px;font-size:11px;color:#94a3b8">Detected from your file \u2014 labels: '+lbl+', values: '+val+'</div>';
+      html += '<div class="hint" style="margin-bottom:10px;background:rgba(99,102,241,.08);border-left:2px solid #d98a4a;padding:6px 10px;border-radius:4px;font-size:11px;color:#a89686">Detected from your file \u2014 labels: '+lbl+', values: '+val+'</div>';
     }
     html += '<div class="f"><label>title</label><input type="text" id="dataTitle" value="' + (title||'').replace(/"/g,'&quot;') + '"></div>';
     html += '<div class="f"><label>labels</label><textarea id="dataLabels">' + labels + '</textarea></div>';
@@ -3014,10 +3449,15 @@ function renderForm() {
       html += '<div class="section"><h2>Theme</h2><div class="theme-pick"><button class="' + (!theme ? 'on':'') + '" data-theme="">none</button>' + tBtns + '</div></div>';
     }
     if (CHART_METHODS.length) {
-      html += '<div class="section"><h2>Chain methods <span style="color:#64748b;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">click to add</span></h2><div class="chain-grid">';
-      for (const m of CHART_METHODS) {
+      const sortedMethods = CHART_METHODS.slice().sort((a,b) => {
+        const fa = FAV_METHODS.has(a.name) ? 0 : 1, fb = FAV_METHODS.has(b.name) ? 0 : 1;
+        return fa - fb;
+      });
+      html += '<div class="section"><h2>Chain methods <span style="color:#8a7a6d;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">click to add · ★ to favorite</span></h2><div class="chain-grid">';
+      for (const m of sortedMethods) {
         const on = chain.find(c => c.name === m.name) ? ' on' : '';
-        html += '<button class="' + on.trim() + '" data-method="'+m.name+'" title="'+(m.doc||m.name).replace(/"/g,'&quot;').slice(0,140)+'">.'+m.name+'</button>';
+        const fav = FAV_METHODS.has(m.name) ? ' on' : '';
+        html += '<div class="mchip"><button class="' + on.trim() + '" data-method="'+m.name+'" title="'+(m.doc||m.name).replace(/"/g,'&quot;').slice(0,140)+'">.'+m.name+'</button><span class="mfav'+fav+'" data-favmethod="'+m.name+'" title="Favorite this method">★</span></div>';
       }
       html += '</div><div id="chainList"></div></div>';
     }
@@ -3025,7 +3465,7 @@ function renderForm() {
       const inUse = current.kwargs.filter(k => !(k.key in kwargs));
       if (inUse.length) {
         const opts = inUse.map(c => '<option value="'+c.key+'">'+c.key+' \u00b7 '+c.kind+'</option>').join('');
-        html += '<div class="section"><h2>Per-chart kwargs <span style="color:#64748b;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">from sp.'+current.id+' signature</span></h2><div class="add-kw"><select id="chartKwPicker">'+opts+'</select><button id="chartKwAdd">Add</button></div></div>';
+        html += '<div class="section"><h2>Per-chart kwargs <span style="color:#8a7a6d;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">from sp.'+current.id+' signature</span></h2><div class="add-kw"><select id="chartKwPicker">'+opts+'</select><button id="chartKwAdd">Add</button></div></div>';
       }
     }
   } else if (current.kind === 'ml_fn') {
@@ -3044,9 +3484,9 @@ function renderForm() {
   }
   if (remaining.length) {
     const opts = remaining.map(c => '<option value="'+c.key+'">'+c.key+' \u00b7 '+c.kind+'</option>').join('');
-    html += '<div class="add-kw"><select id="kwPicker">'+opts+'</select><input id="kwCustom" type="text" placeholder="or type name\u2026" style="flex:1;background:#0b1018;border:1px solid #30363d;color:#e6e6e6;padding:6px;border-radius:5px;font-family:Consolas,monospace;font-size:12px"><button id="kwAdd">Add</button></div>';
+    html += '<div class="add-kw"><select id="kwPicker">'+opts+'</select><input id="kwCustom" type="text" placeholder="or type name\u2026" style="flex:1;background:#1a1310;border:1px solid #45373a;color:#e6e6e6;padding:6px;border-radius:5px;font-family:Consolas,monospace;font-size:12px"><button id="kwAdd">Add</button></div>';
   } else {
-    html += '<div class="add-kw"><input id="kwCustom" type="text" placeholder="custom kwarg name\u2026" style="flex:1;background:#0b1018;border:1px solid #30363d;color:#e6e6e6;padding:6px;border-radius:5px;font-family:Consolas,monospace;font-size:12px"><button id="kwAdd">Add</button></div>';
+    html += '<div class="add-kw"><input id="kwCustom" type="text" placeholder="custom kwarg name\u2026" style="flex:1;background:#1a1310;border:1px solid #45373a;color:#e6e6e6;padding:6px;border-radius:5px;font-family:Consolas,monospace;font-size:12px"><button id="kwAdd">Add</button></div>';
   }
   html += '</div><pre class="snippet" id="snip"></pre>';
 
@@ -3165,6 +3605,11 @@ function attachHandlers() {
     chain.push({ name, positional, kwargs: kw });
     renderForm(); scheduleRender();
   }));
+  document.querySelectorAll('[data-favmethod]').forEach(s => s.addEventListener('click', ev => {
+    ev.stopPropagation();
+    toggleFavMethod(s.getAttribute('data-favmethod'));
+    renderForm();
+  }));
 }
 
 function quickAdd(key) {
@@ -3179,7 +3624,7 @@ function renderKwList() {
   const div = document.getElementById('kwList');
   if (!div) return;
   if (Object.keys(kwargs).length === 0) {
-    div.innerHTML = '<div class="hint" style="font-size:11px;color:#64748b;padding:6px">No kwargs yet. Pick one above.</div>';
+    div.innerHTML = '<div class="hint" style="font-size:11px;color:#8a7a6d;padding:6px">No kwargs yet. Pick one above.</div>';
     return;
   }
   let html = '';
@@ -3219,7 +3664,7 @@ function updateSnippet() { const s = document.getElementById('snip'); if (s) s.t
 function scheduleRender() {
   if (!current) return;
   if (current.kind !== 'chart') {
-    pwrap.innerHTML = '<div class="preview-msg" style="padding:14px;font-size:11px;color:#94a3b8;text-align:center">No preview for ML entries.</div>';
+    pwrap.innerHTML = '<div class="preview-msg" style="padding:14px;font-size:11px;color:#a89686;text-align:center">No preview for ML entries.</div>';
     pbytes.textContent = ''; pstatus.textContent = 'ML \u2014 no preview'; pbar.classList.remove('busy','err');
     return;
   }
@@ -3235,7 +3680,9 @@ function scheduleRender() {
 
 window.addEventListener('message', ev => {
   const m = ev.data;
-  if (!m || m.type !== 'rendered') return;
+  if (!m) return;
+  if (m.type === 'favMethods') { FAV_METHODS = new Set(m.names || []); if (current && current.kind === 'chart') renderForm(); return; }
+  if (m.type !== 'rendered') return;
   pbar.classList.remove('busy');
   if (m.error) {
     pbar.classList.add('err'); pstatus.textContent = 'Render failed'; pbytes.textContent = '';
