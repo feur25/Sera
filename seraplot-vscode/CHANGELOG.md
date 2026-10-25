@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0 - 2026-10-25
+
+- **Fix — some charts' demo data only exists under a non-default variant**: `cartogram` (and likely other map-family charts) registers its documentation demo under `variant="dorling"`, but the Studio was only ever asking for the bare/selected variant and giving up on `None`. It now walks the chart's own variant list (starting with its registered default) until one has demo data, instead of falling back straight to the broken generic placeholder.
+- **Fix — collapsing the chart list made it impossible to reopen**: the collapse button shared a row with the title and the new "+ Folder" button, so collapsing the panel to its narrow strip pushed the collapse button itself out of view — there was no way back. The narrow strip now shows only the collapse arrow, which also flips direction (◀/▶) and updates its tooltip so it's clear which way it'll go. The mini-preview's collapse arrow does the same (▲/▼).
+- **Gallery, Theme Studio and System Monitor now open beside your editor** instead of replacing whatever tab you had open — the same placement Chart Studio and Live Preview already used.
+- **Chart Studio — Recently used**: the last 8 charts you've opened now show in their own group at the top of the list, above Favorites, so jumping back to something you just configured doesn't mean re-scanning the whole catalog.
+- **Chart Studio — Copy button + Ctrl+Enter**: the generated code snippet has its own Copy button now (next to Insert), and Ctrl+Enter / Cmd+Enter inserts at the cursor without reaching for the mouse.
+
 ## 0.10.0 - 2026-10-25
 
 - **Fix — Chart Studio's live preview was empty for several chart families**: heatmap, candlestick/OHLC, sankey, chord and wordcloud's network variant always rendered 0 bytes, and treemap/choropleth rendered but silently without their real hierarchy/map data. The Studio always called `sp.<chart>(title, labels=[...], values=[...])` regardless of what the chart actually needed. It now pulls each chart's own documentation demo data (`sp.demo(id, variant)`) and uses that instead — real per-family data (`col_labels`+matrix for heatmap, `open/high/low/close` for candlestick, `edges_i/edges_j/edges_w` for sankey, etc.). If you've typed real data into the Chart data panel (or it was detected from your open file), that still takes priority over the demo data.

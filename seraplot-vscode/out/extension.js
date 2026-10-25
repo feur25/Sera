@@ -147,6 +147,15 @@ function toggleFavMethod(name) {
         list.push(name);
     setFavMethods(list);
 }
+const RECENT_CHARTS_KEY = "seraplot.recentCharts";
+function recentCharts() { return extCtx ? extCtx.globalState.get(RECENT_CHARTS_KEY, []) : []; }
+function pushRecentChart(chartId) {
+    if (!extCtx || !chartId)
+        return;
+    const list = recentCharts().filter(id => id !== chartId);
+    list.unshift(chartId);
+    extCtx.globalState.update(RECENT_CHARTS_KEY, list.slice(0, 8));
+}
 function folders() { return extCtx ? extCtx.globalState.get(FOLDERS_KEY, []) : []; }
 function setFolders(list) { if (extCtx) extCtx.globalState.update(FOLDERS_KEY, list); }
 function createFolder(name) {
@@ -865,6 +874,27 @@ function fetchDemoSnippet(py, env, chartId, variant) {
             resolve(result);
         });
     });
+}
+async function fetchDemoSnippetResilient(py, env, chartId, selectedVariant, variantsEntry) {
+    const candidates = [];
+    if (selectedVariant)
+        candidates.push(selectedVariant);
+    if (variantsEntry && variantsEntry.default && !candidates.includes(variantsEntry.default))
+        candidates.push(variantsEntry.default);
+    if (!candidates.includes(undefined))
+        candidates.push(undefined);
+    if (variantsEntry && Array.isArray(variantsEntry.variants)) {
+        for (const v of variantsEntry.variants) {
+            if (v && v.key && !candidates.includes(v.key))
+                candidates.push(v.key);
+        }
+    }
+    for (const v of candidates) {
+        const result = await fetchDemoSnippet(py, env, chartId, v);
+        if (result)
+            return result;
+    }
+    return null;
 }
 function renderChainSuffix(chain, methods) {
     if (!Array.isArray(chain) || chain.length === 0)
@@ -2255,7 +2285,7 @@ ${(() => {
 }
 async function openGallery(context) {
     const cat = await (0, runtimeCatalog_1.loadCatalog)(context);
-    const panel = vscode.window.createWebviewPanel("seraplotGallery", "SeraPlot Gallery", vscode.ViewColumn.Active, { enableScripts: true });
+    const panel = vscode.window.createWebviewPanel("seraplotGallery", "SeraPlot Gallery", { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, { enableScripts: true, retainContextWhenHidden: true });
     try {
         panel.iconPath = vscode.Uri.file(path.join(context.extensionPath, "logo.png"));
     }
@@ -2425,7 +2455,7 @@ function sysmonErrorHtml(msg) {
 </body></html>`;
 }
 function openSysmon(context) {
-    const panel = vscode.window.createWebviewPanel("seraplotSysmon", "System Monitor", vscode.ViewColumn.Active, { enableScripts: true, retainContextWhenHidden: true });
+    const panel = vscode.window.createWebviewPanel("seraplotSysmon", "System Monitor", { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, { enableScripts: true, retainContextWhenHidden: true });
     try {
         panel.iconPath = vscode.Uri.file(path.join(context.extensionPath, "logo.png"));
     }
@@ -2593,7 +2623,7 @@ function openMethodToggle(context) {
     });
 }
 function openThemeStudio(context) {
-    const panel = vscode.window.createWebviewPanel("seraplotThemeStudio", "SeraPlot Theme Studio", vscode.ViewColumn.Active, { enableScripts: true });
+    const panel = vscode.window.createWebviewPanel("seraplotThemeStudio", "SeraPlot Theme Studio", { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, { enableScripts: true, retainContextWhenHidden: true });
     try {
         panel.iconPath = vscode.Uri.file(path.join(context.extensionPath, "logo.png"));
     }
@@ -3132,6 +3162,7 @@ async function openChartStudio(context) {
         fav_methods: favMethods(),
         fav_charts: favCharts(),
         studio_folders: folders(),
+        recent_charts: recentCharts(),
         themes: cat.themes || [],
         aliases: mergedAliases,
         variants: cat.chart_variants || {},
@@ -3147,6 +3178,15 @@ async function openChartStudio(context) {
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (!msg)
             return;
+        if (msg.type === "pushRecent" && msg.id) {
+            pushRecentChart(msg.id);
+            return;
+        }
+        if (msg.type === "copySnippet" && typeof msg.code === "string") {
+            await vscode.env.clipboard.writeText(msg.code);
+            vscode.window.setStatusBarMessage("SeraPlot: snippet copied to clipboard", 2500);
+            return;
+        }
         if (msg.type === "toggleFavMethod" && msg.name) {
             toggleFavMethod(msg.name);
             panel.webview.postMessage({ type: "favMethods", names: favMethods() });
@@ -3197,7 +3237,7 @@ async function openChartStudio(context) {
             let dataArgs = `labels=${labels}, values=${values}`;
             let usedDemo = false;
             if (!hasUserData) {
-                const demoSrc = await fetchDemoSnippet(py, env, msg.id, msg.kwargs && msg.kwargs.variant);
+                const demoSrc = await fetchDemoSnippetResilient(py, env, msg.id, msg.kwargs && msg.kwargs.variant, cat.chart_variants && cat.chart_variants[msg.id]);
                 const demoParts = demoSrc ? demoArgsWithoutTitle(demoSrc, msg.id) : null;
                 if (demoParts && demoParts.length) {
                     dataArgs = demoParts.join(", ");
@@ -3368,6 +3408,8 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .mid{flex:1}
 .left.collapsed{width:34px!important}
 .left.collapsed .search,.left.collapsed .list{opacity:0;pointer-events:none}
+.left.collapsed .panel-bar{padding:4px 0;justify-content:center}
+.left.collapsed .panel-bar .pb-title,.left.collapsed .panel-bar #newFolderBtn{display:none}
 .search,.list{transition:opacity .15s ease}
 .resizer-v{width:5px;cursor:col-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
 .resizer-v:hover{background:#d98a4a}
@@ -3501,7 +3543,7 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 <div id="aliases" class="aliases" style="display:none"></div>
 <div id="catalogWarn"></div>
 <div class="body" id="body"><div class="empty">Pick a chart on the left.<br><br>Every chart you select unlocks <b>all its kwargs</b> + <b>every chainable method</b> (<code>.set_bg</code>, <code>.text_auto</code>, <code>.crosshair</code>, …) discovered from the active wheel.</div></div>
-<div class="foot"><button class="btn" id="reset">Reset</button><button class="btn primary" id="insert" disabled>Insert at cursor</button></div>
+<div class="foot"><button class="btn" id="reset">Reset</button><button class="btn" id="copySnip" disabled title="Copy generated code">Copy</button><button class="btn primary" id="insert" disabled title="Insert at cursor (Ctrl+Enter)">Insert at cursor</button></div>
 </div>
 </div>
 <script>
@@ -3516,6 +3558,7 @@ let FAV_METHODS = new Set(PAYLOAD.fav_methods || []);
 function toggleFavMethod(name){ v.postMessage({type:'toggleFavMethod', name}); if (FAV_METHODS.has(name)) FAV_METHODS.delete(name); else FAV_METHODS.add(name); }
 let FAV_CHART_KEYS = new Set(PAYLOAD.fav_charts || []);
 let STUDIO_FOLDERS = PAYLOAD.studio_folders || [];
+let RECENT_CHART_IDS = PAYLOAD.recent_charts || [];
 function isFavChartId(id){ if (FAV_CHART_KEYS.has(id)) return true; let found = false; FAV_CHART_KEYS.forEach(function(k){ if (k.indexOf(id + '::') === 0) found = true; }); return found; }
 
 const UI_STATE_DEFAULTS = { leftWidth:260, miniHeight:280, leftCollapsed:false, miniCollapsed:false, themeMode:'dark', sectionCollapsed:{}, lastChart:null, lastKwargs:{}, lastChain:[], lastTheme:'', lastTitle:'', lastLabels:'', lastValues:'' };
@@ -3526,6 +3569,10 @@ function applyUIState(){
   const mp = document.getElementById('miniPrev');
   if (lp){ lp.style.width = (UI_STATE.leftWidth||260)+'px'; lp.classList.toggle('collapsed', !!UI_STATE.leftCollapsed); }
   if (mp){ mp.style.height = (UI_STATE.miniHeight||280)+'px'; mp.classList.toggle('collapsed', !!UI_STATE.miniCollapsed); }
+  const lc = document.getElementById('leftCollapse');
+  if (lc){ lc.textContent = UI_STATE.leftCollapsed ? '\u25B6' : '\u25C0'; lc.title = UI_STATE.leftCollapsed ? 'Expand chart list' : 'Collapse chart list'; }
+  const mc = document.getElementById('miniCollapse');
+  if (mc){ mc.textContent = UI_STATE.miniCollapsed ? '\u25BC' : '\u25B2'; mc.title = UI_STATE.miniCollapsed ? 'Expand preview' : 'Collapse preview'; }
   document.body.classList.toggle('theme-light', UI_STATE.themeMode === 'light');
   const tt = document.getElementById('themeToggle');
   if (tt) tt.textContent = UI_STATE.themeMode === 'light' ? '\u2600 Light' : '\u263E Dark';
@@ -3587,6 +3634,7 @@ const body = document.getElementById('body');
 const titleEl = document.getElementById('title');
 const tag = document.getElementById('tag');
 const insertBtn = document.getElementById('insert');
+const copySnipBtn = document.getElementById('copySnip');
 const resetBtn = document.getElementById('reset');
 const rerenderBtn = document.getElementById('rerender');
 const pbar = document.getElementById('pbar');
@@ -3644,6 +3692,13 @@ function renderList(filter){
     groups[e.group].push(e);
   }
   list.innerHTML = '';
+  if (!f && RECENT_CHART_IDS.length) {
+    const recentEntries = RECENT_CHART_IDS.map(id => CATALOG.find(c => c.id === id && c.kind === 'chart')).filter(Boolean);
+    if (recentEntries.length) {
+      const h = document.createElement('div'); h.className='grp'; h.textContent = '⏱ Recently used'; list.appendChild(h);
+      recentEntries.forEach(e => list.appendChild(makeItem(e)));
+    }
+  }
   if (!f && FAV_CHART_KEYS.size) {
     const favEntries = [];
     FAV_CHART_KEYS.forEach(function(key){
@@ -3676,6 +3731,8 @@ function select(e) {
   if (e.kind === 'chart') {
     labels = PAYLOAD.detected_labels_lit ? PAYLOAD.detected_labels_lit : (PAYLOAD.detected_labels ? PAYLOAD.detected_labels : '["A","B","C","D","E"]');
     values = PAYLOAD.detected_values_lit ? PAYLOAD.detected_values_lit : (PAYLOAD.detected_values ? PAYLOAD.detected_values : '[10, 20, 15, 25, 18]');
+    RECENT_CHART_IDS = [e.id].concat(RECENT_CHART_IDS.filter(id => id !== e.id)).slice(0, 8);
+    v.postMessage({ type: 'pushRecent', id: e.id });
   }
   kwargs = {};
   chain = [];
@@ -3715,6 +3772,7 @@ function select(e) {
     }
   }
   insertBtn.disabled = false;
+  copySnipBtn.disabled = false;
   renderList(q.value);
   renderForm();
   scheduleRender();
@@ -4126,7 +4184,10 @@ window.addEventListener('message', ev => {
 });
 
 resetBtn.addEventListener('click', () => { if (current) { kwargs = {}; chain = []; theme = ''; if (current.kind === 'chart') { labels = '["A","B","C","D","E"]'; values = '[10, 20, 15, 25, 18]'; } renderForm(); scheduleRender(); persistChart(); } });
-insertBtn.addEventListener('click', () => { if (current) { const sendKwargs = Object.assign({}, kwargs); if (current.kind === 'chart' && current.variantKey) sendKwargs.variant = current.variantKey; v.postMessage({ type:'insert', id: current.callId || current.id, kind: current.kind, title, labels, values, kwargs: sendKwargs, chain, theme }); } });
+function doInsert(){ if (current) { const sendKwargs = Object.assign({}, kwargs); if (current.kind === 'chart' && current.variantKey) sendKwargs.variant = current.variantKey; v.postMessage({ type:'insert', id: current.callId || current.id, kind: current.kind, title, labels, values, kwargs: sendKwargs, chain, theme }); } }
+insertBtn.addEventListener('click', doInsert);
+copySnipBtn.addEventListener('click', () => { if (!current) return; v.postMessage({ type:'copySnippet', code: buildSnippetText() }); copySnipBtn.textContent = 'Copied!'; setTimeout(() => { copySnipBtn.textContent = 'Copy'; }, 1200); });
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !insertBtn.disabled) { e.preventDefault(); doInsert(); } });
 rerenderBtn.addEventListener('click', () => scheduleRender());
 q.addEventListener('input', () => renderList(q.value));
 const newFolderBtn = document.getElementById('newFolderBtn');
