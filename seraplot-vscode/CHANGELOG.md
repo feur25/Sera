@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.0 - 2026-10-25
+
+- **Chart Studio — Chain methods now shows only what actually does something on the selected chart.** There is no per-chart compatibility list anywhere in the engine (confirmed by reading the Rust source: the ~480 chainable methods are flatly merged onto one generic `Chart` struct with zero per-family metadata), so a static list was never going to be accurate. Instead, selecting a chart now renders it once with its real documentation demo data and tries every method against that real instance, keeping only the ones that actually change the rendered output — empirical, not guessed. This caught a genuine upstream bug in the process: `.title()`/`.x_label()`/`.y_label()`/`color_hex` are complete no-ops on pie charts (verified directly against the engine, not a VS Code extension issue). Results are cached per chart+variant so this only costs anything on the first visit to a chart. A "N hidden — show all" link stays available in case the probe ever gets something wrong.
+- Fixed the `seraplot` npm package being two versions behind (2.8.5 → 2.8.7) and carrying stale pre-rename repo/homepage URLs in its `package.json`.
+
 ## 0.12.0 - 2026-10-25
 
 - **Audited every chart family's demo-data fallback, not just the ones reported broken**: wrote a real script that iterates all 108 registered chart families through the same resolution path Chart Studio uses and renders each one. Found and fixed the actual class of bug: several families (`cartogram` among them) only register documentation demo data under one specific non-default variant, so a bare/default-variant lookup came back empty even though the resolver already existed from the previous fix. The resolver now also retries every other variant the chart has before giving up. 107 of 108 real chart families now confirmed render non-empty through this path (the 108th, `plot_3d_types`, isn't a real callable chart — it's a stray non-chart entry in the registry, unreachable from the UI).

@@ -898,6 +898,77 @@ async function fetchDemoSnippetResilient(py, env, chartId, selectedVariant, vari
     }
     return null;
 }
+function probeDummyLiteral(kind) {
+    switch (kind) {
+        case "bool": return "True";
+        case "int": return "97";
+        case "float": return "97.5";
+        case "color": return "0xFF00FF";
+        case "color_str": return '"#ff00ff"';
+        case "json": return "[97, 12]";
+        default: return '"__sp_probe__"';
+    }
+}
+function probeArgsFor(method) {
+    const parts = [];
+    for (const p of (method.params || [])) {
+        const kwDef = (method.kwargs || []).find(k => k.key === p);
+        parts.push(probeDummyLiteral(kwDef ? kwDef.kind : "string"));
+    }
+    return parts.join(", ");
+}
+const applicableMethodsCache = new Map();
+async function probeApplicableMethods(py, env, cat, chartId, variant) {
+    const cacheKey = chartId + "::" + (variant || "");
+    if (applicableMethodsCache.has(cacheKey))
+        return applicableMethodsCache.get(cacheKey);
+    const methods = cat.chart_methods || [];
+    if (!methods.length)
+        return null;
+    const variantsEntry = cat.chart_variants && cat.chart_variants[chartId];
+    const demoSrc = await fetchDemoSnippetResilient(py, env, chartId, variant, variantsEntry);
+    const demoParts = demoSrc ? demoArgsWithoutTitle(demoSrc, chartId) : null;
+    const dataArgs = demoParts && demoParts.length ? demoParts.join(", ") : `labels=["A","B","C","D","E"], values=[10, 20, 15, 25, 18]`;
+    const variantArg = variant ? `, variant=${JSON.stringify(String(variant))}` : "";
+    const probeLines = methods.map(m => `    ("${m.name}", "${probeArgsFor(m).replace(/"/g, "\\\"")}"),`);
+    const code = [
+        "import sys, json, seraplot as sp",
+        "sp.set_auto_display(False)",
+        "_probes = [",
+        ...probeLines,
+        "]",
+        "try:",
+        `    chart = sp.${chartId}(${JSON.stringify(chartId)}, ${dataArgs}${variantArg})`,
+        "except Exception as e:",
+        "    sys.stdout.write(json.dumps([]))",
+        "    sys.exit(0)",
+        "baseline = getattr(chart, 'html', None)",
+        "applicable = []",
+        "for _name, _argstr in _probes:",
+        "    try:",
+        "        _r = eval('chart.' + _name + '(' + _argstr + ')')",
+        "        if _r is not None and hasattr(_r, 'html') and _r.html != baseline:",
+        "            applicable.append(_name)",
+        "    except Exception:",
+        "        pass",
+        "sys.stdout.write(json.dumps(applicable))",
+    ].join("\n");
+    return new Promise(resolve => {
+        cp.execFile(py, ["-c", code], { timeout: 20000, maxBuffer: 16 * 1024 * 1024, env }, (err, stdout) => {
+            let names = null;
+            if (!err && stdout) {
+                try {
+                    const parsed = JSON.parse(stdout.trim());
+                    if (Array.isArray(parsed) && parsed.length)
+                        names = parsed;
+                }
+                catch (_e) { }
+            }
+            applicableMethodsCache.set(cacheKey, names);
+            resolve(names);
+        });
+    });
+}
 function renderChainSuffix(chain, methods) {
     if (!Array.isArray(chain) || chain.length === 0)
         return "";
@@ -3230,6 +3301,13 @@ async function openChartStudio(context) {
             panel.webview.postMessage({ type: "favSnapshot", fav_charts: favCharts(), folders: folders() });
             return;
         }
+        if (msg.type === "probeMethods" && msg.id) {
+            const probePy = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
+            const probeEnv = buildSpawnEnv(cat);
+            const names = await probeApplicableMethods(probePy, probeEnv, cat, msg.id, msg.variant);
+            panel.webview.postMessage({ type: "applicableMethods", id: msg.id, names });
+            return;
+        }
         if (msg.type === "addToStudioFolder" && msg.id) {
             const list = folders();
             const picks = list.map(f => ({ label: f.name, id: f.id })).concat([{ label: "+ New Folder…", id: "" }]);
@@ -3542,6 +3620,9 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .chain-grid .mfav:active{transform:scale(1.3)}
 .chain-grid .mfav:hover{color:#e6b088}
 .chain-grid .mfav.on{color:#e69f67}
+.probe-note{color:#6b5d50;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px}
+.probe-note a{color:#d98a4a;text-decoration:none;cursor:pointer}
+.probe-note a:hover{text-decoration:underline}
 .chain-item{background:#1a1310;border:1px solid #45373a;border-left:2px solid #e6b088;border-radius:6px;padding:8px 10px;margin-bottom:5px}
 .chain-item .chain-hd{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .chain-item .chain-hd code{flex:1;font-size:11px;color:#e6b088;font-family:Consolas,monospace}
@@ -3593,6 +3674,9 @@ function toggleFavMethod(name){ v.postMessage({type:'toggleFavMethod', name}); i
 let FAV_CHART_KEYS = new Set(PAYLOAD.fav_charts || []);
 let STUDIO_FOLDERS = PAYLOAD.studio_folders || [];
 let RECENT_CHART_IDS = PAYLOAD.recent_charts || [];
+let APPLICABLE_METHODS = null;
+let probingMethodsForId = null;
+let showAllMethods = false;
 function isFavChartId(id){ if (FAV_CHART_KEYS.has(id)) return true; let found = false; FAV_CHART_KEYS.forEach(function(k){ if (k.indexOf(id + '::') === 0) found = true; }); return found; }
 
 const UI_STATE_DEFAULTS = { leftWidth:260, miniHeight:280, leftCollapsed:false, miniCollapsed:false, themeMode:'dark', sectionCollapsed:{}, lastChart:null, lastKwargs:{}, lastChain:[], lastTheme:'', lastTitle:'', lastLabels:'', lastValues:'' };
@@ -3772,6 +3856,10 @@ function select(e) {
     values = PAYLOAD.detected_values_lit ? PAYLOAD.detected_values_lit : (PAYLOAD.detected_values ? PAYLOAD.detected_values : '[10, 20, 15, 25, 18]');
     RECENT_CHART_IDS = [e.id].concat(RECENT_CHART_IDS.filter(id => id !== e.id)).slice(0, 8);
     v.postMessage({ type: 'pushRecent', id: e.id });
+    APPLICABLE_METHODS = null;
+    showAllMethods = false;
+    probingMethodsForId = e.id;
+    v.postMessage({ type: 'probeMethods', id: e.id, variant: e.variantKey });
   }
   kwargs = {};
   chain = [];
@@ -3932,11 +4020,22 @@ function renderForm() {
       html += '<div class="section"><h2>Theme</h2><div class="theme-pick"><button class="' + (!theme ? 'on':'') + '" data-theme="">none</button>' + tBtns + '</div></div>';
     }
     if (CHART_METHODS.length) {
-      const sortedMethods = CHART_METHODS.slice().sort((a,b) => {
+      const chainedNames = new Set(chain.map(c => c.name));
+      const filterActive = APPLICABLE_METHODS && !showAllMethods;
+      const visibleMethods = filterActive
+        ? CHART_METHODS.filter(m => APPLICABLE_METHODS.has(m.name) || chainedNames.has(m.name))
+        : CHART_METHODS;
+      const hiddenCount = CHART_METHODS.length - visibleMethods.length;
+      const sortedMethods = visibleMethods.slice().sort((a,b) => {
         const fa = FAV_METHODS.has(a.name) ? 0 : 1, fb = FAV_METHODS.has(b.name) ? 0 : 1;
         return fa - fb;
       });
-      html += '<div class="section"><h2>Chain methods <span style="color:#8a7a6d;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">click to add · ★ to favorite</span></h2><div class="chain-grid">';
+      let note;
+      if (!APPLICABLE_METHODS) note = '<span class="probe-note">checking what applies to this chart…</span>';
+      else if (hiddenCount > 0) note = '<span class="probe-note">' + hiddenCount + ' hidden (no effect on this chart) — <a href="#" data-showall>show all ' + CHART_METHODS.length + '</a></span>';
+      else if (showAllMethods && APPLICABLE_METHODS) note = '<span class="probe-note">showing all — <a href="#" data-hidenonapplicable>only applicable</a></span>';
+      else note = '';
+      html += '<div class="section"><h2>Chain methods <span style="color:#8a7a6d;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">click to add · ★ to favorite</span>' + note + '</h2><div class="chain-grid">';
       for (const m of sortedMethods) {
         const on = chain.find(c => c.name === m.name) ? ' on' : '';
         const fav = FAV_METHODS.has(m.name) ? ' on' : '';
@@ -4094,6 +4193,16 @@ function attachHandlers() {
     toggleFavMethod(s.getAttribute('data-favmethod'));
     renderForm();
   }));
+  document.querySelectorAll('[data-showall]').forEach(s => s.addEventListener('click', ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    showAllMethods = true;
+    renderForm();
+  }));
+  document.querySelectorAll('[data-hidenonapplicable]').forEach(s => s.addEventListener('click', ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    showAllMethods = false;
+    renderForm();
+  }));
 }
 
 function quickAdd(key) {
@@ -4167,6 +4276,12 @@ window.addEventListener('message', ev => {
   if (!m) return;
   if (m.type === 'favMethods') { FAV_METHODS = new Set(m.names || []); if (current && current.kind === 'chart') renderForm(); return; }
   if (m.type === 'favSnapshot') { FAV_CHART_KEYS = new Set(m.fav_charts || []); STUDIO_FOLDERS = m.folders || []; renderList(lastListFilter); return; }
+  if (m.type === 'applicableMethods') {
+    if (m.id !== probingMethodsForId) return;
+    APPLICABLE_METHODS = Array.isArray(m.names) ? new Set(m.names) : null;
+    if (current && current.kind === 'chart' && current.id === m.id) renderForm();
+    return;
+  }
   if (m.type !== 'rendered') return;
   pbar.classList.remove('busy');
   if (m.error) {
