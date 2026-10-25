@@ -89,7 +89,8 @@ const ICON_TRASH = icon('<polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 
 const ICON_HELP = icon('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>');
 const ICON_BOOK = icon('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>');
 const ICON_CHECK = icon('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>');
-const ICON_MAP = { ICON_PLAY, ICON_EYE, ICON_REFRESH, ICON_BUILD, ICON_SETTINGS, ICON_SNIPPET, ICON_GEAR, ICON_FILE, ICON_TOOLS, ICON_PALETTE, ICON_GRID, ICON_EXPORT, ICON_SYNC, ICON_PACKAGE, ICON_DOWNLOAD, ICON_TRASH, ICON_HELP, ICON_BOOK, ICON_CHECK };
+const ICON_KEYBOARD = icon('<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="6" y1="9" x2="6" y2="9"/><line x1="10" y1="9" x2="10" y2="9"/><line x1="14" y1="9" x2="14" y2="9"/><line x1="18" y1="9" x2="18" y2="9"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/>');
+const ICON_MAP = { ICON_PLAY, ICON_EYE, ICON_REFRESH, ICON_BUILD, ICON_SETTINGS, ICON_SNIPPET, ICON_GEAR, ICON_FILE, ICON_TOOLS, ICON_PALETTE, ICON_GRID, ICON_EXPORT, ICON_SYNC, ICON_PACKAGE, ICON_DOWNLOAD, ICON_TRASH, ICON_HELP, ICON_BOOK, ICON_CHECK, ICON_KEYBOARD };
 let previewPanel;
 let previewView;
 let lastPreviewHtml = "";
@@ -230,11 +231,12 @@ const HOME_BUTTONS = {
     autoInstall: { icon: "ICON_DOWNLOAD", label: "Install / Update SeraPlot", cmd: "seraplot.autoInstall" },
     uninstall: { icon: "ICON_TRASH", label: "Uninstall SeraPlot", cmd: "seraplot.uninstall" },
     docs: { icon: "ICON_BOOK", label: "Documentation", cmd: "seraplot.openDocs" },
+    keyboardShortcuts: { icon: "ICON_KEYBOARD", label: "Keyboard Shortcuts", cmd: "seraplot.keyboardShortcuts" },
 };
 const DEFAULT_HOME_LAYOUT = [
     { id: "livepreview", label: "Live preview", icon: "ICON_PLAY", custom: false, items: ["preview", "refreshPreview"] },
     { id: "build", label: "Build", icon: "ICON_BUILD", custom: false, items: ["chartStudio", "insertChart", "insertConfig", "newDemo"] },
-    { id: "tools", label: "Tools", icon: "ICON_TOOLS", custom: false, items: ["themeStudio", "gallery", "exportHtml", "refreshCatalog"] },
+    { id: "tools", label: "Tools", icon: "ICON_TOOLS", custom: false, items: ["themeStudio", "gallery", "exportHtml", "refreshCatalog", "keyboardShortcuts"] },
     { id: "manage", label: "Manage", icon: "ICON_PACKAGE", custom: false, items: ["checkInstall", "autoInstall", "uninstall"] },
     { id: "help", label: "Help", icon: "ICON_HELP", custom: false, items: ["docs"] },
 ];
@@ -331,7 +333,7 @@ function activate(context) {
     recentProvider = new RecentProvider(context);
     const livePreviewProvider = new LivePreviewProvider(context);
     context.subscriptions.push(statusItem, vscode.window.registerWebviewViewProvider("seraplotHome", homeProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerWebviewViewProvider("seraplotLivePreview", livePreviewProvider, { webviewOptions: { retainContextWhenHidden: true } }), vscode.window.registerTreeDataProvider("seraplotGallery", galleryProvider), vscode.window.registerTreeDataProvider("seraplotPreviews", recentProvider), vscode.commands.registerCommand("seraplot.preview", () => openPreview(context)), vscode.commands.registerCommand("seraplot.refreshPreview", () => { if (activeFile)
-        renderPreview(); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/Sera/"))), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.checkInstall", () => checkInstallation()), vscode.commands.registerCommand("seraplot.toggleFavoriteChart", (item) => {
+        renderPreview(); }), vscode.commands.registerCommand("seraplot.themeStudio", () => openThemeStudio(context)), vscode.commands.registerCommand("seraplot.chartStudio", () => openChartStudio(context)), vscode.commands.registerCommand("seraplot.gallery", () => openGallery(context)), vscode.commands.registerCommand("seraplot.insertChart", (entry) => insertChart(entry, context)), vscode.commands.registerCommand("seraplot.insertConfig", () => insertConfig()), vscode.commands.registerCommand("seraplot.newDemo", () => newDemo()), vscode.commands.registerCommand("seraplot.exportHtml", () => exportHtml()), vscode.commands.registerCommand("seraplot.openDocs", () => vscode.env.openExternal(vscode.Uri.parse("https://feur25.github.io/Sera/"))), vscode.commands.registerCommand("seraplot.keyboardShortcuts", () => vscode.commands.executeCommand("workbench.action.openGlobalKeybindings", "@ext:feur25.seraplot-vscode")), vscode.commands.registerCommand("seraplot.sysmon", () => openSysmon(context)), vscode.commands.registerCommand("seraplot.methodToggle", () => openMethodToggle(context)), vscode.commands.registerCommand("seraplot.wasmPlayground", () => openWasmPlayground(context)), vscode.commands.registerCommand("seraplot.autoInstall", () => autoInstallSeraplot()), vscode.commands.registerCommand("seraplot.uninstall", () => uninstallSeraplot()), vscode.commands.registerCommand("seraplot.checkInstall", () => checkInstallation()), vscode.commands.registerCommand("seraplot.toggleFavoriteChart", (item) => {
         if (!item || !item.payload || !item.payload.chart)
             return;
         toggleFavChart(item.payload.chart.id, item.payload.variantKey);
@@ -2294,6 +2296,13 @@ async function openGallery(context) {
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (!msg)
             return;
+        if (msg.type === "float") {
+            panel.reveal(panel.viewColumn, false);
+            setTimeout(() => {
+                vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
+            }, 150);
+            return;
+        }
         if (msg.type === "insert" && msg.id) {
             const entry = cat.charts.find(c => c.id === msg.id);
             if (entry) {
@@ -2370,13 +2379,14 @@ input{background:#2d231f;border:1px solid #45373a;color:#e6e6e6;padding:9px 14px
 </style></head><body>
 <h1>SeraPlot Gallery</h1>
 <div class="sub">${total} entries auto-discovered from seraplot ${htmlEscape(cat.version)} \u00b7 click a chart to insert \u00b7 click variant badge to insert with variant</div>
-<div class="act"><button onclick="stu()">Open Chart Studio</button></div>
+<div class="act"><button onclick="stu()">Open Chart Studio</button><button onclick="flo()" style="background:#3d2f28">\u2b9d Float</button></div>
 <input id="q" placeholder="Filter\u2026" oninput="flt()">
 <div id="all">${sections.join("")}</div>
 <script>
 const v=acquireVsCodeApi();
 function ins(id){v.postMessage({type:'insert',id})}
 function insv(id,vk){v.postMessage({type:'insert',id,variant:vk})}
+function flo(){v.postMessage({type:'float'})}
 function stu(){v.postMessage({type:'studio'})}
 function insml(id,kind){v.postMessage({type:'insertMl',id,kind})}
 function flt(){
@@ -2633,6 +2643,13 @@ function openThemeStudio(context) {
     const bg = cfg.get("defaultBackground", "#1d1511");
     panel.webview.html = themeStudioHtml(palette, bg, extColors());
     panel.webview.onDidReceiveMessage(async (msg) => {
+        if (msg.type === "float") {
+            panel.reveal(panel.viewColumn, false);
+            setTimeout(() => {
+                vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
+            }, 150);
+            return;
+        }
         if (msg.type === "copy" && typeof msg.code === "string") {
             await vscode.env.clipboard.writeText(msg.code);
             vscode.window.showInformationMessage("SeraPlot config copied.");
@@ -2708,7 +2725,8 @@ pre{background:#1a1310;border:1px solid #45373a;padding:14px;border-radius:8px;f
 .extmock-row{padding:7px 9px;border-radius:6px;font-size:10.5px;margin-bottom:5px;transition:background .15s,color .15s,border-color .15s;border:1px solid transparent}
 .extmock-hint{font-size:9.5px;margin-top:8px;padding:6px 8px;border-radius:6px;line-height:1.4;transition:background .15s,color .15s,border-color .15s;border-left:2px solid transparent}
 </style></head><body>
-<h1>SeraPlot Theme Studio</h1>
+<h1 style="display:inline-block">SeraPlot Theme Studio</h1>
+<button id="floatBtn" class="ghost" style="float:right;margin-top:4px">⮝ Float</button>
 <div class="sub">Tune your palette and global config, copy or insert into your file.</div>
 <div class="layout">
 <div class="panel">
@@ -2837,6 +2855,8 @@ function renderExtMock(){
 Object.keys(extInputs).forEach(k => { extInputs[k].oninput = () => { extColors[k] = extInputs[k].value; renderExtMock(); }; });
 document.getElementById('extSave').onclick = () => vscode.postMessage({type:'saveExtColors', colors: extColors});
 document.getElementById('extReset').onclick = () => vscode.postMessage({type:'resetExtColors'});
+const floatBtnTS = document.getElementById('floatBtn');
+if (floatBtnTS) floatBtnTS.onclick = () => vscode.postMessage({type:'float'});
 renderExtMock();
 </script>
 </body></html>`;
@@ -3178,6 +3198,19 @@ async function openChartStudio(context) {
     panel.webview.onDidReceiveMessage(async (msg) => {
         if (!msg)
             return;
+        if (msg.type === "float") {
+            panel.reveal(panel.viewColumn, false);
+            setTimeout(() => {
+                vscode.commands.executeCommand("workbench.action.moveEditorToNewWindow").then(undefined, () => { });
+            }, 150);
+            return;
+        }
+        if (msg.type === "openInBrowser" && typeof msg.html === "string") {
+            const tmpFile = path.join(os.tmpdir(), `seraplot_browser_${Date.now()}.html`);
+            fs.writeFileSync(tmpFile, msg.html, "utf-8");
+            vscode.env.openExternal(vscode.Uri.file(tmpFile));
+            return;
+        }
         if (msg.type === "pushRecent" && msg.id) {
             pushRecentChart(msg.id);
             return;
@@ -3227,7 +3260,7 @@ async function openChartStudio(context) {
             const labelsLit = `["A","B","C","D","E"]`;
             const valuesLit = `[10, 20, 15, 25, 18]`;
             const isLiteral = (s) => !!s && (s.startsWith("[") || s.startsWith("(") || s.startsWith("\"") || s.startsWith("'"));
-            const hasUserData = isLiteral(rawLabels) && isLiteral(rawValues);
+            const hasUserData = !msg.forceDemo && isLiteral(rawLabels) && isLiteral(rawValues);
             const labels = isLiteral(rawLabels) ? rawLabels : labelsLit;
             const values = isLiteral(rawValues) ? rawValues : valuesLit;
             const title = String(msg.title || msg.id);
@@ -3495,6 +3528,7 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .btn{background:#352a24;color:#e6e6e6;border:1px solid #45373a;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;font-family:inherit}
 .btn:hover{border-color:#d98a4a}
 .btn.primary{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;border:none;font-weight:600;padding:9px 20px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
 .btn.primary:disabled{opacity:.4;cursor:not-allowed}
 .snippet{font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;background:#1a1310;border:1px solid #45373a;padding:10px;border-radius:6px;white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:10px}
 .warn{margin:8px 12px;padding:8px 12px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:5px;color:#fca5a5;font-size:11px}
@@ -3534,11 +3568,11 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 <div class="resizer-v" id="resizeLeft"></div>
 <div class="mid">
 <div class="mini-preview" id="miniPrev">
-  <div class="preview-bar" id="pbar"><span class="dot"></span><span id="pstatus">Idle</span><span class="bytes" id="pbytes"></span><span style="flex:1"></span><button class="btn" id="rerender" style="padding:3px 9px;font-size:10px">Re-render</button><button class="btn" id="miniCollapse" style="padding:3px 9px;font-size:10px" title="Collapse / expand preview">\u25B2</button></div>
+  <div class="preview-bar" id="pbar"><span class="dot"></span><span id="pstatus">Idle</span><span class="bytes" id="pbytes"></span><span style="flex:1"></span><button class="btn" id="tryDemo" style="padding:3px 9px;font-size:10px" title="Render with this chart's real documentation demo data">\u{1F3B2} Demo data</button><button class="btn" id="openBrowser" style="padding:3px 9px;font-size:10px" disabled title="Open the rendered chart in your browser \u2014 full hover/zoom/crosshair interaction">\u2197 Browser</button><button class="btn" id="rerender" style="padding:3px 9px;font-size:10px">Re-render</button><button class="btn" id="miniCollapse" style="padding:3px 9px;font-size:10px" title="Collapse / expand preview">\u25B2</button></div>
   <div class="preview-wrap" id="pwrap"><div class="preview-msg" id="pmsg" style="padding:14px;font-size:11px;color:#a89686;text-align:center">Pick a chart on the left.</div></div>
 </div>
 <div class="resizer-h" id="resizeMini"></div>
-<div class="head"><h1 id="title">Configuration</h1><span class="tag" id="tag">pick a chart</span><span class="src-tag" id="srcTag"></span><span class="head-spacer"></span><button class="theme-toggle" id="themeToggle" title="Toggle dark / light theme">\u263E Dark</button></div>
+<div class="head"><h1 id="title">Configuration</h1><span class="tag" id="tag">pick a chart</span><span class="src-tag" id="srcTag"></span><span class="head-spacer"></span><button class="theme-toggle" id="floatBtn" title="Detach into a floating window">\u2B9D Float</button><button class="theme-toggle" id="themeToggle" title="Toggle dark / light theme">\u263E Dark</button></div>
 <div id="variants" class="aliases" style="display:none"></div>
 <div id="aliases" class="aliases" style="display:none"></div>
 <div id="catalogWarn"></div>
@@ -3608,6 +3642,8 @@ function initStudioUI(){
   if (mc) mc.addEventListener('click', function(){ UI_STATE.miniCollapsed = !UI_STATE.miniCollapsed; applyUIState(); saveUI(); if (typeof scaleMini==='function') scaleMini(); });
   const tt = document.getElementById('themeToggle');
   if (tt) tt.addEventListener('click', function(){ UI_STATE.themeMode = UI_STATE.themeMode === 'light' ? 'dark' : 'light'; applyUIState(); saveUI(); });
+  const fb = document.getElementById('floatBtn');
+  if (fb) fb.addEventListener('click', function(){ v.postMessage({ type: 'float' }); });
   document.addEventListener('click', function(e){
     const t = e.target;
     if (t && t.tagName === 'H2' && t.parentElement && t.parentElement.classList && t.parentElement.classList.contains('section')){
@@ -3637,6 +3673,9 @@ const insertBtn = document.getElementById('insert');
 const copySnipBtn = document.getElementById('copySnip');
 const resetBtn = document.getElementById('reset');
 const rerenderBtn = document.getElementById('rerender');
+const openBrowserBtn = document.getElementById('openBrowser');
+const tryDemoBtn = document.getElementById('tryDemo');
+let lastRenderedHtml = '';
 const pbar = document.getElementById('pbar');
 const pstatus = document.getElementById('pstatus');
 const pbytes = document.getElementById('pbytes');
@@ -4106,7 +4145,7 @@ function renderKwList() {
 
 function updateSnippet() { const s = document.getElementById('snip'); if (s) s.textContent = buildSnippetText(); if (typeof persistChart === 'function') persistChart(); }
 
-function scheduleRender() {
+function scheduleRender(forceDemo) {
   if (!current) return;
   if (current.kind !== 'chart') {
     pwrap.innerHTML = '<div class="preview-msg" style="padding:14px;font-size:11px;color:#a89686;text-align:center">No preview for ML entries.</div>';
@@ -4119,8 +4158,8 @@ function scheduleRender() {
   renderTimer = setTimeout(() => {
     const sendKwargs = Object.assign({}, kwargs);
     if (current.kind === 'chart' && current.variantKey) sendKwargs.variant = current.variantKey;
-    v.postMessage({ type:'render', id: current.callId || current.id, kind: current.kind, title, labels, values, kwargs: sendKwargs, chain, theme });
-  }, 350);
+    v.postMessage({ type:'render', id: current.callId || current.id, kind: current.kind, title, labels, values, kwargs: sendKwargs, chain, theme, forceDemo: !!forceDemo });
+  }, forceDemo ? 0 : 350);
 }
 
 window.addEventListener('message', ev => {
@@ -4133,9 +4172,12 @@ window.addEventListener('message', ev => {
   if (m.error) {
     pbar.classList.add('err'); pstatus.textContent = 'Render failed'; pbytes.textContent = '';
     pwrap.innerHTML = '<div class="preview-msg" style="padding:10px;font-size:10.5px;color:#fca5a5;text-align:left;overflow:auto;height:100%"><b>No usable HTML.</b><br>' + (m.error||'').replace(/</g,'&lt;').replace(/\\n/g,'<br>') + '</div>';
+    if (openBrowserBtn) openBrowserBtn.disabled = true;
     return;
   }
   pbar.classList.remove('err');
+  lastRenderedHtml = m.html;
+  if (openBrowserBtn) openBrowserBtn.disabled = false;
   const kb = m.bytes ? (m.bytes >= 1024 ? (m.bytes/1024).toFixed(1)+' KB' : m.bytes+' B') : '';
   pstatus.textContent = 'Live \u00b7 sp.' + (current ? (current.callId || current.id) : '');
   pbytes.textContent = kb + (m.meta && m.meta.info ? ' \u00b7 svg=' + (m.meta.info.has_svg?'y':'n') + ' rects=' + m.meta.info.rects + ' paths=' + m.meta.info.paths : '');
@@ -4189,6 +4231,8 @@ insertBtn.addEventListener('click', doInsert);
 copySnipBtn.addEventListener('click', () => { if (!current) return; v.postMessage({ type:'copySnippet', code: buildSnippetText() }); copySnipBtn.textContent = 'Copied!'; setTimeout(() => { copySnipBtn.textContent = 'Copy'; }, 1200); });
 document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !insertBtn.disabled) { e.preventDefault(); doInsert(); } });
 rerenderBtn.addEventListener('click', () => scheduleRender());
+if (tryDemoBtn) tryDemoBtn.addEventListener('click', () => scheduleRender(true));
+if (openBrowserBtn) openBrowserBtn.addEventListener('click', () => { if (lastRenderedHtml) v.postMessage({ type: 'openInBrowser', html: lastRenderedHtml }); });
 q.addEventListener('input', () => renderList(q.value));
 const newFolderBtn = document.getElementById('newFolderBtn');
 if (newFolderBtn) newFolderBtn.addEventListener('click', () => v.postMessage({ type: 'createStudioFolder' }));

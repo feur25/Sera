@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.0 - 2026-10-25
+
+- **Audited every chart family's demo-data fallback, not just the ones reported broken**: wrote a real script that iterates all 108 registered chart families through the same resolution path Chart Studio uses and renders each one. Found and fixed the actual class of bug: several families (`cartogram` among them) only register documentation demo data under one specific non-default variant, so a bare/default-variant lookup came back empty even though the resolver already existed from the previous fix. The resolver now also retries every other variant the chart has before giving up. 107 of 108 real chart families now confirmed render non-empty through this path (the 108th, `plot_3d_types`, isn't a real callable chart — it's a stray non-chart entry in the registry, unreachable from the UI).
+- **Chart Studio, Gallery and Theme Studio can now detach into their own OS window**: a Float button on each does what Live Preview's already did — pops the panel into a separate floating VS Code window you can drag to another monitor.
+- **Real, rebindable keyboard shortcuts**: `seraplot.preview`, `.refreshPreview`, `.chartStudio`, `.gallery`, `.insertChart` and `.themeStudio` now ship with default keybindings (`Ctrl+Alt+P/R/S/G/I/T`), and a new "Keyboard Shortcuts" button in the Home sidebar opens VS Code's own shortcuts editor pre-filtered to SeraPlot's commands — rebind any of them there, the same as any other VS Code shortcut.
+- **Chart Studio — two more for exploring a chart**: a "Demo data" button forces a render with the chart's real documentation data regardless of what's in the Chart data panel (useful when you've typed something that doesn't fit this chart's shape and want to see what the chart actually looks like), and a "Browser" button opens the current render in your system browser for full hover/zoom/crosshair interaction the embedded mini-preview can't give you.
+
 ## 0.11.0 - 2026-10-25
 
 - **Fix — some charts' demo data only exists under a non-default variant**: `cartogram` (and likely other map-family charts) registers its documentation demo under `variant="dorling"`, but the Studio was only ever asking for the bare/selected variant and giving up on `None`. It now walks the chart's own variant list (starting with its registered default) until one has demo data, instead of falling back straight to the broken generic placeholder.

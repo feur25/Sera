@@ -2,7 +2,7 @@
   "name": "seraplot-vscode",
   "displayName": "SeraPlot",
   "description": "Live preview, gallery, theme studio and snippets for SeraPlot \u2014 high-performance Rust charts for Python, C# and JavaScript/TypeScript.",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "publisher": "feur25",
   "license": "MIT",
   "icon": "logo.png",
@@ -80,7 +80,8 @@
       { "command": "seraplot.addToFolder",    "title": "Add to Folder…", "icon": "$(add)" },
       { "command": "seraplot.removeFromFolder", "title": "Remove from Folder", "icon": "$(dash)" },
       { "command": "seraplot.gallerySearch",  "title": "SeraPlot: Search Gallery", "icon": "$(search)" },
-      { "command": "seraplot.clearGallerySearch", "title": "SeraPlot: Clear Gallery Search", "icon": "$(clear-all)" }
+      { "command": "seraplot.clearGallerySearch", "title": "SeraPlot: Clear Gallery Search", "icon": "$(clear-all)" },
+      { "command": "seraplot.keyboardShortcuts", "title": "SeraPlot: Keyboard Shortcuts", "icon": "$(keyboard)" }
     ],
     "menus": {
       "editor/title": [
@@ -112,6 +113,15 @@
     },
     "snippets": [
       { "language": "python", "path": "./snippets/python.json" }
+    ],
+    "keybindings": [
+      { "command": "seraplot.preview", "key": "ctrl+alt+p", "mac": "cmd+alt+p", "when": "resourceLangId == python || resourceLangId == csharp || resourceLangId == javascript || resourceLangId == typescript" },
+      { "command": "seraplot.refreshPreview", "key": "ctrl+alt+r", "mac": "cmd+alt+r", "when": "resourceLangId == python || resourceLangId == csharp || resourceLangId == javascript || resourceLangId == typescript" },
+      { "command": "seraplot.chartStudio", "key": "ctrl+alt+s", "mac": "cmd+alt+s" },
+      { "command": "seraplot.gallery", "key": "ctrl+alt+g", "mac": "cmd+alt+g" },
+      { "command": "seraplot.insertChart", "key": "ctrl+alt+i", "mac": "cmd+alt+i", "when": "resourceLangId == python" },
+      { "command": "seraplot.themeStudio", "key": "ctrl+alt+t", "mac": "cmd+alt+t" },
+      { "command": "seraplot.keyboardShortcuts", "key": "ctrl+alt+k ctrl+alt+k", "mac": "cmd+alt+k cmd+alt+k" }
     ],
     "configuration": {
       "title": "SeraPlot",
