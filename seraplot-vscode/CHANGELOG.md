@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 - 2026-10-25
+
+- **Fix — Chart Studio's live preview was empty for several chart families**: heatmap, candlestick/OHLC, sankey, chord and wordcloud's network variant always rendered 0 bytes, and treemap/choropleth rendered but silently without their real hierarchy/map data. The Studio always called `sp.<chart>(title, labels=[...], values=[...])` regardless of what the chart actually needed. It now pulls each chart's own documentation demo data (`sp.demo(id, variant)`) and uses that instead — real per-family data (`col_labels`+matrix for heatmap, `open/high/low/close` for candlestick, `edges_i/edges_j/edges_w` for sankey, etc.). If you've typed real data into the Chart data panel (or it was detected from your open file), that still takes priority over the demo data.
+- **Theme Studio — Extension Appearance, much more explicit**: went from 4 color pickers to 11, grouped into "Sidebar & panels", "Buttons" and "Accent & text", each with a one-line hint saying exactly what it recolors. The live preview mockup now shows a full mini sidebar (title, detected-language card, section label, primary button, regular button, a hovered-looking button, and a hint box) so every token's effect is visible at a glance instead of two generic rows.
+- **Home sidebar — rename sections**: every section, built-in or custom, now has a rename control next to delete. Deleting the last remaining section is blocked instead of leaving an empty sidebar.
+- **Chart Studio — chart-only list**: ML models/functions/transformers no longer appear in Chart Studio's chart list (they never had a live preview there, which made clicking them feel broken). They're still reachable from the Gallery panel's ML cards, which now insert a ready-to-edit snippet directly instead of redirecting into an empty Chart Studio.
+- **Smoother interactions throughout Chart Studio**: the chart-list panel and mini-preview now ease open/closed (width/height transition) instead of snapping instantly, and config-form sections collapse with a real height animation instead of popping away. Dragging a resize handle correctly suspends the easing so it doesn't fight your mouse. Favorite stars, folder icons, method chips and the "+ New section" button all got hover/press polish.
+
 ## 0.9.1 - 2026-10-25
 
 - **Home sidebar — rename sections**: every section (built-in or custom) now has a rename (pencil) control next to its name, not just delete. Deleting the last remaining section is blocked rather than leaving you with an empty sidebar.

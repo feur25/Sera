@@ -766,6 +766,106 @@ function renderTypedKwargParts(values, typed, common) {
     }
     return parts;
 }
+function extractDemoCallArgs(source, chartId) {
+    if (!source)
+        return null;
+    const re = new RegExp("sp\\." + chartId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\(");
+    const m = re.exec(source);
+    if (!m)
+        return null;
+    let i = m.index + m[0].length;
+    const start = i;
+    let depth = 1;
+    let inStr = null;
+    for (; i < source.length; i++) {
+        const c = source[i];
+        if (inStr) {
+            if (c === "\\") {
+                i++;
+                continue;
+            }
+            if (c === inStr)
+                inStr = null;
+            continue;
+        }
+        if (c === '"' || c === "'") {
+            inStr = c;
+            continue;
+        }
+        if (c === "(" || c === "[" || c === "{")
+            depth++;
+        else if (c === ")" || c === "]" || c === "}") {
+            depth--;
+            if (depth === 0)
+                break;
+        }
+    }
+    if (depth !== 0 || i >= source.length)
+        return null;
+    return source.slice(start, i);
+}
+function splitTopLevelArgs(argsStr) {
+    const out = [];
+    let depth = 0;
+    let inStr = null;
+    let cur = "";
+    for (let i = 0; i < argsStr.length; i++) {
+        const c = argsStr[i];
+        if (inStr) {
+            cur += c;
+            if (c === "\\" && i + 1 < argsStr.length) {
+                cur += argsStr[++i];
+                continue;
+            }
+            if (c === inStr)
+                inStr = null;
+            continue;
+        }
+        if (c === '"' || c === "'") {
+            inStr = c;
+            cur += c;
+            continue;
+        }
+        if (c === "(" || c === "[" || c === "{")
+            depth++;
+        else if (c === ")" || c === "]" || c === "}")
+            depth--;
+        if (c === "," && depth === 0) {
+            out.push(cur.trim());
+            cur = "";
+            continue;
+        }
+        cur += c;
+    }
+    if (cur.trim())
+        out.push(cur.trim());
+    return out;
+}
+function demoArgsWithoutTitle(source, chartId) {
+    const args = extractDemoCallArgs(source, chartId);
+    if (args === null)
+        return null;
+    const parts = splitTopLevelArgs(args);
+    if (!parts.length)
+        return null;
+    parts.shift();
+    return parts;
+}
+const demoSnippetCache = new Map();
+function fetchDemoSnippet(py, env, chartId, variant) {
+    const cacheKey = chartId + "::" + (variant || "");
+    if (demoSnippetCache.has(cacheKey))
+        return Promise.resolve(demoSnippetCache.get(cacheKey));
+    return new Promise(resolve => {
+        const variantArg = variant ? `, variant=${JSON.stringify(String(variant))}` : "";
+        const code = `import sys, seraplot as sp\ntry:\n    s = sp.demo(${JSON.stringify(chartId)}${variantArg})\n    sys.stdout.write(s or '')\nexcept Exception:\n    pass\n`;
+        cp.execFile(py, ["-c", code], { timeout: 10000, maxBuffer: 8 * 1024 * 1024, env }, (err, stdout) => {
+            const result = !err && stdout && stdout.trim() ? stdout : null;
+            demoSnippetCache.set(cacheKey, result);
+            resolve(result);
+        });
+    });
+}
 function renderChainSuffix(chain, methods) {
     if (!Array.isArray(chain) || chain.length === 0)
         return "";
@@ -1616,6 +1716,37 @@ async function insertChart(entry, context) {
         openPreview(context);
     }
 }
+async function insertMlEntry(id, kind, context) {
+    const cat = await (0, runtimeCatalog_1.loadCatalog)(context);
+    const entry = kind === "function"
+        ? cat.ml_functions.find(m => m.id === id)
+        : (cat.ml_models.find(m => m.id === id) || (cat.ml_transformers && cat.ml_transformers.find(m => m.id === id)));
+    if (!entry)
+        return;
+    let ed = vscode.window.activeTextEditor;
+    if (!ed || ed.document.languageId !== "python") {
+        if (lastPyEditor && !lastPyEditor.document.isClosed) {
+            ed = await vscode.window.showTextDocument(lastPyEditor.document, lastPyEditor.viewColumn || vscode.ViewColumn.One, false);
+        }
+        else {
+            const visiblePy = vscode.window.visibleTextEditors.find(e => e.document.languageId === "python");
+            if (visiblePy) {
+                ed = await vscode.window.showTextDocument(visiblePy.document, visiblePy.viewColumn || vscode.ViewColumn.One, false);
+            }
+            else {
+                vscode.window.showWarningMessage("SeraPlot: open a Python file first.");
+                return;
+            }
+        }
+    }
+    const ctx = scanContext(ed.document);
+    await ensureImport(ed, ctx);
+    const body = kind === "function" ? buildMlFnSnippet(entry, ctx, []) : buildMlModelSnippet(entry, ctx, []);
+    const block = `\n${body}\n`;
+    const pos = ed.selection.active;
+    const startCol = ed.document.lineAt(pos.line).text.length;
+    await ed.edit(eb => eb.insert(new vscode.Position(pos.line, startCol), block));
+}
 async function insertConfig() {
     const ed = vscode.window.activeTextEditor;
     if (!ed) {
@@ -1999,18 +2130,19 @@ body{margin:0;padding:12px;font-family:system-ui,"Segoe UI",sans-serif;font-size
 .lbl .secdel:hover{opacity:1;color:var(--sp-danger)}
 .btnlist{min-height:4px;border-radius:7px;transition:outline-color .15s}
 .btnlist.dragover{outline:1px dashed var(--sp-accent);outline-offset:2px}
-.btn{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface-2);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s}
+.btn{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-bottom:4px;background:var(--sp-surface-2);color:var(--sp-text);border:1px solid var(--sp-border);border-radius:7px;cursor:pointer;font-size:12px;text-align:left;font-family:inherit;transition:border-color .15s,background .15s,transform .1s,opacity .15s ease,box-shadow .15s ease}
 .btn svg{flex-shrink:0;opacity:.75}
 .btn:hover{background:var(--sp-surface-hover);border-color:var(--sp-accent)}
 .btn:active{transform:scale(.98)}
-.btn.dragging{opacity:.35}
+.btn.dragging{opacity:.35;transform:scale(.97)}
 .btn .drag-handle{cursor:grab;opacity:.3;flex-shrink:0;font-size:10px;letter-spacing:-1px;line-height:1}
 .btn .drag-handle:hover{opacity:.7}
 .btn .btn-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn.primary{background:linear-gradient(135deg,var(--sp-accent-on),var(--sp-accent-2));color:#fff;border:1px solid transparent;font-weight:600;box-shadow:0 2px 10px -2px rgba(99,102,241,.45)}
 .btn.primary svg{opacity:1}
 .btn.primary:hover{filter:brightness(1.1)}
-.addsection{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px 10px;margin:12px 0 4px;background:transparent;color:var(--sp-text-muted);border:1px dashed var(--sp-border-hi);border-radius:7px;cursor:pointer;font-size:11px;text-align:center;font-family:inherit}
+.addsection{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px 10px;margin:12px 0 4px;background:transparent;color:var(--sp-text-muted);border:1px dashed var(--sp-border-hi);border-radius:7px;cursor:pointer;font-size:11px;text-align:center;font-family:inherit;transition:color .15s ease,border-color .15s ease,background .15s ease}
+.addsection:hover{background:rgba(255,255,255,.03)}
 .addsection:hover{color:var(--sp-text);border-color:var(--sp-accent)}
 .hint{font-size:11px;color:var(--sp-text-muted);margin-top:12px;line-height:1.5;padding:8px 10px;border-radius:7px;background:rgba(99,102,241,.08);border-left:2px solid var(--sp-accent)}
 </style></head><body>
@@ -2141,6 +2273,8 @@ async function openGallery(context) {
         }
         if (msg.type === "studio")
             await vscode.commands.executeCommand("seraplot.chartStudio");
+        if (msg.type === "insertMl" && msg.id)
+            await insertMlEntry(msg.id, msg.kind, context);
     });
 }
 function galleryHtml(cat) {
@@ -2180,7 +2314,7 @@ function galleryHtml(cat) {
         }
     }
     for (const [c, list] of mlByCat) {
-        const cards = list.map(m => `<div class="card ml" onclick="stu()"><div class="cn">${htmlEscape(m.label)}</div><code>sp.${m.id}</code></div>`).join("");
+        const cards = list.map(m => `<div class="card ml" onclick="insml('${m.id}','${m.kind}')" title="Insert at cursor"><div class="cn">${htmlEscape(m.label)}</div><code>sp.${m.id}</code></div>`).join("");
         sections.push(`<h3>ML \u00b7 ${htmlEscape(c)}<span class="count">${list.length}</span></h3><div class="grid">${cards}</div>`);
     }
     const total = cat.charts.length + cat.ml_models.length + cat.ml_functions.length + (cat.ml_transformers ? cat.ml_transformers.length : 0);
@@ -2214,6 +2348,7 @@ const v=acquireVsCodeApi();
 function ins(id){v.postMessage({type:'insert',id})}
 function insv(id,vk){v.postMessage({type:'insert',id,variant:vk})}
 function stu(){v.postMessage({type:'studio'})}
+function insml(id,kind){v.postMessage({type:'insertMl',id,kind})}
 function flt(){
   const q=document.getElementById('q').value.toLowerCase();
   document.querySelectorAll('.card').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'});
@@ -2524,10 +2659,24 @@ button.primary{background:linear-gradient(135deg,#d98a4a,#c97a3a);color:#fff;bor
 button.ghost{background:#352a24;color:#e6e6e6;border:1px solid #45373a;padding:9px 16px;border-radius:6px;cursor:pointer}
 pre{background:#1a1310;border:1px solid #45373a;padding:14px;border-radius:8px;font-family:Consolas,monospace;font-size:12px;line-height:1.5;color:#a5d6a7;white-space:pre-wrap}
 .hsub{font-size:10.5px;font-weight:400;text-transform:none;letter-spacing:0;color:#8a7a6d;display:block;margin-top:2px}
-.extgrid{display:grid;grid-template-columns:1fr 230px;gap:22px;align-items:start}
-.extmock{border-radius:9px;padding:10px;border:1px solid #45373a;transition:background .15s,border-color .15s}
-.extmock-title{font-size:11px;font-weight:800;margin-bottom:8px;letter-spacing:.2px;transition:color .15s}
+.extgrid{display:grid;grid-template-columns:1fr 240px;gap:24px;align-items:start}
+.extgroup{margin-bottom:16px}
+.extgroup:last-child{margin-bottom:0}
+.extgroup-h{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a7a6d;margin-bottom:8px}
+.extrow{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.extrow label{flex:1;font-size:12.5px;color:#d4c7b8}
+.extrow .exthint{display:block;font-size:10px;color:#6b5d50;margin-top:1px}
+.extrow input[type=color]{width:34px;height:28px;border:none;background:none;cursor:pointer;padding:0;border-radius:4px}
+.extmock{position:sticky;top:0;border-radius:10px;padding:14px;border:1px solid #45373a;transition:background .15s,border-color .15s}
+.extmock-title{font-size:12px;font-weight:800;margin-bottom:3px;letter-spacing:.2px;transition:color .15s}
+.extmock-sub{font-size:9.5px;margin-bottom:10px;transition:color .15s}
+.extmock-card{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;margin-bottom:10px;transition:background .15s,border-color .15s;border:1px solid transparent}
+.extmock-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .15s}
+.extmock-card span{font-size:10px;transition:color .15s}
+.extmock-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:10px 0 6px;transition:color .15s}
+.extmock-lbl:first-of-type{margin-top:0}
 .extmock-row{padding:7px 9px;border-radius:6px;font-size:10.5px;margin-bottom:5px;transition:background .15s,color .15s,border-color .15s;border:1px solid transparent}
+.extmock-hint{font-size:9.5px;margin-top:8px;padding:6px 8px;border-radius:6px;line-height:1.4;transition:background .15s,color .15s,border-color .15s;border-left:2px solid transparent}
 </style></head><body>
 <h1>SeraPlot Theme Studio</h1>
 <div class="sub">Tune your palette and global config, copy or insert into your file.</div>
@@ -2546,18 +2695,39 @@ pre{background:#1a1310;border:1px solid #45373a;padding:14px;border-radius:8px;f
 </div>
 </div>
 <div class="panel" style="margin-top:20px">
-  <h2>Extension Appearance<span class="hsub">Recolors the Home sidebar &amp; Live Preview toolbar — saved forever, survives extension updates</span></h2>
+  <h2>Extension Appearance<span class="hsub">Every color used by the Home sidebar, Chart Studio's chart list and the Live Preview toolbar — saved forever, survives extension updates. The preview on the right updates live.</span></h2>
   <div class="extgrid">
     <div>
-      <div class="row"><label>Sidebar background</label><input type="color" id="ext_bg" value="${ext.bg}"></div>
-      <div class="row"><label>Sidebar surface</label><input type="color" id="ext_surface" value="${ext.surface}"></div>
-      <div class="row"><label>Accent</label><input type="color" id="ext_accent" value="${ext.accent}"></div>
-      <div class="row"><label>Text</label><input type="color" id="ext_text" value="${ext.text}"></div>
+      <div class="extgroup">
+        <div class="extgroup-h">Sidebar &amp; panels</div>
+        <div class="extrow"><label>Background<span class="exthint">Behind everything in the Home sidebar</span></label><input type="color" id="ext_bg" value="${ext.bg}"></div>
+        <div class="extrow"><label>Panel / card background<span class="exthint">The detected-language card, Chart Studio panels</span></label><input type="color" id="ext_surface" value="${ext.surface}"></div>
+        <div class="extrow"><label>Panel / card border<span class="exthint">Outline around cards and buttons</span></label><input type="color" id="ext_border" value="${ext.border}"></div>
+        <div class="extrow"><label>Dashed border<span class="exthint">"+ New section" / "+ New folder" outlines</span></label><input type="color" id="ext_borderHi" value="${ext.borderHi}"></div>
+      </div>
+      <div class="extgroup">
+        <div class="extgroup-h">Buttons</div>
+        <div class="extrow"><label>Button background<span class="exthint">Every regular (non-primary) button</span></label><input type="color" id="ext_surface2" value="${ext.surface2}"></div>
+        <div class="extrow"><label>Button hover background<span class="exthint">While hovering a button</span></label><input type="color" id="ext_surfaceHover" value="${ext.surfaceHover}"></div>
+        <div class="extrow"><label>Primary button — start<span class="exthint">"Open Live Preview" gradient start</span></label><input type="color" id="ext_accentOn" value="${ext.accentOn}"></div>
+        <div class="extrow"><label>Primary button — end<span class="exthint">"Open Live Preview" gradient end</span></label><input type="color" id="ext_accent2" value="${ext.accent2}"></div>
+      </div>
+      <div class="extgroup">
+        <div class="extgroup-h">Accent &amp; text</div>
+        <div class="extrow"><label>Accent<span class="exthint">Section labels, hover borders, links, hints</span></label><input type="color" id="ext_accent" value="${ext.accent}"></div>
+        <div class="extrow"><label>Text<span class="exthint">Titles and button labels</span></label><input type="color" id="ext_text" value="${ext.text}"></div>
+        <div class="extrow"><label>Muted text<span class="exthint">Subtitles, hints, descriptions</span></label><input type="color" id="ext_textMuted" value="${ext.textMuted}"></div>
+      </div>
     </div>
     <div class="extmock" id="extmock">
       <div class="extmock-title" id="extmockTitle">SeraPlot</div>
+      <div class="extmock-sub" id="extmockSub">Rust-native charts</div>
+      <div class="extmock-card" id="extmockCard"><span class="extmock-dot" id="extmockDot"></span><span id="extmockCardTxt">Detected <b>Python</b></span></div>
+      <div class="extmock-lbl" id="extmockLbl1">Live preview</div>
       <div class="extmock-row" id="extmockPrimary">Open Live Preview</div>
       <div class="extmock-row" id="extmockPlain">Refresh Preview</div>
+      <div class="extmock-row" id="extmockHoverRow">Chart Studio <span style="float:right;opacity:.6">hover →</span></div>
+      <div class="extmock-hint" id="extmockHint">Drag buttons to reorder — saved forever.</div>
     </div>
   </div>
   <div style="margin-top:14px"><button class="primary" id="extSave">Save &amp; Apply</button><button class="ghost" id="extReset">Reset to default</button></div>
@@ -2598,20 +2768,41 @@ document.getElementById('save').onclick = ()=> vscode.postMessage({type:'saveDef
 paletteUI(); render();
 
 const extColors = ${extJson};
-const extInputs = { bg: document.getElementById('ext_bg'), surface: document.getElementById('ext_surface'), accent: document.getElementById('ext_accent'), text: document.getElementById('ext_text') };
+const extFields = ['bg','surface','surface2','surfaceHover','border','borderHi','accent','accentOn','accent2','text','textMuted'];
+const extInputs = {};
+extFields.forEach(k => { const el = document.getElementById('ext_'+k); if (el) extInputs[k] = el; });
 const extmock = document.getElementById('extmock');
 const extmockTitle = document.getElementById('extmockTitle');
+const extmockSub = document.getElementById('extmockSub');
+const extmockCard = document.getElementById('extmockCard');
+const extmockDot = document.getElementById('extmockDot');
+const extmockCardTxt = document.getElementById('extmockCardTxt');
+const extmockLbl1 = document.getElementById('extmockLbl1');
 const extmockPrimary = document.getElementById('extmockPrimary');
 const extmockPlain = document.getElementById('extmockPlain');
+const extmockHoverRow = document.getElementById('extmockHoverRow');
+const extmockHint = document.getElementById('extmockHint');
 function renderExtMock(){
   extmock.style.background = extColors.bg;
-  extmock.style.borderColor = extColors.surface2 || '#45373a';
+  extmock.style.borderColor = extColors.border;
   extmockTitle.style.color = extColors.text;
-  extmockPrimary.style.background = extColors.accentOn || extColors.accent;
+  extmockSub.style.color = extColors.textMuted;
+  extmockCard.style.background = extColors.surface;
+  extmockCard.style.borderColor = extColors.border;
+  extmockDot.style.background = extColors.accent;
+  extmockCardTxt.style.color = extColors.textMuted;
+  extmockLbl1.style.color = extColors.accent;
+  extmockPrimary.style.background = 'linear-gradient(135deg,' + extColors.accentOn + ',' + extColors.accent2 + ')';
   extmockPrimary.style.color = '#fff';
-  extmockPlain.style.background = extColors.surface;
+  extmockPlain.style.background = extColors.surface2;
   extmockPlain.style.color = extColors.text;
-  extmockPlain.style.borderColor = extColors.surface2 || '#45373a';
+  extmockPlain.style.borderColor = extColors.border;
+  extmockHoverRow.style.background = extColors.surfaceHover;
+  extmockHoverRow.style.color = extColors.text;
+  extmockHoverRow.style.borderColor = extColors.accent;
+  extmockHint.style.background = extColors.surface;
+  extmockHint.style.color = extColors.textMuted;
+  extmockHint.style.borderLeftColor = extColors.accent;
 }
 Object.keys(extInputs).forEach(k => { extInputs[k].oninput = () => { extColors[k] = extInputs[k].value; renderExtMock(); }; });
 document.getElementById('extSave').onclick = () => vscode.postMessage({type:'saveExtColors', colors: extColors});
@@ -2684,14 +2875,6 @@ function buildStudioCatalog(cat) {
     };
     for (const c of canonical)
         out.push({ kind: "chart", id: c.id, label: c.label, group: c.group, signature: c.signature, params: c.params, kwargs: merge(c.kwargs) });
-    for (const m of cat.ml_models)
-        out.push({ kind: "ml_class", id: m.id, label: m.label, group: "ML \u00b7 " + m.category, signature: m.signature, kwargs: m.kwargs });
-    for (const m of cat.ml_functions)
-        out.push({ kind: "ml_fn", id: m.id, label: m.label, group: "ML \u00b7 ml_dict (" + m.task + ")", signature: m.signature, task: m.task, kwargs: m.kwargs });
-    if (cat.ml_transformers) {
-        for (const t of cat.ml_transformers)
-            out.push({ kind: "ml_class", id: t.id, label: t.label, group: "ML \u00b7 transformers (" + t.category + ")", signature: t.signature, kwargs: t.kwargs });
-    }
     return { entries: out, mergedVariants: variants };
 }
 function openWasmPlayground(context) {
@@ -3004,17 +3187,40 @@ async function openChartStudio(context) {
             const labelsLit = `["A","B","C","D","E"]`;
             const valuesLit = `[10, 20, 15, 25, 18]`;
             const isLiteral = (s) => !!s && (s.startsWith("[") || s.startsWith("(") || s.startsWith("\"") || s.startsWith("'"));
+            const hasUserData = isLiteral(rawLabels) && isLiteral(rawValues);
             const labels = isLiteral(rawLabels) ? rawLabels : labelsLit;
             const values = isLiteral(rawValues) ? rawValues : valuesLit;
             const title = String(msg.title || msg.id);
             const chartEntry = cat.charts.find(c => c.id === msg.id);
-            const kwargParts = renderTypedKwargParts(msg.kwargs || {}, chartEntry?.kwargs, cat.common_kwargs);
+            const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
+            const env = buildSpawnEnv(cat);
+            let dataArgs = `labels=${labels}, values=${values}`;
+            let usedDemo = false;
+            if (!hasUserData) {
+                const demoSrc = await fetchDemoSnippet(py, env, msg.id, msg.kwargs && msg.kwargs.variant);
+                const demoParts = demoSrc ? demoArgsWithoutTitle(demoSrc, msg.id) : null;
+                if (demoParts && demoParts.length) {
+                    dataArgs = demoParts.join(", ");
+                    usedDemo = true;
+                }
+            }
+            const demoKeys = new Set();
+            if (usedDemo) {
+                for (const part of splitTopLevelArgs(dataArgs)) {
+                    const m = /^(\w+)\s*=/.exec(part);
+                    if (m)
+                        demoKeys.add(m[1]);
+                }
+            }
+            const kwargParts = renderTypedKwargParts(msg.kwargs || {}, chartEntry?.kwargs, cat.common_kwargs).filter(p => {
+                const m = /^(\w+)=/.exec(p);
+                return !m || !demoKeys.has(m[1]);
+            });
             const tail = kwargParts.length ? ", " + kwargParts.join(", ") : "";
             const chainTail = renderChainSuffix(msg.chain || [], cat.chart_methods || []);
             const themeLine = msg.theme ? `    sp.theme(${JSON.stringify(String(msg.theme))})` : "";
             const tmpHtml = path.join(os.tmpdir(), `seraplot_studio_${Date.now()}_${Math.floor(Math.random() * 1e6)}.html`);
             const escOut = tmpHtml.replace(/\\/g, "\\\\");
-            const py = vscode.workspace.getConfiguration("seraplot").get("pythonPath", "python");
             const codeLines = [
                 "import sys, os, json, traceback",
                 "try:",
@@ -3023,9 +3229,8 @@ async function openChartStudio(context) {
             ];
             if (themeLine)
                 codeLines.push(themeLine);
-            codeLines.push(`    chart = sp.${msg.id}(${JSON.stringify(title)}, labels=${labels}, values=${values}${tail})${chainTail}`, "    info = json.loads(sp.chart_info(chart))", `    chart.save(r'${escOut}')`, `    sz = os.path.getsize(r'${escOut}') if os.path.exists(r'${escOut}') else 0`, "    sys.stderr.write('META ' + json.dumps({'info': info, 'file_size': sz}))", "except Exception as e:", "    sys.stderr.write('ERR ' + repr(e) + '\\n' + traceback.format_exc())");
+            codeLines.push(`    chart = sp.${msg.id}(${JSON.stringify(title)}, ${dataArgs}${tail})${chainTail}`, "    info = json.loads(sp.chart_info(chart))", `    chart.save(r'${escOut}')`, `    sz = os.path.getsize(r'${escOut}') if os.path.exists(r'${escOut}') else 0`, "    sys.stderr.write('META ' + json.dumps({'info': info, 'file_size': sz}))", "except Exception as e:", "    sys.stderr.write('ERR ' + repr(e) + '\\n' + traceback.format_exc())");
             const code = codeLines.join("\n");
-            const env = buildSpawnEnv(cat);
             cp.execFile(py, ["-c", code], { timeout: 25000, maxBuffer: 32 * 1024 * 1024, env }, (err, _stdout, stderr) => {
                 const errMsg = String(stderr || "");
                 let html = "";
@@ -3050,11 +3255,13 @@ async function openChartStudio(context) {
                 }
                 const isEmpty = (!html || html.length < 32) || (meta && meta.info && meta.info.size === 0);
                 if (isEmpty) {
+                    const callDesc = usedDemo ? `sp.${msg.id}(title, ${dataArgs}, ...)` : `sp.${msg.id}(title, labels=..., values=..., ...)`;
+                    const dataHint = usedDemo
+                        ? "This used the chart's own documentation demo data, so the empty result is likely an unimplemented chart variant rather than a data-shape mismatch."
+                        : "This chart didn't have its own demo data to fall back on and used generic labels/values, which don't fit every chart family's required shape. Try typing real data in the Chart data panel above, or pick a different chart.";
                     const explain = meta && meta.info
                         ? `chart_info reports size=${meta.info.size}, has_svg=${meta.info.has_svg}, paths=${meta.info.paths}, rects=${meta.info.rects}, circles=${meta.info.circles}.\n\n` +
-                            `The framework call \`sp.${msg.id}(title, labels=..., values=..., ...)\` returned an empty chart. ` +
-                            `This means the values you provided don't match what this specific chart expects, OR this chart variant isn't fully implemented in the wheel for these parameters. ` +
-                            `Try simpler defaults (labels=["A","B","C"], values=[1,2,3]) or pick a different chart.`
+                            `The framework call \`${callDesc}\` returned an empty chart. ${dataHint}`
                         : "The framework returned no usable HTML and chart_info was unavailable.";
                     panel.webview.postMessage({ type: "rendered", id: msg.id, error: explain, meta });
                     return;
@@ -3156,10 +3363,12 @@ body.theme-light .resizer-v:hover,body.theme-light .resizer-h:hover{background:#
 body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d50}
 .app{display:flex;flex-direction:row;height:100vh;width:100vw}
 .left,.mid{background:#1a1310;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
-.left{width:260px;flex-shrink:0;border-right:1px solid #45373a}
+.left{width:260px;flex-shrink:0;border-right:1px solid #45373a;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.left.resizing{transition:none}
 .mid{flex:1}
 .left.collapsed{width:34px!important}
-.left.collapsed .search,.left.collapsed .list{display:none}
+.left.collapsed .search,.left.collapsed .list{opacity:0;pointer-events:none}
+.search,.list{transition:opacity .15s ease}
 .resizer-v{width:5px;cursor:col-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
 .resizer-v:hover{background:#d98a4a}
 .resizer-h{height:5px;cursor:row-resize;background:#2d231f;flex-shrink:0;transition:background .15s}
@@ -3173,14 +3382,15 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .search input:focus{outline:none;border-color:#d98a4a}
 .list{flex:1;overflow-y:auto;padding:6px 4px}
 .grp{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#a89686;padding:10px 10px 4px;font-weight:700}
-.item{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:5px;margin:1px 4px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.item{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:5px;margin:1px 4px;display:flex;justify-content:space-between;align-items:center;gap:6px;transition:background .15s ease,padding-left .15s ease,border-color .15s ease}
 .item:hover{background:#3a2d27}
 .item.sel{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12));border-left:2px solid #d98a4a;padding-left:10px}
 .item code{color:#a89686;font-size:10.5px;font-family:Consolas,monospace}
 .item-main{display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0}
 .item-main span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.istar,.ifold{opacity:.3;font-size:11px;cursor:pointer}
+.istar,.ifold{opacity:.3;font-size:11px;cursor:pointer;transition:opacity .15s ease,transform .15s ease}
+.istar:active,.ifold:active{transform:scale(1.25)}
 .istar:hover,.ifold:hover{opacity:1}
 .istar.on{opacity:1;color:#e69f67}
 .item-empty{padding:4px 16px;font-size:10.5px;color:#6b5d50;font-style:italic}
@@ -3194,9 +3404,11 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .empty{color:#8a7a6d;text-align:center;margin-top:60px;font-size:13px;padding:0 20px;line-height:1.5}
 .section{margin-bottom:14px}
 .section h2{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#e6b088;font-weight:600;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
-.section h2::before{content:'\u25BE';font-size:9px;color:#8a7a6d;transition:transform .15s}
+.section h2::before{content:'\u25BE';font-size:9px;color:#8a7a6d;transition:transform .2s cubic-bezier(.4,0,.2,1)}
 .section.collapsed h2::before{transform:rotate(-90deg)}
-.section.collapsed > *:not(h2){display:none}
+.section-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .22s cubic-bezier(.4,0,.2,1),opacity .18s ease}
+.section-body>.section-body-inner{overflow:hidden;min-height:0}
+.section.collapsed .section-body{grid-template-rows:0fr;opacity:0}
 .f{background:#2d231f;border:1px solid #45373a;border-radius:8px;padding:10px 12px;margin-bottom:6px}
 .f label{display:block;font-size:11px;color:#d4c7b8;margin-bottom:6px;font-weight:500;font-family:Consolas,monospace}
 .f .hint{font-size:10px;color:#8a7a6d;margin-top:4px}
@@ -3217,10 +3429,11 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .qchip{background:#3d2f28;color:#a89686;border:1px solid #45373a;padding:3px 9px;border-radius:12px;cursor:pointer;font-size:11px;font-family:inherit}
 .qchip:hover{border-color:#d98a4a;color:#e8ded2}
 .right{display:none}
-.mini-preview{flex-shrink:0;background:#fff;border-bottom:1px solid #45373a;height:280px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-height:60px}
+.mini-preview{flex-shrink:0;background:#fff;border-bottom:1px solid #45373a;height:280px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-height:60px;transition:height .22s cubic-bezier(.4,0,.2,1)}
+.mini-preview.resizing{transition:none}
 .mini-preview.collapsed{height:30px!important}
-.mini-preview.collapsed .preview-wrap{display:none}
-.mini-preview .preview-wrap{flex:1;overflow:hidden;background:#fff;position:relative}
+.mini-preview.collapsed .preview-wrap{opacity:0;pointer-events:none}
+.mini-preview .preview-wrap{flex:1;overflow:hidden;background:#fff;position:relative;transition:opacity .15s ease}
 .mini-preview iframe{border:none;background:#fff;transform-origin:top left;display:block;position:absolute;left:0;top:0}
 .preview-wrap{flex:1;overflow:hidden;min-height:0;background:#fff;position:relative}
 .preview-wrap iframe{display:block;border:none;background:#fff}
@@ -3244,12 +3457,13 @@ body.theme-light .panel-bar{background:#faf7f2;border-color:#e8ded2;color:#6b5d5
 .snippet{font-family:Consolas,monospace;font-size:11px;color:#a5d6a7;background:#1a1310;border:1px solid #45373a;padding:10px;border-radius:6px;white-space:pre-wrap;max-height:160px;overflow:auto;margin-top:10px}
 .warn{margin:8px 12px;padding:8px 12px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:5px;color:#fca5a5;font-size:11px}
 .chain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:5px;margin-bottom:8px;max-height:180px;overflow-y:auto;padding:4px;background:#1a1310;border:1px solid #45373a;border-radius:6px}
-.chain-grid button{background:#2d231f;border:1px solid #45373a;color:#d4c7b8;padding:5px 7px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chain-grid button{background:#2d231f;border:1px solid #45373a;color:#d4c7b8;padding:5px 7px;border-radius:5px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:background .15s ease,border-color .15s ease,color .15s ease}
 .chain-grid button:hover{border-color:#d98a4a;color:#f5ddc4}
 .chain-grid button.on{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.15));border-color:#d98a4a;color:#f5ddc4}
 .chain-grid .mchip{position:relative}
 .chain-grid .mchip button{width:100%;padding-right:16px}
-.chain-grid .mfav{position:absolute;top:3px;right:4px;font-size:9px;line-height:1;cursor:pointer;color:#5a4842;user-select:none}
+.chain-grid .mfav{position:absolute;top:3px;right:4px;font-size:9px;line-height:1;cursor:pointer;color:#5a4842;user-select:none;transition:color .15s ease,transform .15s ease}
+.chain-grid .mfav:active{transform:scale(1.3)}
 .chain-grid .mfav:hover{color:#e6b088}
 .chain-grid .mfav.on{color:#e69f67}
 .chain-item{background:#1a1310;border:1px solid #45373a;border-left:2px solid #e6b088;border-radius:6px;padding:8px 10px;margin-bottom:5px}
@@ -3320,9 +3534,22 @@ function setupResizer(handleId, target, axis, key, minSz){
   const handle = document.getElementById(handleId);
   if (!handle) return;
   let dragging=false, startPos=0, startSize=0;
-  handle.addEventListener('mousedown', function(e){ dragging=true; startPos = axis==='x'?e.clientX:e.clientY; startSize = axis==='x'?target.getBoundingClientRect().width:target.getBoundingClientRect().height; document.body.style.cursor = axis==='x'?'col-resize':'row-resize'; document.body.style.userSelect='none'; e.preventDefault(); });
+  handle.addEventListener('mousedown', function(e){ dragging=true; target.classList.add('resizing'); startPos = axis==='x'?e.clientX:e.clientY; startSize = axis==='x'?target.getBoundingClientRect().width:target.getBoundingClientRect().height; document.body.style.cursor = axis==='x'?'col-resize':'row-resize'; document.body.style.userSelect='none'; e.preventDefault(); });
   window.addEventListener('mousemove', function(e){ if (!dragging) return; const delta = (axis==='x'?e.clientX:e.clientY) - startPos; const next = Math.max(minSz, startSize + delta); if (axis==='x') target.style.width = next+'px'; else target.style.height = next+'px'; UI_STATE[key] = next; });
-  window.addEventListener('mouseup', function(){ if (!dragging) return; dragging=false; document.body.style.cursor=''; document.body.style.userSelect=''; saveUI(); if (typeof scaleMini==='function') scaleMini(); });
+  window.addEventListener('mouseup', function(){ if (!dragging) return; dragging=false; target.classList.remove('resizing'); document.body.style.cursor=''; document.body.style.userSelect=''; saveUI(); if (typeof scaleMini==='function') scaleMini(); });
+}
+function wrapSectionBodies(){
+  document.querySelectorAll('.section').forEach(function(sec){
+    if (sec.querySelector(':scope > .section-body')) return;
+    const h2 = sec.querySelector(':scope > h2');
+    const rest = Array.prototype.filter.call(sec.children, function(c){ return c !== h2; });
+    if (!rest.length) return;
+    const wrap = document.createElement('div'); wrap.className = 'section-body';
+    const inner = document.createElement('div'); inner.className = 'section-body-inner';
+    rest.forEach(function(c){ inner.appendChild(c); });
+    wrap.appendChild(inner);
+    sec.appendChild(wrap);
+  });
 }
 function initStudioUI(){
   applyUIState();
@@ -3650,6 +3877,7 @@ function renderForm() {
   html += '</div><pre class="snippet" id="snip"></pre>';
 
   body.innerHTML = html;
+  wrapSectionBodies();
   attachHandlers();
   renderKwList();
   renderChainList();
