@@ -244,15 +244,16 @@ fn _sera_call_fast(
             variant: &variant,
         };
         let (html, hid) = (entry.render)(title, x.as_slice(), y.as_slice(), &opts);
+        let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
         #[cfg(feature = "sera-pulse")]
         {
             let meta = crate::plot::push_registry::PushMeta::from_xy(x.as_slice(), y.as_slice(), opts.width, opts.height);
             crate::plot::push_registry::register(hid, meta);
-            crate::plot::chart_source_registry::register(hid, entry.name, python_py_args_to_json(title, labels, values, theme, kwargs));
+            crate::plot::chart_source_registry::register(hid, entry.name, payload.clone());
         }
         #[cfg(not(feature = "sera-pulse"))]
         let _ = hid;
-        return Ok(html);
+        return Ok(crate::bindings::fn_registry::apply_method_kwargs_from_json(html, &payload));
     }
 
     for entry in inventory::iter::<crate::plot::canvas_points::LabeledChartEntry>() {
@@ -299,16 +300,17 @@ fn _sera_call_fast(
             variant: &variant,
         };
         let (html, hid) = (entry.render)(title, &lbls, v.as_slice(), &opts);
+        let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
         #[cfg(feature = "sera-pulse")]
         {
             let axis_px = if opts.cols > 0 { 1000 } else { crate::plot::default::bar::bar_plot_h(opts.height) };
             let meta = crate::plot::push_registry::PushMeta::from_values(v.as_slice(), axis_px);
             crate::plot::push_registry::register(hid, meta);
-            crate::plot::chart_source_registry::register(hid, entry.name, python_py_args_to_json(title, labels, values, theme, kwargs));
+            crate::plot::chart_source_registry::register(hid, entry.name, payload.clone());
         }
         #[cfg(not(feature = "sera-pulse"))]
         let _ = hid;
-        return Ok(html);
+        return Ok(crate::bindings::fn_registry::apply_method_kwargs_from_json(html, &payload));
     }
 
     for entry in inventory::iter::<crate::plot::canvas_points::OhlcChartEntry>() {
@@ -345,6 +347,7 @@ fn _sera_call_fast(
             variant: "",
         };
         let (html, hid) = (entry.render)(title, &lbls, open.as_slice(), high.as_slice(), low.as_slice(), close.as_slice(), &opts);
+        let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
         #[cfg(feature = "sera-pulse")]
         {
             let plot_h = (opts.height - 36 - 48).max(10);
@@ -353,11 +356,11 @@ fn _sera_call_fast(
                 plot_h,
             );
             crate::plot::push_registry::register(hid, meta);
-            crate::plot::chart_source_registry::register(hid, entry.name, python_py_args_to_json(title, labels, values, theme, kwargs));
+            crate::plot::chart_source_registry::register(hid, entry.name, payload.clone());
         }
         #[cfg(not(feature = "sera-pulse"))]
         let _ = hid;
-        return Ok(html);
+        return Ok(crate::bindings::fn_registry::apply_method_kwargs_from_json(html, &payload));
     }
 
     for entry in inventory::iter::<crate::plot::canvas_points::HierarchyChartEntry>() {
@@ -399,6 +402,7 @@ fn _sera_call_fast(
             variant: "",
         };
         let (html, hid, min_val, range_val) = (entry.render)(title, &lbls, &parents, v.as_slice(), &opts);
+        let payload = python_py_args_to_json(title, labels, values, theme, kwargs);
         #[cfg(feature = "sera-pulse")]
         {
             let meta = crate::plot::push_registry::PushMeta::Scalar(crate::plot::push_registry::ScalarMeta {
@@ -407,7 +411,7 @@ fn _sera_call_fast(
                 axis_px: 1000,
             });
             crate::plot::push_registry::register(hid, meta);
-            crate::plot::chart_source_registry::register(hid, entry.name, python_py_args_to_json(title, labels, values, theme, kwargs));
+            crate::plot::chart_source_registry::register(hid, entry.name, payload.clone());
         }
         #[cfg(not(feature = "sera-pulse"))]
         {
@@ -415,7 +419,7 @@ fn _sera_call_fast(
             let _ = min_val;
             let _ = range_val;
         }
-        return Ok(html);
+        return Ok(crate::bindings::fn_registry::apply_method_kwargs_from_json(html, &payload));
     }
 
     for entry in inventory::iter::<crate::plot::canvas_points::SeriesChartEntry>() {

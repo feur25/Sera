@@ -222,24 +222,7 @@ fn try_native_fast_path(target: &str, obj: &serde_json::Map<String, serde_json::
     None
 }
 
-pub fn invoke(entry: &FnEntry, json: &str) -> String {
-    let parsed: serde_json::Value = match serde_json::from_str(json) {
-        Ok(v) => v,
-        Err(_) => return (entry.invoke)(json),
-    };
-    let obj = match parsed.as_object() {
-        Some(o) => o,
-        None => return (entry.invoke)(json),
-    };
-    if entry.input == InputKind::Json && entry.output == OutputKind::Html {
-        if let Some(native_html) = try_native_fast_path(entry.name, obj) {
-            return native_html;
-        }
-    }
-    let html = (entry.invoke)(json);
-    if entry.input != InputKind::Json || entry.output != OutputKind::Html {
-        return html;
-    }
+pub fn apply_method_kwargs(html: String, obj: &serde_json::Map<String, serde_json::Value>) -> String {
     let mut out = html;
     for (key, value) in obj {
         if crate::bindings::method_registry::find(key).is_none() {
@@ -254,6 +237,34 @@ pub fn invoke(entry: &FnEntry, json: &str) -> String {
         }
     }
     out
+}
+
+pub fn apply_method_kwargs_from_json(html: String, json: &str) -> String {
+    match serde_json::from_str::<serde_json::Value>(json) {
+        Ok(serde_json::Value::Object(obj)) => apply_method_kwargs(html, &obj),
+        _ => html,
+    }
+}
+
+pub fn invoke(entry: &FnEntry, json: &str) -> String {
+    let parsed: serde_json::Value = match serde_json::from_str(json) {
+        Ok(v) => v,
+        Err(_) => return (entry.invoke)(json),
+    };
+    let obj = match parsed.as_object() {
+        Some(o) => o,
+        None => return (entry.invoke)(json),
+    };
+    if entry.input == InputKind::Json && entry.output == OutputKind::Html {
+        if let Some(native_html) = try_native_fast_path(entry.name, obj) {
+            return apply_method_kwargs(native_html, obj);
+        }
+    }
+    let html = (entry.invoke)(json);
+    if entry.input != InputKind::Json || entry.output != OutputKind::Html {
+        return html;
+    }
+    apply_method_kwargs(html, obj)
 }
 
 #[cfg(test)]
@@ -411,5 +422,20 @@ mod alias_dispatch_tests {
              reinterpreted as the aliased width_px/height_px chart methods (whose 'px' \
              param would be missing from {{\"width\":500}} and silently default to 0): {html}"
         );
+    }
+
+    #[test]
+    fn a_large_bar_call_still_applies_a_chart_method_kwarg_after_switching_to_the_native_renderer() {
+        let entry = find("build_bar").expect("build_bar is a registered fn");
+        let n = 600;
+        let labels: Vec<String> = (0..n).map(|i| i.to_string()).collect();
+        let values: Vec<f64> = (0..n).map(|i| (i % 30) as f64).collect();
+        let plain = serde_json::json!({ "title": "t", "labels": labels, "values": values }).to_string();
+        let with_grid = serde_json::json!({ "title": "t", "labels": labels, "values": values, "grid": true }).to_string();
+        let plain_html = super::invoke(entry, &plain);
+        let grid_html = super::invoke(entry, &with_grid);
+        assert!(grid_html.contains("sp_apply_"), "must still be on the native canvas renderer path");
+        assert_ne!(plain_html, grid_html, "a 'grid: true' kwarg must apply even when the native fast path is taken");
+        assert!(grid_html.contains(".sp-gl{display:block"));
     }
 }
