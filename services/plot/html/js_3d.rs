@@ -1833,6 +1833,10 @@ window['__sp3dCfg_'+cid]=function(opts){
   if(opts.noLegend)SHOWLEG=false;
   if(opts.noTitle)NOTITLE=true;
   if(opts.noAxes)NOAXES=true;
+  if(opts.title!==undefined){ttl=opts.title;cv.setAttribute('aria-label',ttl);}
+  if(opts.xLabel!==undefined)xl=opts.xLabel;
+  if(opts.yLabel!==undefined)yl=opts.yLabel;
+  if(opts.zLabel!==undefined)zl=opts.zLabel;
   wake();
 };
 R();

@@ -1,4 +1,4 @@
-﻿use crate::json_str;
+﻿use crate::{json_str, apply_3d_cfg};
 use super::js::*;
 
 pub(crate) fn apply_despine(html: String) -> String {
@@ -868,6 +868,9 @@ fn replace_attr(tag: &str, attr: &str, value: &str) -> String {
 }
 
 pub(crate) fn apply_set_title(html: String, text: &str) -> String {
+    if html.contains("class=\"c3w\"") {
+        return apply_3d_cfg(html, &format!("{{\"title\":{}}}", json_str(text)));
+    }
     if let Some(out) = replace_text_class(&html, "sp-ttl", text) {
         return out;
     }
@@ -888,6 +891,9 @@ pub(crate) fn apply_set_title(html: String, text: &str) -> String {
 }
 
 pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
+    if html.contains("class=\"c3w\"") {
+        return apply_3d_cfg(html, &format!("{{\"xLabel\":{}}}", json_str(text)));
+    }
     if let Some(out) = replace_text_class(&html, "sp-xl", text) {
         return out;
     }
@@ -909,6 +915,9 @@ pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
 }
 
 pub(crate) fn apply_set_y_label(html: String, text: &str) -> String {
+    if html.contains("class=\"c3w\"") {
+        return apply_3d_cfg(html, &format!("{{\"yLabel\":{}}}", json_str(text)));
+    }
     if let Some(out) = replace_text_class(&html, "sp-yl", text) {
         return out;
     }
@@ -1044,4 +1053,40 @@ pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String
         cfg, SP_TEXTURE_JS
     );
     crate::html::hover::inject_before_body(&html, &snippet)
+}
+
+#[cfg(test)]
+mod three_d_text_tests {
+    use super::{apply_set_title, apply_set_x_label, apply_set_y_label};
+
+    fn fixture_3d_html() -> String {
+        "<!DOCTYPE html><html><head></head><body><div id=\"c3d0\" class=\"c3w\"><canvas id=\"c3d0c\"></canvas></div><script>(function(){var ttl='Basic demo';window['__sp3dCfg_c3d0']=function(opts){};})();</script></body></html>".to_string()
+    }
+
+    #[test]
+    fn setting_the_title_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = apply_set_title(fixture_3d_html(), "New Title Here");
+        assert!(out.contains("__sp3dCfg_c3d0"));
+        assert!(out.contains("\"title\":\"New Title Here\""));
+    }
+
+    #[test]
+    fn setting_the_x_label_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = apply_set_x_label(fixture_3d_html(), "My X");
+        assert!(out.contains("\"xLabel\":\"My X\""));
+    }
+
+    #[test]
+    fn setting_the_y_label_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = apply_set_y_label(fixture_3d_html(), "My Y");
+        assert!(out.contains("\"yLabel\":\"My Y\""));
+    }
+
+    #[test]
+    fn a_2d_svg_chart_still_uses_the_plain_text_element_injection_for_its_title() {
+        let svg_html = "<html><body><svg width=\"100\" height=\"100\" data-sp=\"10,10,80,80\"></svg></body></html>".to_string();
+        let out = apply_set_title(svg_html, "A Title");
+        assert!(out.contains("class=\"sp-ttl\""));
+        assert!(!out.contains("__sp3dCfg_"));
+    }
 }
