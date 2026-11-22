@@ -912,6 +912,14 @@ fn promote_first_svg_text(html: &str, new_text: &str) -> Option<String> {
     Some(out)
 }
 
+fn joint_content_size(html: &str) -> Option<(f64, f64)> {
+    let marker = "name=\"sp-content-size\" content=\"";
+    let start = html.find(marker)? + marker.len();
+    let end = start + html[start..].find('"')?;
+    let (w_s, h_s) = html[start..end].split_once('x')?;
+    Some((w_s.parse().ok()?, h_s.parse().ok()?))
+}
+
 fn plot_rect_or_svg_bounds(html: &str) -> Option<(f64, f64, f64, f64)> {
     if let Some(rect) = parse_plot_rect(html) {
         return Some(rect);
@@ -1042,6 +1050,18 @@ pub(crate) fn apply_set_size(html: String, w: Option<i32>, h: Option<i32>) -> St
         }
         opts.push('}');
         return apply_3d_cfg(html, &opts);
+    }
+    if html.contains("class=\"sp-joint-grid\"") {
+        if let Some((orig_w, orig_h)) = joint_content_size(&html) {
+            let new_w = w.map(|v| v as f64).unwrap_or(orig_w);
+            let new_h = h.map(|v| v as f64).unwrap_or(orig_h);
+            let sx = new_w / orig_w;
+            let sy = new_h / orig_h;
+            let css = format!(
+                "<style>body{{width:{new_w}px;height:{new_h}px;overflow:hidden}}.sp-joint-grid{{transform:scale({sx:.4},{sy:.4});transform-origin:top left}}</style></head>"
+            );
+            return crate::html::hover::inject_before_head(&html, &css);
+        }
     }
     let Some(svg_pos) = html.find("<svg") else {
         return html;
@@ -1207,6 +1227,14 @@ mod three_d_text_tests {
         let out = super::apply_set_size(fixture_3d_html(), Some(640), None);
         assert!(out.contains("\"width\":640"));
         assert!(!out.contains("\"height\""));
+    }
+
+    #[test]
+    fn resizing_a_joint_chart_scales_the_grid_wrapper_via_css_transform_instead_of_no_opping() {
+        let html = "<html><head><meta name=\"sp-content-size\" content=\"800x600\"></head><body><div class=\"sp-joint-grid\"></div></body></html>".to_string();
+        let out = super::apply_set_size(html, Some(400), Some(300));
+        assert!(out.contains("transform:scale(0.5000,0.5000)"));
+        assert!(out.contains("width:400px;height:300px"));
     }
 
     #[test]
