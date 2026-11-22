@@ -1557,6 +1557,12 @@ impl Chart {
     )]
     #[sera_sig(title = "", desc = "")]
     pub fn a11y(&self, title: &str, desc: &str) -> Chart {
+        if self.html.contains("class=\"c3w\"") {
+            return self.propagate(apply_3d_cfg(
+                self.html.clone(),
+                &format!("{{\"a11yLabel\":{},\"a11yDesc\":{}}}", json_str(title), json_str(desc)),
+            ));
+        }
         let esc_attr = title.replace('&', "&amp;").replace('"', "&quot;");
         let esc_title = title.replace('&', "&amp;").replace('<', "&lt;");
         let esc_desc = desc.replace('&', "&amp;").replace('<', "&lt;");
@@ -3258,5 +3264,24 @@ mod to_svg_tests {
         let style_pos = svg.find("<style>").unwrap();
         let rect_pos = svg.find("<rect").unwrap();
         assert!(style_pos < rect_pos, "the style block should be injected before the rect it styles, got: {svg}");
+    }
+}
+
+#[cfg(test)]
+mod a11y_3d_tests {
+    use super::Chart;
+
+    fn fixture_3d_html() -> Chart {
+        Chart {
+            html: "<!DOCTYPE html><html><head></head><body><div id=\"c3d0\" class=\"c3w\"><canvas id=\"c3d0c\"></canvas></div><script>(function(){window['__sp3dCfg_c3d0']=function(opts){};})();</script></body></html>".to_string(),
+            doc_str: "",
+        }
+    }
+
+    #[test]
+    fn a11y_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = fixture_3d_html().a11y("A Title", "A Description").html;
+        assert!(out.contains("\"a11yLabel\":\"A Title\""));
+        assert!(out.contains("\"a11yDesc\":\"A Description\""));
     }
 }

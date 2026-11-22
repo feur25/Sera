@@ -80,6 +80,12 @@ impl Chart {
         let cx = cx.unwrap_or(0.5).clamp(0.0, 1.0);
         let cy = cy.unwrap_or(0.5).clamp(0.0, 1.0);
         let r = r.unwrap_or(0.48).clamp(0.0, 1.0);
+        if let Some(out) = super::apply::apply_3d_wrapper_css(
+            &self.html,
+            &format!("clip-path:circle({:.1}% at {:.1}% {:.1}%)", r * 100.0, cx * 100.0, cy * 100.0),
+        ) {
+            return self.propagate(out);
+        }
         let id = "sp-cm";
         let defs = format!(
             "<defs><clipPath id=\"{}\"><circle cx=\"{:.1}%\" cy=\"{:.1}%\" r=\"{:.1}%\"/></clipPath></defs>",
@@ -133,6 +139,20 @@ impl Chart {
             })
             .collect::<Vec<_>>()
             .join(" ");
+        if let Some(out) = super::apply::apply_3d_wrapper_css(
+            &self.html,
+            &format!(
+                "clip-path:polygon({})",
+                points.split(' ').map(|p| {
+                    let mut parts = p.splitn(2, ',');
+                    let x: f64 = parts.next().unwrap_or("0").parse().unwrap_or(0.0);
+                    let y: f64 = parts.next().unwrap_or("0").parse().unwrap_or(0.0);
+                    format!("{:.2}% {:.2}%", x, y)
+                }).collect::<Vec<_>>().join(", ")
+            ),
+        ) {
+            return self.propagate(out);
+        }
         let id = "sp-poly";
         let defs = format!(
             "<defs><clipPath id=\"{}\" clipPathUnits=\"objectBoundingBox\"><polygon points=\"{}\"/></clipPath></defs>",
@@ -234,6 +254,13 @@ impl Chart {
     #[sera_sig(from_color = "#0f172a", to_color = "#1e1b4b", duration = 4.0)]
     pub fn morph_bg(&self, from_color: &str, to_color: &str, duration: f64) -> Chart {
         let dur = duration.max(0.5);
+        if let Some(cid) = crate::extract_c3d_id(&self.html).map(|s| s.to_string()) {
+            let kf = format!("sp-morph-{cid}");
+            let css = format!(
+                "<style>@keyframes {kf}{{0%,100%{{background-color:{from_color}}}50%{{background-color:{to_color}}}}}#{cid}.c3w{{animation:{kf} {dur}s ease-in-out infinite}}</style></head>"
+            );
+            return self.propagate(crate::html::hover::inject_before_head(&self.html, &css));
+        }
         let id = "sp-morph-bg";
         let defs = format!(
             "<defs><linearGradient id=\"{id}\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\"><animate attributeName=\"stop-color\" values=\"{from};{to};{from}\" dur=\"{dur}s\" repeatCount=\"indefinite\"/></stop><stop offset=\"100%\"><animate attributeName=\"stop-color\" values=\"{to};{from};{to}\" dur=\"{dur}s\" repeatCount=\"indefinite\"/></stop></linearGradient></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#{id})\" style=\"pointer-events:none\"/>",
@@ -292,5 +319,36 @@ impl Chart {
             other.html.replace('"', "&quot;")
         );
         self.propagate(html)
+    }
+}
+
+#[cfg(test)]
+mod three_d_compositing_tests {
+    use super::Chart;
+
+    fn fixture_3d_html() -> Chart {
+        Chart {
+            html: "<!DOCTYPE html><html><head></head><body><div id=\"c3d0\" class=\"c3w\"><canvas id=\"c3d0c\"></canvas></div></body></html>".to_string(),
+            doc_str: "",
+        }
+    }
+
+    #[test]
+    fn mask_circle_on_a_3d_chart_clips_the_wrapper_div_with_css_instead_of_no_opping() {
+        let out = fixture_3d_html().mask_circle(None, None, None).html;
+        assert!(out.contains("#c3d0.c3w{clip-path:circle("));
+    }
+
+    #[test]
+    fn mask_poly_on_a_3d_chart_clips_the_wrapper_div_with_css_instead_of_no_opping() {
+        let out = fixture_3d_html().mask_poly(6, 0.0).html;
+        assert!(out.contains("#c3d0.c3w{clip-path:polygon("));
+    }
+
+    #[test]
+    fn morph_bg_on_a_3d_chart_animates_the_wrapper_divs_background_instead_of_no_opping() {
+        let out = fixture_3d_html().morph_bg("#0f172a", "#1e1b4b", 4.0).html;
+        assert!(out.contains("@keyframes sp-morph-c3d0"));
+        assert!(out.contains("#c3d0.c3w{animation:sp-morph-c3d0"));
     }
 }

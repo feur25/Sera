@@ -1837,6 +1837,8 @@ window['__sp3dCfg_'+cid]=function(opts){
   if(opts.xLabel!==undefined)xl=opts.xLabel;
   if(opts.yLabel!==undefined)yl=opts.yLabel;
   if(opts.zLabel!==undefined)zl=opts.zLabel;
+  if(opts.a11yLabel!==undefined)cv.setAttribute('aria-label',opts.a11yLabel);
+  if(opts.a11yDesc!==undefined)cv.title=opts.a11yDesc;
   wake();
 };
 R();
