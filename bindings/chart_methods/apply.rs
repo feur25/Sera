@@ -7,6 +7,14 @@ pub(crate) fn apply_3d_wrapper_css(html: &str, css_body: &str) -> Option<String>
     Some(crate::html::hover::inject_before_head(html, &css))
 }
 
+pub(crate) fn apply_joint_wrapper_css(html: &str, css_body: &str) -> Option<String> {
+    if !html.contains("class=\"sp-joint-grid\"") {
+        return None;
+    }
+    let css = format!("<style>.sp-joint-grid{{{css_body}}}</style></head>");
+    Some(crate::html::hover::inject_before_head(html, &css))
+}
+
 pub(crate) fn apply_3d_overlay(html: &str, inner: &str) -> Option<String> {
     let cid = extract_c3d_id(html)?;
     let needle = format!("id=\"{cid}c\"");

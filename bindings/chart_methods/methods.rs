@@ -1569,6 +1569,20 @@ impl Chart {
                 &format!("{{\"a11yLabel\":{},\"a11yDesc\":{}}}", json_str(title), json_str(desc)),
             ));
         }
+        if self.html.contains("class=\"sp-joint-grid\"") {
+            let esc_attr = title.replace('&', "&amp;").replace('"', "&quot;");
+            let marker = "class=\"sp-joint-grid\"";
+            let Some(pos) = self.html.find(marker) else {
+                return self.propagate(self.html.clone());
+            };
+            let insert_at = pos + marker.len();
+            let mut out = self.html.clone();
+            out.insert_str(
+                insert_at,
+                &format!(" role=\"img\" aria-label=\"{}\" title=\"{}\"", esc_attr, desc.replace('&', "&amp;").replace('<', "&lt;")),
+            );
+            return self.propagate(out);
+        }
         let esc_attr = title.replace('&', "&amp;").replace('"', "&quot;");
         let esc_title = title.replace('&', "&amp;").replace('<', "&lt;");
         let esc_desc = desc.replace('&', "&amp;").replace('<', "&lt;");
@@ -3295,5 +3309,16 @@ mod a11y_3d_tests {
     fn hover_slots_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
         let out = fixture_3d_html().hover_slots("[{\"title\":\"A\",\"kv\":[[\"k\",\"v\"]]}]").html;
         assert!(out.contains("\"hoverSlots\":[{\"title\":\"A\",\"kv\":[[\"k\",\"v\"]]}]"));
+    }
+
+    #[test]
+    fn a11y_on_a_joint_chart_annotates_the_grid_wrapper_instead_of_no_opping() {
+        let chart = Chart {
+            html: "<!DOCTYPE html><html><head></head><body><p class=\"sp-joint-title\">T</p><div class=\"sp-joint-grid\"><div class=\"sp-joint-top\"></div></div></body></html>".to_string(),
+            doc_str: "",
+        };
+        let out = chart.a11y("A Title", "A Description").html;
+        assert!(out.contains("aria-label=\"A Title\""));
+        assert!(out.contains("title=\"A Description\""));
     }
 }

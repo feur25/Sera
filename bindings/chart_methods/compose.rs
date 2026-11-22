@@ -67,6 +67,15 @@ impl Chart {
         ) {
             return self.propagate(out);
         }
+        if let Some(out) = super::apply::apply_joint_wrapper_css(
+            &self.html,
+            &format!(
+                "background-image:linear-gradient(rgba(9,13,24,{:.2}),rgba(9,13,24,{:.2})),url('{}');background-size:cover;background-position:center",
+                1.0 - op, 1.0 - op, url
+            ),
+        ) {
+            return self.propagate(out);
+        }
         let insert = format!(
             "<image href=\"{}\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"xMidYMid slice\" opacity=\"{:.2}\"/>",
             url, op
@@ -90,6 +99,12 @@ impl Chart {
         let cy = cy.unwrap_or(0.5).clamp(0.0, 1.0);
         let r = r.unwrap_or(0.48).clamp(0.0, 1.0);
         if let Some(out) = super::apply::apply_3d_wrapper_css(
+            &self.html,
+            &format!("clip-path:circle({:.1}% at {:.1}% {:.1}%)", r * 100.0, cx * 100.0, cy * 100.0),
+        ) {
+            return self.propagate(out);
+        }
+        if let Some(out) = super::apply::apply_joint_wrapper_css(
             &self.html,
             &format!("clip-path:circle({:.1}% at {:.1}% {:.1}%)", r * 100.0, cx * 100.0, cy * 100.0),
         ) {
@@ -149,6 +164,20 @@ impl Chart {
             .collect::<Vec<_>>()
             .join(" ");
         if let Some(out) = super::apply::apply_3d_wrapper_css(
+            &self.html,
+            &format!(
+                "clip-path:polygon({})",
+                points.split(' ').map(|p| {
+                    let mut parts = p.splitn(2, ',');
+                    let x: f64 = parts.next().unwrap_or("0").parse().unwrap_or(0.0);
+                    let y: f64 = parts.next().unwrap_or("0").parse().unwrap_or(0.0);
+                    format!("{:.2}% {:.2}%", x, y)
+                }).collect::<Vec<_>>().join(", ")
+            ),
+        ) {
+            return self.propagate(out);
+        }
+        if let Some(out) = super::apply::apply_joint_wrapper_css(
             &self.html,
             &format!(
                 "clip-path:polygon({})",
@@ -277,6 +306,12 @@ impl Chart {
             );
             return self.propagate(crate::html::hover::inject_before_head(&self.html, &css));
         }
+        if self.html.contains("class=\"sp-joint-grid\"") {
+            let css = format!(
+                "<style>@keyframes sp-morph-joint{{0%,100%{{background-color:{from_color}}}50%{{background-color:{to_color}}}}}.sp-joint-grid{{animation:sp-morph-joint {dur}s ease-in-out infinite}}</style></head>"
+            );
+            return self.propagate(crate::html::hover::inject_before_head(&self.html, &css));
+        }
         let id = "sp-morph-bg";
         let defs = format!(
             "<defs><linearGradient id=\"{id}\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\"><animate attributeName=\"stop-color\" values=\"{from};{to};{from}\" dur=\"{dur}s\" repeatCount=\"indefinite\"/></stop><stop offset=\"100%\"><animate attributeName=\"stop-color\" values=\"{to};{from};{to}\" dur=\"{dur}s\" repeatCount=\"indefinite\"/></stop></linearGradient></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#{id})\" style=\"pointer-events:none\"/>",
@@ -388,5 +423,38 @@ mod three_d_compositing_tests {
         assert!(out.contains("<text "));
         assert!(out.contains(">DRAFT<"));
         assert!(out.contains("position:absolute;inset:0"));
+    }
+
+    fn fixture_joint_html() -> Chart {
+        Chart {
+            html: "<!DOCTYPE html><html><head></head><body><p class=\"sp-joint-title\">T</p><div class=\"sp-joint-grid\"><div class=\"sp-joint-top\"></div></div></body></html>".to_string(),
+            doc_str: "",
+        }
+    }
+
+    #[test]
+    fn mask_circle_on_a_joint_chart_clips_the_grid_wrapper_with_css_instead_of_no_opping() {
+        let out = fixture_joint_html().mask_circle(None, None, None).html;
+        assert!(out.contains(".sp-joint-grid{clip-path:circle("));
+    }
+
+    #[test]
+    fn mask_poly_on_a_joint_chart_clips_the_grid_wrapper_with_css_instead_of_no_opping() {
+        let out = fixture_joint_html().mask_poly(6, 0.0).html;
+        assert!(out.contains(".sp-joint-grid{clip-path:polygon("));
+    }
+
+    #[test]
+    fn morph_bg_on_a_joint_chart_animates_the_grid_wrappers_background_instead_of_no_opping() {
+        let out = fixture_joint_html().morph_bg("#0f172a", "#1e1b4b", 4.0).html;
+        assert!(out.contains("@keyframes sp-morph-joint"));
+        assert!(out.contains(".sp-joint-grid{animation:sp-morph-joint"));
+    }
+
+    #[test]
+    fn image_bg_on_a_joint_chart_sets_a_css_background_image_on_the_grid_wrapper_instead_of_no_opping() {
+        let out = fixture_joint_html().image_bg("https://example.com/bg.png", 0.5).html;
+        assert!(out.contains(".sp-joint-grid{background-image:"));
+        assert!(out.contains("https://example.com/bg.png"));
     }
 }
