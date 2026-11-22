@@ -56,31 +56,64 @@ All four bindings funnel chart-method calls through the **same** generic dispatc
 
 ## 4. Module map
 
+```mermaid
+graph LR
+    subgraph core["core/"]
+        math["math.rs"]
+        hw["hw_profile.rs"]
+        adaptive["adaptive_exec.rs"]
+        pack["asset_pack.rs"]
+    end
+
+    subgraph services["services/"]
+        data["data/ — DFrame + dframe/secure/"]
+        ml["ml/ — SeraML bridge"]
+
+        subgraph plot["plot/ — the chart engine"]
+            html["html/ — shared SVG/JS emission\n(hover.rs, media_overlay.rs, js_3d.rs)"]
+            map["map/ — region data + asset_pack"]
+            pulse["pulse/ — live/streaming engine\n(push, record, export_gif, firehose)"]
+            statistical["statistical/ — one module per\nchart family (radar/, pie/, ...)"]
+            canvas_points["canvas_points.rs — NativeChartEntry /\nLabeledChartEntry / OhlcChartEntry / ..."]
+        end
+    end
+
+    subgraph bindings["bindings/"]
+        chart_methods["chart_methods/ — every chainable\nmethod, split by theme"]
+        method_registry["method_registry.rs\nMethodEntry{name, apply}"]
+        fn_registry["fn_registry.rs\nFnEntry{name, invoke} — the dispatcher\nevery binding calls through"]
+        doc_registry["doc_registry.rs\nFnDoc — backs sp.docs()"]
+        chart_ffi["chart_ffi.rs / fast_export_c.rs\nC ABI surface"]
+    end
+
+    macros["seraplot-macros/\n#[sera_impl] #[sera_doc] #[sera_sig]"]
+
+    macros -. "expands into" .-> chart_methods
+    macros -. "expands into" .-> method_registry
+    macros -. "expands into" .-> doc_registry
+    chart_methods --> method_registry
+    method_registry --> fn_registry
+    canvas_points --> fn_registry
+    chart_ffi --> fn_registry
 ```
-core/        math, hardware-profile detection, adaptive execution, the asset-pack compressor
-services/
-  data/      the DFrame data layer (+ services/data/dframe/secure/, the encrypted-at-rest variant)
-  ml/        SeraML bridge code
-  plot/      the chart engine itself
-    html/        shared HTML/SVG/JS emission helpers (hover.rs, media_overlay.rs, js_3d.rs, ...)
-    map/         region/world-map data, the generic asset_pack region compressor
-    pulse/       the live/streaming engine (push/push_vector/record/export_gif/firehose/...)
-    statistical/ per-family 2D/3D renderers (one module per chart family, e.g. radar/, pie/, ...)
-    canvas_points.rs   NativeChartEntry / LabeledChartEntry / OhlcChartEntry / HierarchyChartEntry /
-                       SeriesChartEntry — inventory-collected structs describing each "native fast
-                       path" chart family (see §5)
-bindings/
-  chart_methods/    every chainable Chart method (`.title()`, `.flip()`, `.mask_circle()`, ...),
-                    split by theme: methods.rs, apply.rs, compose.rs, interactive.rs, layout.rs,
-                    extras.rs, pages.rs, js.rs (shared JS string constants)
-  method_registry.rs   MethodEntry { name, apply: fn(&Chart, &str) -> Chart } — inventory-collected
-  fn_registry.rs       FnEntry { name, input, output, invoke } — the generic alias-resolving
-                       dispatcher every language binding calls through
-  doc_registry.rs      FnDoc — the structured doc entries that back every docs page and sp.docs()
-  alias_registry.rs, name_norm.rs   alias resolution shared by every registry above
-  chart_ffi.rs, fast_export_c.rs    C ABI surface
-seraplot-macros/   the proc-macro crate: #[sera_impl], #[sera_doc], #[sera_sig], #[sera_doc_impl]
-```
+
+| Path | Role |
+|---|---|
+| `core/` | math, hardware-profile detection, adaptive execution, the asset-pack compressor |
+| `services/data/` | the DFrame data layer (+ `services/data/dframe/secure/`, encrypted-at-rest) |
+| `services/ml/` | SeraML bridge code |
+| `services/plot/html/` | shared HTML/SVG/JS emission helpers (`hover.rs`, `media_overlay.rs`, `js_3d.rs`, ...) |
+| `services/plot/map/` | region/world-map data, the generic `asset_pack` region compressor |
+| `services/plot/pulse/` | the live/streaming engine (push/push_vector/record/export_gif/firehose/...) |
+| `services/plot/statistical/` | per-family 2D/3D renderers (one module per chart family, e.g. `radar/`, `pie/`, ...) |
+| `services/plot/canvas_points.rs` | `NativeChartEntry` / `LabeledChartEntry` / `OhlcChartEntry` / `HierarchyChartEntry` / `SeriesChartEntry` — inventory-collected structs describing each "native fast path" chart family (see §5) |
+| `bindings/chart_methods/` | every chainable `Chart` method (`.title()`, `.flip()`, `.mask_circle()`, ...), split by theme: `methods.rs`, `apply.rs`, `compose.rs`, `interactive.rs`, `layout.rs`, `extras.rs`, `pages.rs`, `js.rs` (shared JS string constants) |
+| `bindings/method_registry.rs` | `MethodEntry { name, apply: fn(&Chart, &str) -> Chart }` — inventory-collected |
+| `bindings/fn_registry.rs` | `FnEntry { name, input, output, invoke }` — the generic alias-resolving dispatcher every language binding calls through |
+| `bindings/doc_registry.rs` | `FnDoc` — the structured doc entries that back every docs page and `sp.docs()` |
+| `bindings/alias_registry.rs`, `name_norm.rs` | alias resolution shared by every registry above |
+| `bindings/chart_ffi.rs`, `fast_export_c.rs` | C ABI surface |
+| `seraplot-macros/` | the proc-macro crate: `#[sera_impl]`, `#[sera_doc]`, `#[sera_sig]`, `#[sera_doc_impl]` |
 
 ## 5. The registry/macro system
 
@@ -113,6 +146,21 @@ That single annotation expands, at compile time, into three things registered vi
    string (used when a chart-method is passed as a *constructor kwarg*, e.g.
    `sp.bar(..., flip=True)` instead of `sp.bar(...).flip()`).
 
+```mermaid
+flowchart TD
+    src["pub fn title(&self, text: &str) -> Chart { ... }\nannotated #[sera_impl] / #[sera_doc] / #[sera_sig]"]
+    src -- "compile-time macro expansion" --> doc["doc_registry::FnDoc\n(sp.docs(), doc pages)"]
+    src -- "compile-time macro expansion" --> pym["#[pyo3(name=\"title\")]\n(direct Python method)"]
+    src -- "compile-time macro expansion" --> mreg["method_registry::MethodEntry\n{name: \"title\", apply: fn}"]
+
+    mreg --> fnreg["fn_registry::invoke\nthe one dispatcher every binding calls"]
+    pyB["Python binding"] --> fnreg
+    wasmB["WASM binding"] --> fnreg
+    cB["C / C++ FFI"] --> fnreg
+    csB["C# / NuGet"] --> fnreg
+    fnreg -- "resolves aliases, applies\nmethod kwargs, incl. native\nfast-path charts" --> chart["Chart.html"]
+```
+
 `bindings/fn_registry.rs::invoke` is the single generic entry point every binding (Python, WASM,
 C FFI, C#) calls through. It resolves aliases, decides whether the call matches a chart
 constructor or a chart method, and — critically — **always** applies any chart-method keyword
@@ -130,6 +178,31 @@ anything that looks like dispatch logic — it almost certainly already exists.
 
 A method that patches the generated HTML (`title()`, `mask_circle()`, `color_hex()`, ...) has to
 branch on which of three fundamentally different output shapes it's looking at:
+
+```mermaid
+flowchart LR
+    subgraph twoD["2D — plain SVG"]
+        svg["&lt;svg&gt;...&lt;/svg&gt;\ndata-sp=\"l,t,w,h\"\nclass=\"sp-ttl/sp-xl/sp-yl\"\ndata-series / data-idx"]
+    end
+    subgraph threeD["3D — canvas + WebGL"]
+        div3d["&lt;div class=\"c3w\"&gt;\n&lt;canvas&gt;...&lt;/canvas&gt;\n&lt;script&gt; IIFE (js_3d.rs)"]
+        hook["window['__sp3dCfg_'+cid]\n(opts) => { ... wake() }"]
+        div3d --> hook
+    end
+    subgraph joint["joint — composite"]
+        grid["&lt;div class=\"sp-joint-grid\"&gt;"]
+        f1["&lt;iframe srcdoc=...&gt;\nmain scatter panel"]
+        f2["&lt;iframe srcdoc=...&gt;\nmarginal histogram"]
+        f3["&lt;iframe srcdoc=...&gt;\nmarginal histogram"]
+        grid --> f1
+        grid --> f2
+        grid --> f3
+    end
+
+    method["a chart_method call,\ne.g. title()/mask_circle()"] -. "string-search + patch" .-> svg
+    method -. "apply_3d_cfg(...)\ncalls the hook" .-> hook
+    method -. "CSS on .sp-joint-grid\n(no per-chart id needed)" .-> grid
+```
 
 1. **2D charts** — a plain `<svg>…</svg>` tree. Most helpers in
    `bindings/chart_methods/apply.rs` work by string-searching for conventions the renderers
