@@ -58,6 +58,15 @@ impl Chart {
     #[sera_sig(url, opacity = 0.35)]
     pub fn image_bg(&self, url: &str, opacity: f64) -> Chart {
         let op = opacity.clamp(0.0, 1.0);
+        if let Some(out) = super::apply::apply_3d_wrapper_css(
+            &self.html,
+            &format!(
+                "background-image:linear-gradient(rgba(9,13,24,{:.2}),rgba(9,13,24,{:.2})),url('{}');background-size:cover;background-position:center",
+                1.0 - op, 1.0 - op, url
+            ),
+        ) {
+            return self.propagate(out);
+        }
         let insert = format!(
             "<image href=\"{}\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"xMidYMid slice\" opacity=\"{:.2}\"/>",
             url, op
@@ -350,5 +359,12 @@ mod three_d_compositing_tests {
         let out = fixture_3d_html().morph_bg("#0f172a", "#1e1b4b", 4.0).html;
         assert!(out.contains("@keyframes sp-morph-c3d0"));
         assert!(out.contains("#c3d0.c3w{animation:sp-morph-c3d0"));
+    }
+
+    #[test]
+    fn image_bg_on_a_3d_chart_sets_a_css_background_image_on_the_wrapper_div_instead_of_no_opping() {
+        let out = fixture_3d_html().image_bg("https://example.com/bg.png", 0.5).html;
+        assert!(out.contains("#c3d0.c3w{background-image:"));
+        assert!(out.contains("https://example.com/bg.png"));
     }
 }
