@@ -1,4 +1,5 @@
 ﻿use crate::{json_str, apply_3d_cfg, extract_c3d_id};
+use crate::plot::statistical::common::escape_xml_s;
 use super::js::*;
 
 pub(crate) fn apply_3d_wrapper_css(html: &str, css_body: &str) -> Option<String> {
@@ -13,6 +14,31 @@ pub(crate) fn apply_joint_wrapper_css(html: &str, css_body: &str) -> Option<Stri
     }
     let css = format!("<style>.sp-joint-grid{{{css_body}}}</style></head>");
     Some(crate::html::hover::inject_before_head(html, &css))
+}
+
+fn unescape_xml(s: &str) -> String {
+    s.replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&amp;", "&")
+}
+
+pub(crate) fn apply_to_joint_panel(html: &str, transform: impl FnOnce(String) -> String) -> Option<String> {
+    let marker = "class=\"sp-joint-panel\"";
+    let panel_pos = html.find(marker)?;
+    let needle = "srcdoc=\"";
+    let rel = html[panel_pos..].find(needle)?;
+    let start = panel_pos + rel + needle.len();
+    let end = start + html[start..].find('"')?;
+    let inner = unescape_xml(&html[start..end]);
+    let transformed = transform(inner);
+    let reescaped = escape_xml_s(&transformed);
+    let mut out = String::with_capacity(html.len() + reescaped.len());
+    out.push_str(&html[..start]);
+    out.push_str(&reescaped);
+    out.push_str(&html[end..]);
+    Some(out)
 }
 
 pub(crate) fn apply_3d_overlay(html: &str, inner: &str) -> Option<String> {
@@ -1019,6 +1045,9 @@ pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
     if html.contains("class=\"c3w\"") {
         return apply_3d_cfg(html, &format!("{{\"xLabel\":{}}}", json_str(text)));
     }
+    if let Some(out) = apply_to_joint_panel(&html, |panel| apply_set_x_label(panel, text)) {
+        return out;
+    }
     if let Some(out) = replace_text_class(&html, "sp-xl", text) {
         return out;
     }
@@ -1043,6 +1072,9 @@ pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
 pub(crate) fn apply_set_y_label(html: String, text: &str) -> String {
     if html.contains("class=\"c3w\"") {
         return apply_3d_cfg(html, &format!("{{\"yLabel\":{}}}", json_str(text)));
+    }
+    if let Some(out) = apply_to_joint_panel(&html, |panel| apply_set_y_label(panel, text)) {
+        return out;
     }
     if let Some(out) = replace_text_class(&html, "sp-yl", text) {
         return out;
@@ -1268,7 +1300,30 @@ pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String
 
 #[cfg(test)]
 mod three_d_text_tests {
-    use super::{apply_glow, apply_neon_bloom, apply_set_title, apply_set_x_label, apply_set_y_label};
+    use super::{apply_glow, apply_neon_bloom, apply_set_title, apply_set_x_label, apply_set_y_label, escape_xml_s};
+
+    fn fixture_joint_with_panel_svg() -> String {
+        let panel = "<html><body><svg width=\"400\" height=\"200\"><path d=\"M0,0\"/></svg></body></html>";
+        format!(
+            "<!DOCTYPE html><html><body><div class=\"sp-joint-grid\"><div class=\"sp-joint-top\"><iframe srcdoc=\"ignored\"></iframe></div><div class=\"sp-joint-panel\"><iframe srcdoc=\"{}\"></iframe></div></div></body></html>",
+            escape_xml_s(panel)
+        )
+    }
+
+    #[test]
+    fn x_label_on_a_joint_chart_forwards_into_the_main_panels_own_svg_instead_of_no_opping() {
+        let out = apply_set_x_label(fixture_joint_with_panel_svg(), "Joint X");
+        assert!(out.contains("Joint X"));
+        assert!(out.contains("sp-xl"));
+        assert!(out.contains("srcdoc=\"ignored\""));
+    }
+
+    #[test]
+    fn y_label_on_a_joint_chart_forwards_into_the_main_panels_own_svg_instead_of_no_opping() {
+        let out = apply_set_y_label(fixture_joint_with_panel_svg(), "Joint Y");
+        assert!(out.contains("Joint Y"));
+        assert!(out.contains("sp-yl"));
+    }
 
     #[test]
     fn glow_on_a_3d_chart_applies_a_css_drop_shadow_filter_instead_of_injecting_dead_svg_defs() {
