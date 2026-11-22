@@ -1336,6 +1336,69 @@ mod chart_variants_demo_coverage_tests {
     }
 }
 
+#[cfg(test)]
+mod manifest_drift_tests {
+    use std::collections::BTreeMap;
+
+    fn section_entries(src: &str, header: &str) -> BTreeMap<String, String> {
+        let mut out = BTreeMap::new();
+        let needle = format!("[{header}]");
+        let Some(start) = src.find(&needle) else {
+            return out;
+        };
+        let body_start = start + needle.len();
+        let rest = &src[body_start..];
+        let body_end = rest.find("\n[").map(|i| i + 1).unwrap_or(rest.len());
+        for line in rest[..body_end].lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') || line.starts_with('[') {
+                continue;
+            }
+            let Some((key, value)) = line.split_once('=') else {
+                continue;
+            };
+            out.insert(key.trim().to_string(), value.trim().to_string());
+        }
+        out
+    }
+
+    #[test]
+    #[ignore]
+    fn report_dependency_and_feature_drift_against_the_surrounding_v2_workspace_manifest() {
+        let this_manifest = std::fs::read_to_string(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"),
+        )
+        .expect("this crate's own Cargo.toml must be readable");
+        let sibling_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../Cargo.toml");
+        let Ok(sibling_manifest) = std::fs::read_to_string(&sibling_path) else {
+            println!("no sibling manifest found at {sibling_path:?}, skipping - nothing to compare against outside this checkout");
+            return;
+        };
+
+        for section in ["dependencies", "features"] {
+            let mine = section_entries(&this_manifest, section);
+            let theirs = section_entries(&sibling_manifest, section);
+            println!("=== [{section}] ===");
+            for (key, value) in &mine {
+                match theirs.get(key) {
+                    None => println!("  only in this manifest: {key} = {value}"),
+                    Some(other) if other != value => {
+                        println!("  value differs for {key}:");
+                        println!("    this manifest:    {value}");
+                        println!("    sibling manifest: {other}");
+                    }
+                    _ => {}
+                }
+            }
+            for key in theirs.keys() {
+                if !mine.contains_key(key) {
+                    println!("  only in sibling manifest: {key} = {}", theirs[key]);
+                }
+            }
+        }
+    }
+}
+
 pub fn chart_themes() -> serde_json::Value {
     use crate::plot::statistical::theme::ChartTheme;
     use serde_json::{Map, Value};
