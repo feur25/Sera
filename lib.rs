@@ -1293,7 +1293,6 @@ pub fn chart_variants() -> serde_json::Value {
         "ridgeline3d",
         "stacked_bar3d",
         "violin3d",
-        "plot_3d_types",
     ] {
         out.insert(family.to_string(), build(scene_keys, scene_default, "3d"));
     }
