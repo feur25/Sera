@@ -2,7 +2,9 @@
 
 Thanks for considering a contribution. This document covers the practical workflow — branching,
 commits, pull requests, code style, and testing. For how the codebase itself is laid out, read
-[ARCHITECTURE.md](ARCHITECTURE.md) first.
+[ARCHITECTURE.md](ARCHITECTURE.md) first. Adding a new chart type or variant? Use
+[NEW_CHART_TYPE.md](NEW_CHART_TYPE.md)'s checklist instead of copying the closest existing family
+and hoping nothing's missed.
 
 ## Before you start
 
