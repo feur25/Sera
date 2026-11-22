@@ -1839,6 +1839,15 @@ window['__sp3dCfg_'+cid]=function(opts){
   if(opts.zLabel!==undefined)zl=opts.zLabel;
   if(opts.a11yLabel!==undefined)cv.setAttribute('aria-label',opts.a11yLabel);
   if(opts.a11yDesc!==undefined)cv.title=opts.a11yDesc;
+  if(opts.width||opts.height){
+    if(opts.width)W=opts.width;
+    if(opts.height)H=opts.height;
+    wrap.style.width=W+'px';
+    wrap.style.aspectRatio=W+'/'+H;
+    cv.width=W*dpr;cv.height=H*dpr;
+    g.scale(dpr,dpr);
+    if(_glcv){_glcv.width=W*dpr;_glcv.height=H*dpr;}
+  }
   wake();
 };
 R();

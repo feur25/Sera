@@ -1,5 +1,11 @@
-﻿use crate::{json_str, apply_3d_cfg};
+﻿use crate::{json_str, apply_3d_cfg, extract_c3d_id};
 use super::js::*;
+
+pub(crate) fn apply_3d_wrapper_css(html: &str, css_body: &str) -> Option<String> {
+    let cid = extract_c3d_id(html)?.to_string();
+    let css = format!("<style>#{cid}.c3w{{{css_body}}}</style></head>");
+    Some(crate::html::hover::inject_before_head(html, &css))
+}
 
 pub(crate) fn apply_despine(html: String) -> String {
     crate::html::hover::inject_before_head(&html, "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>")
@@ -939,6 +945,20 @@ pub(crate) fn apply_set_y_label(html: String, text: &str) -> String {
 }
 
 pub(crate) fn apply_set_size(html: String, w: Option<i32>, h: Option<i32>) -> String {
+    if html.contains("class=\"c3w\"") {
+        let mut opts = String::from("{");
+        if let Some(neww) = w {
+            opts.push_str(&format!("\"width\":{neww}"));
+        }
+        if let Some(newh) = h {
+            if opts.len() > 1 {
+                opts.push(',');
+            }
+            opts.push_str(&format!("\"height\":{newh}"));
+        }
+        opts.push('}');
+        return apply_3d_cfg(html, &opts);
+    }
     let Some(svg_pos) = html.find("<svg") else {
         return html;
     };
@@ -1088,5 +1108,20 @@ mod three_d_text_tests {
         let out = apply_set_title(svg_html, "A Title");
         assert!(out.contains("class=\"sp-ttl\""));
         assert!(!out.contains("__sp3dCfg_"));
+    }
+
+    #[test]
+    fn resizing_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = super::apply_set_size(fixture_3d_html(), Some(640), Some(480));
+        assert!(out.contains("\"width\":640"));
+        assert!(out.contains("\"height\":480"));
+        assert!(out.contains("__sp3dCfg_c3d0"));
+    }
+
+    #[test]
+    fn resizing_only_the_width_of_a_3d_chart_omits_height_from_the_opts() {
+        let out = super::apply_set_size(fixture_3d_html(), Some(640), None);
+        assert!(out.contains("\"width\":640"));
+        assert!(!out.contains("\"height\""));
     }
 }
