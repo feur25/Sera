@@ -1084,11 +1084,10 @@ pub(crate) fn apply_set_size(html: String, w: Option<i32>, h: Option<i32>) -> St
     out
 }
 
-fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
+fn collect_tagged_colors(html: &str, needle: &str) -> Vec<(usize, String)> {
     let mut pairs: Vec<(usize, String)> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut idx = 0usize;
-    let needle = "data-series=\"";
     while let Some(rel) = html[idx..].find(needle) {
         let pos = idx + rel + needle.len();
         let Some(end_rel) = html[pos..].find('"') else {
@@ -1117,6 +1116,14 @@ fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
     pairs
 }
 
+fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
+    let pairs = collect_tagged_colors(html, "data-series=\"");
+    if !pairs.is_empty() {
+        return pairs;
+    }
+    collect_tagged_colors(html, "data-idx=\"")
+}
+
 pub(crate) fn apply_palette(html: String, colors: &[u32]) -> String {
     if colors.is_empty() {
         return html;
@@ -1136,6 +1143,9 @@ pub(crate) fn apply_palette(html: String, colors: &[u32]) -> String {
 }
 
 pub(crate) fn apply_color_hex(html: String, color: &str) -> String {
+    if html.contains("class=\"c3w\"") {
+        return apply_3d_cfg(html, &format!("{{\"colorHex\":{}}}", json_str(color)));
+    }
     let pairs = collect_series_colors(&html);
     let mut out = html;
     for (_, old_color) in pairs {
@@ -1227,6 +1237,21 @@ mod three_d_text_tests {
         let out = super::apply_set_size(fixture_3d_html(), Some(640), None);
         assert!(out.contains("\"width\":640"));
         assert!(!out.contains("\"height\""));
+    }
+
+    #[test]
+    fn color_hex_on_a_3d_chart_overrides_the_palette_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = super::apply_color_hex(fixture_3d_html(), "#00ff00");
+        assert!(out.contains("\"colorHex\":\"#00ff00\""));
+    }
+
+    #[test]
+    fn color_hex_recolors_elements_tagged_with_data_idx_when_no_data_series_attribute_exists() {
+        let html = "<html><body><svg><path data-idx=\"0\" fill=\"#636efa\" d=\"M0,0\"/><path data-idx=\"1\" fill=\"#ef553b\" d=\"M1,1\"/></svg></body></html>".to_string();
+        let out = super::apply_color_hex(html, "#00ff00");
+        assert!(out.contains("fill=\"#00ff00\""));
+        assert!(!out.contains("#636efa"));
+        assert!(!out.contains("#ef553b"));
     }
 
     #[test]

@@ -1856,6 +1856,7 @@ window['__sp3dCfg_'+cid]=function(opts){
   if(opts.a11yLabel!==undefined)cv.setAttribute('aria-label',opts.a11yLabel);
   if(opts.a11yDesc!==undefined)cv.title=opts.a11yDesc;
   if(opts.hoverSlots!==undefined)window['_hs3d_'+cid]=opts.hoverSlots;
+  if(opts.colorHex!==undefined)PAL=[opts.colorHex];
   if(opts.width||opts.height){
     if(opts.width)W=opts.width;
     if(opts.height)H=opts.height;
