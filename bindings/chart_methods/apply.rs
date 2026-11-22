@@ -892,6 +892,17 @@ fn promote_first_svg_text(html: &str, new_text: &str) -> Option<String> {
     Some(out)
 }
 
+fn plot_rect_or_svg_bounds(html: &str) -> Option<(f64, f64, f64, f64)> {
+    if let Some(rect) = parse_plot_rect(html) {
+        return Some(rect);
+    }
+    let (w, h) = crate::html::hover::extract_svg_dims(html);
+    if w > 0 && h > 0 {
+        return Some((0.0, 0.0, w as f64, h as f64));
+    }
+    None
+}
+
 fn replace_attr(tag: &str, attr: &str, value: &str) -> String {
     let marker = format!("{}=\"", attr);
     if let Some(pos) = tag.find(&marker) {
@@ -952,11 +963,12 @@ pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
     if let Some(out) = replace_text_class(&html, "sp-xl", text) {
         return out;
     }
-    let Some((l, t, w, h)) = parse_plot_rect(&html) else {
+    let Some((l, t, w, h)) = plot_rect_or_svg_bounds(&html) else {
         return html;
     };
+    let (_sw, sh) = crate::html::hover::extract_svg_dims(&html);
     let cx = l + w / 2.0;
-    let y = t + h + 42.0;
+    let y = (t + h + 42.0).min(sh as f64 - 4.0);
     let snippet = format!(
         "<text x=\"{cx}\" y=\"{y}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xl\">{}</text>",
         escape_text(text)
@@ -976,7 +988,7 @@ pub(crate) fn apply_set_y_label(html: String, text: &str) -> String {
     if let Some(out) = replace_text_class(&html, "sp-yl", text) {
         return out;
     }
-    let Some((l, t, _w, h)) = parse_plot_rect(&html) else {
+    let Some((l, t, _w, h)) = plot_rect_or_svg_bounds(&html) else {
         return html;
     };
     let cy = t + h / 2.0;
@@ -1190,5 +1202,22 @@ mod three_d_text_tests {
         assert!(out.contains("class=\"sp-ttl\""));
         assert!(out.contains("x=\"200\""));
         assert!(out.contains(">Fresh Title<"));
+    }
+
+    #[test]
+    fn setting_the_x_label_on_a_renderer_with_no_placeholder_and_no_data_sp_falls_back_to_svg_bounds() {
+        let html = "<html><body><svg width=\"400\" height=\"200\"><path d=\"M0,0\"/></svg></body></html>".to_string();
+        let out = super::apply_set_x_label(html, "X Axis");
+        assert!(out.contains("class=\"sp-xl\""));
+        assert!(out.contains(">X Axis<"));
+        assert!(out.contains("y=\"196\""));
+    }
+
+    #[test]
+    fn setting_the_y_label_on_a_renderer_with_no_placeholder_and_no_data_sp_falls_back_to_svg_bounds() {
+        let html = "<html><body><svg width=\"400\" height=\"200\"><path d=\"M0,0\"/></svg></body></html>".to_string();
+        let out = super::apply_set_y_label(html, "Y Axis");
+        assert!(out.contains("class=\"sp-yl\""));
+        assert!(out.contains(">Y Axis<"));
     }
 }
