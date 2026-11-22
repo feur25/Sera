@@ -196,10 +196,26 @@ fn extract_attr_range(html: &str, attr: &str) -> Option<(f64, f64)> {
     }
 }
 
+fn strip_existing_colorbar(html: &str) -> String {
+    let marker = "box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15)";
+    let Some(marker_pos) = html.find(marker) else {
+        return html.to_string();
+    };
+    let Some(div_start) = html[..marker_pos].rfind("<div") else {
+        return html.to_string();
+    };
+    let Some(rel_end) = html[marker_pos..].find("</div>") else {
+        return html.to_string();
+    };
+    let div_end = marker_pos + rel_end + "</div>".len();
+    let mut out = String::with_capacity(html.len());
+    out.push_str(&html[..div_start]);
+    out.push_str(&html[div_end..]);
+    out
+}
+
 pub(crate) fn apply_colorbar(html: String, position: &str) -> String {
-    if html.contains("box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15)") {
-        return html;
-    }
+    let html = strip_existing_colorbar(&html);
     let pos = match position {
         "left" | "right" | "top" | "bottom" => position,
         _ => "right",
@@ -1120,16 +1136,16 @@ fn collect_tagged_colors(html: &str, needle: &str) -> Vec<(usize, String)> {
 }
 
 const CHROME_COLOR_BLOCKLIST: &[&str] = &[
-    "#ffffff", "#fff", "#f1f5f9", "#e2e8f0", "#6b7280", "#9ca3af",
+    "#ffffff", "#fff", "#f1f5f9", "#e2e8f0", "#e5e7eb", "#6b7280", "#9ca3af",
     "#1a202c", "#1e293b", "#374151", "#0d1117", "#f8fafc", "#0f172a",
 ];
 
-fn collect_untagged_fill_colors(html: &str) -> Vec<(usize, String)> {
+fn collect_untagged_colors_for_attr(html: &str, attr: &str) -> Vec<(usize, String)> {
     let mut pairs: Vec<(usize, String)> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut idx = 0usize;
-    let needle = "fill=\"#";
-    while let Some(rel) = html[idx..].find(needle) {
+    let needle = format!("{attr}=\"#");
+    while let Some(rel) = html[idx..].find(&needle) {
         let fpos = idx + rel + needle.len() - 1;
         let Some(fend) = html[fpos..].find('"') else {
             break;
@@ -1138,11 +1154,24 @@ fn collect_untagged_fill_colors(html: &str) -> Vec<(usize, String)> {
         let tag_start = html[..fpos].rfind('<').unwrap_or(fpos);
         let tag_name_end = html[tag_start..].find(|c: char| c == ' ' || c == '>').map(|e| tag_start + e).unwrap_or(fpos);
         let tag_name = &html[tag_start + 1..tag_name_end];
-        let is_shape = matches!(tag_name, "circle" | "path" | "polygon" | "ellipse");
+        let is_shape = matches!(tag_name, "circle" | "path" | "polygon" | "ellipse" | "line");
         if is_shape && !CHROME_COLOR_BLOCKLIST.contains(&color.to_lowercase().as_str()) && seen.insert(color.clone()) {
             pairs.push((pairs.len(), color));
         }
         idx = fpos + fend;
+    }
+    pairs
+}
+
+fn collect_untagged_fill_colors(html: &str) -> Vec<(usize, String)> {
+    let mut seen = std::collections::HashSet::new();
+    let mut pairs = Vec::new();
+    for attr in ["fill", "stroke"] {
+        for (_, color) in collect_untagged_colors_for_attr(html, attr) {
+            if seen.insert(color.clone()) {
+                pairs.push((pairs.len(), color));
+            }
+        }
     }
     pairs
 }
@@ -1272,6 +1301,14 @@ mod three_d_text_tests {
         let out = super::apply_set_size(fixture_3d_html(), Some(640), None);
         assert!(out.contains("\"width\":640"));
         assert!(!out.contains("\"height\""));
+    }
+
+    #[test]
+    fn calling_colorbar_again_replaces_an_already_present_default_colorbar_instead_of_no_opping() {
+        let html = "<!DOCTYPE html><html><body><div id=\"c3d0\" class=\"c3w\"><canvas id=\"c3d0c\"></canvas><div style=\"position:absolute;top:50%;right:10px;transform:translateY(-50%);width:14px;height:150px;background:linear-gradient(to top,#00008f,#00ffff,#00ff00,#ffff00,#ff0000);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15);z-index:50\"><span>0.00</span><span>1.00</span></div><button id=\"c3d0x\"></button><button id=\"c3d0z\"></button></div></body></html>".to_string();
+        let out = super::apply_colorbar(html, "left");
+        assert_eq!(out.matches("box-shadow:0 2px 8px").count(), 1);
+        assert!(out.contains("left:10px"));
     }
 
     #[test]
