@@ -874,6 +874,18 @@ fn replace_text_class(html: &str, class: &str, new_text: &str) -> Option<String>
     Some(out)
 }
 
+fn replace_joint_title(html: &str, new_text: &str) -> Option<String> {
+    let marker = "class=\"sp-joint-title\">";
+    let pos = html.find(marker)?;
+    let start = pos + marker.len();
+    let end_rel = html[start..].find("</p>")?;
+    let mut out = String::with_capacity(html.len());
+    out.push_str(&html[..start]);
+    out.push_str(&escape_text(new_text));
+    out.push_str(&html[start + end_rel..]);
+    Some(out)
+}
+
 fn promote_first_svg_text(html: &str, new_text: &str) -> Option<String> {
     let svg_pos = html.find("<svg")?;
     let rel = html[svg_pos..].find("<text")?;
@@ -923,6 +935,9 @@ pub(crate) fn apply_set_title(html: String, text: &str) -> String {
         return apply_3d_cfg(html, &format!("{{\"title\":{}}}", json_str(text)));
     }
     if let Some(out) = replace_text_class(&html, "sp-ttl", text) {
+        return out;
+    }
+    if let Some(out) = replace_joint_title(&html, text) {
         return out;
     }
     if let Some((l, _t, w, _h)) = parse_plot_rect(&html) {
@@ -1202,6 +1217,13 @@ mod three_d_text_tests {
         assert!(out.contains("class=\"sp-ttl\""));
         assert!(out.contains("x=\"200\""));
         assert!(out.contains(">Fresh Title<"));
+    }
+
+    #[test]
+    fn setting_the_title_on_a_joint_chart_replaces_the_sp_joint_title_paragraph() {
+        let html = "<html><body><p class=\"sp-joint-title\">Old</p><div class=\"sp-joint-grid\"></div></body></html>".to_string();
+        let out = super::apply_set_title(html, "New Joint Title");
+        assert!(out.contains("class=\"sp-joint-title\">New Joint Title</p>"));
     }
 
     #[test]
