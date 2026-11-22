@@ -1313,6 +1313,29 @@ pub fn chart_variants() -> serde_json::Value {
     Value::Object(out)
 }
 
+#[cfg(test)]
+mod chart_variants_demo_coverage_tests {
+    #[test]
+    fn every_registered_family_has_a_working_demo_for_its_default_variant() {
+        let registry = crate::chart_variants();
+        let families = registry.as_object().expect("chart_variants must be an object");
+        let mut missing = Vec::new();
+        for (family, entry) in families {
+            let default_key = entry
+                .get("default")
+                .and_then(|v| v.as_str())
+                .unwrap_or("basic");
+            if crate::demo_snippet(family, default_key).is_none() {
+                missing.push(format!("{family}:{default_key}"));
+            }
+        }
+        assert!(
+            missing.is_empty(),
+            "families registered in chart_variants() with no working demo for their default variant: {missing:?}"
+        );
+    }
+}
+
 pub fn chart_themes() -> serde_json::Value {
     use crate::plot::statistical::theme::ChartTheme;
     use serde_json::{Map, Value};
