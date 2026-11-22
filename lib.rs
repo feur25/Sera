@@ -487,19 +487,66 @@ pub(crate) fn apply_3d_cfg(html: String, opts_json: &str) -> String {
     crate::html::hover::inject_before_body(&html, &snippet)
 }
 
+fn strip_existing_labels_script(html: &str) -> String {
+    let needle = "<script>(function(){if(window.__SL__)return;window.__SL__=1;";
+    let Some(start) = html.find(needle) else {
+        return html.to_string();
+    };
+    let Some(rel_end) = html[start..].find("</script>") else {
+        return html.to_string();
+    };
+    let end = start + rel_end + "</script>".len();
+    let mut out = String::with_capacity(html.len());
+    out.push_str(&html[..start]);
+    out.push_str(&html[end..]);
+    out
+}
+
 pub(crate) fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) -> String {
     if html.contains("class=\"c3w\"") {
         return apply_3d_cfg(html.to_string(), &format!("{{\"legend\":true,\"legendPos\":{}}}", json_str(pos)));
     }
-    if html.contains("window.__SL__") {
-        return html.to_string();
-    }
+    let stripped = strip_existing_labels_script(html);
     let forced = if labels.is_empty() {
         String::new()
     } else {
         encode_forced(labels, colors)
     };
-    crate::html::hover::inject_before_body(&html, &build_labels_js(pos, &forced))
+    crate::html::hover::inject_before_body(&stripped, &build_labels_js(pos, &forced))
+}
+
+#[cfg(test)]
+mod inject_labels_tests {
+    use super::inject_labels;
+
+    fn html_with_default_legend() -> String {
+        format!(
+            "<html><body><svg></svg>{}",
+            super::build_labels_js("bottom", "")
+        )
+    }
+
+    #[test]
+    fn calling_show_labels_again_replaces_the_already_present_default_legend_instead_of_no_opping() {
+        let before = html_with_default_legend();
+        let out = inject_labels(&before, "top", &[], &[]);
+        assert!(out.contains("var POS='top';"));
+        assert_eq!(out.matches("window.__SL__=1").count(), 1);
+    }
+
+    #[test]
+    fn custom_labels_and_colors_survive_a_repeated_call_on_an_already_legended_chart() {
+        let before = html_with_default_legend();
+        let out = inject_labels(
+            &before,
+            "left",
+            &["Alpha".to_string()],
+            &["#ff0000".to_string()],
+        );
+        assert!(out.contains("Alpha"));
+        assert!(out.contains("#ff0000"));
+        assert!(out.contains("var POS='left';"));
+    }
 }
 
 const SP_CROSSHAIR_JS: &str = crate::bindings::chart_methods::js::SP_CROSSHAIR_JS;
