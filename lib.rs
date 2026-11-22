@@ -464,6 +464,17 @@ pub(crate) fn extract_c3d_id(html: &str) -> Option<&str> {
     Some(&rest[..end])
 }
 
+pub(crate) fn extract_c3d_dims(html: &str) -> Option<(f64, f64)> {
+    let cid = extract_c3d_id(html)?;
+    let start = html.find(&format!("id=\"{cid}\""))?;
+    let rel = html[start..].find("aspect-ratio:")? + "aspect-ratio:".len();
+    let seg_start = start + rel;
+    let seg_end = seg_start + html[seg_start..].find('"')?;
+    let seg = &html[seg_start..seg_end];
+    let (w_s, h_s) = seg.split_once('/')?;
+    Some((w_s.trim().parse().ok()?, h_s.trim().parse().ok()?))
+}
+
 pub(crate) fn apply_3d_cfg(html: String, opts_json: &str) -> String {
     let cid = match extract_c3d_id(&html) {
         Some(c) => c.to_string(),

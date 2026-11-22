@@ -220,6 +220,9 @@ impl Chart {
                 x, y, r, col, op
             ));
         }
+        if let Some(out) = super::apply::apply_3d_overlay(&self.html, &circles) {
+            return self.propagate(out);
+        }
         let layer = format!("<g class=\"sp-flourish\" style=\"pointer-events:none\">{}</g></svg>", circles);
         let html = crate::html::hover::inject_before_svg_close(&self.html, &layer);
         self.propagate(html)
@@ -242,10 +245,14 @@ impl Chart {
     pub fn stamp(&self, text: &str, x: f64, y: f64, size: f64, color: &str, opacity: f64) -> Chart {
         let op = opacity.clamp(0.0, 1.0);
         let escaped = text.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
-        let node = format!(
-            "<text x=\"{:.1}%\" y=\"{:.1}%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"{:.0}\" font-weight=\"900\" fill=\"{}\" opacity=\"{:.3}\" pointer-events=\"none\" style=\"user-select:none;letter-spacing:0.08em;\">{}</text></svg>",
+        let text_node = format!(
+            "<text x=\"{:.1}%\" y=\"{:.1}%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"{:.0}\" font-weight=\"900\" fill=\"{}\" opacity=\"{:.3}\" pointer-events=\"none\" style=\"user-select:none;letter-spacing:0.08em;\">{}</text>",
             x, y, size, color, op, escaped
         );
+        if let Some(out) = super::apply::apply_3d_overlay(&self.html, &text_node) {
+            return self.propagate(out);
+        }
+        let node = format!("{}</svg>", text_node);
         let html = crate::html::hover::inject_before_svg_close(&self.html, &node);
         self.propagate(html)
     }
@@ -366,5 +373,20 @@ mod three_d_compositing_tests {
         let out = fixture_3d_html().image_bg("https://example.com/bg.png", 0.5).html;
         assert!(out.contains("#c3d0.c3w{background-image:"));
         assert!(out.contains("https://example.com/bg.png"));
+    }
+
+    #[test]
+    fn flourish_on_a_3d_chart_overlays_an_svg_instead_of_no_opping() {
+        let out = fixture_3d_html().flourish(0.5, 42, None).html;
+        assert!(out.contains("<circle "));
+        assert!(out.contains("position:absolute;inset:0"));
+    }
+
+    #[test]
+    fn stamp_on_a_3d_chart_overlays_an_svg_instead_of_no_opping() {
+        let out = fixture_3d_html().stamp("DRAFT", 50.0, 50.0, 48.0, "#ff0000", 0.3).html;
+        assert!(out.contains("<text "));
+        assert!(out.contains(">DRAFT<"));
+        assert!(out.contains("position:absolute;inset:0"));
     }
 }

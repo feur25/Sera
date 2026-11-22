@@ -7,6 +7,22 @@ pub(crate) fn apply_3d_wrapper_css(html: &str, css_body: &str) -> Option<String>
     Some(crate::html::hover::inject_before_head(html, &css))
 }
 
+pub(crate) fn apply_3d_overlay(html: &str, inner: &str) -> Option<String> {
+    let cid = extract_c3d_id(html)?;
+    let needle = format!("id=\"{cid}c\"");
+    let pos = html.find(&needle)?;
+    let close_rel = html[pos..].find("</canvas>")?;
+    let insert_at = pos + close_rel + "</canvas>".len();
+    let overlay = format!(
+        "<svg width=\"100%\" height=\"100%\" style=\"position:absolute;inset:0;pointer-events:none\" preserveAspectRatio=\"none\">{inner}</svg>"
+    );
+    let mut out = String::with_capacity(html.len() + overlay.len());
+    out.push_str(&html[..insert_at]);
+    out.push_str(&overlay);
+    out.push_str(&html[insert_at..]);
+    Some(out)
+}
+
 pub(crate) fn apply_despine(html: String) -> String {
     crate::html::hover::inject_before_head(&html, "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>")
 }

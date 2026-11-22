@@ -46,7 +46,12 @@ pub(crate) fn add_media(
     shape: &str,
     opacity: f64,
 ) -> String {
-    let (sw, sh) = extract_svg_dims(html);
+    let (sw, sh) = if html.contains("class=\"c3w\"") {
+        crate::extract_c3d_dims(html).unwrap_or((300.0, 300.0))
+    } else {
+        let (w, h) = extract_svg_dims(html);
+        (w as f64, h as f64)
+    };
     let px = x.clamp(0.0, 1.0) * sw as f64;
     let py = y.clamp(0.0, 1.0) * sh as f64;
     let pw = width.clamp(0.0, 1.0) * sw as f64;
@@ -96,6 +101,10 @@ pub(crate) fn add_media(
                 px, py, pw, ph
             ));
         }
+    }
+    if html.contains("class=\"c3w\"") {
+        return crate::bindings::chart_methods::apply::apply_3d_overlay(html, &frag)
+            .unwrap_or_else(|| html.to_string());
     }
     frag.push_str("</svg>");
     inject_before_svg_close(html, &frag)
@@ -165,5 +174,17 @@ mod tests {
         assert!(out.contains("width=\"900.00\""));
         assert!(out.contains("height=\"480.00\""));
         assert!(out.contains("opacity=\"1.000\""));
+    }
+
+    fn fixture_3d_html() -> String {
+        "<!DOCTYPE html><html><body><div id=\"c3d0\" class=\"c3w\" style=\"width:640px;max-width:100%;aspect-ratio:640/360\"><canvas id=\"c3d0c\"></canvas></div></body></html>".to_string()
+    }
+
+    #[test]
+    fn add_media_on_a_3d_chart_overlays_an_svg_instead_of_no_opping() {
+        let out = add_media(&fixture_3d_html(), "image", "http://x.test/a.png", 0.5, 0.5, 0.2, 0.2, "rect", 1.0);
+        assert!(out.contains("<image "));
+        assert!(out.contains("x=\"320.00\""));
+        assert!(out.contains("position:absolute;inset:0"));
     }
 }
