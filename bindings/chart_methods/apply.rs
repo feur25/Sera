@@ -64,6 +64,12 @@ pub(crate) fn apply_caption(html: String, text: &str) -> String {
 }
 
 pub(crate) fn apply_glow(html: String, color: &str) -> String {
+    if let Some(out) = apply_3d_wrapper_css(
+        &html,
+        &format!("filter:drop-shadow(0 0 8px {color})"),
+    ) {
+        return out;
+    }
     let mut html = html;
     if let Some(svg_pos) = html.find("<svg") {
         if let Some(rel_end) = html[svg_pos..].find('>') {
@@ -79,6 +85,12 @@ pub(crate) fn apply_glow(html: String, color: &str) -> String {
 }
 
 pub(crate) fn apply_neon_bloom(html: String, color: &str) -> String {
+    if let Some(out) = apply_3d_wrapper_css(
+        &html,
+        &format!("filter:drop-shadow(0 0 20px {color}) drop-shadow(0 0 8px {color})"),
+    ) {
+        return out;
+    }
     let mut html = html;
     if let Some(svg_pos) = html.find("<svg") {
         if let Some(rel_end) = html[svg_pos..].find('>') {
@@ -1256,7 +1268,21 @@ pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String
 
 #[cfg(test)]
 mod three_d_text_tests {
-    use super::{apply_set_title, apply_set_x_label, apply_set_y_label};
+    use super::{apply_glow, apply_neon_bloom, apply_set_title, apply_set_x_label, apply_set_y_label};
+
+    #[test]
+    fn glow_on_a_3d_chart_applies_a_css_drop_shadow_filter_instead_of_injecting_dead_svg_defs() {
+        let out = apply_glow(fixture_3d_html(), "#ff00ff");
+        assert!(out.contains("filter:drop-shadow(0 0 8px #ff00ff)"));
+        assert!(!out.contains("sp-glow-f"));
+    }
+
+    #[test]
+    fn neon_bloom_on_a_3d_chart_applies_a_css_drop_shadow_filter_instead_of_injecting_dead_svg_defs() {
+        let out = apply_neon_bloom(fixture_3d_html(), "#ff00ff");
+        assert!(out.contains("filter:drop-shadow(0 0 20px #ff00ff) drop-shadow(0 0 8px #ff00ff)"));
+        assert!(!out.contains("sp-bloom"));
+    }
 
     fn fixture_3d_html() -> String {
         "<!DOCTYPE html><html><head></head><body><div id=\"c3d0\" class=\"c3w\"><canvas id=\"c3d0c\"></canvas></div><script>(function(){var ttl='Basic demo';window['__sp3dCfg_c3d0']=function(opts){};})();</script></body></html>".to_string()
