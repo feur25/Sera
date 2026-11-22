@@ -6,6 +6,8 @@ SeraPlot — High-Performance Data Visualization & ML Framework
 
 > **Documentation:** https://feur25.github.io/seraplot/introduction.html
 
+Contributing? Read [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [ARCHITECTURE.md](ARCHITECTURE.md) for how the codebase is laid out.
+
 ---
 
 ## Why Choose SeraPlot?
