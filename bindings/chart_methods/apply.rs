@@ -1096,10 +1096,13 @@ fn collect_tagged_colors(html: &str, needle: &str) -> Vec<(usize, String)> {
         let series_str = &html[pos..pos + end_rel];
         if let Ok(series_idx) = series_str.parse::<usize>() {
             let tag_start = html[..pos].rfind('<').unwrap_or(pos);
-            let tag_end = html[pos..].find('>').map(|e| pos + e).unwrap_or(html.len());
-            let tag = &html[tag_start..tag_end];
+            let window_end = html[pos..]
+                .find(needle)
+                .map(|r| pos + r)
+                .unwrap_or_else(|| (pos + 1200).min(html.len()));
+            let window = &html[tag_start..window_end];
             for attr in ["fill=\"#", "stroke=\"#"] {
-                if let Some(frel) = tag.find(attr) {
+                if let Some(frel) = window.find(attr) {
                     let fpos = tag_start + frel + attr.len() - 1;
                     if let Some(fend) = html[fpos..].find('"') {
                         let color = html[fpos..fpos + fend].to_string();
@@ -1116,12 +1119,44 @@ fn collect_tagged_colors(html: &str, needle: &str) -> Vec<(usize, String)> {
     pairs
 }
 
+const CHROME_COLOR_BLOCKLIST: &[&str] = &[
+    "#ffffff", "#fff", "#f1f5f9", "#e2e8f0", "#6b7280", "#9ca3af",
+    "#1a202c", "#1e293b", "#374151", "#0d1117", "#f8fafc", "#0f172a",
+];
+
+fn collect_untagged_fill_colors(html: &str) -> Vec<(usize, String)> {
+    let mut pairs: Vec<(usize, String)> = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+    let mut idx = 0usize;
+    let needle = "fill=\"#";
+    while let Some(rel) = html[idx..].find(needle) {
+        let fpos = idx + rel + needle.len() - 1;
+        let Some(fend) = html[fpos..].find('"') else {
+            break;
+        };
+        let color = html[fpos..fpos + fend].to_string();
+        let tag_start = html[..fpos].rfind('<').unwrap_or(fpos);
+        let tag_name_end = html[tag_start..].find(|c: char| c == ' ' || c == '>').map(|e| tag_start + e).unwrap_or(fpos);
+        let tag_name = &html[tag_start + 1..tag_name_end];
+        let is_shape = matches!(tag_name, "circle" | "path" | "polygon" | "ellipse");
+        if is_shape && !CHROME_COLOR_BLOCKLIST.contains(&color.to_lowercase().as_str()) && seen.insert(color.clone()) {
+            pairs.push((pairs.len(), color));
+        }
+        idx = fpos + fend;
+    }
+    pairs
+}
+
 fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
     let pairs = collect_tagged_colors(html, "data-series=\"");
     if !pairs.is_empty() {
         return pairs;
     }
-    collect_tagged_colors(html, "data-idx=\"")
+    let pairs = collect_tagged_colors(html, "data-idx=\"");
+    if !pairs.is_empty() {
+        return pairs;
+    }
+    collect_untagged_fill_colors(html)
 }
 
 pub(crate) fn apply_palette(html: String, colors: &[u32]) -> String {
@@ -1243,6 +1278,24 @@ mod three_d_text_tests {
     fn color_hex_on_a_3d_chart_overrides_the_palette_through_the_sp3dcfg_hook_instead_of_no_opping() {
         let out = super::apply_color_hex(fixture_3d_html(), "#00ff00");
         assert!(out.contains("\"colorHex\":\"#00ff00\""));
+    }
+
+    #[test]
+    fn color_hex_recolors_untagged_shape_fills_when_no_data_series_or_data_idx_exists_anywhere() {
+        let html = "<html><body><svg><rect class=\"sp-bg\"/><rect x=\"0\" width=\"10\" height=\"10\" fill=\"#f1f5f9\"/><circle cx=\"1\" cy=\"1\" r=\"2\" fill=\"#636efa\" fill-opacity=\"0.55\"/><circle cx=\"2\" cy=\"2\" r=\"2\" fill=\"#636efa\" fill-opacity=\"0.55\"/></svg></body></html>".to_string();
+        let out = super::apply_color_hex(html, "#00ff00");
+        assert!(out.contains("fill=\"#00ff00\""));
+        assert!(!out.contains("#636efa"));
+        assert!(out.contains("#f1f5f9"));
+    }
+
+    #[test]
+    fn color_hex_recolors_a_color_found_on_a_descendant_of_the_data_series_tagged_group() {
+        let html = "<html><body><svg><g data-series=\"0\" data-idx=\"0\"><path d=\"M0,0\" fill=\"none\" stroke=\"#636efa\"/></g><g data-series=\"1\" data-idx=\"1\"><path d=\"M1,1\" fill=\"none\" stroke=\"#ef553b\"/></g></svg></body></html>".to_string();
+        let out = super::apply_color_hex(html, "#00ff00");
+        assert!(out.contains("stroke=\"#00ff00\""));
+        assert!(!out.contains("#636efa"));
+        assert!(!out.contains("#ef553b"));
     }
 
     #[test]
