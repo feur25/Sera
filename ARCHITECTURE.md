@@ -66,27 +66,27 @@ graph LR
     end
 
     subgraph services["services/"]
-        data["data/ — DFrame + dframe/secure/"]
-        ml["ml/ — SeraML bridge"]
+        data["data/ - DFrame + dframe/secure/"]
+        ml["ml/ - SeraML bridge"]
 
-        subgraph plot["plot/ — the chart engine"]
-            html["html/ — shared SVG/JS emission\n(hover.rs, media_overlay.rs, js_3d.rs)"]
-            map["map/ — region data + asset_pack"]
-            pulse["pulse/ — live/streaming engine\n(push, record, export_gif, firehose)"]
-            statistical["statistical/ — one module per\nchart family (radar/, pie/, ...)"]
-            canvas_points["canvas_points.rs — NativeChartEntry /\nLabeledChartEntry / OhlcChartEntry / ..."]
+        subgraph plot["plot/ - the chart engine"]
+            html["html/ - shared SVG/JS emission<br/>hover.rs, media_overlay.rs, js_3d.rs"]
+            map["map/ - region data + asset_pack"]
+            pulse["pulse/ - live/streaming engine<br/>push, record, export_gif, firehose"]
+            statistical["statistical/ - one module per<br/>chart family: radar/, pie/, etc"]
+            canvas_points["canvas_points.rs<br/>NativeChartEntry, LabeledChartEntry,<br/>OhlcChartEntry, and friends"]
         end
     end
 
     subgraph bindings["bindings/"]
-        chart_methods["chart_methods/ — every chainable\nmethod, split by theme"]
-        method_registry["method_registry.rs\nMethodEntry{name, apply}"]
-        fn_registry["fn_registry.rs\nFnEntry{name, invoke} — the dispatcher\nevery binding calls through"]
-        doc_registry["doc_registry.rs\nFnDoc — backs sp.docs()"]
-        chart_ffi["chart_ffi.rs / fast_export_c.rs\nC ABI surface"]
+        chart_methods["chart_methods/ - every chainable<br/>method, split by theme"]
+        method_registry["method_registry.rs<br/>MethodEntry: name, apply"]
+        fn_registry["fn_registry.rs<br/>FnEntry: name, invoke - the dispatcher<br/>every binding calls through"]
+        doc_registry["doc_registry.rs<br/>FnDoc - backs sp.docs()"]
+        chart_ffi["chart_ffi.rs / fast_export_c.rs<br/>C ABI surface"]
     end
 
-    macros["seraplot-macros/\n#[sera_impl] #[sera_doc] #[sera_sig]"]
+    macros["seraplot-macros/<br/>sera_impl, sera_doc, sera_sig"]
 
     macros -. "expands into" .-> chart_methods
     macros -. "expands into" .-> method_registry
@@ -148,17 +148,17 @@ That single annotation expands, at compile time, into three things registered vi
 
 ```mermaid
 flowchart TD
-    src["pub fn title(&self, text: &str) -> Chart { ... }\nannotated #[sera_impl] / #[sera_doc] / #[sera_sig]"]
-    src -- "compile-time macro expansion" --> doc["doc_registry::FnDoc\n(sp.docs(), doc pages)"]
-    src -- "compile-time macro expansion" --> pym["#[pyo3(name=\"title\")]\n(direct Python method)"]
-    src -- "compile-time macro expansion" --> mreg["method_registry::MethodEntry\n{name: \"title\", apply: fn}"]
+    src["Chart::title method<br/>annotated sera_impl, sera_doc, sera_sig"]
+    src -- "compile-time macro expansion" --> doc["doc_registry::FnDoc<br/>sp.docs(), doc pages"]
+    src -- "compile-time macro expansion" --> pym["pyo3 name = title<br/>direct Python method"]
+    src -- "compile-time macro expansion" --> mreg["method_registry::MethodEntry<br/>name = title, apply = fn"]
 
-    mreg --> fnreg["fn_registry::invoke\nthe one dispatcher every binding calls"]
+    mreg --> fnreg["fn_registry::invoke<br/>the one dispatcher every binding calls"]
     pyB["Python binding"] --> fnreg
     wasmB["WASM binding"] --> fnreg
     cB["C / C++ FFI"] --> fnreg
     csB["C# / NuGet"] --> fnreg
-    fnreg -- "resolves aliases, applies\nmethod kwargs, incl. native\nfast-path charts" --> chart["Chart.html"]
+    fnreg -- "resolves aliases, applies method<br/>kwargs, incl. native fast-path charts" --> chart["Chart.html"]
 ```
 
 `bindings/fn_registry.rs::invoke` is the single generic entry point every binding (Python, WASM,
@@ -181,27 +181,27 @@ branch on which of three fundamentally different output shapes it's looking at:
 
 ```mermaid
 flowchart LR
-    subgraph twoD["2D — plain SVG"]
-        svg["&lt;svg&gt;...&lt;/svg&gt;\ndata-sp=\"l,t,w,h\"\nclass=\"sp-ttl/sp-xl/sp-yl\"\ndata-series / data-idx"]
+    subgraph twoD["2D - plain SVG"]
+        svg["svg tree<br/>data-sp rect attribute<br/>sp-ttl / sp-xl / sp-yl classes<br/>data-series / data-idx attributes"]
     end
-    subgraph threeD["3D — canvas + WebGL"]
-        div3d["&lt;div class=\"c3w\"&gt;\n&lt;canvas&gt;...&lt;/canvas&gt;\n&lt;script&gt; IIFE (js_3d.rs)"]
-        hook["window['__sp3dCfg_'+cid]\n(opts) => { ... wake() }"]
+    subgraph threeD["3D - canvas + WebGL"]
+        div3d["div.c3w wrapping a canvas<br/>plus an inline script IIFE, js_3d.rs"]
+        hook["window.__sp3dCfg_ + cid<br/>opts callback, triggers wake()"]
         div3d --> hook
     end
-    subgraph joint["joint — composite"]
-        grid["&lt;div class=\"sp-joint-grid\"&gt;"]
-        f1["&lt;iframe srcdoc=...&gt;\nmain scatter panel"]
-        f2["&lt;iframe srcdoc=...&gt;\nmarginal histogram"]
-        f3["&lt;iframe srcdoc=...&gt;\nmarginal histogram"]
+    subgraph joint["joint - composite"]
+        grid["div.sp-joint-grid"]
+        f1["iframe srcdoc<br/>main scatter panel"]
+        f2["iframe srcdoc<br/>marginal histogram"]
+        f3["iframe srcdoc<br/>marginal histogram"]
         grid --> f1
         grid --> f2
         grid --> f3
     end
 
-    method["a chart_method call,\ne.g. title()/mask_circle()"] -. "string-search + patch" .-> svg
-    method -. "apply_3d_cfg(...)\ncalls the hook" .-> hook
-    method -. "CSS on .sp-joint-grid\n(no per-chart id needed)" .-> grid
+    method["a chart_method call<br/>e.g. title or mask_circle"] -. "string-search + patch" .-> svg
+    method -. "apply_3d_cfg calls the hook" .-> hook
+    method -. "CSS on .sp-joint-grid,<br/>no per-chart id needed" .-> grid
 ```
 
 1. **2D charts** — a plain `<svg>…</svg>` tree. Most helpers in
