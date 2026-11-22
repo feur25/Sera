@@ -1762,10 +1762,25 @@ function rFlatMap(mx,my,sc){
   }
 }
 function ht(ex,ey){if(typeof BN!=='undefined'&&!isEnvScene())return hitBlock(ex,ey);var bi=-1,bd=900;for(var i=pp.length-1;i>=0;i--){var dx=pp[i].sx-ex,dy=pp[i].sy-ey,d2=dx*dx+dy*dy,hr=(pp[i].r+10)*(pp[i].r+10);if(d2<bd&&d2<hr){bd=d2;bi=pp[i].i;}}return bi;}
+function _hsEsc3d(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function _hsCard3d(d){
+  var h='';
+  if(d.title)h+='<b>'+_hsEsc3d(d.title)+'</b>';
+  (d.kv||[]).forEach(function(p){h+='<span>'+_hsEsc3d(p[0])+':</span> <span class="tv">'+_hsEsc3d(p[1])+'</span><br>';});
+  if(d.image)h+='<img src="'+_hsEsc3d(d.image)+'" alt="" style="max-width:100%;border-radius:6px;margin-top:4px">';
+  if(d.video)h+='<video src="'+_hsEsc3d(d.video)+'" controls muted playsinline style="max-width:100%;border-radius:6px;margin-top:4px"></video>';
+  if(d.html)h+='<div>'+d.html+'</div>';
+  return h;
+}
 function sT(idx,ex,ey){
+  var slot=(window['_hs3d_'+cid]||{})[idx];
+  var h;
+  if(slot){
+    h=_hsCard3d(slot);
+  } else {
   var blk=typeof BN!=='undefined';
   var lbl=blk?(CL.length>0?CL[BCI[idx]%CL.length]:'Block '+(idx+1)):(typeof NM!=='undefined'&&NM[idx]!==undefined?NM[idx]:(CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1)));
-  var h='<b>'+lbl+'</b>';
+  h='<b>'+lbl+'</b>';
   if(typeof VAL!=='undefined'&&VAL[idx]!==undefined){
     h+='<span>Value:</span> <span class="tv">'+VAL[idx].toFixed(2)+'</span>';
   } else {
@@ -1773,6 +1788,7 @@ function sT(idx,ex,ey){
     h+='<span>'+(xl||'X')+':</span> <span class="tv">'+vx.toFixed(3)+'</span><br>';
     h+='<span>'+(yl||'Y')+':</span> <span class="tv">'+vy.toFixed(3)+'</span><br>';
     h+='<span>'+(zl||'Z')+':</span> <span class="tv">'+vz.toFixed(3)+'</span>';
+  }
   }
   tip.innerHTML=h;tip.className='c3t v'+(pin?' p':'');
   var bx=wrap.getBoundingClientRect();
@@ -1839,6 +1855,7 @@ window['__sp3dCfg_'+cid]=function(opts){
   if(opts.zLabel!==undefined)zl=opts.zLabel;
   if(opts.a11yLabel!==undefined)cv.setAttribute('aria-label',opts.a11yLabel);
   if(opts.a11yDesc!==undefined)cv.title=opts.a11yDesc;
+  if(opts.hoverSlots!==undefined)window['_hs3d_'+cid]=opts.hoverSlots;
   if(opts.width||opts.height){
     if(opts.width)W=opts.width;
     if(opts.height)H=opts.height;

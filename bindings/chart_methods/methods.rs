@@ -619,6 +619,12 @@ impl Chart {
     )]
     #[sera_sig(slots_json)]
     pub fn hover_slots(&self, slots_json: &str) -> Chart {
+        if self.html.contains("class=\"c3w\"") {
+            return self.propagate(apply_3d_cfg(
+                self.html.clone(),
+                &format!("{{\"hoverSlots\":{}}}", slots_json),
+            ));
+        }
         let needle = "var data=";
         let term = ";\n\n";
         let (deduped_json, imgs_js) = hover_dedup_images(slots_json);
@@ -3283,5 +3289,11 @@ mod a11y_3d_tests {
         let out = fixture_3d_html().a11y("A Title", "A Description").html;
         assert!(out.contains("\"a11yLabel\":\"A Title\""));
         assert!(out.contains("\"a11yDesc\":\"A Description\""));
+    }
+
+    #[test]
+    fn hover_slots_on_a_3d_chart_routes_through_the_sp3dcfg_hook_instead_of_no_opping() {
+        let out = fixture_3d_html().hover_slots("[{\"title\":\"A\",\"kv\":[[\"k\",\"v\"]]}]").html;
+        assert!(out.contains("\"hoverSlots\":[{\"title\":\"A\",\"kv\":[[\"k\",\"v\"]]}]"));
     }
 }
