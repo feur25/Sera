@@ -874,6 +874,24 @@ fn replace_text_class(html: &str, class: &str, new_text: &str) -> Option<String>
     Some(out)
 }
 
+fn promote_first_svg_text(html: &str, new_text: &str) -> Option<String> {
+    let svg_pos = html.find("<svg")?;
+    let rel = html[svg_pos..].find("<text")?;
+    let text_pos = svg_pos + rel;
+    let tag_close_rel = html[text_pos..].find('>')?;
+    let tag_end = text_pos + tag_close_rel;
+    let content_start = tag_end + 1;
+    let content_end_rel = html[content_start..].find("</text>")?;
+    let content_end = content_start + content_end_rel;
+    let mut out = String::with_capacity(html.len() + new_text.len() + 20);
+    out.push_str(&html[..tag_end]);
+    out.push_str(" class=\"sp-ttl\"");
+    out.push_str(&html[tag_end..content_start]);
+    out.push_str(&escape_text(new_text));
+    out.push_str(&html[content_end..]);
+    Some(out)
+}
+
 fn replace_attr(tag: &str, attr: &str, value: &str) -> String {
     let marker = format!("{}=\"", attr);
     if let Some(pos) = tag.find(&marker) {
@@ -896,20 +914,35 @@ pub(crate) fn apply_set_title(html: String, text: &str) -> String {
     if let Some(out) = replace_text_class(&html, "sp-ttl", text) {
         return out;
     }
-    let Some((l, _t, w, _h)) = parse_plot_rect(&html) else {
-        return html;
-    };
-    let cx = l + w / 2.0;
-    let snippet = format!(
-        "<text x=\"{cx}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">{}</text>",
-        escape_text(text)
-    );
-    let Some(pos) = html.find("</svg>") else {
-        return html;
-    };
-    let mut out = html.clone();
-    out.insert_str(pos, &snippet);
-    out
+    if let Some((l, _t, w, _h)) = parse_plot_rect(&html) {
+        let cx = l + w / 2.0;
+        let snippet = format!(
+            "<text x=\"{cx}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">{}</text>",
+            escape_text(text)
+        );
+        if let Some(pos) = html.find("</svg>") {
+            let mut out = html.clone();
+            out.insert_str(pos, &snippet);
+            return out;
+        }
+    }
+    if let Some(out) = promote_first_svg_text(&html, text) {
+        return out;
+    }
+    let (w, _h) = crate::html::hover::extract_svg_dims(&html);
+    if w > 0 {
+        let snippet = format!(
+            "<text x=\"{}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">{}</text>",
+            w / 2,
+            escape_text(text)
+        );
+        if let Some(pos) = html.find("</svg>") {
+            let mut out = html.clone();
+            out.insert_str(pos, &snippet);
+            return out;
+        }
+    }
+    html
 }
 
 pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
@@ -1139,5 +1172,23 @@ mod three_d_text_tests {
         let out = super::apply_set_size(fixture_3d_html(), Some(640), None);
         assert!(out.contains("\"width\":640"));
         assert!(!out.contains("\"height\""));
+    }
+
+    #[test]
+    fn setting_the_title_on_a_renderer_with_no_sp_ttl_class_and_no_data_sp_promotes_the_first_svg_text_instead_of_no_opping() {
+        let html = "<html><body><svg width=\"400\" height=\"200\"><text x=\"200\" y=\"22\" text-anchor=\"middle\" font-weight=\"700\">Old Title</text><path d=\"M0,0\"/></svg></body></html>".to_string();
+        let out = super::apply_set_title(html, "New Title");
+        assert!(out.contains("class=\"sp-ttl\""));
+        assert!(out.contains(">New Title<"));
+        assert!(!out.contains("Old Title"));
+    }
+
+    #[test]
+    fn setting_the_title_on_a_renderer_with_no_text_at_all_inserts_a_fresh_title_from_svg_width() {
+        let html = "<html><body><svg width=\"400\" height=\"200\"><path d=\"M0,0\"/></svg></body></html>".to_string();
+        let out = super::apply_set_title(html, "Fresh Title");
+        assert!(out.contains("class=\"sp-ttl\""));
+        assert!(out.contains("x=\"200\""));
+        assert!(out.contains(">Fresh Title<"));
     }
 }
