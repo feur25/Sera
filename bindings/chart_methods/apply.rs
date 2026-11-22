@@ -1138,6 +1138,7 @@ fn collect_tagged_colors(html: &str, needle: &str) -> Vec<(usize, String)> {
 const CHROME_COLOR_BLOCKLIST: &[&str] = &[
     "#ffffff", "#fff", "#f1f5f9", "#e2e8f0", "#e5e7eb", "#6b7280", "#9ca3af",
     "#1a202c", "#1e293b", "#374151", "#0d1117", "#f8fafc", "#0f172a",
+    "#64748b", "#3a4a5a",
 ];
 
 fn collect_untagged_colors_for_attr(html: &str, attr: &str) -> Vec<(usize, String)> {
