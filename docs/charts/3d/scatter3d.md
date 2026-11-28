@@ -1,284 +1,217 @@
-﻿# Scatter 3D
+# Scatter Chart 3D
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+
 ## Signature
 
-```python
-sp.build_scatter3d_chart(
-    title: str,
-    x: list[float],
-    y: list[float],
-    z: list[float],
-    *,
-    color_values: list[float] | None = None,
-    color_labels: list[str] | None = None,
-    series_names: list[str] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "X",
-    y_label: str = "Y",
-    z_label: str = "Z",
-    hover_json: str | None = None,
-    palette: list[int] | None = None,
-) -> Chart
-```
+`sp.scatter3d(title, x=None, y=None, z=None, labels=None, categories=None, color_values=None, series=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, bg_color="#1a1a2e", width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.scatter3d`
-
----
+Aliases: `sp.build_scatter3d_chart()`, `sp.scatter_3d()`, `sp.scatter3d_chart()`, `sp.scatter3d_family()`, `sp.scatters3d()`.
 
 ## Description
 
-GPU-accelerated 3D scatter plot rendered via WebGL.
-Handles millions of points at interactive frame rates.
+`sp.scatter3d()` carries two independent forms under one name, chosen by whether `z` is given. Pass `x`, `y` and `z` together and it keeps its original job: a real spatial point cloud in 3D space, optionally coloured by `color_values`, capped to a budget for huge clouds. Leave `z` out and **every one of the 12 2D scatter variants gets a 3D form instead**, selected with the same `variant` keyword and fed with the same `x`/`y` rows — the family this page otherwise documents.
 
-Use `color_values` for a continuous color scale, or `color_labels` for categorical coloring.
+## Variants
 
----
+| Variant | Aliases | Uses | 3D form |
+|---|---|---|---|
+| `basic` | `simple`, `default` | `x, y` | A small marker per point. |
+| `categorical` | `grouped`, `groups`, `category` | `x, y, categories` | The same markers, one class (and colour) per category. |
+| `symbols` | `marker`, `markers`, `shape`, `shapes` | `x, y` | The same markers as basic, from the 2D chart's per-category marker shapes. |
+| `labeled` | `labels`, `text`, `annotated` | `x, y` | The same markers as basic; names show on hover in every variant. |
+| `regression` | `trendline`, `fit`, `ols` | `x, y` | The markers plus a linear best-fit line laid across them. |
+| `residual` | `residuals`, `residplot` | `x, y` | Every point repositioned to its vertical distance from the best-fit line, flattening the trend. |
+| `dual_style` | `hue_style`, `two_way` | `x, y` | The same markers as basic, from the 2D chart's two-hue category styling. |
+| `continuous_hue` | `numeric_hue`, `colormap` | `x, y, color_values` | The same markers toned on a continuous ramp by `color_values`. |
+| `facet` | `facets`, `small_multiples`, `relplot` | `x, y, categories` | Every category on its own depth row, a small multiple per group. |
+| `sized` | `size_scale`, `bubble_scatter`, `magnitude_size` | `x, y, color_values` | Marker size and tone both scale with `color_values`. |
+| `wide_form` | `wide`, `multi_series`, `columns` | `x, series` | Every column of `series` its own depth row, all sharing the same `x`. |
+| `rug` | `rugplot`, `marginal_ticks`, `carpet_ticks` | `x, y` | The markers plus a tick at every point's position along both floor margins. |
+
+## Data
+
+Without `z`: `x`/`y` position each point, `categories` groups or facets it, `color_values` drives continuous tone or size, and `series` (as parallel y-columns) feeds `wide_form`.
+
+## 3D planes
+
+The viewpoint is independent from the variant: `orientation3d` picks the initial camera plane and applies to **every** variant; the view always stays draggable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Isometric three-quarter view (default).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Side-on view, almost at floor level.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Top-down view from above.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Front elevation, nearly flat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-front.html"></iframe></div>
+</div>
+
+## 3D scenes
+
+`scene` swaps the environment the columns are drawn in and applies to every variant and every plane.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Each series keeps its own categorical palette color, rendered as shaded 3D bars on a flat grid.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; The data is resampled onto a dense grid and rendered as hundreds of thin colormap-colored columns, forming a continuous mountain-of-bars terrain.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; The data is resampled onto a dense field of round skyscraper-like towers instead of boxes, for a city-skyline reading of magnitude.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; The data is resampled onto a dense polar grid of rings and wedges radiating from the center, like a 3D radar/sonar sweep of the value field.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; The data is resampled onto a dense grid and quantized into stepped terrace levels, like a rice-terrace contour map, to read value bands at a glance.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-podium.html"></iframe></div>
+</div>
+
+## Themes
+
+`theme` restyles the whole canvas (colour grade and glow) and applies to every variant, scene and plane.
+
+<div data-sp-registry-table="themes" data-family="scatter3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-cosmic.html"></iframe></div>
+</div>
+
+## Auto-scaling zone
+
+The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `x` | `list[float]` | required | X coordinates |
-| `y` | `list[float]` | required | Y coordinates |
-| `z` | `list[float]` | required | Z coordinates |
-| `color_values` | `list[float] \| None` | `None` | Continuous colormap values |
-| `color_labels` | `list[str] \| None` | `None` | Categorical color group labels |
-| `series_names` | `list[str] \| None` | `None` | Series legend names |
-| `bg_color` | `str` | `"#1a1a2e"` | Canvas background color |
-| `width` | `int` | `900` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `x_label` | `str` | `"X"` | X-axis label |
-| `y_label` | `str` | `"Y"` | Y-axis label |
-| `z_label` | `str` | `"Z"` | Z-axis label |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
-| `palette` | `list[int] \| None` | `None` | Custom color palette |
-
----
+<div data-sp-registry-table="options" data-family="scatter3d"></div>
 
 ## Returns
 
-`Chart`
+`Chart` object with an `.html` property and a `.show()` method.
 
----
+</div><!-- /lang-en -->
 
-## Performance
-
-The renderer uses a single `gl.drawArrays(POINTS, …)` call per frame.
-Tested at 10 million points at 60 fps on a mid-range GPU.
-
----
-
-## Examples
-
-### 3D scatter with categorical colors
-
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="scatter3d">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('scatter3d','scatter3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('scatter3d','scatter3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('scatter3d','scatter3d-ts',this)">TypeScript</button></div>
-<div id="scatter3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-n = 1000
-x = [random.gauss(0, 1) for _ in range(n)]
-y = [random.gauss(0, 1) for _ in range(n)]
-z = [random.gauss(0, 1) for _ in range(n)]
-groups = [random.choice(["A", "B", "C"]) for _ in range(n)]
-chart = sp.build_scatter3d_chart(
-    "3D Point Cloud",
-    x_values=x, y_values=y, z_values=z,
-    color_labels=groups,
-    x_label="X", y_label="Y", z_label="Z",
-)</code></pre></div>
-<div id="scatter3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import random
-const n = 1000
-const x = [random.gauss(0, 1) for _ in range(n)]
-const y = [random.gauss(0, 1) for _ in range(n)]
-const z = [random.gauss(0, 1) for _ in range(n)]
-const groups = [random.choice(["A", "B", "C"]) for _ in range(n)]
-const chart = sp.build_scatter3d_chart("3D Point Cloud",
-x,
-y,
-{
-    z_values: z,
-    color_labels: groups,
-    x_label: "X",
-    y_label: "Y",
-    z_label: "Z"
-})</code></pre></div>
-<div id="scatter3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import random
-const n: number = 1000
-const x: number[] = [random.gauss(0, 1) for _ in range(n)]
-const y: number[] = [random.gauss(0, 1) for _ in range(n)]
-const z: number[] = [random.gauss(0, 1) for _ in range(n)]
-const groups: string[] = [random.choice(["A", "B", "C"]) for _ in range(n)]
-const chart = sp.build_scatter3d_chart("3D Point Cloud",
-x,
-y,
-{
-    z_values: z,
-    color_labels: groups,
-    x_label: "X",
-    y_label: "Y",
-    z_label: "Z"
-})</code></pre></div>
-</div>
-
-
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
-<iframe src="../../previews/scatter3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
-
-</div>
-
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
 <h2>Signature</h2>
 
-```python
-sp.build_scatter3d_chart(
-    title: str,
-    x: list[float],
-    y: list[float],
-    z: list[float],
-    *,
-    color_values: list[float] | None = None,
-    color_labels: list[str] | None = None,
-    series_names: list[str] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "X",
-    y_label: str = "Y",
-    z_label: str = "Z",
-    hover_json: str | None = None,
-    palette: list[int] | None = None,
-) -> Chart
-```
+`sp.scatter3d(title, x=None, y=None, z=None, labels=None, categories=None, color_values=None, series=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, bg_color="#1a1a2e", width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.scatter3d`
-
----
+Alias : `sp.build_scatter3d_chart()`, `sp.scatter_3d()`, `sp.scatter3d_chart()`, `sp.scatter3d_family()`, `sp.scatters3d()`.
 
 <h2>Description</h2>
 
-Nuage de points 3D accéléré GPU via WebGL. Gère des millions de points à des fréquences d'images interactives.
+`sp.scatter3d()` porte deux formes indépendantes sous un seul nom, choisies selon que `z` est fourni. Passez `x`, `y` et `z` ensemble et il garde son rôle d'origine : un vrai nuage de points spatial en 3D, coloré en option par `color_values`, plafonné pour les nuages énormes. Omettez `z` et **chacune des 12 variantes de scatter 2D obtient à la place une forme 3D**, choisie avec le même mot-clé `variant` et alimentée par les mêmes lignes `x`/`y` — la famille que documente le reste de cette page.
 
-Utilisez `color_values` pour une échelle de couleur continue, ou `color_labels` pour un coloriage catégoriel.
+<h2>Variantes</h2>
 
----
+| Variante | Alias | Utilise | Forme 3D |
+|---|---|---|---|
+| `basic` | `simple`, `default` | `x, y` | Un petit repère par point. |
+| `categorical` | `grouped`, `groups`, `category` | `x, y, categories` | Les mêmes repères, une classe (et une couleur) par catégorie. |
+| `symbols` | `marker`, `markers`, `shape`, `shapes` | `x, y` | Les mêmes repères que basic, depuis les formes de marqueur par catégorie du graphique 2D. |
+| `labeled` | `labels`, `text`, `annotated` | `x, y` | Les mêmes repères que basic ; les noms s'affichent au survol dans toutes les variantes. |
+| `regression` | `trendline`, `fit`, `ols` | `x, y` | Les repères plus une droite de régression tracée à travers eux. |
+| `residual` | `residuals`, `residplot` | `x, y` | Chaque point repositionné selon sa distance verticale à la droite de régression, aplatissant la tendance. |
+| `dual_style` | `hue_style`, `two_way` | `x, y` | Les mêmes repères que basic, depuis le style à deux teintes par catégorie du graphique 2D. |
+| `continuous_hue` | `numeric_hue`, `colormap` | `x, y, color_values` | Les mêmes repères teintés sur une rampe continue selon `color_values`. |
+| `facet` | `facets`, `small_multiples`, `relplot` | `x, y, categories` | Chaque catégorie sur sa propre rangée de profondeur, un petit multiple par groupe. |
+| `sized` | `size_scale`, `bubble_scatter`, `magnitude_size` | `x, y, color_values` | Taille et teinte du repère suivent toutes deux `color_values`. |
+| `wide_form` | `wide`, `multi_series`, `columns` | `x, series` | Chaque colonne de `series` sur sa propre rangée de profondeur, toutes partageant le même `x`. |
+| `rug` | `rugplot`, `marginal_ticks`, `carpet_ticks` | `x, y` | Les repères plus une marque à la position de chaque point le long des deux marges du sol. |
+
+<h2>Données</h2>
+
+Sans `z` : `x`/`y` positionne chaque point, `categories` le groupe ou le facette, `color_values` pilote la teinte continue ou la taille, et `series` (en colonnes y parallèles) alimente `wide_form`.
+
+<h2>Plans 3D</h2>
+
+Le point de vue est indépendant de la variante : `orientation3d` choisit le plan initial de la caméra et s'applique à **toutes** les variantes ; la vue reste toujours orientable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Vue isométrique trois-quarts (défaut).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Vue de côté, presque au niveau du sol.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Vue du dessus, plongeante.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Élévation de face, presque à plat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-plane-front.html"></iframe></div>
+</div>
+
+<h2>Scènes 3D</h2>
+
+`scene` change l'environnement dans lequel les colonnes sont dessinées et s'applique à chaque variante et chaque plan.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Chaque série garde sa propre couleur de palette catégorielle, rendue en barres 3D ombrées sur une grille plate.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; Les données sont réinterpolées sur une grille dense et rendues en centaines de fines colonnes colorées par hauteur, formant un terrain continu en montagne de barres.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; Les données sont réinterpolées sur un champ dense de tours cylindriques façon gratte-ciel au lieu de boites, pour une lecture des magnitudes en skyline urbaine.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; Les données sont réinterpolées sur une grille polaire dense d'anneaux et de secteurs partant du centre, comme un balayage radar/sonar 3D du champ de valeurs.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; Les données sont réinterpolées sur une grille dense et quantifiées en paliers étagés, façon rizière en terrasses, pour lire les tranches de valeurs d'un coup d'oeil.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-scene-podium.html"></iframe></div>
+</div>
+
+<h2>Thèmes</h2>
+
+`theme` restyle tout le canevas (étalonnage des couleurs et halo) et s'applique à chaque variante, scène et plan.
+
+<div data-sp-registry-table="themes" data-family="scatter3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter3d-theme-cosmic.html"></iframe></div>
+</div>
+
+<h2>Zone auto-ajustée</h2>
+
+La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `x` | `list[float]` | requis | Coordonnées X |
-| `y` | `list[float]` | requis | Coordonnées Y |
-| `z` | `list[float]` | requis | Coordonnées Z |
-| `color_values` | `list[float] \| None` | `None` | Valeurs de colormap continues |
-| `color_labels` | `list[str] \| None` | `None` | Groupes de couleur catégoriels |
-| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
-| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
-| `width` | `int` | `900` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `x_label` | `str` | `"X"` | Étiquette de l'axe X |
-| `y_label` | `str` | `"Y"` | Étiquette de l'axe Y |
-| `z_label` | `str` | `"Z"` | Étiquette de l'axe Z |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
-| `palette` | `list[int] \| None` | `None` | Palette de couleurs |
+<div data-sp-registry-table="options" data-family="scatter3d"></div>
 
----
+<h2>Retour</h2>
 
-<h2>Retourne</h2>
+Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 
-`Chart`
-
----
-
-<h2>Performance</h2>
-
-Le moteur de rendu utilise un seul appel `gl.drawArrays(POINTS, …)` par frame.
-Testé avec 10 millions de points à 60 fps sur un GPU milieu de gamme.
-
----
-
-<h2>Exemples</h2>
-
-### Nuage 3D avec couleurs catégorielles
-
-<div class="sp-tabs" id="scatter3d-fr">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('scatter3d-fr','scatter3d-fr-py',this)">Python</button><button class="sp-tb" onclick="spTab('scatter3d-fr','scatter3d-fr-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('scatter3d-fr','scatter3d-fr-ts',this)">TypeScript</button></div>
-<div id="scatter3d-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-n = 1000
-x = [random.gauss(0, 1) for _ in range(n)]
-y = [random.gauss(0, 1) for _ in range(n)]
-z = [random.gauss(0, 1) for _ in range(n)]
-groupes = [random.choice(["A", "B", "C"]) for _ in range(n)]
-chart = sp.build_scatter3d_chart(
-    "Nuage 3D",
-    x_values=x, y_values=y, z_values=z,
-    color_labels=groupes,
-    x_label="X", y_label="Y", z_label="Z",
-)</code></pre></div>
-<div id="scatter3d-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const n = 1000;
-const x = Array.from({length: n}, () => Math.random() * 6 - 3);
-const y = Array.from({length: n}, () => Math.random() * 6 - 3);
-const z = Array.from({length: n}, () => Math.random() * 6 - 3);
-const groupes = Array.from({length: n}, () => ["A","B","C"][Math.floor(Math.random()*3)]);
-const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
-    z_values: z,
-    color_labels: groupes,
-    x_label: "X", y_label: "Y", z_label: "Z"
-});</code></pre></div>
-<div id="scatter3d-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const n: number = 1000;
-const x: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
-const y: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
-const z: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
-const groupes: string[] = Array.from({length: n}, () => ["A","B","C"][Math.floor(Math.random()*3)]);
-const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
-    z_values: z,
-    color_labels: groupes,
-    x_label: "X", y_label: "Y", z_label: "Z"
-});</code></pre></div>
-</div>
-
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Aperçu en direct</summary>
-
-<iframe src="../../previews/scatter3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
-
-</div>
+</div><!-- /lang-fr -->

@@ -2,22 +2,72 @@
 
 <div class="lang-en">
 
-SeraPlot provides geographic chart types for visualizing spatial data on world maps.
+SeraPlot provides geographic chart types for visualizing spatial data on any registered region set — from whole-world country data down to a single country's states or provinces. Every chart type below reads its variants, parameters and region sets live from the same register/inventory system the 2D charts use.
 
 | Chart | Function |
 |---|---|
 | [Bubble Map](bubble-map.md) | `bubble_map()` |
 | [Choropleth](choropleth.md) | `choropleth()` |
+| [Flow Map](flow-map.md) | `flow_map()` |
+| [Contour Map](contour-map.md) | `contour_map()` |
+| [Vector Field Map](vector-field-map.md) | `vector_field_map()` |
+| [Cartogram](cartogram.md) | `cartogram()` |
+| [Graticule Map](graticule-map.md) | `graticule_map()` |
+
+Choropleth and Bubble Map both include a real orthographic ("globe from space") and polar (azimuthal, pole-centered) projection, computed from an actual pixel-to-latitude/longitude inversion of the world map — not a cosmetic re-skin. Contour Map and Vector Field Map take raw `lats`/`lons` samples directly rather than named regions — for continuous scalar fields (temperature, pressure, precipitation) and vector fields (wind, currents) that don't line up with any political boundary. Cartogram distorts position itself, relaxing each region's glyph away from overlap while a real physics-style pull keeps it anchored near where it truly sits. Graticule Map needs no data at all — it draws the coordinate grid itself, flat, projected onto a globe, or as a Tissot distortion check.
+
+## Any country, any region
+
+`map` selects which registered geographic region set to draw (`"world"` for individual countries, `"usa_states"` for US states, and any future region set added the same way); `region` restricts drawing to one named group inside that set (a continent or political/economic bloc for `"world"`, a Census region for `"usa_states"`).
+
+## Bridging to 2D charts
+
+`sp.region_labels(map=..., group=...)` returns the same ordered label list a map for that region draws — build a map and a matching bar/line chart from the exact same named entities:
+
+```python
+import seraplot as sp
+
+labels = sp.region_labels(map="usa_states", group="West")
+values = [my_data[l] for l in labels]
+
+geo = sp.bubble_map("Western Sales", labels=labels, values=values, map="usa_states", region="West", variant="proportional")
+bars = sp.bar("Western Sales", labels=labels, values=values)
+```
 
 </div>
 
 <div class="lang-fr">
 
-SeraPlot propose des types de graphiques géographiques pour visualiser des données spatiales sur des cartes mondiales.
+SeraPlot propose des types de graphiques géographiques pour visualiser des données spatiales sur n'importe quel ensemble de régions enregistré — des données par pays à l'échelle mondiale jusqu'aux états ou provinces d'un seul pays. Chaque type de graphique ci-dessous lit ses variantes, paramètres et ensembles de régions en direct depuis le même système de register/inventory que les graphiques 2D.
 
 | Graphique | Fonction |
 |-----------|----------|
 | [Carte à bulles](bubble-map.md) | `bubble_map()` |
 | [Choropleth](choropleth.md) | `choropleth()` |
+| [Carte de flux](flow-map.md) | `flow_map()` |
+| [Carte de contours](contour-map.md) | `contour_map()` |
+| [Carte de champ vectoriel](vector-field-map.md) | `vector_field_map()` |
+| [Cartogramme](cartogram.md) | `cartogram()` |
+| [Carte de graticule](graticule-map.md) | `graticule_map()` |
+
+Choropleth et Bubble Map incluent tous deux une vraie projection orthographique (« globe vu de l'espace ») et polaire (azimutale, centrée sur un pôle), calculée à partir d'une véritable inversion pixel vers latitude/longitude de la carte du monde — pas un simple habillage cosmétique. Carte de contours et Carte de champ vectoriel prennent directement des échantillons bruts `lats`/`lons` plutôt que des régions nommées — pour des champs scalaires continus (température, pression, précipitations) et des champs vectoriels (vent, courants) qui ne s'alignent sur aucune frontière politique. Cartogramme distord la position elle-même, relaxant le glyphe de chaque région pour éviter le chevauchement tandis qu'une vraie attraction façon physique le maintient ancré près de sa position réelle. Carte de graticule n'a besoin d'aucune donnée — elle dessine la grille de coordonnées elle-même, plate, projetée sur un globe, ou comme test de distorsion de Tissot.
+
+## N'importe quel pays, n'importe quelle région
+
+`map` sélectionne quel ensemble de régions géographiques enregistré dessiner (`"world"` pour les pays individuels, `"usa_states"` pour les états américains, et tout futur ensemble de régions ajouté de la même façon) ; `region` restreint le dessin à un seul groupe nommé de cet ensemble (un continent ou un bloc politique/économique pour `"world"`, une région de recensement pour `"usa_states"`).
+
+## Passerelle vers les graphiques 2D
+
+`sp.region_labels(map=..., group=...)` retourne la même liste de labels ordonnée qu'une carte dessine pour cette région — construisez une carte et un graphique à barres/lignes assorti depuis exactement les mêmes entités nommées :
+
+```python
+import seraplot as sp
+
+labels = sp.region_labels(map="usa_states", group="West")
+values = [my_data[l] for l in labels]
+
+geo = sp.bubble_map("Ventes de l'Ouest", labels=labels, values=values, map="usa_states", region="West", variant="proportional")
+bars = sp.bar("Ventes de l'Ouest", labels=labels, values=values)
+```
 
 </div>

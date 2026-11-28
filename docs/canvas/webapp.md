@@ -37,14 +37,29 @@ server-side and pushes the new chart HTML into the page without a reload.
    return `self`, so calls chain.
 3. `.add_callback(inputs, output, handler)` wires a Python callable: whenever
    *any* component whose id is in `inputs` changes, `handler` is invoked with
-   the **current string value of every input**, positionally, in the order
-   given to `inputs`. Its return value becomes the new HTML for `output` —
-   either a raw string, or any object exposing an `.html` attribute (a
-   `Chart` works directly, no `.html` access needed on the caller's side).
-4. `.serve(port=8787, host="127.0.0.1")` blocks and starts the server. The
+   the **current value of every input, typed to its component** — `float`
+   for a `slider`, `bool` for a `checkbox`, `str` for everything else —
+   positionally, in the order given to `inputs`. Its return value becomes
+   the new HTML for `output` — either a raw string, or any object exposing
+   an `.html` attribute (a `Chart` works directly, no `.html` access needed
+   on the caller's side).
+4. `.interval(seconds, output, handler)` wires a Python callable that fires
+   on a server-side timer instead of a client event — no arguments, same
+   return contract as a callback. `.push(id, html)` sets a component's HTML
+   and broadcasts it to every connected browser immediately, from outside
+   any callback (e.g. from a background thread). Both bypass the
+   request/response cycle: they reach the browser over the same open
+   WebSocket, unprompted.
+5. Each browser tab that opens `/ws` gets its own **session** — input values
+   are tracked per connection, so two tabs moving the same-id slider don't
+   clobber each other's callback inputs.
+6. `.auth(username, password)` gates every request (page loads and the `/ws`
+   upgrade) behind HTTP Basic Auth; omit it and the app stays open.
+7. `.serve(port=8787, host="127.0.0.1")` blocks and starts the server. The
    browser opens a WebSocket to `/ws`; every input interaction sends
    `{"type":"event","id":...,"value":...}`, the server re-runs matching
-   callbacks and pushes back `{"type":"update","id":...,"html":...}`, and a
+   callbacks and pushes back `{"type":"update","id":...,"html":...}` — the
+   same message an `.interval()` tick or a `.push()` call sends — and a
    ~15-line bootstrap script does `document.getElementById(id).innerHTML =
    html` — no virtual DOM, no client-side framework.
 
@@ -59,20 +74,12 @@ server-side and pushes the new chart HTML into the page without a reload.
 | `.button(id, label)` | `(str, str)` | Emits value `"click"` on press |
 | `.text_input(id, value="", placeholder="")` | `(str, str, str)` | |
 | `.checkbox(id, label, checked=False)` | `(str, str, bool)` | Emits `"true"`/`"false"` |
-| `.chart(id, html="")` | `(str, str)` | Registers an output slot; typically seeded with a `Chart.html` and refreshed via a callback |
-| `.add_callback(inputs, output, handler)` | `(list[str], str, Callable)` | `handler` receives one positional `str` per entry in `inputs` |
+| `.chart(id, html="")` | `(str, str)` | Registers an output slot; typically seeded with a `Chart.html` and refreshed via a callback or `.push()` |
+| `.add_callback(inputs, output, handler)` | `(list[str], str, Callable)` | `handler` receives one positional argument per entry in `inputs`, typed to its component (`float`/`bool`/`str`) |
+| `.interval(seconds, output, handler)` | `(float, str, Callable)` | `handler` takes no arguments; fires on a repeating server-side timer, independent of any client event |
+| `.push(id, html)` | `(str, str \| Chart)` | Sets `id`'s HTML and broadcasts it to every open connection immediately |
+| `.auth(username, password)` | `(str, str)` | Gates every request behind HTTP Basic Auth |
 | `.serve(port=8787, host="127.0.0.1")` | `(int, str)` | Blocking call |
-
-## Honest limitations
-
-- Every callback argument arrives as a **string** — the server does not know
-  a slider's numeric type, so `handler(value: str)` must `float()`/`int()`
-  it itself.
-- `.chart()` values are only refreshed through a callback's return value;
-  there's no server-push independent of a client-originated event (no
-  polling, no server timers).
-- No routing/auth/session layer — `sp.App` is a local dashboard tool for
-  exploration and internal tools, not a production web framework.
 
 </div>
 
@@ -116,15 +123,33 @@ sans rechargement.
    la page courante. Tous retournent `self`, donc les appels s'enchaînent.
 3. `.add_callback(inputs, output, handler)` relie un callable Python : dès
    qu'un composant dont l'id figure dans `inputs` change, `handler` est
-   appelé avec la **valeur chaîne courante de chaque input**, en positionnel,
-   dans l'ordre de `inputs`. Sa valeur de retour devient le nouveau HTML de
-   `output` — une chaîne brute, ou tout objet exposant un attribut `.html`
-   (un `Chart` fonctionne directement, sans accès `.html` côté appelant).
-4. `.serve(port=8787, host="127.0.0.1")` bloque et démarre le serveur. Le
+   appelé avec la **valeur courante de chaque input, typée selon son
+   composant** — `float` pour un `slider`, `bool` pour une `checkbox`, `str`
+   pour le reste — en positionnel, dans l'ordre de `inputs`. Sa valeur de
+   retour devient le nouveau HTML de `output` — une chaîne brute, ou tout
+   objet exposant un attribut `.html` (un `Chart` fonctionne directement,
+   sans accès `.html` côté appelant).
+4. `.interval(seconds, output, handler)` relie un callable Python déclenché
+   par un minuteur côté serveur plutôt qu'un événement client — sans
+   argument, même contrat de retour qu'un callback. `.push(id, html)` fixe
+   le HTML d'un composant et le diffuse immédiatement à toutes les
+   connexions ouvertes, depuis l'extérieur de tout callback (par ex. depuis
+   un thread d'arrière-plan). Les deux contournent le cycle
+   requête/réponse : ils atteignent le navigateur sur le même WebSocket
+   ouvert, sans sollicitation préalable.
+5. Chaque onglet de navigateur qui ouvre `/ws` obtient sa propre
+   **session** — les valeurs des inputs sont suivies par connexion, donc
+   deux onglets qui modifient un slider de même id ne s'écrasent pas
+   mutuellement dans les callbacks.
+6. `.auth(username, password)` protège chaque requête (chargements de page
+   et upgrade `/ws`) derrière une authentification HTTP Basic ; omise,
+   l'application reste ouverte.
+7. `.serve(port=8787, host="127.0.0.1")` bloque et démarre le serveur. Le
    navigateur ouvre un WebSocket vers `/ws` ; chaque interaction envoie
    `{"type":"event","id":...,"value":...}`, le serveur relance les callbacks
-   correspondants et repousse `{"type":"update","id":...,"html":...}`, et un
-   script d'amorçage d'une quinzaine de lignes fait
+   correspondants et repousse `{"type":"update","id":...,"html":...}` — le
+   même message qu'envoie un tick `.interval()` ou un appel `.push()` — et
+   un script d'amorçage d'une quinzaine de lignes fait
    `document.getElementById(id).innerHTML = html` — pas de DOM virtuel, pas
    de framework côté client.
 
@@ -139,20 +164,11 @@ sans rechargement.
 | `.button(id, label)` | `(str, str)` | Émet la valeur `"click"` au clic |
 | `.text_input(id, value="", placeholder="")` | `(str, str, str)` | |
 | `.checkbox(id, label, checked=False)` | `(str, str, bool)` | Émet `"true"`/`"false"` |
-| `.chart(id, html="")` | `(str, str)` | Enregistre un emplacement de sortie ; généralement initialisé avec un `Chart.html` et rafraîchi via un callback |
-| `.add_callback(inputs, output, handler)` | `(list[str], str, Callable)` | `handler` reçoit un `str` positionnel par entrée de `inputs` |
+| `.chart(id, html="")` | `(str, str)` | Enregistre un emplacement de sortie ; généralement initialisé avec un `Chart.html` et rafraîchi via un callback ou `.push()` |
+| `.add_callback(inputs, output, handler)` | `(list[str], str, Callable)` | `handler` reçoit un argument positionnel par entrée de `inputs`, typé selon son composant (`float`/`bool`/`str`) |
+| `.interval(seconds, output, handler)` | `(float, str, Callable)` | `handler` ne prend aucun argument ; se déclenche sur un minuteur serveur répétitif, indépendant de tout événement client |
+| `.push(id, html)` | `(str, str \| Chart)` | Fixe le HTML de `id` et le diffuse à toutes les connexions ouvertes immédiatement |
+| `.auth(username, password)` | `(str, str)` | Protège chaque requête derrière une authentification HTTP Basic |
 | `.serve(port=8787, host="127.0.0.1")` | `(int, str)` | Appel bloquant |
-
-## Limites honnêtes
-
-- Chaque argument de callback arrive sous forme de **chaîne** — le serveur
-  ne connaît pas le type numérique d'un slider, donc `handler(value: str)`
-  doit faire `float()`/`int()` lui-même.
-- Les valeurs de `.chart()` ne sont rafraîchies que via la valeur de retour
-  d'un callback ; il n'y a pas de push serveur indépendant d'un événement
-  initié côté client (pas de polling, pas de timers serveur).
-- Aucune couche routage/auth/session — `sp.App` est un outil de tableau de
-  bord local pour l'exploration et les outils internes, pas un framework web
-  de production.
 
 </div>

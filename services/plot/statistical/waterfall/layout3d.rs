@@ -1,0 +1,258 @@
+use super::common::prepare;
+use super::config::WaterfallConfig;
+use super::variant::WaterfallVariant;
+use crate::plot::statistical::_3d::budget::{Budget, Buckets};
+use crate::plot::statistical::_3d::steps::{arrow_tips, floating_bars, horizontal_bars, stem_heads, Step, TOTAL_TONE};
+use crate::plot::statistical::_3d::zone::Fit;
+use crate::plot::statistical::bar::Bar3DBlock;
+
+pub fn fit_3d(variant: WaterfallVariant) -> Fit {
+    match variant {
+        WaterfallVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
+
+pub const HEIGHT_RATIO: f64 = 0.8;
+pub const COLORMAP: &str = "updown";
+const BAR_HW: f64 = 0.32;
+const STEPPED_HW: f64 = 0.5;
+const STEM_HW: f64 = 0.05;
+const DEPTH: f64 = 0.35;
+const HORIZ_THICKNESS: f64 = 0.4;
+const HORIZ_ROW: f64 = 1.0;
+
+#[derive(Clone, Copy)]
+enum Glyph {
+    Bars,
+    Contiguous,
+    Lollipop,
+}
+
+#[derive(Clone, Copy)]
+struct Recipe {
+    glyph: Glyph,
+    arrows: bool,
+    graded: bool,
+    trend: bool,
+    swap: bool,
+}
+
+impl Recipe {
+    const fn of(glyph: Glyph) -> Self {
+        Self { glyph, arrows: false, graded: false, trend: false, swap: false }
+    }
+
+    const fn arrowed(mut self) -> Self {
+        self.arrows = true;
+        self
+    }
+
+    const fn graded(mut self) -> Self {
+        self.graded = true;
+        self
+    }
+
+    const fn trended(mut self) -> Self {
+        self.trend = true;
+        self
+    }
+
+    const fn swapped(mut self) -> Self {
+        self.swap = true;
+        self
+    }
+}
+
+fn recipe(variant: WaterfallVariant) -> Recipe {
+    use WaterfallVariant::*;
+    let bars = Recipe::of(Glyph::Bars);
+    match variant {
+        Basic => bars,
+        Stepped => Recipe::of(Glyph::Contiguous),
+        Lollipop => Recipe::of(Glyph::Lollipop),
+        Arrowed => bars.arrowed(),
+        Delta => bars.graded(),
+        Horizontal => bars.swapped(),
+        Trend => bars.trended(),
+    }
+}
+
+fn graded_tones(blocks: &mut [Bar3DBlock], steps: &[Step]) {
+    let peak = steps
+        .iter()
+        .filter(|s| !s.total)
+        .map(|s| (s.end - s.start).abs())
+        .fold(1e-12, f64::max);
+    for (block, step) in blocks.iter_mut().zip(steps) {
+        block.tone = Some(if step.total {
+            TOTAL_TONE
+        } else {
+            (0.5 + 0.5 * (step.end - step.start) / peak).clamp(0.0, 1.0)
+        });
+    }
+}
+
+pub fn layout_3d(cfg: &WaterfallConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    layout_named(cfg, budget).0
+}
+
+pub fn layout_named(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>) {
+    let (blocks, names, _, _) = layout_named_tips(cfg, budget);
+    (blocks, names)
+}
+
+pub fn layout_named_tips(cfg: &WaterfallConfig, budget: &Budget) -> (Vec<Bar3DBlock>, Vec<String>, usize, Vec<f64>) {
+    let n = cfg.labels.len().min(cfg.values.len());
+    let buckets = Buckets::new(n, budget.points);
+    if buckets.is_identity() {
+        return stepped_3d(cfg);
+    }
+    let labels = buckets.first(&cfg.labels[..n]);
+    let values = buckets.sum(&cfg.values[..n]);
+    stepped_3d(&WaterfallConfig {
+        variant: cfg.variant,
+        labels: &labels,
+        values: &values,
+        sort_order: cfg.sort_order,
+        ..WaterfallConfig::default()
+    })
+}
+
+fn stepped_3d(cfg: &WaterfallConfig) -> (Vec<Bar3DBlock>, Vec<String>, usize, Vec<f64>) {
+    let Some(prepared) = prepare(cfg) else {
+        return (Vec::new(), Vec::new(), 0, Vec::new());
+    };
+    let steps: Vec<Step> = (0..prepared.n)
+        .map(|i| Step { start: prepared.starts[i], end: prepared.ends[i], total: prepared.is_total[i] })
+        .collect();
+    let plan = recipe(cfg.variant);
+    let mut blocks = if plan.swap {
+        horizontal_bars(&steps, HORIZ_THICKNESS, HORIZ_ROW, DEPTH)
+    } else {
+        match plan.glyph {
+            Glyph::Bars => floating_bars(&steps, BAR_HW, DEPTH),
+            Glyph::Contiguous => floating_bars(&steps, STEPPED_HW, DEPTH),
+            Glyph::Lollipop => stem_heads(&steps, STEM_HW, BAR_HW * 0.8, DEPTH),
+        }
+    };
+    if plan.graded {
+        graded_tones(&mut blocks, &steps);
+    }
+    let mut tip_count = 0;
+    if plan.arrows {
+        let tips = arrow_tips(&steps, BAR_HW * 0.9);
+        tip_count = tips.len();
+        blocks.extend(tips);
+    }
+    let trend = if plan.trend { steps.iter().map(|s| s.end).collect() } else { Vec::new() };
+    (blocks, prepared.labels, tip_count, trend)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn blocks_for(variant: WaterfallVariant) -> Vec<Bar3DBlock> {
+        let labels: Vec<String> = ["Start", "Q1", "Q2", "Q3", "End"].iter().map(|s| s.to_string()).collect();
+        let values = [100.0, 30.0, -15.0, 40.0, 155.0];
+        layout_3d(
+            &WaterfallConfig {
+                variant,
+                labels: &labels,
+                values: &values,
+                ..WaterfallConfig::default()
+            },
+            &Budget::default(),
+        )
+    }
+
+    #[test]
+    fn every_waterfall_variant_draws_something() {
+        for variant in WaterfallVariant::all() {
+            assert!(!blocks_for(*variant).is_empty(), "{} must draw blocks", variant.name());
+        }
+    }
+
+    #[test]
+    fn variants_add_their_own_glyphs_on_top_of_the_steps() {
+        let base = blocks_for(WaterfallVariant::Basic).len();
+        assert_eq!(base, 5);
+        assert_eq!(blocks_for(WaterfallVariant::Lollipop).len(), 10);
+        assert_eq!(blocks_for(WaterfallVariant::Arrowed).len(), 10);
+        assert_eq!(blocks_for(WaterfallVariant::Trend).len(), 5, "trend overlays a line, it doesn't add extra blocks");
+    }
+
+    #[test]
+    fn trend_reports_the_running_total_at_each_step_for_the_line_overlay() {
+        let labels: Vec<String> = ["Start", "Q1", "Q2", "Q3", "End"].iter().map(|s| s.to_string()).collect();
+        let values = [100.0, 30.0, -15.0, 40.0, 155.0];
+        let cfg = WaterfallConfig { variant: WaterfallVariant::Trend, labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let (_, _, _, trend) = layout_named_tips(&cfg, &Budget::default());
+        assert_eq!(trend, vec![100.0, 130.0, 115.0, 155.0, 310.0]);
+        let (_, _, _, basic_trend) = layout_named_tips(
+            &WaterfallConfig { variant: WaterfallVariant::Basic, labels: &labels, values: &values, ..WaterfallConfig::default() },
+            &Budget::default(),
+        );
+        assert!(basic_trend.is_empty(), "only trend emits the line overlay points");
+    }
+
+    #[test]
+    fn delta_grades_the_tones_by_the_size_of_the_change() {
+        let graded = blocks_for(WaterfallVariant::Delta);
+        let plain = blocks_for(WaterfallVariant::Basic);
+        assert_ne!(graded[1].tone, plain[1].tone);
+        assert!(graded[3].tone.unwrap() > graded[1].tone.unwrap());
+    }
+
+    #[test]
+    fn horizontal_stretches_the_row_axis_so_steps_dont_collapse_into_each_other() {
+        use crate::plot::statistical::_3d::zone::fit;
+        let blocks = blocks_for(WaterfallVariant::Horizontal);
+        let uniform = fit(&blocks, HEIGHT_RATIO, None, Fit::Uniform);
+        let stretched = fit(&blocks, HEIGHT_RATIO, None, fit_3d(WaterfallVariant::Horizontal));
+        assert!(
+            stretched.data[1] > uniform.data[1] * 3.0,
+            "sharing one scale with the wide value axis crushes every row to the same spot"
+        );
+        assert_eq!(fit_3d(WaterfallVariant::Basic), Fit::Uniform);
+    }
+
+    #[test]
+    fn horizontal_lays_each_step_out_as_a_flat_row_with_value_as_the_x_span() {
+        let horizontal = blocks_for(WaterfallVariant::Horizontal);
+        let rows: std::collections::BTreeSet<i64> = horizontal.iter().map(|b| (b.cy * 1000.0).round() as i64).collect();
+        assert_eq!(rows.len(), horizontal.len(), "each step must sit on its own row, like the 2D horizontal bar chart");
+        assert!(horizontal.iter().all(|b| (b.z1 - b.z0) < 1.0), "horizontal bars must stay a flat slab, the value belongs on x not z");
+        let basic = blocks_for(WaterfallVariant::Basic);
+        assert!(basic.iter().any(|b| (b.z1 - b.z0) > 1.0), "basic must still stand tall for this comparison to mean anything");
+    }
+
+    #[test]
+    fn block_labels_follow_the_pooled_and_sorted_steps() {
+        let labels: Vec<String> = (0..1000).map(|i| format!("S{i}")).collect();
+        let values: Vec<f64> = vec![1.0; 1000];
+        let cfg = WaterfallConfig { labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let (blocks, names) = layout_named(&cfg, &Budget::new(Some(100)));
+        assert_eq!((blocks.len(), names.len()), (100, 100));
+        assert_eq!(names[1], "S10");
+    }
+
+    #[test]
+    fn empty_input_draws_nothing() {
+        assert!(layout_3d(&WaterfallConfig::default(), &Budget::default()).is_empty());
+    }
+
+    #[test]
+    fn long_ledgers_are_pooled_by_sum_so_the_final_total_is_preserved() {
+        let n = 100_000;
+        let labels: Vec<String> = (0..n).map(|i| format!("S{i}")).collect();
+        let values: Vec<f64> = (0..n).map(|i| if i % 3 == 0 { -1.0 } else { 2.0 }).collect();
+        let cfg = WaterfallConfig { labels: &labels, values: &values, ..WaterfallConfig::default() };
+        let blocks = layout_3d(&cfg, &Budget::new(Some(400)));
+        assert_eq!(blocks.len(), 400);
+        let expected: f64 = values.iter().sum();
+        let top = blocks.iter().map(|b| b.z1).fold(f64::MIN, f64::max);
+        assert!((top - expected).abs() < expected.abs() * 0.01 + 5.0);
+    }
+}

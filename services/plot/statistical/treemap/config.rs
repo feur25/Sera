@@ -1,0 +1,24 @@
+crate::chart_config!(TreemapConfig, 1100, 520;
+    struct {
+        pub variant: super::variant::TreemapVariant,
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub parents: &'a [String],
+        pub palette: &'a [u32],
+        pub show_text: bool,
+        pub prior_values: &'a [f64],
+        pub categories: &'a [String],
+        pub categories2: &'a [String],
+    }
+    defaults {
+        variant: super::variant::TreemapVariant::Basic,
+        labels: &[],
+        values: &[],
+        parents: &[],
+        palette: &[],
+        show_text: false,
+        prior_values: &[],
+        categories: &[],
+        categories2: &[],
+    }
+);

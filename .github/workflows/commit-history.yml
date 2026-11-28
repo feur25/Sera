@@ -1,0 +1,55 @@
+name: Update Commit History Graph
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.REPO_PUSH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install seraplot playwright
+          playwright install --with-deps chromium
+
+      - name: Locate seraplot native extension
+        id: sera_ext
+        run: |
+          SITE=$(python -c "import site; print(site.getsitepackages()[0])")
+          SO=$(find "$SITE/seraplot" -maxdepth 1 -name "*.so" | head -n1)
+          echo "path=$SO" >> "$GITHUB_OUTPUT"
+
+      - name: Generate graph
+        run: LD_PRELOAD="${{ steps.sera_ext.outputs.path }}" python tools/commit_history.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/commit-history.html docs/theme/images/commit-history-preview.png
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: weekly commit-history graph refresh"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            git fetch origin main
+            git rebase origin/main
+          done
+          exit 1

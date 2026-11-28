@@ -3,40 +3,8 @@
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-
-.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
-.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
 .sp-cls.sp-open .sp-cls-rail{min-width:180px;padding:18px 8px}
-.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
-.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
-.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
-.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
-.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
-.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
-.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
-.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
-.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
-.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
-.sp-variant{display:none}
-.sp-variant.sp-von{display:block;animation:spFade .25s ease}
-@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
-
-.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
-.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
-.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
-
-.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
-.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
-.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
 .sp-preview-frame{width:100%;height:440px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
@@ -49,56 +17,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 `sp.heatmap(title, labels=None, values=None, *, variant="basic", col_labels=None, **kwargs) -> Chart`
 
-Aliases: `sp.heatmap`, `sp.heat_map`
-
 ## Description
 
 `sp.heatmap()` is the unified entry point for the entire heatmap family. The `variant` keyword selects the rendering strategy — every other argument stays consistent across variants. Cell colors are computed in pure Rust, no NumPy required. The matrix is passed as a flat list of length `len(labels) * len(col_labels)` (row-major).
+## Variants
 
-| Variant | Use case | Key extra args |
-|---------|----------|----------------|
-| `"basic"` | Default colored grid, 3-stop interpolation | `colorscale`, `colorbar_position` |
-| `"annotated"` | Cell values printed on top of the grid | `show_values=True` |
-| `"categorical"` | Discrete palette indexed by integer values | `palette` |
-| `"unequal"` / `"variable"` | Variable cell widths/heights | `widths`, `ranges` |
-| `"log"` / `"log_scale"` | Log10 normalization for skewed data | `colorscale` |
-| `"discrete"` / `"binned"` | N quantized bands instead of a gradient | `bins` |
-| `"correlation"` / `"corr"` | Diverging colorscale around 0 | `colorscale="rdbu_r"` |
-| `"density"` / `"imshow"` | Continuous viridis-style field, no values | `colorscale`, `origin_lower` |
-| `"contour"` | Smooth interpolation with isoline overlays | `colorscale` |
-| `"temporal"` / `"calendar"` | Calendar-style activity grid | `colorscale="greens"` |
-| `"cluster"` / `"clustermap"` | Rows + columns reordered by sum (dendrogram-like) | `colorscale` |
-| `"bubble"` / `"punchcard"` | Each cell rendered as a sized circle | `colorscale` |
-| `"marginal"` / `"with_marginals"` | Side bar charts for row + column totals | `colorscale` |
-| `"confusion"` / `"confusion_matrix"` | Diagonal-emphasized matrix for classifiers | `colorscale="blues"` |
-| `"pivot"` / `"pivot_table"` | Pivot table with row + column + grand totals | `colorscale` |
-
----
+<div data-sp-registry-table="variants" data-family="heatmap"></div>
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | — | all | Chart title shown at the top |
-| `labels` | `list[str]` | `None` | all | Row labels |
-| `col_labels` | `list[str]` | `None` | all | Column labels |
-| `values` | `list[float]` | `None` | all | Flat row-major matrix (`len(labels) * len(col_labels)`) |
-| `variant` | `str` | `"basic"` | all | Selects the heatmap variant |
-| `colorscale` | `str` | `""` | most | Named gradient, see list below |
-| `colorbar_position` | `str` | `"right"` | continuous | `"right"` (vertical) or `"bottom"` (horizontal) |
-| `origin_lower` | `bool` | `False` | all | Flip the y-axis so row 0 is at the bottom |
-| `show_values` | `bool` | `True` | all | Print numeric values in cells |
-| `bins` | `int` | `0` | discrete | Number of quantized bands (3–9) |
-| `palette` | `list[int]` | `None` | categorical, discrete | Hex colors for categorical/discrete cells |
-| `widths` | `list[float]` | `None` | unequal | Per-column width multipliers |
-| `ranges` | `list[float]` | `None` | unequal | Per-row height multipliers |
-| `color_low` | `int` | `0x6366F1` | basic, annotated, log, contour | Low-value hex color (3-stop interp) |
-| `color_mid` | `int` | `0xFAFBFC` | basic, annotated, log, contour | Mid-value hex color |
-| `color_high` | `int` | `0xF43F5E` | basic, annotated, log, contour | High-value hex color |
-| `width` | `int` | `720` | all | Canvas width in pixels |
-| `height` | `int` | `440` | all | Canvas height in pixels |
-| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+<div data-sp-registry-table="options" data-family="heatmap"></div>
 
 ---
 
@@ -126,6 +54,9 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <button class="sp-cls-tab" onclick="spCls('hm-en','marginal',this)"><span class="sp-cic">⊥</span><span class="sp-clb">Marginal</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','pivot',this)"><span class="sp-cic">⊡</span><span class="sp-clb">Pivot</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Radial Cluster</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','moods',this)"><span class="sp-cic">♬</span><span class="sp-clb">Moods</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -133,9 +64,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-basic.html"></iframe>
 
 </div>
 
@@ -143,9 +73,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"annotated"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-annotated.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-annotated.html"></iframe>
 
 </div>
 
@@ -153,9 +82,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>palette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-categorical.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-categorical.html"></iframe>
 
 </div>
 
@@ -163,9 +91,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>widths</code>, <code>ranges</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-unequal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-unequal.html"></iframe>
 
 </div>
 
@@ -173,9 +100,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"log"</code> / <code>"log_scale"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-log.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-log.html"></iframe>
 
 </div>
 
@@ -183,9 +109,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>bins</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-discrete.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-discrete.html"></iframe>
 
 </div>
 
@@ -193,9 +118,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-correlation.html"></iframe>
 
 </div>
 
@@ -203,9 +127,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code> / <code>"imshow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-density.html"></iframe>
 
 </div>
 
@@ -213,9 +136,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-contour.html"></iframe>
 
 </div>
 
@@ -223,19 +145,19 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-temporal.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="hm-en-cluster">
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code> / <code>"dendrogram"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Rows and columns are reordered by average-linkage hierarchical clustering (Euclidean distance on each row/column vector) so similar rows/columns sit next to each other, and the merge tree is drawn as a real dendrogram in the left and top margins — seaborn's <code>clustermap</code> / <code>structured_heatmap</code> look, fully native.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-cluster.html"></iframe>
 
 </div>
 
@@ -243,9 +165,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code> / <code>"punchcard"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-bubble.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-bubble.html"></iframe>
 
 </div>
 
@@ -253,9 +174,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginal"</code> / <code>"with_marginals"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-marginal.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-marginal.html"></iframe>
 
 </div>
 
@@ -263,9 +183,8 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"confusion"</code> / <code>"confusion_matrix"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-confusion.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-confusion.html"></iframe>
 
 </div>
 
@@ -273,9 +192,39 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pivot"</code> / <code>"pivot_table"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-pivot.html"></iframe>
+
+</div>
+
+<div class="sp-variant" id="hm-en-polar">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code> / <code>"carbon_wheel"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-polar.html"></iframe>
+
+</div>
+
+<div class="sp-variant" id="hm-en-radial_cluster">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial_cluster"</code> / <code>"circular_cluster"</code> / <code>"circos"</code> / <code>"radial_dendrogram"</code> / <code>"circular_dendrogram"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Columns are reordered by the same average-linkage hierarchical clustering as the <code>cluster</code> variant, then laid out as wedges around a ring instead of a straight axis, with the merge tree drawn as a real radial dendrogram in the center — rows become concentric colored bands. <code>col_labels</code> is optional: when omitted it falls back to <code>labels</code>, same as <code>cluster</code>, for a symmetric matrix.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-radial_cluster.html"></iframe>
+
+</div>
+
+<div class="sp-variant" id="hm-en-moods">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"moods"</code> / <code>"mood_matrix"</code> / <code>"punchcard_grouped"</code> / <code>"library"</code> / <code>"sentiment_grid"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">A grouped punchcard: each row's label is read as <code>"Group::Subgroup::Item"</code> (e.g. genre/artist/album) and rendered as a real nested outline on the left, with a thin divider between groups and the group name set vertically alongside its own block — every row keeps a small checkbox marker. Every column gets its own fixed color from the palette instead of a shared value colorscale, so intensity is read from bubble size and opacity while color reads the category. Every cell still draws a small dot even near zero, so faint columns stay visible as a guide down the grid instead of disappearing.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/heatmap-moods.html"></iframe>
 
 </div>
 
@@ -284,73 +233,22 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 </div><!-- /lang-en -->
 
-
 <div class="lang-fr" style="display:none">
 
 <h2>Signature</h2>
 
 `sp.heatmap(title, matrix, *, variant="basic", x_labels=None, y_labels=None, **kwargs) -> Chart`
 
-Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
-
 <h2>Description</h2>
 
 `sp.heatmap()` est le point d'entrée unique pour toute la famille des cartes de chaleur. Le paramètre `variant` sélectionne la stratégie de rendu — annotée, catégorielle, log, contour, clustering hiérarchique, etc. — tout en partageant la même API de base.
+<h2>Variantes</h2>
 
-| Variante | Cas d'usage | Arguments clés |
-|----------|-------------|----------------|
-| `"basic"` | Heatmap classique | `matrix`, `x_labels`, `y_labels` |
-| `"annotated"` / `"text"` | Valeurs imprimées dans chaque cellule | `matrix`, `annotation_format` |
-| `"categorical"` / `"cat"` | Données catégorielles (palette discrète) | `matrix`, `categories` |
-| `"unequal"` / `"variable"` | Cellules à largeur/hauteur variable | `matrix`, `x_widths`, `y_heights` |
-| `"log"` / `"logscale"` | Échelle de couleur logarithmique | `matrix`, `colorscale` |
-| `"discrete"` / `"binned"` | Découpage en bandes discrètes | `matrix`, `levels` |
-| `"correlation"` / `"corr"` | Matrice de corrélation symétrique | `matrix`, `mask_upper` |
-| `"density"` / `"hist2d"` | Densité 2D (binning xy) | `x`, `y`, `bins` |
-| `"contour"` / `"isoline"` | Lignes de contour superposées | `matrix`, `n_contours` |
-| `"temporal"` / `"calendar"` | Calendrier (jour × heure / semaine × jour) | `matrix`, `time_axis` |
-| `"cluster"` / `"dendro"` | Clustering hiérarchique avec dendrogramme | `matrix`, `cluster_method` |
-| `"bubble"` / `"dot"` | Cellules sous forme de bulles dimensionnées | `matrix`, `size_matrix` |
-| `"marginal"` / `"histograms"` | Heatmap + histogrammes marginaux | `matrix` |
-| `"confusion"` / `"cm"` | Matrice de confusion (vrai vs prédit) | `matrix`, `class_labels` |
-| `"pivot"` / `"crosstab"` | Tableau croisé dynamique | `data`, `index`, `columns`, `values` |
-
----
+<div data-sp-registry-table="variants" data-family="heatmap"></div>
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `matrix` | `list[list[float]]` | requis | toutes sauf density, pivot | Matrice 2D des valeurs |
-| `x_labels` | `list[str]` | `None` | toutes | Labels des colonnes |
-| `y_labels` | `list[str]` | `None` | toutes | Labels des lignes |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `colorscale` | `str` | `"viridis"` | toutes | Palette continue (`"viridis"`, `"plasma"`, `"inferno"`, …) |
-| `annotation_format` | `str` | `".2f"` | annotated | Format des valeurs affichées |
-| `categories` | `list[str]` | `None` | categorical | Catégories pour palette discrète |
-| `x_widths` | `list[float]` | `None` | unequal | Largeur relative de chaque colonne |
-| `y_heights` | `list[float]` | `None` | unequal | Hauteur relative de chaque ligne |
-| `levels` | `int` ou `list[float]` | `5` | discrete, contour | Nombre de bandes / contours |
-| `mask_upper` | `bool` | `False` | correlation | Masque le triangle supérieur |
-| `x` / `y` | `list[float]` | `None` | density | Coordonnées brutes pour binning |
-| `bins` | `int` ou `tuple` | `30` | density | Nombre de bins pour la densité |
-| `n_contours` | `int` | `8` | contour | Nombre de courbes de niveau |
-| `time_axis` | `str` | `"hour-day"` | temporal | `"hour-day"`, `"day-week"`, `"day-month"` |
-| `cluster_method` | `str` | `"ward"` | cluster | Méthode de liaison (`"ward"`, `"single"`, `"complete"`) |
-| `size_matrix` | `list[list[float]]` | `None` | bubble | Matrice de tailles des bulles |
-| `class_labels` | `list[str]` | `None` | confusion | Noms des classes |
-| `data` | `list[dict]` | `None` | pivot | Données longues à pivoter |
-| `index` | `str` | `None` | pivot | Colonne pour l'axe Y |
-| `columns` | `str` | `None` | pivot | Colonne pour l'axe X |
-| `values` | `str` | `None` | pivot | Colonne agrégée |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `width` | `int` | `800` | toutes | Largeur du canevas en px |
-| `height` | `int` | `600` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `show_colorbar` | `bool` | `True` | toutes | Afficher la barre de couleur |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+<div data-sp-registry-table="options" data-family="heatmap"></div>
 
 ---
 
@@ -378,38 +276,47 @@ Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
 <button class="sp-cls-tab" onclick="spCls('hm-fr','marginal',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Marginale</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','pivot',this)"><span class="sp-cic">⊟</span><span class="sp-clb">Pivot</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Cluster Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','moods',this)"><span class="sp-cic">♬</span><span class="sp-clb">Humeurs</span></button>
 </div>
 <div class="sp-cls-body">
 
-<div class="sp-variant sp-von" id="hm-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-basic.html"></iframe></div>
+<div class="sp-variant sp-von" id="hm-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-basic.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-annotated"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"annotated"</code> / <code>"text"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>annotation_format</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-annotated.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-annotated"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"annotated"</code> / <code>"text"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>annotation_format</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-annotated.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-categorical"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"cat"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>categories</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-categorical.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-categorical"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"cat"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>categories</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-categorical.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-unequal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>x_widths</code>, <code>y_heights</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-unequal.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-unequal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>x_widths</code>, <code>y_heights</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-unequal.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-log"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"log"</code> / <code>"logscale"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>colorscale</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-log.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-log"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"log"</code> / <code>"logscale"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>colorscale</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-log.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-discrete"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>levels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-discrete.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-discrete"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>levels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-discrete.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-correlation"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>mask_upper</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-correlation"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>mask_upper</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-correlation.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-density"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code> / <code>"hist2d"</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code>, <code>bins</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-density"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code> / <code>"hist2d"</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code>, <code>bins</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-density.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-contour"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"contour"</code> / <code>"isoline"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>n_contours</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-contour"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"contour"</code> / <code>"isoline"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>n_contours</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-contour.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-temporal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>time_axis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-temporal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>time_axis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-temporal.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"cluster"</code> / <code>"dendro"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>cluster_method</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"cluster"</code> / <code>"clustermap"</code> / <code>"dendrogram"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Les lignes et colonnes sont réordonnées par classification hiérarchique average-linkage (distance euclidienne sur chaque vecteur ligne/colonne) pour que les lignes/colonnes similaires se retrouvent côte à côte, et l'arbre de fusion est dessiné comme un vrai dendrogramme dans les marges gauche et haute — le look <code>clustermap</code> / <code>structured_heatmap</code> de seaborn, entièrement natif.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-cluster.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-bubble"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code> / <code>"dot"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>size_matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-bubble.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-bubble"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code> / <code>"dot"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>size_matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-bubble.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-marginal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginal"</code> / <code>"histograms"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-marginal.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-marginal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginal"</code> / <code>"histograms"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-marginal.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-confusion"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"confusion"</code> / <code>"cm"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>class_labels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-confusion.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-confusion"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"confusion"</code> / <code>"cm"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>class_labels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-confusion.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-pivot"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pivot"</code> / <code>"crosstab"</code></span><span><strong>Requis</strong> <code>data</code>, <code>index</code>, <code>columns</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-pivot"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pivot"</code> / <code>"crosstab"</code></span><span><strong>Requis</strong> <code>data</code>, <code>index</code>, <code>columns</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-pivot.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-polar"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-polar.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-radial_cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial_cluster"</code> / <code>"circular_cluster"</code> / <code>"circos"</code> / <code>"radial_dendrogram"</code> / <code>"circular_dendrogram"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Les colonnes sont réordonnées par la même classification hiérarchique average-linkage que la variante <code>cluster</code>, puis disposées en quartiers autour d'un anneau au lieu d'un axe droit, avec l'arbre de fusion dessiné comme un vrai dendrogramme radial au centre — les lignes deviennent des bandes colorées concentriques. <code>col_labels</code> est optionnel : si omis, retombe sur <code>labels</code>, comme <code>cluster</code>, pour une matrice symétrique.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-radial_cluster.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-moods"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"moods"</code> / <code>"mood_matrix"</code> / <code>"punchcard_grouped"</code> / <code>"library"</code> / <code>"sentiment_grid"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un punchcard groupé : le label de chaque ligne est lu comme <code>"Groupe::Sous-groupe::Élément"</code> (par ex. genre/artiste/album) et rendu comme une vraie arborescence à gauche, avec une fine séparation entre groupes et le nom du groupe affiché verticalement le long de son propre bloc — chaque ligne garde une petite case à cocher. Chaque colonne reçoit sa propre couleur fixe de la palette plutôt qu'une échelle de couleur partagée par valeur, donc l'intensité se lit dans la taille et l'opacité de la bulle pendant que la couleur indique la catégorie. Chaque cellule dessine toujours un petit point même proche de zéro, pour que les colonnes faibles restent visibles comme repère le long de la grille au lieu de disparaître.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" data-src="../../previews/heatmap-moods.html"></iframe></div>
 
 </div>
 </div>

@@ -1,0 +1,185 @@
+(function () {
+  var THREE_D = [
+    "scatter3d", "bar3d", "line3d", "radar3d", "lollipop3d", "kde3d",
+    "ridgeline3d", "bubble3d", "pie3d", "violin3d", "heatmap3d",
+    "candlestick3d", "boxplot3d", "waterfall3d", "histogram3d", "dumbbell3d",
+    "bullet3d", "gantt3d", "funnel3d", "gauge3d", "sunburst3d", "icicle3d",
+    "treemap3d", "circle_pack3d", "dendrogram3d",
+    "area3d", "stackplot3d", "slope3d",
+    "correlogram3d", "splom3d", "hexbin3d", "eventplot3d",
+    "scatterternary3d", "plot_web3d", "orbita3d",
+    "sankey3d", "chord3d", "arc_diagram3d", "hive3d",
+    "parallel3d", "parcats3d", "venn3d", "wordcloud3d", "pulse3d",
+    "choropleth3d", "bubble_map3d", "cartogram3d", "flow_map3d",
+    "contour_map3d", "graticule_map3d", "vector_field_map3d",
+    "stacked-bar3d", "globe3d",
+  ];
+
+  function slugify(key) {
+    return key.replace(/_/g, "-");
+  }
+
+  function titleCase(slug) {
+    return slug
+      .replace(/-?3d$/, " 3D")
+      .split(/[-_ ]/)
+      .filter(Boolean)
+      .map(function (w) { return w === "3D" ? w : w.charAt(0).toUpperCase() + w.slice(1); })
+      .join(" ");
+  }
+
+  function resolvePreviewSrc(slug, cb) {
+    var plain = "previews/" + slug + ".html";
+    fetch(plain, { method: "HEAD" }).then(function (r) {
+      cb(r.ok ? plain : "previews/" + slug + "-basic.html");
+    }).catch(function () {
+      cb("previews/" + slug + "-basic.html");
+    });
+  }
+
+  var FALLBACK_W = 900, FALLBACK_H = 540;
+
+  function measureFrameContent(frame) {
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.body) return null;
+      var w = Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth);
+      var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+      return (w && h) ? { w: w, h: h } : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function fitFrame(frame, viewport) {
+    var size = measureFrameContent(frame) || { w: FALLBACK_W, h: FALLBACK_H };
+    frame.style.width = size.w + "px";
+    frame.style.height = size.h + "px";
+    var vw = viewport.clientWidth, vh = viewport.clientHeight;
+    var scale = Math.min(vw / size.w, vh / size.h);
+    frame.style.transform = "scale(" + scale + ")";
+  }
+
+  function stripChrome(frame) {
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.head) return;
+      var style = doc.createElement("style");
+      style.textContent =
+        "html,body{background:transparent!important}" +
+        ".sp-bg{fill:transparent!important}";
+      doc.head.appendChild(style);
+      var wrap = doc.querySelector('[role="main"] > div');
+      if (wrap) {
+        wrap.style.boxShadow = "none";
+        wrap.style.borderRadius = "0";
+        wrap.style.background = "transparent";
+      }
+    } catch (e) {}
+  }
+
+  function card(slug, category, title) {
+    var wrap = document.createElement("a");
+    wrap.className = "sp-sc-card";
+    wrap.href = "charts/" + category + "/" + slug + ".html";
+    var viewport = document.createElement("div");
+    viewport.className = "sp-sc-viewport";
+    var frame = document.createElement("iframe");
+    frame.className = "sp-sc-frame";
+    frame.loading = "lazy";
+    frame.scrolling = "no";
+    frame.style.width = FALLBACK_W + "px";
+    frame.style.height = FALLBACK_H + "px";
+    frame.style.transform = "scale(" + (172 / FALLBACK_H) + ")";
+    frame.onload = function () {
+      stripChrome(frame);
+      fitFrame(frame, viewport);
+    };
+    viewport.appendChild(frame);
+    var body = document.createElement("div");
+    body.className = "sp-sc-cardbody";
+    var t = document.createElement("span");
+    t.className = "sp-sc-title";
+    t.textContent = title;
+    var arrow = document.createElement("span");
+    arrow.className = "sp-sc-arrow";
+    arrow.textContent = "→";
+    body.appendChild(t);
+    body.appendChild(arrow);
+    wrap.appendChild(viewport);
+    wrap.appendChild(body);
+    resolvePreviewSrc(slug, function (src) { frame.src = src; });
+    return wrap;
+  }
+
+  function section(container, heading, entries, category) {
+    if (!entries.length) return;
+    var sec = document.createElement("div");
+    sec.className = "sp-sc-section";
+    var h = document.createElement("h3");
+    h.textContent = heading;
+    sec.appendChild(h);
+    var grid = document.createElement("div");
+    grid.className = "sp-sc-grid";
+    entries.forEach(function (e) {
+      grid.appendChild(card(e.slug, category, e.title));
+    });
+    sec.appendChild(grid);
+    container.appendChild(sec);
+  }
+
+  function familyKind(entry) {
+    return (entry && entry.kind) || "2d";
+  }
+
+  function build(root, lang) {
+    root.innerHTML = "";
+    var reg = window.SeraPlotDocRegistry;
+    var variants = (reg && reg.variants) || {};
+    var families = Object.keys(variants);
+
+    var byKind = function (kind) {
+      return families
+        .filter(function (name) { return familyKind(variants[name]) === kind; })
+        .map(slugify)
+        .sort()
+        .map(function (s) { return { slug: s, title: titleCase(s) }; });
+    };
+
+    var twoD = byKind("2d");
+    var maps = byKind("map");
+    var threeD = families.some(function (name) { return familyKind(variants[name]) === "3d"; })
+      ? byKind("3d")
+      : THREE_D.map(function (s) { return { slug: s, title: titleCase(s) }; });
+
+    var titles = lang === "fr"
+      ? { d2: "Graphiques 2D", d3: "Graphiques 3D", map: "Cartes", count: "familles enregistrées — lu depuis le registre SeraPlot" }
+      : { d2: "2D Charts", d3: "3D Charts", map: "Map Charts", count: "registered families — read from the SeraPlot registry" };
+
+    var intro = document.createElement("div");
+    intro.className = "sp-sc-intro";
+    var count = document.createElement("p");
+    count.className = "sp-sc-count";
+    count.textContent = (twoD.length + threeD.length + maps.length) + " " + titles.count;
+    intro.appendChild(count);
+    root.appendChild(intro);
+
+    section(root, titles.d2, twoD, "2d");
+    section(root, titles.d3, threeD, "3d");
+    section(root, titles.map, maps, "map");
+  }
+
+  function init() {
+    var enRoot = document.getElementById("sp-showcase-en");
+    var frRoot = document.getElementById("sp-showcase-fr");
+    if (!enRoot && !frRoot) return;
+    if (enRoot) build(enRoot, "en");
+    if (frRoot) build(frRoot, "fr");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

@@ -1,62 +1,43 @@
-SeraPlot — High-Performance Data Visualization & ML Framework
+# Sera
 
-**SeraPlot v2.7.0+** is a production-grade framework written in **Rust**, delivering blazing-fast interactive charts. Designed as a modern alternative to Plotly it make visualization and can be combinate with SeraML in a single Rust binary — no dependencies, no bloat.
+Sera is a framework that combines three tools into one ecosystem, providing cross-tool features such as native CPU/GPU optimizations, memory allocation management, chunking systems, alias management, and more.
 
-**SeraPlot outperforms Plotly and Matplotlib by 100–8000× on chart generation speed.**
+The main goal of Sera is to be developed entirely in pure Rust, avoiding dependencies on external tools by providing a complete and self-contained ecosystem. The framework is designed with a more development-oriented approach, relying less on long method chains or complex callable patterns.
 
-> **Documentation:** https://feur25.github.io/seraplot/introduction.html
+Sera gives developers full freedom to build the way they want: create custom configurations, define their own aliases, extend the framework, and adapt it to their own workflows.
 
-Contributing? Read [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [ARCHITECTURE.md](ARCHITECTURE.md) for how the codebase is laid out.
+The objective is also to be significantly faster and lighter than existing solutions. Since I am currently developing this project alone and not working on it full-time, I cannot yet provide tools as complete and mature as libraries such as **scikit-learn**, **pandas**, or **matplotlib** in such a short amount of time. However, the long-term goal is to progressively reach similar levels of functionality while maintaining Rust's performance, safety, and efficiency.
 
----
+Sera was initially created to address my own needs, but it also aims to bring data visualization, machine learning, and dataframe manipulation capabilities to programming languages other than Python. One of the long-term goals is to make Sera available across multiple languages, especially through integrations such as **C#** bindings.
 
-## Why Choose SeraPlot?
+Feel free to open issues, suggest improvements, or discuss the architecture. You can also explore how the code is structured to create your own plots, themes, variants, and extensions.
 
-**100–8000× faster** than Plotly & Matplotlib on chart generation  
-**Minimal memory footprint** — runs on edge devices, embedded systems, low-power servers  
-**Production-ready** — enterprise-grade stability, zero fluff, maximum efficiency  
-**Multi-language** — Python, JavaScript/WebAssembly, C/C++, C#  
-**60+ chart types** — 2D, 3D, maps, statistical plots, all GPU-accelerated
-**WebAssembly** — npm package `@seraplot/wasm` for browser visualization
----
+The ecosystem is designed to remain clean, modular, and easy to contribute to. Contributions are more than welcome!
 
-## Installation
+## Components
 
-**Python** (PyPI — wheel for CPython 3.11+)
+Sera is composed of three main tools:
 
-```bash
-pip install seraplot
-```
+- **SeraPlot** — Data visualization and graph generation.
+- **SeraML** — Machine learning tools and algorithms.
+- **SeraDFrame** — Dataframe manipulation, analysis, and tabular data processing.
 
-Alternative package managers:
-```bash
-conda install -c conda-forge seraplot
-uv pip install seraplot
-```
+Each component is designed to work independently while also benefiting from shared features provided by the Sera ecosystem.
 
-**JavaScript/WebAssembly** (npm)
+You are free to explore the source code and contribute to the project.
 
-```bash
-npm install seraplot
-```
+## Development
 
----
+More than **90% of the codebase has been written manually**.  
+The documentation, however, was greatly assisted by Claude in order to provide a complete and accessible documentation as quickly as possible.
 
-### Gallery — Chart Types
+Documentation:
+https://feur25.github.io/Sera/introduction.html
 
-#### 2D Charts
-| | | | |
-|:---:|:---:|:---:|:---:|
-| ![2D-1](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/1.png) | ![2D-2](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/2.png) | ![2D-3](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/3.png) | ![2D-4](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/4.png) |
-| ![2D-5](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/5.png) | ![2D-6](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/6.png) | ![2D-7](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/7.png) | ![2D-8](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/2d/8.png) |
+## Commit History
 
-#### 3D Charts  
-| | | | |
-|:---:|:---:|:---:|:---:|
-| ![3D-1](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/1.png) | ![3D-2](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/2.png) | ![3D-3](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/3.png) | ![3D-4](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/4.png) |
-| ![3D-5](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/5.png) | ![3D-6](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/6.png) | ![3D-7](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/7.png) | ![3D-8](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/3d/8.png) |
+Every commit, packed by week, sized by lines changed, colored by insertions vs. deletions — built entirely with SeraPlot's own canvas and bar chart primitives. Refreshed automatically every Monday.
 
----
-<p align="center">
-  <a href="https://feur25.github.io/seraplot/introduction.html"><img src="https://i.ibb.co/WpF73657/logo-banner.png" alt="Seraplot Banner" border="0"></a>
-</p>
+![Commit history graph](docs/theme/images/commit-history-preview.png)
+
+**<a href="https://feur25.github.io/Sera/commit-history.html" target="_blank" rel="noopener">Open the live, interactive version →</a>**

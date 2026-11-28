@@ -1,0 +1,17 @@
+crate::plot_family! {
+    pub enum LineVariant default Basic family "line" {
+        Basic            => "basic",
+        Multi            => "multi" | "multiline" | "multiple",
+        Stepped          => "stepped" | "step" | "hv" | "vh" | "hvh" | "vhv",
+        Spline           => "spline" | "smooth" | "curved",
+        Filled           => "filled" | "area" | "fill",
+        Sparkline        => "sparkline" | "spark" | "tiny",
+        Dashed           => "dashed" | "dotted" | "styled",
+        ConnectedScatter => "connected_scatter" | "markers" | "lines+markers",
+        Gapped           => "gapped" | "gaps" | "missing",
+        Band             => "band" | "confidence_band" | "forecast" | "range_band",
+        Momentum         => "momentum" | "slope_glow" | "trend_pulse",
+        Epoch            => "epoch" | "chapters" | "regime_bands",
+        Pace             => "pace" | "pacing" | "glidepath" | "runway",
+    }
+}

@@ -1,193 +1,207 @@
-﻿# Ridgeline Chart 3D
+# Ridgeline Chart 3D
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+
 ## Signature
 
-```python
-sp.build_ridgeline3d_chart(
-    title: str,
-    categories: list[str],
-    values: list[float],
-    *,
-    bandwidth: float = 1.0,
-    palette: list[int] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "",
-    y_label: str = "",
-    z_label: str = "Density",
-) -> Chart
-```
+`sp.ridgeline3d(title, categories=None, values=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, bg_color="#1a1a2e", width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.ridgeline3d`
-
----
+Aliases: `sp.build_ridgeline3d_chart()`, `sp.ridgeline_3d()`, `sp.ridgeline3d_chart()`, `sp.joy_plot3d()`.
 
 ## Description
 
-Ridgeline chart in 3D — KDE surfaces per category arranged along the Y axis in a WebGL scene.
+`sp.ridgeline3d()` is the 3D twin of `sp.ridgeline()`: **every one of the 7 ridgeline variants has a 3D form**, selected with the same `variant` keyword and fed with the same samples. Every category becomes a Gaussian KDE curve laid out as a grid of thin columns on its own depth row, all sharing the same value domain so the ridges are directly comparable, the same joy-plot reading as the 2D chart.
 
----
+## Variants
+
+| Variant | Aliases | Uses | 3D form |
+|---|---|---|---|
+| `basic` | `filled`, `default`, `single`, `multi` | `categories, values` | One density ridge per category, rows close enough that tall ridges overlap the row behind them. |
+| `lines` | `outline`, `stroke`, `no_fill` | `categories, values` | The same ridges pressed to a needle-thin profile, a wireframe-like reading of the landscape. |
+| `quartiles` | `q`, `qrt`, `iqr` | `categories, values` | The basic ridges plus a marker plate at each category's first quartile, median and third quartile. |
+| `mean` | `average`, `avg`, `mean_dot` | `categories, values` | The basic ridges plus a single marker plate at each category's arithmetic mean. |
+| `rug` | `ticks`, `carpet`, `rugplot` | `categories, values` | Thin ridges plus a small tick at every raw sample's position along its row. |
+| `heatmap` | `heat`, `rainbow`, `colored` | `categories, values` | The same ridges toned cell by cell on a continuous ramp instead of one flat colour per row. |
+| `spaced` | `separated`, `no_overlap`, `split` | `categories, values` | The same ridges pushed onto widely separated rows, so none of them overlap. |
+
+## Data
+
+`categories` names each sample's row and `values` gives its number; every sample sharing a category name feeds that row's density curve.
+
+## 3D planes
+
+The viewpoint is independent from the variant: `orientation3d` picks the initial camera plane and applies to **every** variant; the view always stays draggable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Isometric three-quarter view (default).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Side-on view, almost at floor level.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Top-down view from above.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Front elevation, nearly flat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-front.html"></iframe></div>
+</div>
+
+## 3D scenes
+
+`scene` swaps the environment the columns are drawn in and applies to every variant and every plane.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Each series keeps its own categorical palette color, rendered as shaded 3D bars on a flat grid.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; The data is resampled onto a dense grid and rendered as hundreds of thin colormap-colored columns, forming a continuous mountain-of-bars terrain.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; The data is resampled onto a dense field of round skyscraper-like towers instead of boxes, for a city-skyline reading of magnitude.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; The data is resampled onto a dense polar grid of rings and wedges radiating from the center, like a 3D radar/sonar sweep of the value field.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; The data is resampled onto a dense grid and quantized into stepped terrace levels, like a rice-terrace contour map, to read value bands at a glance.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-podium.html"></iframe></div>
+</div>
+
+## Themes
+
+`theme` restyles the whole canvas (colour grade and glow) and applies to every variant, scene and plane.
+
+<div data-sp-registry-table="themes" data-family="ridgeline3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-cosmic.html"></iframe></div>
+</div>
+
+## Auto-scaling zone
+
+The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `categories` | `list[str]` | required | Category labels |
-| `values` | `list[float]` | required | Flat concatenated sample data |
-| `bandwidth` | `float` | `1.0` | KDE bandwidth |
-| `palette` | `list[int] \| None` | `None` | Per-ridge colors |
-| `bg_color` | `str` | `"#1a1a2e"` | Background |
-| `width` | `int` | `900` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `z_label` | `str` | `"Density"` | Z-axis label |
-
----
+<div data-sp-registry-table="options" data-family="ridgeline3d"></div>
 
 ## Returns
 
-`Chart`
+`Chart` object with an `.html` property and a `.show()` method.
 
----
+</div><!-- /lang-en -->
 
-## Examples
-
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="ridgeline3d">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('ridgeline3d','ridgeline3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('ridgeline3d','ridgeline3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('ridgeline3d','ridgeline3d-ts',this)">TypeScript</button></div>
-<div id="ridgeline3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-cats   = ["Low", "Medium", "High"]
-means  = [10, 50, 90]
-values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-chart = sp.build_ridgeline3d_chart(
-    "Score Distribution by Group",
-    categories=cats,
-    values=values,
-)</code></pre></div>
-<div id="ridgeline3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import random
-const cats   = ["Low", "Medium", "High"]
-const means  = [10, 50, 90]
-const values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
-cats,
-{
-    values: values
-})</code></pre></div>
-<div id="ridgeline3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import random
-const cats: string[] = ["Low", "Medium", "High"]
-const means: number[] = [10, 50, 90]
-const values: number[] = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
-cats,
-{
-    values: values
-})</code></pre></div>
-</div>
-
-
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
-<iframe src="../../previews/ridgeline3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
-
-</div>
-
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
 <h2>Signature</h2>
 
-```python
-sp.build_ridgeline3d_chart(
-    title: str,
-    categories: list[str],
-    values: list[float],
-    *,
-    bandwidth: float = 1.0,
-    palette: list[int] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "",
-    y_label: str = "",
-    z_label: str = "Density",
-) -> Chart
-```
+`sp.ridgeline3d(title, categories=None, values=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, bg_color="#1a1a2e", width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.ridgeline3d`
-
----
+Alias : `sp.build_ridgeline3d_chart()`, `sp.ridgeline_3d()`, `sp.ridgeline3d_chart()`, `sp.joy_plot3d()`.
 
 <h2>Description</h2>
 
-Ridgeline 3D — surfaces KDE par catégorie arrangées le long de l'axe Y dans une scène WebGL.
+`sp.ridgeline3d()` est le jumeau 3D de `sp.ridgeline()` : **chacune des 7 variantes de ridgeline a une forme 3D**, choisie avec le même mot-clé `variant` et alimentée par les mêmes échantillons. Chaque catégorie devient une courbe de densité gaussienne posée comme une grille de fines colonnes sur sa propre rangée de profondeur, toutes partageant le même domaine de valeurs pour rester directement comparables, la même lecture en « joy plot » que le graphique 2D.
 
----
+<h2>Variantes</h2>
+
+| Variante | Alias | Utilise | Forme 3D |
+|---|---|---|---|
+| `basic` | `filled`, `default`, `single`, `multi` | `categories, values` | Une crête de densité par catégorie, les rangées assez proches pour que les hautes crêtes recouvrent la rangée derrière elles. |
+| `lines` | `outline`, `stroke`, `no_fill` | `categories, values` | Les mêmes crêtes pressées en un profil fin comme une aiguille, une lecture filaire du paysage. |
+| `quartiles` | `q`, `qrt`, `iqr` | `categories, values` | Les crêtes de base plus une dalle repère au premier quartile, à la médiane et au troisième quartile de chaque catégorie. |
+| `mean` | `average`, `avg`, `mean_dot` | `categories, values` | Les crêtes de base plus une unique dalle repère à la moyenne arithmétique de chaque catégorie. |
+| `rug` | `ticks`, `carpet`, `rugplot` | `categories, values` | Crêtes fines plus une petite marque à la position de chaque échantillon brut le long de sa rangée. |
+| `heatmap` | `heat`, `rainbow`, `colored` | `categories, values` | Les mêmes crêtes teintées cellule par cellule sur une rampe continue au lieu d'une couleur plate par rangée. |
+| `spaced` | `separated`, `no_overlap`, `split` | `categories, values` | Les mêmes crêtes poussées sur des rangées largement séparées, si bien qu'aucune ne se chevauche. |
+
+<h2>Données</h2>
+
+`categories` nomme la ligne de chaque échantillon et `values` donne son nombre ; chaque échantillon partageant un nom de catégorie alimente la courbe de densité de cette ligne.
+
+<h2>Plans 3D</h2>
+
+Le point de vue est indépendant de la variante : `orientation3d` choisit le plan initial de la caméra et s'applique à **toutes** les variantes ; la vue reste toujours orientable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Vue isométrique trois-quarts (défaut).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Vue de côté, presque au niveau du sol.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Vue du dessus, plongeante.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Élévation de face, presque à plat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-plane-front.html"></iframe></div>
+</div>
+
+<h2>Scènes 3D</h2>
+
+`scene` change l'environnement dans lequel les colonnes sont dessinées et s'applique à chaque variante et chaque plan.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Chaque série garde sa propre couleur de palette catégorielle, rendue en barres 3D ombrées sur une grille plate.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; Les données sont réinterpolées sur une grille dense et rendues en centaines de fines colonnes colorées par hauteur, formant un terrain continu en montagne de barres.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; Les données sont réinterpolées sur un champ dense de tours cylindriques façon gratte-ciel au lieu de boites, pour une lecture des magnitudes en skyline urbaine.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; Les données sont réinterpolées sur une grille polaire dense d'anneaux et de secteurs partant du centre, comme un balayage radar/sonar 3D du champ de valeurs.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; Les données sont réinterpolées sur une grille dense et quantifiées en paliers étagés, façon rizière en terrasses, pour lire les tranches de valeurs d'un coup d'oeil.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-scene-podium.html"></iframe></div>
+</div>
+
+<h2>Thèmes</h2>
+
+`theme` restyle tout le canevas (étalonnage des couleurs et halo) et s'applique à chaque variante, scène et plan.
+
+<div data-sp-registry-table="themes" data-family="ridgeline3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/ridgeline3d-theme-cosmic.html"></iframe></div>
+</div>
+
+<h2>Zone auto-ajustée</h2>
+
+La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `categories` | `list[str]` | requis | Étiquettes des catégories |
-| `values` | `list[float]` | requis | Données concaténées en plat |
-| `bandwidth` | `float` | `1.0` | Bande passante KDE |
-| `palette` | `list[int] \| None` | `None` | Couleurs par ridge |
-| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
-| `width` | `int` | `900` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `z_label` | `str` | `"Density"` | Étiquette de l'axe Z |
+<div data-sp-registry-table="options" data-family="ridgeline3d"></div>
 
----
+<h2>Retour</h2>
 
-<h2>Retourne</h2>
+Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 
-`Chart`
-
----
-
-<h2>Exemples</h2>
-
-```python
-import seraplot as sp
-import random
-
-cats   = ["Faible", "Moyen", "Haut"]
-means  = [10, 50, 90]
-values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-
-chart = sp.build_ridgeline3d_chart(
-    "Distribution des scores par groupe",
-    categories=cats,
-    values=values,
-)
-```
-
----
-
-</div>
+</div><!-- /lang-fr -->

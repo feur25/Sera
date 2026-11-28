@@ -88,15 +88,10 @@ Return Euclidean distance from each sample to each centroid (shape: n_samples ×
 
 ### Basic N-D clustering
 
-
 <style>
 .sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border)}
 .sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb.active{color:var(--sp-text);border-bottom-color:var(--sp-accent)}
-.sp-tp{display:none;padding:18px 20px;background:var(--sp-surface)}
-.sp-tp.active{display:block}
-pre{margin:0;background:transparent!important}
 </style>
 <div class="sp-tabs">
 <div class="sp-tab-btns">
@@ -128,7 +123,6 @@ print(f"Centroids: {model.centroids_}")
 ---
 
 ### Combine class + chart
-
 
 <div class="sp-tabs">
 <div class="sp-tab-btns">
@@ -165,7 +159,6 @@ print(f"Inertia: {model.inertia_:.4f}")
 ---
 
 ### Distance transform
-
 
 <div class="sp-tabs">
 <div class="sp-tab-btns">

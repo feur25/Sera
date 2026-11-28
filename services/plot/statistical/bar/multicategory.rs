@@ -1,0 +1,244 @@
+use super::block3d::Bar3DBlock;
+use super::config::BarConfig;
+use crate::plot::statistical::common::{
+    escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
+};
+
+const BAND_GAP_MULT: f64 = 2.4;
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len().max(1);
+    if n_cats == 0 {
+        return Vec::new();
+    }
+    let mut positions = Vec::with_capacity(n_cats);
+    let mut cx = 0.0;
+    for ci in 0..n_cats {
+        if ci > 0 {
+            let same_band = cfg.super_categories.get(ci) == cfg.super_categories.get(ci - 1);
+            cx += if same_band { 1.0 } else { 1.0 + BAND_GAP_MULT };
+        }
+        positions.push(cx);
+    }
+    let mut out = Vec::new();
+    if cfg.series.is_empty() {
+        for ci in 0..n_cats {
+            let v = cfg.values.get(ci).copied().unwrap_or(0.0);
+            out.push(Bar3DBlock::new(positions[ci], 0.0, 0.0, v, 0.32, 0.32, ci));
+        }
+    } else {
+        for ci in 0..n_cats {
+            for (si, (_, vals)) in cfg.series.iter().enumerate() {
+                let v = vals.get(ci).copied().unwrap_or(0.0);
+                if !v.is_finite() {
+                    continue;
+                }
+                let cy = si as f64 - (n_ser as f64 - 1.0) / 2.0;
+                out.push(Bar3DBlock::new(positions[ci], cy, 0.0, v, 0.30, 0.30, si));
+            }
+        }
+    }
+    out
+}
+
+#[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21]], series_names=[\"2023\",\"2024\"], super_categories=[\"H1\",\"H1\",\"H2\",\"H2\"]")]
+
+pub fn render(cfg: &BarConfig) -> String {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len().max(1);
+    if n_cats == 0 {
+        return String::new();
+    }
+
+    let max_val: f64 = if cfg.series.is_empty() {
+        cfg.values
+            .iter()
+            .cloned()
+            .filter(|v| v.is_finite())
+            .fold(0.0f64, f64::max)
+            .max(1.0)
+    } else {
+        cfg.series
+            .iter()
+            .flat_map(|(_, v)| v.iter().copied())
+            .filter(|v| v.is_finite())
+            .fold(0.0f64, f64::max)
+            .max(1.0)
+    };
+
+    let legend_w = if cfg.series.is_empty() { 0 } else { 160 };
+    let mut f = Frame::new_html(
+        cfg.title,
+        cfg.width,
+        cfg.height,
+        56,
+        42,
+        70,
+        legend_w,
+        n_cats * n_ser * 200 + 4096,
+    );
+    f.open(cfg.title, true);
+    f.y_grid(6, 0.0, max_val, cfg.gridlines);
+    f.axes(cfg.x_label, cfg.y_label);
+
+    let cat_w = f.pw as f64 / n_cats as f64;
+    let bar_w = (cat_w / (n_ser as f64 + 0.6) * 0.9) as i32;
+
+    for ci in 0..n_cats {
+        let cx = f.pl + (ci as f64 * cat_w + cat_w / 2.0) as i32;
+        if cfg.series.is_empty() {
+            let v = cfg.values.get(ci).copied().unwrap_or(0.0);
+            let color = palette_color(cfg.palette, ci);
+            let h = ((v / max_val) * f.ph as f64) as i32;
+            let bx = cx - bar_w / 2;
+            let by = f.pt + f.ph - h;
+            push_b(&mut f.buf, b"<rect data-idx=\"");
+            push_i(&mut f.buf, ci as i32);
+            push_b(&mut f.buf, b"\" data-v=\"");
+            push_f2(&mut f.buf, v);
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, &cfg.category_labels[ci]);
+            push_b(&mut f.buf, b"\" x=\"");
+            push_i(&mut f.buf, bx);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, by);
+            push_b(&mut f.buf, b"\" width=\"");
+            push_i(&mut f.buf, bar_w);
+            push_b(&mut f.buf, b"\" height=\"");
+            push_i(&mut f.buf, h.max(1));
+            push_b(&mut f.buf, b"\" fill=\"");
+            push_hex(&mut f.buf, color);
+            push_b(&mut f.buf, b"\"/>");
+        } else {
+            let group_w = cat_w * 0.85;
+            let bw = (group_w / n_ser as f64) as i32;
+            for (si, (sname, vals)) in cfg.series.iter().enumerate() {
+                let v = vals.get(ci).copied().unwrap_or(0.0);
+                if !v.is_finite() {
+                    continue;
+                }
+                let color = palette_color(cfg.palette, si);
+                let h = ((v / max_val) * f.ph as f64) as i32;
+                let bx = cx - (group_w / 2.0) as i32 + si as i32 * bw;
+                let by = f.pt + f.ph - h;
+                push_b(&mut f.buf, b"<rect data-idx=\"");
+                push_i(&mut f.buf, (ci * n_ser + si) as i32);
+                push_b(&mut f.buf, b"\" data-v=\"");
+                push_f2(&mut f.buf, v);
+                push_b(&mut f.buf, b"\" data-lbl=\"");
+                escape_xml(&mut f.buf, sname);
+                push_b(&mut f.buf, b"\" data-group=\"");
+                escape_xml(&mut f.buf, sname);
+                push_b(&mut f.buf, b"\" x=\"");
+                push_i(&mut f.buf, bx);
+                push_b(&mut f.buf, b"\" y=\"");
+                push_i(&mut f.buf, by);
+                push_b(&mut f.buf, b"\" width=\"");
+                push_i(&mut f.buf, (bw - 2).max(1));
+                push_b(&mut f.buf, b"\" height=\"");
+                push_i(&mut f.buf, h.max(1));
+                push_b(&mut f.buf, b"\" fill=\"");
+                push_hex(&mut f.buf, color);
+                push_b(&mut f.buf, b"\"/>");
+            }
+        }
+        push_b(&mut f.buf, b"<text x=\"");
+        push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, f.pt + f.ph + 16);
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#475569\">");
+        escape_xml(&mut f.buf, &cfg.category_labels[ci]);
+        push_b(&mut f.buf, b"</text>");
+    }
+
+    if !cfg.super_categories.is_empty() {
+        let mut start = 0usize;
+        while start < n_cats {
+            let cur = cfg
+                .super_categories
+                .get(start)
+                .map(|s| s.as_str())
+                .unwrap_or("");
+            let mut end = start + 1;
+            while end < n_cats {
+                let nxt = cfg
+                    .super_categories
+                    .get(end)
+                    .map(|s| s.as_str())
+                    .unwrap_or("");
+                if nxt != cur {
+                    break;
+                }
+                end += 1;
+            }
+            let x1 = f.pl + (start as f64 * cat_w) as i32 + 4;
+            let x2 = f.pl + (end as f64 * cat_w) as i32 - 4;
+            let y_line = f.pt + f.ph + 32;
+            let y_text = f.pt + f.ph + 50;
+            push_b(&mut f.buf, b"<line x1=\"");
+            push_i(&mut f.buf, x1);
+            push_b(&mut f.buf, b"\" y1=\"");
+            push_i(&mut f.buf, y_line);
+            push_b(&mut f.buf, b"\" x2=\"");
+            push_i(&mut f.buf, x2);
+            push_b(&mut f.buf, b"\" y2=\"");
+            push_i(&mut f.buf, y_line);
+            push_b(&mut f.buf, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
+            push_b(&mut f.buf, b"<text x=\"");
+            push_i(&mut f.buf, (x1 + x2) / 2);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, y_text);
+            push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#334155\">");
+            escape_xml(&mut f.buf, cur);
+            push_b(&mut f.buf, b"</text>");
+            start = end;
+        }
+    }
+
+    if !cfg.series.is_empty() {
+        let names: Vec<&str> = cfg.series.iter().map(|(n, _)| n.as_str()).collect();
+        f.legend_pos(&names, cfg.palette, cfg.legend_position);
+    }
+    f.html("[]")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_super_category_boundary_makes_the_3d_layout_visibly_distinct_from_plain_grouped() {
+        let category_labels: Vec<String> = ["Q1", "Q2", "Q3", "Q4"].iter().map(|s| s.to_string()).collect();
+        let super_categories: Vec<String> = ["H1", "H1", "H2", "H2"].iter().map(|s| s.to_string()).collect();
+        let values = [1.0, 1.0, 1.0, 1.0];
+        let cfg = BarConfig {
+            category_labels: &category_labels,
+            super_categories: &super_categories,
+            values: &values,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 4);
+        let same_band_step = blocks[1].cx - blocks[0].cx;
+        let cross_band_step = blocks[2].cx - blocks[1].cx;
+        assert!(
+            cross_band_step > same_band_step * 3.0,
+            "a super-category boundary ({cross_band_step}) must read as a clear break, not a slightly uneven step ({same_band_step})"
+        );
+    }
+
+    #[test]
+    fn without_super_categories_the_spacing_stays_perfectly_even() {
+        let category_labels: Vec<String> = ["Q1", "Q2", "Q3", "Q4"].iter().map(|s| s.to_string()).collect();
+        let values = [1.0, 1.0, 1.0, 1.0];
+        let cfg = BarConfig {
+            category_labels: &category_labels,
+            values: &values,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        let steps: Vec<f64> = blocks.windows(2).map(|w| w[1].cx - w[0].cx).collect();
+        assert!(steps.windows(2).all(|w| (w[0] - w[1]).abs() < 1e-9), "no super_categories means no band gaps: {steps:?}");
+    }
+}

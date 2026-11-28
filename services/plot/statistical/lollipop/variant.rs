@@ -1,0 +1,13 @@
+crate::plot_family! {
+    pub enum LollipopVariant default Basic family "lollipop" {
+        Basic            => "basic" | "default" | "classic" | "vertical",
+        Cleveland        => "cleveland" | "horizontal" | "h" | "row",
+        Diverging        => "diverging" | "div" | "signed" | "delta",
+        Circular         => "circular" | "polar" | "radial" | "round",
+        Office           => "office" | "grouped" | "season" | "panel",
+        ConditionalColor => "conditional_color" | "conditional" | "threshold_color",
+        Trend            => "trend" | "colormap" | "arrow" | "annotated",
+        Custom           => "custom" | "diamond" | "styled",
+        Duel             => "duel" | "head_to_head" | "versus" | "rivalry" | "radial_diverging",
+    }
+}

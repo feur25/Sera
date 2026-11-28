@@ -1,188 +1,273 @@
-﻿# Choropleth Map
+# Choropleth Map
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:420px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
 ## Signature
 
-```python
-sp.build_choropleth(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    iso_codes: list[str] | None = None,
-    color_low: int = 0,
-    color_high: int = 0,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    show_legend: bool = True,
-    null_color: int = 0xdddddd,
-) -> Chart
-```
+`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
-Aliases: `sp.choropleth`
-
----
+Aliases: `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_chart`, `sp.geo_map`, `sp.build_choropleth`
 
 ## Description
 
-Choropleth (filled map) — country or region polygons colored by a scalar value.
+`sp.choropleth()` fills country or region polygons by a scalar value. `variant` selects the color-classification strategy; `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set (e.g. a continent or a census region). All three are read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
 
-Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 alpha-3) to match countries automatically.
+## Variants
 
----
+<div data-sp-registry-table="variants" data-family="choropleth"></div>
+
+## Region Sets
+
+<div data-sp-registry-table="regions"></div>
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Country|
-| `values` | `list[float]` | required | Values to color by |
-| `iso_codes` | `list[str] \| None` | `None` | ISO-3166 alpha-3 codes |
-| `color_low` | `int` | auto | Low value color |
-| `color_high` | `int` | auto | High value color |
-| `null_color` | `int` | `0xdddddd` | Color for countries with no data |
-| `width` | `int` | `1000` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `show_legend` | `bool` | `True` | Show color scale legend |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
+<div data-sp-registry-table="options" data-family="choropleth"></div>
 
 ---
 
 ## Returns
 
-`Chart`
+`Chart` — object with `.html` property and `.show()` method.
 
 ---
 
-## Examples
+<div class="sp-cls sp-open" id="choropleth-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('choropleth-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('choropleth-en','sequential',this)"><span class="sp-cic">▧</span><span class="sp-clb">Sequential</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','binned',this)"><span class="sp-cic">▤</span><span class="sp-clb">Binned</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Diverging</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographic</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivariate</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Dot density</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-en','daynight',this)"><span class="sp-cic">◑</span><span class="sp-clb">Day / Night</span></button>
+</div>
+<div class="sp-cls-body">
 
-### Unemployment rate choropleth
+<div class="sp-variant sp-von" id="choropleth-en-sequential">
 
+Continuous heat gradient from the lowest to the highest value in the visible set — the classic choropleth, one smooth color ramp.
 
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sequential"</code></span><span><strong>Aliases</strong> <code>"sequential"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"heat"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="choropleth">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('choropleth','choropleth-py',this)">Python</button><button class="sp-tb" onclick="spTab('choropleth','choropleth-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('choropleth','choropleth-ts',this)">TypeScript</button></div>
-<div id="choropleth-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.build_choropleth(
-    "Unemployment Rate by Country",
-    labels=["FRA", "DEU", "ESP", "ITA", "PRT"],
-    values=[7.1, 3.0, 11.8, 6.7, 6.2],
-)</code></pre></div>
-<div id="choropleth-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.build_choropleth("Unemployment Rate by Country",
-["FRA", "DEU", "ESP", "ITA", "PRT"],
-{
-    values: [7.1, 3.0, 11.8, 6.7, 6.2]
-})</code></pre></div>
-<div id="choropleth-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.build_choropleth("Unemployment Rate by Country",
-["FRA", "DEU", "ESP", "ITA", "PRT"],
-{
-    values: [7.1, 3.0, 11.8, 6.7, 6.2]
-})</code></pre></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-sequential.html"></iframe>
 </div>
 
+<div class="sp-variant" id="choropleth-en-binned">
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
+Splits the values into `bins` discrete quantile classes (equal counts per class, not equal-width) and paints each class its own step of a `viridis` scale — the standard cartographic technique for reading patterns at a glance instead of guessing shades on a gradient.
 
-<iframe src="../../previews/choropleth.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"binned"</code></span><span><strong>Aliases</strong> <code>"binned"</code> / <code>"quantile"</code> / <code>"classed"</code> / <code>"steps"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</details>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-binned.html"></iframe>
+</div>
 
----
+<div class="sp-variant" id="choropleth-en-diverging">
+
+Red–white–blue diverging scale centered on `diverging_midpoint` (default `0`) — built for signed data where the story is above/below a reference point: year-over-year change, deviation from a target, a delta rather than a magnitude.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>"diverging"</code> / <code>"delta"</code> / <code>"change"</code> / <code>"rdbu"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-diverging.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-orthographic">
+
+The globe, seen from space: every polygon vertex is converted from map pixels to real latitude/longitude and re-projected with actual orthographic sphere math, then clipped to the visible hemisphere. `center_lat` / `center_lon` aim the view (default `15, 10`). Only region sets that expose a coordinate inversion support this — today, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"orthographic"</code></span><span><strong>Aliases</strong> <code>"orthographic"</code> / <code>"globe"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-orthographic.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-polar">
+
+Azimuthal equidistant, centered on a pole by default (`center_lat=90, center_lon=0`) — the classic polar-projection read, where distance from the center is true distance from the chosen point.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar"</code></span><span><strong>Aliases</strong> <code>"polar"</code> / <code>"azimuthal"</code> / <code>"pole"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-bivariate">
+
+Two value series at once instead of one: `values` and `secondary_values` each split into three bins, looked up in a 3×3 color grid instead of a single ramp, so a single glance separates "high on both", "high on one, low on the other", and "low on both" — a technique real cartographers use and almost no charting library ships.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bivariate"</code></span><span><strong>Aliases</strong> <code>"bivariate"</code> / <code>"two_variable"</code> / <code>"cross"</code> / <code>"dual"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-bivariate.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-dot_density">
+
+One dot per fixed unit of value, scattered at random inside the real region outline (rejection-sampled against the actual polygon, not just its bounding box) instead of one flat fill color — texture and density carry the magnitude the way an old-school population map does.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dot_density"</code></span><span><strong>Aliases</strong> <code>"dot_density"</code> / <code>"dots"</code> / <code>"stipple"</code> / <code>"scatter_fill"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-en-daynight">
+
+Not data-driven at all — the real day/night terminator, solved from the spherical law of cosines for where the sun sits exactly on the horizon, not a cosmetic gradient band. `center_lat`/`center_lon` are read as the current subsolar point (the latitude tracks the season, the longitude the time of day); the correct pole is shaded by comparing which one the sun's declination actually leaves in darkness, and a sun glyph marks the subsolar point itself. `labels`/`values` are ignored entirely for this variant.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"daynight"</code></span><span><strong>Aliases</strong> <code>"daynight"</code> / <code>"day_night"</code> / <code>"terminator"</code> / <code>"solar"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-daynight.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>
 
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
-<h2>Signature</h2>
+## Signature
 
-```python
-sp.build_choropleth(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    iso_codes: list[str] | None = None,
-    color_low: int = 0,
-    color_high: int = 0,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    show_legend: bool = True,
-    null_color: int = 0xdddddd,
-) -> Chart
-```
+`sp.choropleth(title, labels=None, values=None, *, variant="sequential", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
-Aliases: `sp.choropleth`
+Alias : `sp.choropleth`, `sp.choropleths`, `sp.choropleth_map`, `sp.choropleth_chart`, `sp.geo_map`, `sp.build_choropleth`
 
----
+## Description
 
-<h2>Description</h2>
+`sp.choropleth()` remplit des polygones de pays ou de régions selon une valeur scalaire. `variant` sélectionne la stratégie de classification des couleurs ; `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble (un continent, une région de recensement...). Les trois sont lus en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
 
-Carte choro-plèthe — polygones de pays/régions colorés par une valeur scalaire. Les pays sans données reçoivent la `null_color`. Fournissez des `iso_codes` (ISO-3166 alpha-3) pour associer les pays automatiquement.
+## Variantes
+
+<div data-sp-registry-table="variants" data-family="choropleth"></div>
+
+## Ensembles de régions
+
+<div data-sp-registry-table="regions"></div>
+
+## Paramètres
+
+<div data-sp-registry-table="options" data-family="choropleth"></div>
 
 ---
 
-<h2>Paramètres</h2>
+## Retourne
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Pays |
-| `values` | `list[float]` | requis | Valeurs pour la colorisation |
-| `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 |
-| `color_low` | `int` | auto | Couleur pour les valeurs basses |
-| `color_high` | `int` | auto | Couleur pour les valeurs hautes |
-| `null_color` | `int` | `0xdddddd` | Couleur des pays sans données |
-| `width` | `int` | `1000` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `show_legend` | `bool` | `True` | Afficher l'échelle de couleur |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
 ---
 
-<h2>Retourne</h2>
+<div class="sp-cls sp-open" id="choropleth-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('choropleth-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('choropleth-fr','sequential',this)"><span class="sp-cic">▧</span><span class="sp-clb">Séquentiel</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','binned',this)"><span class="sp-cic">▤</span><span class="sp-clb">Par classes</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','diverging',this)"><span class="sp-cic">◐</span><span class="sp-clb">Divergent</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','orthographic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Orthographique</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','bivariate',this)"><span class="sp-cic">▦</span><span class="sp-clb">Bivarié</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','dot_density',this)"><span class="sp-cic">⁘</span><span class="sp-clb">Densité de points</span></button>
+<button class="sp-cls-tab" onclick="spCls('choropleth-fr','daynight',this)"><span class="sp-cic">◑</span><span class="sp-clb">Jour / Nuit</span></button>
+</div>
+<div class="sp-cls-body">
 
-`Chart`
+<div class="sp-variant sp-von" id="choropleth-fr-sequential">
 
----
+Dégradé continu de la valeur la plus basse à la plus haute dans l'ensemble visible — le choroplèthe classique, une seule rampe de couleur lisse.
 
-<h2>Exemples</h2>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sequential"</code></span><span><strong>Alias</strong> <code>"sequential"</code> / <code>"basic"</code> / <code>"default"</code> / <code>"heat"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
-```python
-import seraplot as sp
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-sequential.html"></iframe>
+</div>
 
-chart = sp.build_choropleth(
-    "Taux de chômage par pays",
-    labels=["FRA", "DEU", "ESP", "ITA", "PRT"],
-    values=[7.1, 3.0, 11.8, 6.7, 6.2],
-)
-```
+<div class="sp-variant" id="choropleth-fr-binned">
 
----
+Répartit les valeurs en `bins` classes de quantiles discrètes (effectifs égaux, pas des largeurs égales) et peint chaque classe avec son propre palier d'une échelle `viridis` — la technique cartographique standard pour lire les motifs d'un coup d'œil plutôt que deviner des nuances sur un dégradé.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"binned"</code></span><span><strong>Alias</strong> <code>"binned"</code> / <code>"quantile"</code> / <code>"classed"</code> / <code>"steps"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-binned.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-diverging">
+
+Échelle divergente rouge–blanc–bleu centrée sur `diverging_midpoint` (par défaut `0`) — conçue pour des données signées où l'histoire se joue au-dessus/en dessous d'un point de référence : évolution d'une année sur l'autre, écart à une cible, une différence plutôt qu'une magnitude.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"diverging"</code></span><span><strong>Alias</strong> <code>"diverging"</code> / <code>"delta"</code> / <code>"change"</code> / <code>"rdbu"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-diverging.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-orthographic">
+
+Le globe, vu depuis l'espace : chaque sommet de polygone est converti des pixels de la carte vers une vraie latitude/longitude puis reprojeté avec une véritable trigonométrie orthographique de sphère, puis découpé à l'hémisphère visible. `center_lat` / `center_lon` orientent la vue (par défaut `15, 10`). Seuls les ensembles de régions exposant une inversion de coordonnées supportent ceci — aujourd'hui, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"orthographic"</code></span><span><strong>Alias</strong> <code>"orthographic"</code> / <code>"globe"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-orthographic.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-polar">
+
+Azimutale équidistante, centrée par défaut sur un pôle (`center_lat=90, center_lon=0`) — la lecture classique en projection polaire, où la distance au centre est la vraie distance au point choisi.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code></span><span><strong>Alias</strong> <code>"polar"</code> / <code>"azimuthal"</code> / <code>"pole"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-polar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-bivariate">
+
+Deux séries de valeurs à la fois plutôt qu'une seule : `values` et `secondary_values`, chacune répartie en trois classes, recherchées dans une grille de couleurs 3×3 plutôt qu'une seule rampe — un coup d'œil suffit à distinguer "haut sur les deux", "haut sur l'une, bas sur l'autre" et "bas sur les deux", une technique que les vrais cartographes utilisent et que presque aucune librairie de graphiques ne propose.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bivariate"</code></span><span><strong>Alias</strong> <code>"bivariate"</code> / <code>"two_variable"</code> / <code>"cross"</code> / <code>"dual"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-bivariate.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-dot_density">
+
+Un point par unité fixe de valeur, dispersé aléatoirement à l'intérieur du vrai contour de la région (échantillonnage par rejet contre le polygone réel, pas juste sa boîte englobante) plutôt qu'une seule couleur de remplissage plate — la texture et la densité portent la magnitude, comme sur une vieille carte de population.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dot_density"</code></span><span><strong>Alias</strong> <code>"dot_density"</code> / <code>"dots"</code> / <code>"stipple"</code> / <code>"scatter_fill"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-dot_density.html"></iframe>
+</div>
+
+<div class="sp-variant" id="choropleth-fr-daynight">
+
+Pas du tout piloté par des données — le vrai terminateur jour/nuit, résolu depuis la loi des cosinus sphérique pour trouver où le soleil est exactement à l'horizon, pas une bande de dégradé cosmétique. `center_lat`/`center_lon` sont lus comme le point sub-solaire actuel (la latitude suit la saison, la longitude l'heure de la journée) ; le bon pôle est ombré en comparant lequel des deux la déclinaison solaire laisse réellement dans l'obscurité, et un symbole solaire marque le point sub-solaire lui-même. `labels`/`values` sont entièrement ignorés pour cette variante.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"daynight"</code></span><span><strong>Alias</strong> <code>"daynight"</code> / <code>"day_night"</code> / <code>"terminator"</code> / <code>"solar"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/choropleth-daynight.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>

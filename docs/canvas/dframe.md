@@ -17,79 +17,60 @@ by_region = df.groupby("region").agg({"cost": "sum", "latency_ms": "mean"})
 top5 = by_region.sort_values("cost", ascending=False).head(5)
 ```
 
-## Construction
+Every table below is generated at page load straight from the `#[sera_doc(...)]`
+attributes on each method in `v2/src/data/dframe/` — not hand-maintained, so
+it cannot drift from what is actually implemented. `SeraDFrame` methods do
+not currently carry aliases the way chart functions do — one canonical name
+per method, matching the underlying pandas-shaped surface directly.
 
-| Constructor | Effect |
-|---|---|
-| `sp.SeraDFrame({"col": [...], ...})` | From a `dict[str, list]`. |
-| `sp.SeraDFrame.from_csv(path)` | Reads a CSV; per-column type inference (numeric/bool/string) runs in parallel across columns via `rayon`. |
-| `sp.SeraDFrame.from_pandas(df)` | From an existing `pandas.DataFrame`. |
-| `sp.DFrameBuilder().column(name, values)....build()` | Incremental, chainable builder — add columns one at a time, `build()` when done. |
+## Construction & Interop
 
-## Reading
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="construct"></div>
 
-`shape`, `columns()`, `dtypes()`, `head(n)`, `tail(n)`, `len(df)`,
-`df["col"]` / `df[["a", "b"]]`, `column_f64`/`column_str`, `to_records()`.
+## Reading & Attributes
 
-## Shaping
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="attrs"></div>
 
-`filter_eq/gt/lt/ge/le/in`, `sort_values(col, ascending=True)`,
-`drop_duplicates(subset=None)`, `dropna(subset=None)`, `fillna(value)`,
-`select(names)`, `rename(mapping)`, `assign(name, values)`,
-`apply(col, python_callable)` — calls back into Python per value, so it
-accepts **any** function, not just the built-in numeric ops.
+## Filtering & Masking
 
-## Relational & aggregate
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="filter,mask,query"></div>
 
-`merge(other, on, how="inner"|"left")`, `concat(other)`,
-`groupby(col)` returns a `SeraDFrameGroupBy` with `.agg({"col": "sum"|...})`,
-`.mean()`/`.sum()`/`.min()`/`.max()`/`.count()`/`.size()` (auto-selecting
-every numeric column, mirroring `pandas`' `groupby(col).mean()`).
+## Shaping & Transform
 
-## Stats
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="derive,elementwise,reshape,tools"></div>
 
-`describe()`, `corr(a, b)`, `value_counts(col)`, `unique(col)`,
-`nunique(col)`.
+## Relational & Combine
 
-## Interop
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="relational,combine"></div>
 
-`to_pandas() -> pandas.DataFrame`, `to_csv(path)`, `to_table() -> Table` —
-bridges into SeraPlot's `Table` so its chart-export helpers
-(`to_grouped_bar`, `pivot`, ...) are one call away.
+## GroupBy
 
-## Honest performance notes
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="groupby"></div>
 
-Benchmarked against pandas 2.x, both on a 250k-row sample and on the same
-data replicated to **3,000,000 rows × 34 columns**
-(`v2/examples/GptDoc/seradframe_vs_pandas.ipynb`). Three deliberate design
-choices behind the numbers:
+## Rolling & Expanding
 
-- String columns are `Vec<Arc<str>>`, not `Vec<String>` — row/group
-  operations clone a refcount bump instead of a heap-allocated string copy.
-- `groupby().agg()` never gathers rows into per-group `Vec<f64>` buffers (a
-  cache-hostile random-access pattern). It precomputes one `group_id: Vec<u32>`
-  and does a single cache-friendly linear scan per column, accumulating
-  sum/min/max/count directly — the same data-oriented technique as a
-  histogram pass, not a sort-then-segment.
-- The **global allocator is `mimalloc`**, not the system default. Profiling
-  showed the real bottleneck at multi-million-row scale wasn't the parsing
-  or aggregation logic — it was lock contention in the default allocator
-  under many concurrent small allocations from rayon threads. Swapping the
-  allocator turned `from_csv` from a *regression* (0.4× pandas) into a
-  **1.1–1.8× win**, and pushed `describe()` past 16×, without touching a
-  single line of parsing or aggregation code.
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="rolling"></div>
 
-At 3,000,000 rows, SeraDFrame beats pandas on every benchmarked operation:
-`describe()` **~16×**, `corr()` **~6–7×**, `sort_values` **~1.4×**,
-`value_counts` **~1.1–2.4×**, `read_csv` **~1.1–1.8×**, `filter_gt` and
-`groupby().mean()` **on par, sometimes ahead** (0.8–1.4× depending on machine
-load — the one place still close enough to call a tie rather than a win).
+## Datetime
 
-An earlier attempt at partitioning `groupby`'s row-bucketing step across
-threads was tested at this same 3M-row scale and made things **14× slower**
-(0.07×) instead of faster — it was reverted rather than kept on the theory
-that it "should" help. Every number above is the result of measuring, not
-predicting.
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="datetime"></div>
+
+## Stats & Reductions
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="stats,reduce"></div>
+
+## String Methods
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
+
+## Sera Secure — encrypted DataFrames (commercial)
+
+`SecureDFrame` is an AES-256-GCM encrypted counterpart to `SeraDFrame` —
+columns stay ciphertext at rest, decrypted only transiently for a single
+read or chart render. It's a **paid add-on**, not part of the free/open-source
+surface documented above: full description and method reference are on the
+[Sera Pulse pricing page](../seraplot/pulse-pricing.md), alongside the rest
+of SeraPlot's paid catalog.
 
 </div>
 
@@ -111,83 +92,61 @@ by_region = df.groupby("region").agg({"cost": "sum", "latency_ms": "mean"})
 top5 = by_region.sort_values("cost", ascending=False).head(5)
 ```
 
-## Construction
+Chaque tableau ci-dessous est généré au chargement de la page directement
+depuis les attributs `#[sera_doc(...)]` de chaque méthode dans
+`v2/src/data/dframe/` — pas maintenu à la main, donc impossible de dériver
+de ce qui est réellement implémenté. Les méthodes `SeraDFrame` n'ont
+actuellement pas d'alias comme les fonctions de graphique — un seul nom
+canonique par méthode, reflétant directement la surface pandas sous-jacente.
 
-| Constructeur | Effet |
-|---|---|
-| `sp.SeraDFrame({"col": [...], ...})` | Depuis un `dict[str, list]`. |
-| `sp.SeraDFrame.from_csv(path)` | Lit un CSV ; l'inférence de type par colonne (numérique/booléen/chaîne) tourne en parallèle sur les colonnes via `rayon`. |
-| `sp.SeraDFrame.from_pandas(df)` | Depuis un `pandas.DataFrame` existant. |
-| `sp.DFrameBuilder().column(nom, valeurs)....build()` | Builder incrémental et chaînable — ajoutez les colonnes une à une, `build()` à la fin. |
+<h2>Construction & Interopérabilité</h2>
 
-## Lecture
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="construct"></div>
 
-`shape`, `columns()`, `dtypes()`, `head(n)`, `tail(n)`, `len(df)`,
-`df["col"]` / `df[["a", "b"]]`, `column_f64`/`column_str`, `to_records()`.
+<h2>Lecture & attributs</h2>
 
-## Mise en forme
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="attrs"></div>
 
-`filter_eq/gt/lt/ge/le/in`, `sort_values(col, ascending=True)`,
-`drop_duplicates(subset=None)`, `dropna(subset=None)`, `fillna(value)`,
-`select(names)`, `rename(mapping)`, `assign(name, values)`,
-`apply(col, fonction_python)` — rappelle Python pour chaque valeur, accepte
-donc **n'importe quelle** fonction, pas seulement les opérations numériques
-intégrées.
+<h2>Filtrage & masques</h2>
 
-## Relationnel & agrégation
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="filter,mask,query"></div>
 
-`merge(other, on, how="inner"|"left")`, `concat(other)`,
-`groupby(col)` renvoie un `SeraDFrameGroupBy` avec `.agg({"col": "sum"|...})`,
-`.mean()`/`.sum()`/`.min()`/`.max()`/`.count()`/`.size()` (sélectionne
-automatiquement toutes les colonnes numériques, comme `groupby(col).mean()`
-sous `pandas`).
+<h2>Mise en forme & transformation</h2>
 
-## Stats
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="derive,elementwise,reshape,tools"></div>
 
-`describe()`, `corr(a, b)`, `value_counts(col)`, `unique(col)`,
-`nunique(col)`.
+<h2>Relationnel & combinaison</h2>
 
-## Interopérabilité
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="relational,combine"></div>
 
-`to_pandas() -> pandas.DataFrame`, `to_csv(path)`, `to_table() -> Table` —
-passerelle vers le `Table` de SeraPlot pour profiter de ses aides
-d'export vers les charts (`to_grouped_bar`, `pivot`, ...) en un appel.
+<h2>GroupBy</h2>
 
-## Notes de performance honnêtes
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="groupby"></div>
 
-Benchmarké contre pandas 2.x, sur un échantillon de 250k lignes et sur les
-mêmes données répliquées à **3 000 000 lignes × 34 colonnes**
-(`v2/examples/GptDoc/seradframe_vs_pandas.ipynb`). Trois choix de
-conception délibérés derrière ces chiffres :
+<h2>Fenêtres glissantes</h2>
 
-- Les colonnes de chaînes sont des `Vec<Arc<str>>`, pas des `Vec<String>` —
-  les opérations de ligne/groupe clonent un compteur de références, pas une
-  copie de chaîne sur le tas.
-- `groupby().agg()` ne rassemble jamais les lignes dans des buffers
-  `Vec<f64>` par groupe (un accès mémoire aléatoire hostile au cache). Un
-  `group_id: Vec<u32>` est précalculé une fois, puis un seul passage linéaire
-  par colonne accumule somme/min/max/count directement — la même technique
-  data-oriented qu'un histogramme, pas un tri-puis-segmentation.
-- **L'allocateur global est `mimalloc`**, pas celui du système. Le
-  profilage a montré que le vrai goulot d'étranglement à l'échelle du
-  million de lignes n'était ni le parsing ni l'agrégation — c'était la
-  contention de verrou dans l'allocateur par défaut sous de nombreuses
-  petites allocations concurrentes venant des threads rayon. Changer
-  l'allocateur a fait passer `from_csv` d'une *régression* (0.4× pandas) à
-  un **gain de 1.1 à 1.8×**, et a poussé `describe()` au-delà de 16×, sans
-  toucher une seule ligne de code de parsing ou d'agrégation.
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="rolling"></div>
 
-À 3 000 000 lignes, SeraDFrame bat pandas sur chaque opération benchmarkée :
-`describe()` **~16×**, `corr()` **~6-7×**, `sort_values` **~1.4×**,
-`value_counts` **~1.1 à 2.4×**, `read_csv` **~1.1 à 1.8×**, `filter_gt` et
-`groupby().mean()` **à égalité, parfois devant** (0.8 à 1.4× selon la
-charge machine — le seul cas encore assez proche pour parler d'égalité
-plutôt que de victoire).
+<h2>Dates & heures</h2>
 
-Une tentative antérieure de paralléliser le regroupement en buckets du
-`groupby` par partition a été testée à cette même échelle de 3M lignes et a
-rendu les choses **14× plus lentes** (0.07×) au lieu de mieux — elle a été
-annulée plutôt que gardée sur la théorie qu'elle "devrait" aider. Chaque
-chiffre ci-dessus est le résultat d'une mesure, pas d'une prédiction.
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="datetime"></div>
+
+<h2>Stats & réductions</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="stats,reduce"></div>
+
+<h2>Méthodes de chaînes</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
+
+<h2>Sera Secure — DataFrames chiffrés (commercial)</h2>
+
+`SecureDFrame` est un équivalent chiffré en AES-256-GCM de `SeraDFrame` — les
+colonnes restent en texte chiffré au repos, déchiffrées seulement de façon
+transitoire pour une lecture ou un rendu de chart ponctuel. C'est un
+**module payant**, distinct de la surface gratuite/open-source documentée
+ci-dessus : description complète et référence des méthodes sur la
+[page de tarification Sera Pulse](../seraplot/pulse-pricing.md), avec le
+reste du catalogue payant de SeraPlot.
 
 </div>

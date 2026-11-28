@@ -10,7 +10,7 @@
 import seraplot as sp
 import pickle
 
-chart = sp.bar("", labels=["a","b","c"], values=[1,2,3])
+chart = sp.bar("Revenue", labels=["a", "b", "c"], values=[1, 2, 3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
@@ -21,16 +21,7 @@ Internally, only the HTML string is serialized — minimal payload, no transient
 
 ## ML models
 
-Native `ml_save_model` / `ml_load_model` are registered in the Rust core but **not yet exposed as Python attributes** in 2.3.89. For now use stdlib `pickle` directly on fitted estimators:
-
-```python
-import pickle
-from seraplot import KNeighborsClassifier
-
-clf = KNeighborsClassifier(k=5).fit(X, y)
-blob = pickle.dumps(clf)
-restored = pickle.loads(blob)
-```
+Trained models are a separate concern from `Chart` pickling — see [ML Model Persistence](ml-persistence.md) for `sp.ml_save_model()` / `sp.ml_load_model()`.
 
 </div>
 
@@ -44,7 +35,7 @@ Les objets `Chart` sont sérialisables via `__getstate__` / `__setstate__` — c
 import seraplot as sp
 import pickle
 
-chart = sp.bar("", labels=["a","b","c"], values=[1,2,3])
+chart = sp.bar("Revenu", labels=["a", "b", "c"], values=[1, 2, 3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
@@ -55,15 +46,6 @@ En interne, seule la chaîne HTML est sérialisée — payload minimal, aucun é
 
 ## Modèles ML
 
-Les fonctions natives `ml_save_model` / `ml_load_model` sont enregistrées dans le cœur Rust mais **pas encore exposées comme attributs Python** en 2.3.89. Utilisez `pickle` standard sur les estimateurs entraînés :
-
-```python
-import pickle
-from seraplot import KNeighborsClassifier
-
-clf = KNeighborsClassifier(k=5).fit(X, y)
-blob = pickle.dumps(clf)
-restored = pickle.loads(blob)
-```
+Les modèles entraînés sont une préoccupation distincte du pickling de `Chart` — voir [ML Model Persistence](ml-persistence.md) pour `sp.ml_save_model()` / `sp.ml_load_model()`.
 
 </div>

@@ -1,0 +1,575 @@
+use std::collections::HashSet;
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use crate::build_common::{snake_to_camel, walk};
+
+#[derive(Default)]
+struct RegisteredFns {
+    exported: HashSet<String>,
+    custom_wrapped: HashSet<String>,
+    html_wrapped: HashSet<String>,
+}
+
+fn attr_block_before(src: &str, pos: usize) -> &str {
+    let prefix = &src[..pos];
+    let start = prefix.rfind("\n\n").map(|i| i + 2).unwrap_or(0);
+    &prefix[start..]
+}
+
+fn split_top_level_csv(input: &str) -> Vec<&str> {
+    let mut out = Vec::new();
+    let mut start = 0usize;
+    let mut depth = 0i32;
+    for (idx, ch) in input.char_indices() {
+        match ch {
+            '{' => depth += 1,
+            '}' => depth -= 1,
+            ',' if depth == 0 => {
+                out.push(input[start..idx].trim());
+                start = idx + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    out.push(input[start..].trim());
+    out.into_iter().filter(|part| !part.is_empty()).collect()
+}
+
+fn collect_pub_use_names(stmt: &str, out: &mut Vec<String>, registered: &HashSet<String>) {
+    let stmt = stmt.trim();
+    if stmt.is_empty() {
+        return;
+    }
+    if let (Some(lb), Some(rb)) = (stmt.find('{'), stmt.rfind('}')) {
+        let inner = &stmt[lb + 1..rb];
+        for part in split_top_level_csv(inner) {
+            collect_pub_use_names(part, out, registered);
+        }
+        return;
+    }
+    let name = if let Some(pos) = stmt.rfind(" as ") {
+        stmt[pos + 4..].trim()
+    } else {
+        stmt.rsplit("::").next().unwrap_or_default().trim()
+    };
+    if !name.is_empty()
+        && registered.contains(name)
+        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+    {
+        out.push(name.to_string());
+    }
+}
+
+fn push_input_str_fn(src: &str, pos: usize, out: &mut Vec<String>) -> Option<String> {
+    let after = &src[pos + "pub fn ".len()..];
+    let paren = after.find('(')?;
+    let name = &after[..paren];
+    if name.is_empty() {
+        return None;
+    }
+    if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+        return None;
+    }
+    let sig_end = after.find('{').unwrap_or(after.len());
+    let rest = &after[paren..sig_end];
+    let has_str_input = rest.contains(": &str)")
+        || rest.contains(": &str,")
+        || rest.contains("_: &str)")
+        || rest.contains("_: &str,");
+    if !has_str_input || !rest.contains("-> String") {
+        return None;
+    }
+    out.push(name.to_string());
+    Some(name.to_string())
+}
+
+fn extract_input_str_fns(src: &str, registered: &HashSet<String>) -> Vec<String> {
+    let mut out = Vec::new();
+    for line in src.lines() {
+        let t = line.trim_start();
+        if t.starts_with("pub use ") {
+            let stmt = t[8..].trim();
+            let stmt = stmt.split(';').next().unwrap_or_default().trim();
+            collect_pub_use_names(stmt, &mut out, registered);
+            continue;
+        }
+    }
+    let mut cur = 0;
+    while let Some(rel) = src[cur..].find("pub fn ") {
+        let pos = cur + rel;
+        push_input_str_fn(src, pos, &mut out);
+        cur = pos + "pub fn ".len();
+    }
+    out.sort();
+    out.dedup();
+    out
+}
+
+fn collect_registered_fns(root: &Path) -> RegisteredFns {
+    let mut files = Vec::new();
+    walk(root, &mut files);
+    files.sort();
+    let mut out = RegisteredFns::default();
+    for file in files {
+        let is_gen_dir = file.components().any(|c| c.as_os_str() == "gen")
+            && file.to_string_lossy().contains("docs");
+        let is_book_output = file.components().any(|c| c.as_os_str() == "book");
+        let is_codegen_dir = file.components().any(|c| c.as_os_str() == "codegen");
+        if is_gen_dir || is_book_output || is_codegen_dir {
+            continue;
+        }
+        let Ok(src) = fs::read_to_string(&file) else {
+            continue;
+        };
+        let mut cur = 0;
+        while let Some(rel) = src[cur..].find("pub fn ") {
+            let pos = cur + rel;
+            let attr_src = attr_block_before(&src, pos);
+            let mut names = Vec::new();
+            if attr_src.contains("sera_register") {
+                if let Some(name) = push_input_str_fn(&src, pos, &mut names) {
+                    out.exported.insert(name.clone());
+                    if attr_src.contains("sera_register(custom") {
+                        out.custom_wrapped.insert(name);
+                    } else if attr_src.contains("chart") {
+                        out.html_wrapped.insert(name);
+                    }
+                    if attr_src.contains("chart") {
+                        if let Some(name) = names.last() {
+                            out.html_wrapped.insert(name.clone());
+                        }
+                    }
+                }
+            }
+            cur = pos + "pub fn ".len();
+        }
+    }
+    out
+}
+
+mod csharp;
+mod cpp;
+use csharp::gen_csharp;
+use cpp::gen_cpp_header;
+
+fn gen_wasm(f: &str, js: &str, module: &str) -> String {
+    let mut s = String::new();
+    s.push_str("#[cfg(all(feature = \"js\", target_arch = \"wasm32\"))]\n");
+    s.push_str(&format!(
+        "#[wasm_bindgen::prelude::wasm_bindgen(js_name = \"{}\")]\n",
+        js
+    ));
+    s.push_str(&format!(
+        "pub fn __wasm_{}(input: String) -> String {{ crate::{}::{}(&input) }}\n\n",
+        f, module, f
+    ));
+    s
+}
+
+fn gen_ffi(f: &str, module: &str) -> String {
+    let mut s = String::new();
+    s.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\n");
+    s.push_str(&format!("pub unsafe extern \"C\" fn sera_{}(input: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {{\n", f));
+    s.push_str(
+        "    let s = unsafe { std::ffi::CStr::from_ptr(input).to_str().unwrap_or(\"\") };\n",
+    );
+    s.push_str(&format!(
+        "    std::ffi::CString::new(crate::{}::{}(s)).unwrap_or_default().into_raw()\n}}\n\n",
+        module, f
+    ));
+    s
+}
+
+fn should_emit_ffi(name: &str) -> bool {
+    !matches!(
+        name,
+        "reset_global_background"
+            | "set_global_background"
+            | "reset_theme"
+            | "set_theme"
+            | "themes"
+    )
+}
+
+
+fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String]) -> String {
+    let charts = "bindings::commands::charts";
+    let ml = "bindings::commands::ml";
+
+    let mut wasm_body = String::new();
+    wasm_body.push_str("use wasm_bindgen::prelude::*;\n");
+    for n in chart_fns {
+        wasm_body.push_str(&gen_wasm(n, &snake_to_camel(n), charts));
+    }
+    for n in util_fns {
+        wasm_body.push_str(&gen_wasm(n, &snake_to_camel(n), charts));
+    }
+    for n in ml_fns {
+        wasm_body.push_str(&gen_wasm(n, &snake_to_camel(n), ml));
+    }
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"demo\")]\n");
+    wasm_body.push_str("pub fn wasm_demo(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { family: Option<String>, variant: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    crate::demo_snippet(&i.family.unwrap_or_default(), &i.variant.unwrap_or_else(|| \"basic\".to_string())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"chartVariants\")]\n");
+    wasm_body.push_str("pub fn wasm_chart_variants_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::chart_variants()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"chartAliases\")]\n");
+    wasm_body.push_str("pub fn wasm_chart_aliases_json() -> String {\n");
+    wasm_body
+        .push_str("    serde_json::to_string(&crate::CHART_ALIAS_REGISTRY).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"applyChartMethod\")]\n");
+    wasm_body.push_str(
+        "pub fn wasm_apply_chart_method(html: &str, name: &str, args_json: &str) -> String {\n",
+    );
+    wasm_body.push_str("    crate::bindings::method_registry::apply_by_name(html, name, args_json).unwrap_or_else(|| html.to_string())\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"chartMethods\")]\n");
+    wasm_body.push_str("pub fn wasm_chart_methods_json() -> String {\n");
+    wasm_body.push_str("    let names: Vec<&str> = crate::bindings::method_registry::iter_entries().map(|e| e.name).collect();\n");
+    wasm_body.push_str("    serde_json::to_string(&names).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"list\")]\n");
+    wasm_body.push_str("pub fn wasm_list() -> String {\n");
+    wasm_body.push_str("    let names: Vec<&str> = crate::bindings::fn_registry::iter_entries().map(|e| e.name).collect();\n");
+    wasm_body.push_str("    serde_json::to_string(&names).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"call\")]\n");
+    wasm_body.push_str("pub fn wasm_call(name: &str, json: &str) -> String {\n");
+    wasm_body.push_str("    let target = crate::bindings::alias_registry::resolve_call_target(name);\n");
+    wasm_body.push_str("    match crate::bindings::fn_registry::find(&target) {\n");
+    wasm_body.push_str("        Some(entry) => crate::bindings::fn_registry::invoke(entry, json),\n");
+    wasm_body.push_str("        None => String::new(),\n");
+    wasm_body.push_str("    }\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"version\")]\n");
+    wasm_body.push_str("pub fn wasm_version() -> String {\n");
+    wasm_body.push_str("    env!(\"CARGO_PKG_VERSION\").to_string()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"params\")]\n");
+    wasm_body.push_str("pub fn wasm_params_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { chart: Option<String>, family: Option<String>, variant: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    let chart = i.chart.or(i.family);\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::params(chart.as_deref(), i.variant.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"requiredParams\")]\n");
+    wasm_body.push_str("pub fn wasm_required_params_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { chart: Option<String>, family: Option<String>, variant: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    let chart = i.chart.or(i.family);\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::required_params(chart.as_deref(), i.variant.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"trueRequiredParams\")]\n");
+    wasm_body.push_str("pub fn wasm_true_required_params_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { chart: Option<String>, family: Option<String>, variant: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    let chart = i.chart.or(i.family);\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::true_required_params(chart.as_deref(), i.variant.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"chartThemes\")]\n");
+    wasm_body.push_str("pub fn wasm_chart_themes_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::chart_themes()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"mapRegions\")]\n");
+    wasm_body.push_str("pub fn wasm_map_regions_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::map_regions()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"regionLabels\")]\n");
+    wasm_body.push_str("pub fn wasm_region_labels_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { map: Option<String>, group: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::region_labels(i.map.as_deref(), i.group.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"scenes3d\")]\n");
+    wasm_body.push_str("pub fn wasm_scenes3d_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::scenes3d()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"docs\")]\n");
+    wasm_body.push_str("pub fn wasm_docs_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::docs()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasAdd\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_add(method: &str, alias: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::add_alias(method, alias)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasRemove\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_remove(method: &str, alias: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::remove_alias(method, alias)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasReset\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_reset() {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::reset();\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasList\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_list() -> String {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::aliases_json()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasResolve\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_resolve(name: &str) -> Option<String> {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::resolve(name)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasLoadJson\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_load_json(json: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::add_aliases_from_json(json)\n");
+    wasm_body.push_str("}\n");
+
+    let mut ffi_body = String::new();
+    for n in chart_fns {
+        if should_emit_ffi(n) {
+            ffi_body.push_str(&gen_ffi(n, charts));
+        }
+    }
+    for n in util_fns {
+        if should_emit_ffi(n) {
+            ffi_body.push_str(&gen_ffi(n, charts));
+        }
+    }
+    for n in ml_fns {
+        if should_emit_ffi(n) {
+            ffi_body.push_str(&gen_ffi(n, ml));
+        }
+    }
+    ffi_body.push_str("#[no_mangle]\npub unsafe extern \"C\" fn seraplot_free(ptr: *mut std::os::raw::c_char) {\n");
+    ffi_body.push_str("    if !ptr.is_null() { drop(std::ffi::CString::from_raw(ptr)); }\n}\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_add(method: *const std::os::raw::c_char, alias: *const std::os::raw::c_char) -> bool {\n    let method = unsafe { std::ffi::CStr::from_ptr(method).to_str().unwrap_or(\"\") };\n    let alias = unsafe { std::ffi::CStr::from_ptr(alias).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::add_alias(method, alias)\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_remove(method: *const std::os::raw::c_char, alias: *const std::os::raw::c_char) -> bool {\n    let method = unsafe { std::ffi::CStr::from_ptr(method).to_str().unwrap_or(\"\") };\n    let alias = unsafe { std::ffi::CStr::from_ptr(alias).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::remove_alias(method, alias)\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub extern \"C\" fn sera_alias_reset() {\n    crate::bindings::alias_registry::reset();\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub extern \"C\" fn sera_alias_list() -> *mut std::os::raw::c_char {\n    std::ffi::CString::new(crate::bindings::alias_registry::aliases_json()).unwrap_or_default().into_raw()\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_resolve(name: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {\n    let name = unsafe { std::ffi::CStr::from_ptr(name).to_str().unwrap_or(\"\") };\n    let resolved = crate::bindings::alias_registry::resolve(name).unwrap_or_default();\n    std::ffi::CString::new(resolved).unwrap_or_default().into_raw()\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_load_json(json: *const std::os::raw::c_char) -> bool {\n    let json = unsafe { std::ffi::CStr::from_ptr(json).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::add_aliases_from_json(json)\n}\n\n");
+
+    let mut out = String::new();
+    out.push_str("#[cfg(all(feature = \"js\", target_arch = \"wasm32\"))]\npub mod _wasm {\n");
+    for line in wasm_body.lines() {
+        out.push_str("    ");
+        out.push_str(line);
+        out.push('\n');
+    }
+    out.push_str("}\n\n");
+
+    out.push_str("#[cfg(feature = \"ffi\")]\npub mod _ffi {\n");
+    for line in ffi_body.lines() {
+        out.push_str("    ");
+        out.push_str(line);
+        out.push('\n');
+    }
+    out.push_str("}\n");
+
+    out
+}
+
+fn emit_macro(name: &str, fns: &[String]) -> String {
+    let mut s = format!(
+        "#[allow(unused_macros)]\nmacro_rules! {} {{\n    ($mac:ident) => {{\n",
+        name
+    );
+    for n in fns {
+        s.push_str(&format!(
+            "        $mac!({}, \"{}\");\n",
+            n,
+            snake_to_camel(n)
+        ));
+    }
+    s.push_str("    };\n}\n#[allow(unused_imports)]\npub(crate) use ");
+    s.push_str(name);
+    s.push_str(";\n");
+    s
+}
+
+fn emit_class_macro(name: &str, classes: &[String]) -> String {
+    let mut s = format!(
+        "#[allow(unused_macros)]\nmacro_rules! {} {{\n    ($mac:ident) => {{\n",
+        name
+    );
+    for n in classes {
+        s.push_str(&format!("        $mac!({});\n", n));
+    }
+    s.push_str("    };\n}\n#[allow(unused_imports)]\npub(crate) use ");
+    s.push_str(name);
+    s.push_str(";\n");
+    s
+}
+
+pub(crate) fn write_all(
+    manifest: &Path,
+    bindings_root: &Path,
+    out_dir: &Path,
+    builder_fns: &[String],
+    ml_builder_fns: &[String],
+) {
+    let ml_pyclasses: Vec<String> = Vec::new();
+    let ml_pyfunctions: Vec<String> = Vec::new();
+    let src_root = bindings_root.parent().unwrap_or(manifest).to_path_buf();
+    let registered = collect_registered_fns(&src_root);
+
+    let charts_path = bindings_root.join("commands").join("charts.rs");
+    let charts_src = if charts_path.exists() {
+        fs::read_to_string(&charts_path).unwrap_or_default()
+    } else {
+        let charts_dir = bindings_root.join("commands").join("charts");
+        if charts_dir.is_dir() {
+            println!("cargo:rerun-if-changed={}", charts_dir.display());
+            let mut src = String::new();
+            let mut chart_files: Vec<PathBuf> = Vec::new();
+            walk(&charts_dir, &mut chart_files);
+            chart_files.sort();
+            for f in &chart_files {
+                if let Ok(s) = fs::read_to_string(f) {
+                    src.push_str(&s);
+                    src.push('\n');
+                }
+            }
+            src
+        } else {
+            String::new()
+        }
+    };
+    let ml_dir = bindings_root.join("commands").join("ml");
+    let ml_src = if ml_dir.is_dir() {
+        let mut src = String::new();
+        let mut ml_files: Vec<PathBuf> = Vec::new();
+        walk(&ml_dir, &mut ml_files);
+        ml_files.sort();
+        for f in &ml_files {
+            if let Ok(s) = fs::read_to_string(f) {
+                src.push_str(&s);
+                src.push('\n');
+            }
+        }
+        src
+    } else {
+        let ml_path = bindings_root.join("commands").join("ml.rs");
+        fs::read_to_string(&ml_path).unwrap_or_default()
+    };
+    let mut all_fns = extract_input_str_fns(&charts_src, &registered.exported);
+    for name in &registered.exported {
+        if !all_fns.contains(name) {
+            all_fns.push(name.clone());
+        }
+    }
+    all_fns.sort();
+    all_fns.dedup();
+    let plot_utils_path = src_root.join("plot").join("utils.rs");
+    let plot_utils_src = fs::read_to_string(&plot_utils_path).unwrap_or_default();
+    println!("cargo:rerun-if-changed={}", plot_utils_path.display());
+    let plot_util_fns = extract_input_str_fns(&plot_utils_src, &registered.exported);
+    let ml_fns_vec = extract_input_str_fns(&ml_src, &HashSet::new());
+    let mut chart_fns: Vec<String> = Vec::new();
+    let mut ml_fns: Vec<String> = ml_fns_vec;
+    for n in ml_builder_fns {
+        if !ml_fns.contains(n) {
+            ml_fns.push(n.clone());
+        }
+    }
+    ml_fns.sort();
+    ml_fns.dedup();
+    let mut util_fns: Vec<String> = Vec::new();
+    let mut auto_util_fns: Vec<String> = Vec::new();
+    let mut html_util_fns: Vec<String> = Vec::new();
+    for n in builder_fns {
+        if registered.custom_wrapped.contains(n) {
+            util_fns.push(n.clone());
+            if registered.html_wrapped.contains(n) {
+                html_util_fns.push(n.clone());
+            }
+        } else {
+            chart_fns.push(n.clone());
+        }
+    }
+    for n in &all_fns {
+        if registered.custom_wrapped.contains(n) {
+            if !util_fns.contains(n) {
+                util_fns.push(n.clone());
+            }
+            if registered.html_wrapped.contains(n) && !html_util_fns.contains(n) {
+                html_util_fns.push(n.clone());
+            }
+        } else {
+            if !util_fns.contains(n) {
+                util_fns.push(n.clone());
+            }
+            if !auto_util_fns.contains(n) {
+                auto_util_fns.push(n.clone());
+            }
+        }
+    }
+    for n in &plot_util_fns {
+        if !util_fns.contains(n) {
+            if registered.custom_wrapped.contains(n) {
+                util_fns.push(n.clone());
+                if registered.html_wrapped.contains(n) && !html_util_fns.contains(n) {
+                    html_util_fns.push(n.clone());
+                }
+            } else {
+                util_fns.push(n.clone());
+                auto_util_fns.push(n.clone());
+            }
+        }
+    }
+
+    let adapters = generate_adapters(&chart_fns, &ml_fns, &auto_util_fns);
+    fs::write(out_dir.join("adapters.rs"), adapters).expect("write adapters.rs");
+
+    if let Some(v2_root) = manifest.parent() {
+        let csharp_dir = v2_root.join("csharp").join("SeraPlot");
+        let _ = fs::create_dir_all(&csharp_dir);
+        fs::write(csharp_dir.join("SeraPlot.g.cs"), gen_csharp()).expect("write SeraPlot.g.cs");
+
+        let cpp_dir = v2_root.join("cpp").join("include");
+        let _ = fs::create_dir_all(&cpp_dir);
+        fs::write(cpp_dir.join("seraplot.g.h"), gen_cpp_header())
+            .expect("write seraplot.g.h");
+    }
+
+    let chart_py_wrappers: Vec<String> = chart_fns
+        .iter()
+        .map(|n| format!("__sera_py_{}", n))
+        .collect();
+
+    fs::write(
+        out_dir.join("chart_fn_macro.rs"),
+        emit_macro("for_each_json_chart_fn", &chart_fns),
+    )
+    .expect("write chart_fn_macro.rs");
+    fs::write(
+        out_dir.join("chart_py_wrapper_macro.rs"),
+        emit_class_macro("for_each_json_chart_py_wrapper_fn", &chart_py_wrappers),
+    )
+    .expect("write chart_py_wrapper_macro.rs");
+    fs::write(
+        out_dir.join("ml_fn_macro.rs"),
+        emit_macro("for_each_ml_oneshot_fn", &ml_fns),
+    )
+    .expect("write ml_fn_macro.rs");
+    fs::write(
+        out_dir.join("ml_pyclass_macro.rs"),
+        emit_class_macro("for_each_ml_pyclass", &ml_pyclasses),
+    )
+    .expect("write ml_pyclass_macro.rs");
+    fs::write(
+        out_dir.join("ml_pyfn_macro.rs"),
+        emit_macro("for_each_ml_python_fn", &ml_pyfunctions),
+    )
+    .expect("write ml_pyfn_macro.rs");
+    fs::write(
+        out_dir.join("util_fn_macro.rs"),
+        emit_macro("for_each_util_fn", &util_fns),
+    )
+    .expect("write util_fn_macro.rs");
+    fs::write(
+        out_dir.join("auto_util_fn_macro.rs"),
+        emit_macro("for_each_auto_util_fn", &auto_util_fns),
+    )
+    .expect("write auto_util_fn_macro.rs");
+    fs::write(
+        out_dir.join("html_util_fn_macro.rs"),
+        emit_macro("for_each_html_util_fn", &html_util_fns),
+    )
+    .expect("write html_util_fn_macro.rs");
+}

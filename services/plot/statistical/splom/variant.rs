@@ -1,0 +1,8 @@
+crate::plot_family! {
+    pub enum SplomVariant default Basic family "splom" {
+        Basic       => "basic" | "default" | "classic" | "dots",
+        Correlation => "correlation" | "corr" | "heat" | "shaded",
+        Density     => "density" | "alpha" | "overplot" | "cloud",
+        Regression  => "regression" | "trend" | "fit" | "lm",
+    }
+}

@@ -17,13 +17,7 @@ impl BatchRenderer {
         self.circles.push((pos, radius, color));
     }
 
-    pub fn add_line(
-        &mut self,
-        from: egui::Pos2,
-        to: egui::Pos2,
-        color: egui::Color32,
-        width: f32,
-    ) {
+    pub fn add_line(&mut self, from: egui::Pos2, to: egui::Pos2, color: egui::Color32, width: f32) {
         self.lines.push((from, to, color, width));
     }
 
@@ -57,5 +51,3 @@ impl BatchRenderer {
         self.text_items.clear();
     }
 }
-
-

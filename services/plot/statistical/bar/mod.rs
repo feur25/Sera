@@ -1,0 +1,252 @@
+use crate::plot::statistical::_3d::budget::Budget;
+use crate::plot::{apply, apply_h, parse_all};
+pub mod basic;
+pub mod block3d;
+pub mod circular;
+pub mod circular_common;
+pub mod circular_grouped;
+pub mod config;
+pub mod deluxe;
+pub mod distribution;
+pub mod diverging;
+pub mod grouped;
+pub mod grouped_stacked;
+pub mod hedgehog;
+pub mod marimekko;
+pub mod multicategory;
+pub mod ordering;
+pub mod pictogram;
+pub mod population_pyramid;
+pub mod prism;
+pub mod radial_flow;
+pub mod reduction;
+pub mod relative;
+pub mod spiral;
+pub mod spiral_common;
+pub mod stacked;
+pub mod variant;
+
+pub use block3d::Bar3DBlock;
+pub use config::BarConfig;
+pub use variant::BarVariant;
+
+pub fn layout_3d(cfg: &BarConfig, budget: &Budget) -> Vec<Bar3DBlock> {
+    match reduction::reduced(cfg, budget) {
+        Some(r) => ordered_3d(&BarConfig {
+            labels: &r.labels,
+            values: &r.values,
+            category_labels: &r.category_labels,
+            series: &r.series,
+            color_groups: &r.color_groups,
+            widths: &r.widths,
+            super_categories: &r.super_categories,
+            ..cfg.clone()
+        }),
+        None => ordered_3d(cfg),
+    }
+}
+
+fn ordered_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    if !ordering::is_reordered(cfg) {
+        return dispatch_3d(cfg);
+    }
+    let ordered = ordering::ordered(cfg);
+    dispatch_3d(&BarConfig {
+        labels: &ordered.labels,
+        values: &ordered.values,
+        color_groups: &ordered.groups,
+        ..cfg.clone()
+    })
+}
+
+fn dispatch_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    use BarVariant::*;
+    match cfg.variant {
+        Basic => basic::layout_3d(cfg),
+        Horizontal => basic::layout_3d_horizontal(cfg),
+        Grouped => grouped::layout_3d(cfg, false),
+        Stacked => grouped::layout_3d(cfg, true),
+        Relative => relative::layout_3d(cfg),
+        GroupedStacked => grouped_stacked::layout_3d(cfg),
+        Marimekko => marimekko::layout_3d(cfg),
+        Multicategory => multicategory::layout_3d(cfg),
+        Pictogram => pictogram::layout_3d(cfg),
+        Circular => circular::layout_3d(cfg),
+        CircularGrouped => circular_grouped::layout_3d(cfg),
+        Pyramid => population_pyramid::layout_3d(cfg),
+        Diverging => diverging::layout_3d(cfg),
+        Distribution => distribution::layout_3d(cfg),
+        Spiral => spiral::layout_3d(cfg),
+        Hedgehog => hedgehog::layout_3d(cfg),
+        RadialFlow => radial_flow::layout_3d(cfg),
+    }
+}
+
+pub fn fit_3d(variant: BarVariant) -> crate::plot::statistical::_3d::zone::Fit {
+    use crate::plot::statistical::_3d::zone::Fit;
+    match variant {
+        BarVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
+
+pub fn height_ratio_3d(variant: BarVariant) -> f64 {
+    use BarVariant::*;
+    match variant {
+        Circular | CircularGrouped | Spiral | Hedgehog | RadialFlow | Distribution => 0.45,
+        _ => 1.0,
+    }
+}
+
+pub fn render_bar_html(cfg: &BarConfig) -> String {
+    use crate::plot::statistical::theme::ChartTheme;
+    match cfg.theme {
+        ChartTheme::Deluxe => return deluxe::render(cfg, cfg.orientation),
+        ChartTheme::Prism => return prism::render(cfg),
+        _ => {}
+    }
+    use BarVariant::*;
+    match cfg.variant {
+        Basic => basic::render(cfg, cfg.orientation),
+        Horizontal => basic::render(cfg, b'h'),
+        Grouped => grouped::render(cfg, false),
+        Stacked => stacked::render(cfg),
+        Relative => relative::render(cfg),
+        GroupedStacked => grouped_stacked::render(cfg),
+        Marimekko => marimekko::render(cfg),
+        Pictogram => pictogram::render(cfg),
+        Multicategory => multicategory::render(cfg),
+        Circular => circular::render(cfg),
+        CircularGrouped => circular_grouped::render(cfg),
+        Pyramid => population_pyramid::render(cfg),
+        Diverging => diverging::render(cfg),
+        Distribution => distribution::render(cfg),
+        Spiral => spiral::render(cfg),
+        Hedgehog => hedgehog::render(cfg),
+        RadialFlow => radial_flow::render(cfg),
+    }
+}
+
+pub use build as build_bar;
+
+pub fn build_series(
+    a: &crate::plot::chart_input::ChartArgs,
+    o: &crate::plot::chart_input::ChartOpts,
+    category_labels: &[String],
+) -> Vec<(String, Vec<f64>)> {
+    let sn = o.series_names.clone().unwrap_or_default();
+    let n_cats = category_labels.len();
+    if let Some(s) = a.series.as_ref() {
+        s.iter()
+            .enumerate()
+            .map(|(si, vals)| {
+                (
+                    sn.get(si)
+                        .cloned()
+                        .unwrap_or_else(|| format!("S{}", si + 1)),
+                    vals.clone(),
+                )
+            })
+            .collect()
+    } else if !sn.is_empty() && n_cats > 0 {
+        let flat = a.values.clone().unwrap_or_default();
+        sn.iter()
+            .enumerate()
+            .map(|(si, name)| {
+                let vals: Vec<f64> = (0..n_cats)
+                    .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
+                    .collect();
+                (name.clone(), vals)
+            })
+            .collect()
+    } else {
+        Vec::new()
+    }
+}
+
+#[crate::sera_alias(
+    "bar",
+    "bar_chart",
+    "bars",
+    "bar_unified",
+    "bars_unified",
+    "bar_family"
+)]
+#[crate::sera_builder("build_bar")]
+pub fn build(input: &str) -> String {
+    use crate::plot::statistical::{render_bar_html, BarConfig, BarVariant, ChartTheme};
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let variant = BarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+
+    let labels = a.labels.clone().unwrap_or_default();
+    let values = a.values.clone().unwrap_or_default();
+    let category_labels = a.labels.clone().unwrap_or_default();
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let hover = o.hj();
+    let palette = o.pal();
+    let offset_groups = o.offset_groups.clone().unwrap_or_default();
+    let widths = o.widths.clone().unwrap_or_default();
+    let super_categories = o.super_categories.clone().unwrap_or_default();
+    let unit_desc = o.unit_description.clone().unwrap_or_default();
+    let xl = o.xl();
+    let yl = o.yl();
+    let srt = o.srt();
+    let lp = o.lp();
+
+    let series: Vec<(String, Vec<f64>)> = build_series(&a, &o, &category_labels);
+    let error_low = o.error_low.clone().unwrap_or_default();
+    let error_high = o.error_high.clone().unwrap_or_default();
+    let overlay_line = o.overlay_line.clone().unwrap_or_default();
+    let overlay_line_label = o.overlay_line_label.clone().unwrap_or_default();
+
+    let cfg = BarConfig {
+        variant,
+        title,
+        x_label: &xl,
+        y_label: &yl,
+        width: o.w(900),
+        height: o.h(480),
+        gridlines: o.grid(),
+        sort_order: &srt,
+        legend_position: &lp,
+        hover: &hover,
+        palette: &palette,
+        labels: &labels,
+        values: &values,
+        color_hex: o.color_hex.unwrap_or(0),
+        color_low: o.color_low.unwrap_or(0x636EFA),
+        color_high: o.color_high.unwrap_or(0xF43F5E),
+        color_groups: &groups,
+        error_low: &error_low,
+        error_high: &error_high,
+        overlay_line: &overlay_line,
+        overlay_line_label: &overlay_line_label,
+        category_labels: &category_labels,
+        series: &series,
+        offset_groups: &offset_groups,
+        widths: &widths,
+        super_categories: &super_categories,
+        icon_size: o.icon_size.unwrap_or(24),
+        max_icons_per_column: o.max_icons_per_column.unwrap_or(10),
+        units_per_icon: o.units_per_icon.unwrap_or(1.0),
+        unit_description: &unit_desc,
+        show_text: o
+            .show_values
+            .or(o.show_text)
+            .unwrap_or(matches!(variant, BarVariant::Diverging)),
+        corner_radius: o.corner_radius.unwrap_or(0),
+        bar_gap: o.bar_gap.unwrap_or(0.2),
+        bargroup_gap: o.bargroup_gap.unwrap_or(0.1),
+        orientation: o.orient_byte(),
+        theme: ChartTheme::from_str(o.theme.as_deref().unwrap_or("none")),
+    };
+    let html = render_bar_html(&cfg);
+    use crate::plot::statistical::BarVariant::*;
+    let native = matches!(variant, Basic | Horizontal | Grouped | Stacked);
+    if native {
+        apply_h(html, &o)
+    } else {
+        apply(html, &o)
+    }
+}

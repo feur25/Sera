@@ -1,0 +1,75 @@
+use crate::plot::{apply, parse_all};
+pub mod basic;
+pub mod common;
+pub mod config;
+pub mod flat;
+pub mod gapped;
+pub mod heat;
+pub mod layout3d;
+pub mod mono;
+pub mod nested;
+pub mod outlined;
+pub mod trend;
+pub mod variant;
+pub mod voronoi;
+pub mod voronoi_engine;
+
+pub use config::TreemapConfig;
+pub use variant::TreemapVariant;
+
+pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
+    use variant::TreemapVariant::*;
+    match cfg.variant {
+        Basic => basic::render(cfg),
+        Flat => flat::render(cfg),
+        Outlined => outlined::render(cfg),
+        Gapped => gapped::render(cfg),
+        Nested => nested::render(cfg),
+        Heat => heat::render(cfg),
+        Mono => mono::render(cfg),
+        Trend => trend::render(cfg),
+        Voronoi => voronoi::render(cfg),
+    }
+}
+
+pub use build as build_treemap;
+
+#[crate::sera_alias(
+    "treemap",
+    "treemaps",
+    "treemap_chart",
+    "treemap_family",
+    "treemap_unified"
+)]
+#[crate::sera_builder("build_treemap")]
+pub fn build(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let pars = a.parents.unwrap_or_default();
+    let comparisons = o.comparisons.clone().unwrap_or_default();
+    let cats = a.categories.clone().unwrap_or_default();
+    let cats2 = a.categories2.clone().unwrap_or_default();
+    use crate::plot::statistical::{render_treemap_html, TreemapConfig, TreemapVariant};
+    let hover = o.hj();
+    let variant = TreemapVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let html = render_treemap_html(&TreemapConfig {
+        title,
+        labels: &labels,
+        values: &values,
+        parents: &pars,
+        palette: &o.pal(),
+        sort_order: &o.srt(),
+        width: o.w(1100),
+        height: o.h(520),
+        hover: &hover,
+        variant,
+        show_text: o.show_text.unwrap_or(false),
+        prior_values: &comparisons,
+        categories: &cats,
+        categories2: &cats2,
+        ..TreemapConfig::default()
+    });
+    apply(html, &o)
+}

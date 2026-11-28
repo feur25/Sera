@@ -1,29 +1,38 @@
 ---
 name: Bug report
-about: Report something that doesn't work as expected
-title: ""
-labels: bug
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
-**What happened?**
-A clear description of the bug.
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-**Minimal reproduction**
-
-```python
-import seraplot as sp
-
-# smallest code that reproduces the issue
-```
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
 **Expected behavior**
-What you expected to happen instead.
+A clear and concise description of what you expected to happen.
 
-**Environment**
-- SeraPlot version: `sp.__version__` if available, or the pip/conda version installed
-- Python version:
-- OS:
-- Browser (if the bug is about a rendered chart): Chromium / Firefox / Safari / other
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-**Rendered output (if relevant)**
-If the bug involves a chart's visual output or generated HTML, paste the relevant snippet or attach a screenshot.
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
+
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
+
+**Additional context**
+Add any other context about the problem here.

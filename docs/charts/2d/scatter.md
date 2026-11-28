@@ -3,37 +3,7 @@
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
-.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
-.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
-.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
-.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
-.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
-.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
-.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
-.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
-.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
-.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
-.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
-.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
-.sp-variant{display:none}
-.sp-variant.sp-von{display:block;animation:spFade .25s ease}
-@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
-.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
-.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
-.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
-.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
-.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
-.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
 .sp-preview-frame{width:100%;height:380px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
@@ -42,55 +12,20 @@ function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
 </script>
 
-
 ## Signature
 
 `sp.scatter(title, x_values, y_values, *, variant="basic", categories=None, labels=None, color_values=None, **kwargs) -> Chart`
 
-Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
-
 ## Description
 
 `sp.scatter()` is the unified entry point for the entire scatter family. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. Scatter plots are the canonical way to display the joint distribution of two numeric variables; SeraPlot adds optional grouping, continuous color, distinct marker shapes, on-point labels and OLS regression — all in pure Rust SVG, thousands of times faster than Plotly.
+## Variants
 
-| Variant | Use case | Key extra args |
-|---------|----------|----------------|
-| `"basic"` | Plain points, single color | `x_values`, `y_values` |
-| `"categorical"` / `"grouped"` | Color-by-group with side legend | `categories` |
-| `"gradient"` / `"colorscale"` | Continuous color mapping + colorbar | `color_values`, `color_low`, `color_high` |
-| `"symbols"` / `"shapes"` | Distinct marker shapes per group | `categories` |
-| `"labeled"` / `"text"` | Always-on per-point labels | `labels` |
-| `"regression"` / `"trendline"` | OLS fit overlay (linear / poly2) | `regression_type` |
-
----
+<div data-sp-registry-table="variants" data-family="scatter"></div>
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `x_values` | `list[float]` | required | all | Horizontal coordinate of each point |
-| `y_values` | `list[float]` | required | all | Vertical coordinate of each point |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `categories` | `list[str]` | `None` | categorical, symbols | Per-point group name |
-| `labels` | `list[str]` | `None` | all (hover) / labeled (rendered) | Per-point text label |
-| `color_values` | `list[float]` | `None` | gradient | Continuous numeric value for colorscale |
-| `color_hex` | `int` | `0x6366F1` | basic, regression | Single fill color |
-| `color_low` | `int` | `0x6366F1` | gradient | Low end of color scale |
-| `color_high` | `int` | `0xF43F5E` | gradient, regression | High end of color scale / regression line |
-| `point_size` | `float` | `5.0` | all | Marker radius in pixels |
-| `stroke_width` | `float` | `1.0` | all | Marker stroke width |
-| `symbol` | `str` | `"circle"` | all | Default marker shape (`circle`, `square`, `diamond`, `triangle`, `cross`, `plus`, `star`, `triangle-down`) |
-| `symbols` | `list[str]` | `None` | symbols | Per-point marker shape override |
-| `regression_type` | `str` | `"linear"` | regression | `"linear"` or `"polynomial2"` |
-| `palette` | `list[int]` | `None` | categorical, symbols | Custom color palette |
-| `width` | `int` | `900` | all | Canvas width (px) |
-| `height` | `int` | `500` | all | Canvas height (px) |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines |
-| `legend_position` | `str` | `"right"` | categorical, symbols | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color (None = transparent) |
+<div data-sp-registry-table="options" data-family="scatter"></div>
 
 ---
 
@@ -105,10 +40,16 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <button class="sp-cls-toggle" onclick="spClsTog('scatter-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatter-en','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Categorical</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symbols</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Residual</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Dual Style</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Continuous Hue</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facet</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Sized</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Wide form</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','rug',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Rug</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -116,7 +57,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-categorical">
@@ -124,15 +65,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-en-gradient">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-symbols">
@@ -140,7 +73,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-symbols.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-labeled">
@@ -148,7 +81,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-en-regression">
@@ -156,7 +89,75 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-regression.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-residual">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"residual"</code></span><span><strong>Aliases</strong> <code>residuals / residplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-residual.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-dual_style">
+
+<p>Two independent categorical variables: <code>categories</code> drives color, <code>categories2</code> drives marker shape - matching seaborn's "hue and style with different variables" example.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dual_style"</code></span><span><strong>Aliases</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-dual_style.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-continuous_hue">
+
+<p>Points colored by a continuous numeric variable (<code>color_values</code>) interpolated between <code>color_low</code> and <code>color_high</code>, with a gradient legend bar - seaborn's numeric hue mapping.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"continuous_hue"</code></span><span><strong>Aliases</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-continuous_hue.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-facet">
+
+<p>Splits the data into one small-multiple panel per unique <code>categories</code> value, all sharing the same x/y domain - a native equivalent of seaborn's <code>relplot()</code> faceting.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"facet"</code></span><span><strong>Aliases</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-facet.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-sized">
+
+<p>Both marker radius and color are driven by the same continuous variable (<code>color_values</code>, scaled between <code>min_size</code> and <code>max_size</code>) with a combined size+color legend - seaborn's <code>hue=</code> and <code>size=</code> mapped to the same column, with <code>sizes=(min, max)</code>.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sized"</code></span><span><strong>Aliases</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-sized.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-wide_form">
+
+<p>Plots several numeric columns (<code>series</code>, named via <code>series_names</code>) against one shared <code>x_values</code> axis, one color per column with a legend - the native equivalent of calling <code>seaborn.scatterplot(data=wide_dataframe)</code> directly on a wide-form table.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"wide_form"</code></span><span><strong>Aliases</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-wide_form.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-rug">
+
+<p>Scatter + rug plot fusion: each point gets a short tick mark projected onto both axes, right at the plot edges — a Tufte-style view of the marginal distributions along x and y without the overhead of a separate marginal panel (unlike <code>joint()</code>, no iframe composition needed).</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-rug.html"></iframe>
 </div>
 
 </div>
@@ -166,95 +167,20 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="lang-fr">
 
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
-.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
-.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
-.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
-.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
-.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
-.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
-.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
-.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
-.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
-.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
-.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
-.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
-.sp-variant{display:none}
-.sp-variant.sp-von{display:block;animation:spFade .25s ease}
-@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
-.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
-.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
-.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
-.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
-.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
-.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
-.sp-preview-frame{width:100%;height:380px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
-function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
-function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
-</script>
-
-
 <h2>Signature</h2>
 
 `sp.scatter(title, x_values, y_values, *, variant="basic", categories=None, labels=None, color_values=None, **kwargs) -> Chart`
 
-Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
-
 <h2>Description</h2>
 
 `sp.scatter()` est le point d'entrée unifié de toute la famille scatter. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments gardent le même nom d'une variante à l'autre. Les nuages de points sont la façon canonique d'afficher la distribution conjointe de deux variables numériques ; SeraPlot ajoute groupement optionnel, couleur continue, formes de marqueurs distinctes, étiquettes sur les points et régression OLS — le tout en SVG Rust pur, des milliers de fois plus rapide que Plotly.
+<h2>Variantes</h2>
 
-| Variante | Usage | Arguments clés |
-|----------|-------|----------------|
-| `"basic"` | Points simples, couleur unique | `x_values`, `y_values` |
-| `"categorical"` / `"grouped"` | Couleur par groupe + légende latérale | `categories` |
-| `"gradient"` / `"colorscale"` | Couleur continue + barre de couleur | `color_values`, `color_low`, `color_high` |
-| `"symbols"` / `"shapes"` | Formes distinctes par groupe | `categories` |
-| `"labeled"` / `"text"` | Étiquettes permanentes par point | `labels` |
-| `"regression"` / `"trendline"` | Superposition d'un ajustement OLS | `regression_type` |
-
----
+<div data-sp-registry-table="variants" data-family="scatter"></div>
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `x_values` | `list[float]` | requis | toutes | Coordonnée horizontale de chaque point |
-| `y_values` | `list[float]` | requis | toutes | Coordonnée verticale de chaque point |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `categories` | `list[str]` | `None` | categorical, symbols | Nom de groupe par point |
-| `labels` | `list[str]` | `None` | toutes (hover) / labeled (rendu) | Étiquette texte par point |
-| `color_values` | `list[float]` | `None` | gradient | Valeur numérique continue pour l'échelle de couleur |
-| `color_hex` | `int` | `0x6366F1` | basic, regression | Couleur unique de remplissage |
-| `color_low` | `int` | `0x6366F1` | gradient | Borne basse de l'échelle |
-| `color_high` | `int` | `0xF43F5E` | gradient, regression | Borne haute / couleur de la régression |
-| `point_size` | `float` | `5.0` | toutes | Rayon du marqueur (px) |
-| `stroke_width` | `float` | `1.0` | toutes | Largeur du contour |
-| `symbol` | `str` | `"circle"` | toutes | Forme par défaut (`circle`, `square`, `diamond`, `triangle`, `cross`, `plus`, `star`, `triangle-down`) |
-| `symbols` | `list[str]` | `None` | symbols | Forme du marqueur point par point |
-| `regression_type` | `str` | `"linear"` | regression | `"linear"` ou `"polynomial2"` |
-| `palette` | `list[int]` | `None` | categorical, symbols | Palette personnalisée |
-| `width` | `int` | `900` | toutes | Largeur (px) |
-| `height` | `int` | `500` | toutes | Hauteur (px) |
-| `x_label` | `str` | `""` | toutes | Légende axe X |
-| `y_label` | `str` | `""` | toutes | Légende axe Y |
-| `gridlines` | `bool` | `False` | toutes | Afficher la grille |
-| `legend_position` | `str` | `"right"` | categorical, symbols | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS (None = transparent) |
+<div data-sp-registry-table="options" data-family="scatter"></div>
 
 ---
 
@@ -269,10 +195,16 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <button class="sp-cls-toggle" onclick="spClsTog('scatter-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatter-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">De base</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symboles</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiquetés</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Résidus</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Style double</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Teinte continue</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facettes</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Taille</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Format large</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','rug',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Rug</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -280,7 +212,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-categorical">
@@ -288,15 +220,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-fr-gradient">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-symbols">
@@ -304,7 +228,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-symbols.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-labeled">
@@ -312,7 +236,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-labeled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="scatter-fr-regression">
@@ -320,7 +244,75 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-regression.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-residual">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"residual"</code></span><span><strong>Alias</strong> <code>residuals / residplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-residual.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-dual_style">
+
+<p>Deux variables catégorielles indépendantes : <code>categories</code> pilote la couleur, <code>categories2</code> pilote la forme du marqueur - comme l'exemple seaborn "hue and style" avec des variables différentes.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dual_style"</code></span><span><strong>Alias</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-dual_style.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-continuous_hue">
+
+<p>Points colorés selon une variable numérique continue (<code>color_values</code>) interpolée entre <code>color_low</code> et <code>color_high</code>, avec une barre de légende en dégradé - le mapping de teinte numérique de seaborn.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"continuous_hue"</code></span><span><strong>Alias</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-continuous_hue.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-facet">
+
+<p>Sépare les données en un panneau petit-multiple par valeur unique de <code>categories</code>, tous partageant le même domaine x/y - un équivalent natif du facettage <code>relplot()</code> de seaborn.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"facet"</code></span><span><strong>Alias</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-facet.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-sized">
+
+<p>Le rayon du marqueur et sa couleur sont pilotés par la même variable continue (<code>color_values</code>, mise à l'échelle entre <code>min_size</code> et <code>max_size</code>) avec une légende combinée taille+couleur - l'équivalent de <code>hue=</code> et <code>size=</code> pointant sur la même colonne en seaborn, avec <code>sizes=(min, max)</code>.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sized"</code></span><span><strong>Alias</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-sized.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-wide_form">
+
+<p>Trace plusieurs colonnes numériques (<code>series</code>, nommées via <code>series_names</code>) sur un même axe <code>x_values</code> partagé, une couleur par colonne avec une légende - l'équivalent natif d'appeler <code>seaborn.scatterplot(data=wide_dataframe)</code> directement sur un tableau au format large.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"wide_form"</code></span><span><strong>Alias</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-wide_form.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-rug">
+
+<p>Fusion scatter + rug plot : chaque point projette une petite marque sur les deux axes, au bord du graphique — une vue façon Tufte des distributions marginales en x et en y sans le coût d'un panneau marginal séparé (contrairement à <code>joint()</code>, aucune composition iframe nécessaire).</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/scatter-rug.html"></iframe>
 </div>
 
 </div>

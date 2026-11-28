@@ -1,210 +1,209 @@
-﻿# Bubble Chart 3D
+# Bubble Chart 3D
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:340px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+
 ## Signature
 
-```python
-sp.build_bubble3d_chart(
-    title: str,
-    x: list[float],
-    y: list[float],
-    z: list[float],
-    sizes: list[float],
-    *,
-    color_labels: list[str] | None = None,
-    color_values: list[float] | None = None,
-    palette: list[int] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "X",
-    y_label: str = "Y",
-    z_label: str = "Z",
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.bubble3d(title, x=None, y=None, z=None, sizes=None, labels=None, categories=None, x_categories=None, y_categories=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.bubble3d`
-
----
+Aliases: `sp.build_bubble3d_chart()`, `sp.bubble_3d()`, `sp.bubble3d_chart()`, `sp.bubble3d_family()`, `sp.bubbles3d()`.
 
 ## Description
 
-3D bubble chart — scatter in XYZ space where bubble radius encodes a fourth dimension.
+`sp.bubble3d()` carries two independent forms under one name, chosen by whether `z` is given. Pass `x`, `y`, `z` and `sizes` together and it keeps its original job: a real spatial point cloud sized by `sizes`. Leave `z` out and **every one of the 8 2D bubble variants gets a 3D form instead**, selected with the same `variant` keyword and fed with the same `x`/`y`/`sizes` rows — the family this page otherwise documents.
 
----
+## Variants
+
+| Variant | Aliases | Uses | 3D form |
+|---|---|---|---|
+| `basic` | `simple` | `x, y, sizes` | A marker per bubble, size following `sizes`. |
+| `categorical` | `grouped`, `groups`, `category` | `x, y, sizes` | The same bubbles, one class (and colour) per category. |
+| `labeled` | `labels`, `text`, `annotated` | `x, y, sizes` | The same bubbles as basic; names show on hover in every variant. |
+| `outlined` | `hollow`, `ring`, `open` | `x, y, sizes` | The same bubbles as basic, from the 2D chart's hollow-ring styling. |
+| `negative` | `signed`, `diverging` | `x, y, sizes` | Bubbles rise above the floor for a positive size and sink below it for a negative one. |
+| `split` | `half`, `binary`, `categorical_split` | `x_categories, y_categories, categories, sizes` | Bubbles placed on an `x_categories` × `y_categories` grid, classed by their split group. |
+| `burst` | `radial_burst`, `spiral`, `transition`, `topic_burst` | `x, y, sizes, categories` | Bubbles spread by category around a centre, radius growing with size. |
+| `radial_rows` | `polar_rows`, `circular_timeline`, `record_wheel`, `fastest` | `x, y, sizes, categories` | Bubbles spread by category across a half-circle sweep, radius growing with size. |
+
+## Data
+
+Without `z`: `x`/`y` position each bubble and `sizes` scales it (signed for `negative`); `split` instead reads `x_categories`/`y_categories` for its grid and `categories` for the split group.
+
+## 3D planes
+
+The viewpoint is independent from the variant: `orientation3d` picks the initial camera plane and applies to **every** variant; the view always stays draggable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Isometric three-quarter view (default).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Side-on view, almost at floor level.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Top-down view from above.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Front elevation, nearly flat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-front.html"></iframe></div>
+</div>
+
+## 3D scenes
+
+`scene` swaps the environment the columns are drawn in and applies to every variant and every plane.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Each series keeps its own categorical palette color, rendered as shaded 3D bars on a flat grid.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; The data is resampled onto a dense grid and rendered as hundreds of thin colormap-colored columns, forming a continuous mountain-of-bars terrain.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; The data is resampled onto a dense field of round skyscraper-like towers instead of boxes, for a city-skyline reading of magnitude.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; The data is resampled onto a dense polar grid of rings and wedges radiating from the center, like a 3D radar/sonar sweep of the value field.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; The data is resampled onto a dense grid and quantized into stepped terrace levels, like a rice-terrace contour map, to read value bands at a glance.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-podium.html"></iframe></div>
+</div>
+
+## Themes
+
+`theme` restyles the whole canvas (colour grade and glow) and applies to every variant, scene and plane.
+
+<div data-sp-registry-table="themes" data-family="bubble3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-cosmic.html"></iframe></div>
+</div>
+
+## Auto-scaling zone
+
+The 3D zone (floor, walls, axes and camera) scales to the elements: its length, width and height follow the extents of the drawn blocks, a minimum floor depth keeps single rows readable, wide scenes are drawn flatter and the camera frames the whole box. The axis ticks read the real data range. Pass `zone=[x, y, z]` to force the proportions of the box instead; the longest side is normalised to 1.
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `x` | `list[float]` | required | X positions |
-| `y` | `list[float]` | required | Y positions |
-| `z` | `list[float]` | required | Z positions |
-| `sizes` | `list[float]` | required | Bubble radii |
-| `color_labels` | `list[str] \| None` | `None` | Categorical color groups |
-| `color_values` | `list[float] \| None` | `None` | Continuous colormap values |
-| `palette` | `list[int] \| None` | `None` | Custom color palette |
-| `bg_color` | `str` | `"#1a1a2e"` | Background color |
-| `width` | `int` | `900` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
-
----
+<div data-sp-registry-table="options" data-family="bubble3d"></div>
 
 ## Returns
 
-`Chart`
+`Chart` object with an `.html` property and a `.show()` method.
 
----
+</div><!-- /lang-en -->
 
-## Examples
-
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="bubble3d">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble3d','bubble3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble3d','bubble3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble3d','bubble3d-ts',this)">TypeScript</button></div>
-<div id="bubble3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-n = 200
-chart = sp.build_bubble3d_chart(
-    "4D Dataset",
-    x_values=[random.gauss(0,1) for _ in range(n)],
-    y_values=[random.gauss(0,1) for _ in range(n)],
-    z_values=[random.gauss(0,1) for _ in range(n)],
-    size_values=[random.uniform(5, 30) for _ in range(n)],
-    color_labels=[random.choice(["A","B","C"]) for _ in range(n)],
-)</code></pre></div>
-<div id="bubble3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import random
-const n = 200
-const chart = sp.build_bubble3d_chart("4D Dataset",
-[random.gauss(0,1) for _ in range(n)],
-[random.gauss(0,1) for _ in range(n)],
-[random.gauss(0,1) for _ in range(n)],
-{
-    size_values: [random.uniform(5, 30) for _ in range(n)],
-    color_labels: [random.choice(["A","B","C"]) for _ in range(n)]
-})</code></pre></div>
-<div id="bubble3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import random
-const n: number = 200
-const chart = sp.build_bubble3d_chart("4D Dataset",
-[random.gauss(0,1) for _ in range(n)],
-[random.gauss(0,1) for _ in range(n)],
-[random.gauss(0,1) for _ in range(n)],
-{
-    size_values: [random.uniform(5, 30) for _ in range(n)],
-    color_labels: [random.choice(["A","B","C"]) for _ in range(n)]
-})</code></pre></div>
-</div>
-
-
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
-<iframe src="../../previews/bubble3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
-
-</div>
-
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
 <h2>Signature</h2>
 
-```python
-sp.build_bubble3d_chart(
-    title: str,
-    x: list[float],
-    y: list[float],
-    z: list[float],
-    sizes: list[float],
-    *,
-    color_labels: list[str] | None = None,
-    color_values: list[float] | None = None,
-    palette: list[int] | None = None,
-    bg_color: str = "#1a1a2e",
-    width: int = 900,
-    height: int = 600,
-    x_label: str = "X",
-    y_label: str = "Y",
-    z_label: str = "Z",
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.bubble3d(title, x=None, y=None, z=None, sizes=None, labels=None, categories=None, x_categories=None, y_categories=None, *, variant="basic", orientation3d="iso", scene="default", theme="none", zone=None, max_points=None, width=900, height=560, x_label="", y_label="", z_label="", **kwargs) -> Chart`
 
-Aliases: `sp.bubble3d`
-
----
+Alias : `sp.build_bubble3d_chart()`, `sp.bubble_3d()`, `sp.bubble3d_chart()`, `sp.bubble3d_family()`, `sp.bubbles3d()`.
 
 <h2>Description</h2>
 
-Graphique à bulles 3D — nuage de points XYZ où le rayon des bulles encode une quatrième dimension.
+`sp.bubble3d()` porte deux formes indépendantes sous un seul nom, choisies selon que `z` est fourni. Passez `x`, `y`, `z` et `sizes` ensemble et il garde son rôle d'origine : un vrai nuage de points spatial dimensionné par `sizes`. Omettez `z` et **chacune des 8 variantes de bubble 2D obtient à la place une forme 3D**, choisie avec le même mot-clé `variant` et alimentée par les mêmes lignes `x`/`y`/`sizes` — la famille que documente le reste de cette page.
 
----
+<h2>Variantes</h2>
+
+| Variante | Alias | Utilise | Forme 3D |
+|---|---|---|---|
+| `basic` | `simple` | `x, y, sizes` | Un repère par bulle, la taille suivant `sizes`. |
+| `categorical` | `grouped`, `groups`, `category` | `x, y, sizes` | Les mêmes bulles, une classe (et une couleur) par catégorie. |
+| `labeled` | `labels`, `text`, `annotated` | `x, y, sizes` | Les mêmes bulles que basic ; les noms s'affichent au survol dans toutes les variantes. |
+| `outlined` | `hollow`, `ring`, `open` | `x, y, sizes` | Les mêmes bulles que basic, depuis le style en anneau creux du graphique 2D. |
+| `negative` | `signed`, `diverging` | `x, y, sizes` | Les bulles s'élèvent au-dessus du sol pour une taille positive et s'enfoncent en dessous pour une négative. |
+| `split` | `half`, `binary`, `categorical_split` | `x_categories, y_categories, categories, sizes` | Bulles placées sur une grille `x_categories` × `y_categories`, classées selon leur groupe de scission. |
+| `burst` | `radial_burst`, `spiral`, `transition`, `topic_burst` | `x, y, sizes, categories` | Bulles réparties par catégorie autour d'un centre, le rayon croissant avec la taille. |
+| `radial_rows` | `polar_rows`, `circular_timeline`, `record_wheel`, `fastest` | `x, y, sizes, categories` | Bulles réparties par catégorie sur un balayage en demi-cercle, le rayon croissant avec la taille. |
+
+<h2>Données</h2>
+
+Sans `z` : `x`/`y` positionne chaque bulle et `sizes` la dimensionne (signé pour `negative`) ; `split` lit plutôt `x_categories`/`y_categories` pour sa grille et `categories` pour le groupe de scission.
+
+<h2>Plans 3D</h2>
+
+Le point de vue est indépendant de la variante : `orientation3d` choisit le plan initial de la caméra et s'applique à **toutes** les variantes ; la vue reste toujours orientable.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>orientation3d="iso"</code> &mdash; Vue isométrique trois-quarts (défaut).</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-iso.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="horizontal"</code> &mdash; Vue de côté, presque au niveau du sol.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-horizontal.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="vertical"</code> &mdash; Vue du dessus, plongeante.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-vertical.html"></iframe></div>
+<div><div class="sp-preview-label"><code>orientation3d="front"</code> &mdash; Élévation de face, presque à plat.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-plane-front.html"></iframe></div>
+</div>
+
+<h2>Scènes 3D</h2>
+
+`scene` change l'environnement dans lequel les colonnes sont dessinées et s'applique à chaque variante et chaque plan.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>scene="default"</code> &mdash; Chaque série garde sa propre couleur de palette catégorielle, rendue en barres 3D ombrées sur une grille plate.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-default.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="terrain"</code> &mdash; Les données sont réinterpolées sur une grille dense et rendues en centaines de fines colonnes colorées par hauteur, formant un terrain continu en montagne de barres.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-terrain.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="tower"</code> &mdash; Les données sont réinterpolées sur un champ dense de tours cylindriques façon gratte-ciel au lieu de boites, pour une lecture des magnitudes en skyline urbaine.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-tower.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="radial"</code> &mdash; Les données sont réinterpolées sur une grille polaire dense d'anneaux et de secteurs partant du centre, comme un balayage radar/sonar 3D du champ de valeurs.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-radial.html"></iframe></div>
+<div><div class="sp-preview-label"><code>scene="podium"</code> &mdash; Les données sont réinterpolées sur une grille dense et quantifiées en paliers étagés, façon rizière en terrasses, pour lire les tranches de valeurs d'un coup d'oeil.</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-scene-podium.html"></iframe></div>
+</div>
+
+<h2>Thèmes</h2>
+
+`theme` restyle tout le canevas (étalonnage des couleurs et halo) et s'applique à chaque variante, scène et plan.
+
+<div data-sp-registry-table="themes" data-family="bubble3d"></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px">
+<div><div class="sp-preview-label"><code>theme="deluxe"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-deluxe.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="prism"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-prism.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="aurora"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-aurora.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="inferno"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-inferno.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="frost"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-frost.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glow"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-glow.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="glass"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-glass.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="neon"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-neon.html"></iframe></div>
+<div><div class="sp-preview-label"><code>theme="cosmic"</code></div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble3d-theme-cosmic.html"></iframe></div>
+</div>
+
+<h2>Zone auto-ajustée</h2>
+
+La zone 3D (sol, parois, axes et caméra) s'adapte aux éléments : sa longueur, sa largeur et sa hauteur suivent l'étendue des blocs dessinés, une profondeur minimale garde les rangées seules lisibles, les scènes larges sont dessinées plus basses et la caméra cadre toute la boîte. Les graduations des axes lisent la vraie plage des données. Passez `zone=[x, y, z]` pour forcer plutôt les proportions de la boîte ; le côté le plus long est normalisé à 1.
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `x` | `list[float]` | requis | Positions X |
-| `y` | `list[float]` | requis | Positions Y |
-| `z` | `list[float]` | requis | Positions Z |
-| `sizes` | `list[float]` | requis | Rayons des bulles |
-| `color_labels` | `list[str] \| None` | `None` | Groupes de couleur catégoriels |
-| `color_values` | `list[float] \| None` | `None` | Valeurs de colormap continues |
-| `palette` | `list[int] \| None` | `None` | Palette de couleurs |
-| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
-| `width` | `int` | `900` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+<div data-sp-registry-table="options" data-family="bubble3d"></div>
 
----
+<h2>Retour</h2>
 
-<h2>Retourne</h2>
+Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 
-`Chart`
-
----
-
-<h2>Exemples</h2>
-
-```python
-import seraplot as sp
-import random
-
-n = 200
-chart = sp.build_bubble3d_chart(
-    "Jeu de données 4D",
-    x_values=[random.gauss(0,1) for _ in range(n)],
-    y_values=[random.gauss(0,1) for _ in range(n)],
-    z_values=[random.gauss(0,1) for _ in range(n)],
-    size_values=[random.uniform(5, 30) for _ in range(n)],
-    color_labels=[random.choice(["A","B","C"]) for _ in range(n)],
-)
-```
-
----
-
-</div>
+</div><!-- /lang-fr -->

@@ -3,34 +3,7 @@
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
-.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
-.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
-.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
-.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
-.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
-.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
-.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
-.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
-.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
-.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
-.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
-.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
-.sp-variant{display:none}
-.sp-variant.sp-von{display:block;animation:spFade .25s ease}
-@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
-.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
-.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
-.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
 .sp-preview-frame{width:100%;height:480px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
@@ -39,12 +12,9 @@ function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
 </script>
 
-
 ## Signature
 
 `sp.treemap(title, labels, values, *, parents=None, variant="basic", palette=None, **kwargs) -> Chart`
-
-Aliases: `sp.treemap`, `sp.build_treemap`
 
 ## Description
 
@@ -54,30 +24,11 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 
 ## Variants
 
-| Variant | Aliases | Description |
-|---|---|---|
-| `"basic"` | `basic / default / classic / filled` | Classic squarified treemap with rounded corners and white separators between tiles. |
-| `"flat"` | `flat / mosaic / edge / tight` | Edge-to-edge mosaic with no stroke and no rounding for a dense, magazine-style block. |
-| `"gradient"` | `gradient / fade / shaded / smooth` | Per-tile vertical gradient (opaque top, faded bottom) for a polished, modern feel. |
-| `"outlined"` | `outlined / outline / stroke / wireframe` | Wireframe tiles: translucent fill with bold colored stroke and dark labels for print-ready look. |
-| `"gapped"` | `gapped / spaced / inset / separated` | Each tile inset with extra padding so the structure breathes; rounded corners and color fill. |
-| `"nested"` | `nested / grouped / parents / hierarchy` | Draws parent group rectangles with header labels around their children, emphasising hierarchy. |
-| `"heat"` | `heat / heatmap / temperature / cold_warm` | Color encodes value (cool blue -> hot red) instead of identity, turning the treemap into a heatmap. |
-| `"mono"` | `mono / monochrome / single / uniform` | Single hue with opacity decreasing by rank; editorial, minimalist, perfect for slides. |
+<div data-sp-registry-table="variants" data-family="treemap"></div>
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`    | `str`         | required  | Chart title |
-| `labels`   | `list[str]`   | required  | Tile labels (one per leaf) |
-| `values`   | `list[float]` | required  | Leaf values (area) |
-| `parents`  | `list[str]`   | `None`    | Parent label of each leaf (`""` -> flat) |
-| `variant`  | `str`         | `"basic"` | Visual style (see table) |
-| `palette`  | `list[int]`   | `None`    | Custom color palette (per parent or per tile) |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` or `"desc"` for leaves |
-| `width`    | `int`         | `1100`    | Canvas width (px) |
-| `height`   | `int`         | `520`     | Canvas height (px) |
+<div data-sp-registry-table="options" data-family="treemap"></div>
 
 ## Returns
 
@@ -90,12 +41,13 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <button class="sp-cls-toggle" onclick="spClsTog('treemap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('treemap-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
-<button class="sp-cls-tab" onclick="spCls('treemap-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Trend</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','voronoi',this)"><span class="sp-cic">V</span><span class="sp-clb">Voronoi</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -105,7 +57,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic squarified treemap with rounded corners and white separators between tiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-flat">
@@ -114,16 +66,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Edge-to-edge mosaic with no stroke and no rounding for a dense, magazine-style block.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
-</div>
-
-<div class="sp-variant" id="treemap-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Per-tile vertical gradient (opaque top, faded bottom) for a polished, modern feel.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-flat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-outlined">
@@ -132,7 +75,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Wireframe tiles: translucent fill with bold colored stroke and dark labels for print-ready look.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-gapped">
@@ -141,7 +84,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each tile inset with extra padding so the structure breathes; rounded corners and color fill.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-nested">
@@ -150,7 +93,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Draws parent group rectangles with header labels around their children, emphasising hierarchy.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-nested.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-heat">
@@ -159,7 +102,7 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes value (cool blue -> hot red) instead of identity, turning the treemap into a heatmap.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-heat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-en-mono">
@@ -168,7 +111,25 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Single hue with opacity decreasing by rank; editorial, minimalist, perfect for slides.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-mono.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-trend">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / change / delta / yoy</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap + period-over-period change fusion: pass <code>comparisons</code> (prior-period values, aligned with <code>values</code>) and every tile big enough gets a small colored badge (▲/▼ + %) in its corner — the Finviz-style "market map" look, natively.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-voronoi">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"voronoi"</code></span><span><strong>Aliases</strong> <code>voronoi / voronoi_treemap / organic / polygon_treemap / power_diagram</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Real Voronoi treemap: a weighted power diagram is relaxed over many iterations until each organic polygon's area matches its value, no rectangles involved. Pass <code>parents</code> to split the disc into value-sized angular sectors (first sector gets full category color via <code>categories</code> plus an optional hatch flag via <code>categories2</code>; every other sector renders in neutral gray) — built for "how much of the whole is in this hazardous/flagged/priority group" breakdowns.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-voronoi.html"></iframe>
 </div>
 
 </div>
@@ -182,8 +143,6 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 
 `sp.treemap(title, labels, values, *, parents=None, variant="basic", palette=None, **kwargs) -> Chart`
 
-Alias : `sp.treemap`, `sp.build_treemap`
-
 <h2>Description</h2>
 
 `sp.treemap()` est le point d entree unifie pour toute la famille treemap. Un treemap decoupe un rectangle en sous-rectangles proportionnels dont l aire code la valeur ; lorsqu une liste `parents` est fournie le rendu devient hierarchique (chaque parent recoit son propre bloc, les feuilles y sont squarifiees). Le mot-cle `variant` change le style sans toucher aux donnees. Les treemaps sont la reference pour visualiser budgets, capitalisations boursieres, occupation disque, poids de portefeuille, systemes de fichiers et toute decomposition 'tout = somme des parties'.
@@ -192,30 +151,11 @@ Alias : `sp.treemap`, `sp.build_treemap`
 
 <h2>Variantes</h2>
 
-| Variante | Alias | Description |
-|---|---|---|
-| `"basic"` | `basic / default / classic / filled` | Treemap squarifie classique avec coins arrondis et separateurs blancs entre les tuiles. |
-| `"flat"` | `flat / mosaic / edge / tight` | Mosaique bord-a-bord sans contour ni arrondi pour un bloc dense type magazine. |
-| `"gradient"` | `gradient / fade / shaded / smooth` | Degrade vertical par tuile (haut opaque, bas estompe) pour un rendu moderne et soigne. |
-| `"outlined"` | `outlined / outline / stroke / wireframe` | Tuiles en fil de fer : fond translucide, contour colore epais et libelles sombres, style imprimable. |
-| `"gapped"` | `gapped / spaced / inset / separated` | Chaque tuile en retrait avec marges supplementaires pour aerer la structure ; coins arrondis. |
-| `"nested"` | `nested / grouped / parents / hierarchy` | Dessine les rectangles parents avec libelle d en-tete autour de leurs enfants, met en avant la hierarchie. |
-| `"heat"` | `heat / heatmap / temperature / cold_warm` | La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap. |
-| `"mono"` | `mono / monochrome / single / uniform` | Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides. |
+<div data-sp-registry-table="variants" data-family="treemap"></div>
 
-<h2>Parametres</h2>
+<h2>Paramètres</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title`    | `str`         | requis    | Titre du graphique |
-| `labels`   | `list[str]`   | requis    | Libelles des tuiles (un par feuille) |
-| `values`   | `list[float]` | requis    | Valeurs feuilles (aire) |
-| `parents`  | `list[str]`   | `None`    | Parent de chaque feuille (`""` -> plat) |
-| `variant`  | `str`         | `"basic"` | Style visuel (voir tableau) |
-| `palette`  | `list[int]`   | `None`    | Palette de couleurs (par parent ou tuile) |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` ou `"desc"` pour les feuilles |
-| `width`    | `int`         | `1100`    | Largeur du canvas (px) |
-| `height`   | `int`         | `520`     | Hauteur du canvas (px) |
+<div data-sp-registry-table="options" data-family="treemap"></div>
 
 <h2>Retour</h2>
 
@@ -228,12 +168,13 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <button class="sp-cls-toggle" onclick="spClsTog('treemap-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('treemap-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
-<button class="sp-cls-tab" onclick="spCls('treemap-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Tendance</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','voronoi',this)"><span class="sp-cic">V</span><span class="sp-clb">Voronoi</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -243,7 +184,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap squarifie classique avec coins arrondis et separateurs blancs entre les tuiles.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-flat">
@@ -252,16 +193,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mosaique bord-a-bord sans contour ni arrondi pour un bloc dense type magazine.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
-</div>
-
-<div class="sp-variant" id="treemap-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Degrade vertical par tuile (haut opaque, bas estompe) pour un rendu moderne et soigne.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-flat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-outlined">
@@ -270,7 +202,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Tuiles en fil de fer : fond translucide, contour colore epais et libelles sombres, style imprimable.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-outlined.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-gapped">
@@ -279,7 +211,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque tuile en retrait avec marges supplementaires pour aerer la structure ; coins arrondis.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-gapped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-nested">
@@ -288,7 +220,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dessine les rectangles parents avec libelle d en-tete autour de leurs enfants, met en avant la hierarchie.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-nested.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-heat">
@@ -297,7 +229,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-heat.html"></iframe>
 </div>
 
 <div class="sp-variant" id="treemap-fr-mono">
@@ -306,7 +238,25 @@ Alias : `sp.treemap`, `sp.build_treemap`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides.</p>
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-mono.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-trend">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"trend"</code></span><span><strong>Alias</strong> <code>trend / change / delta / yoy</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion treemap + variation d'une periode a l'autre : passez <code>comparisons</code> (valeurs de la periode precedente, alignees avec <code>values</code>) et chaque case assez grande recoit un petit badge colore (▲/▼ + %) dans son coin — le look "market map" façon Finviz, nativement.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-trend.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-voronoi">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"voronoi"</code></span><span><strong>Alias</strong> <code>voronoi / voronoi_treemap / organic / polygon_treemap / power_diagram</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Un vrai treemap de Voronoi : un diagramme de puissance pondere est relaxe sur de nombreuses iterations jusqu a ce que l aire de chaque polygone organique corresponde a sa valeur, sans le moindre rectangle. Passez <code>parents</code> pour decouper le disque en secteurs angulaires proportionnels a leur valeur (le premier secteur recoit la couleur de categorie via <code>categories</code> plus un hachurage optionnel via <code>categories2</code> ; tous les autres secteurs restent gris neutre) — concu pour les repartitions du type "quelle part de l ensemble est dangereuse/marquee/prioritaire".</p>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/treemap-voronoi.html"></iframe>
 </div>
 
 </div>

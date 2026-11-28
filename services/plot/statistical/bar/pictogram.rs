@@ -1,0 +1,188 @@
+use super::block3d::Bar3DBlock;
+use super::config::BarConfig;
+use crate::plot::statistical::common::{
+    escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
+};
+
+const ICON_SIZE: f64 = 0.32;
+const ICON_GAP: f64 = 0.10;
+const ICON_COL_STEP: f64 = 0.62;
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n = cfg.values.len();
+    if n == 0 {
+        return Vec::new();
+    }
+    let upi = cfg.units_per_icon.max(1.0);
+    let max_per_col = cfg.max_icons_per_column.max(1) as usize;
+    let half = ICON_SIZE / 2.0;
+    let mut out = Vec::new();
+    for i in 0..n {
+        let count = ((cfg.values[i] / upi).round() as i64).max(0) as usize;
+        for k in 0..count {
+            let col = k / max_per_col;
+            let row = k % max_per_col;
+            let cx = i as f64 + col as f64 * ICON_COL_STEP;
+            let z0 = row as f64 * (ICON_SIZE + ICON_GAP);
+            out.push(Bar3DBlock::new(cx, 0.0, z0, z0 + ICON_SIZE, half, half, i));
+        }
+    }
+    out
+}
+
+#[crate::chart_demo("labels=[\"Bikes\",\"Cars\",\"Buses\",\"Trains\"], values=[24,38,17,42], unit_description=\"units\", units_per_icon=2.0, icon_size=24, max_icons_per_column=10")]
+
+pub fn render(cfg: &BarConfig) -> String {
+    let n = cfg.labels.len().min(cfg.values.len());
+    if n == 0 {
+        return String::new();
+    }
+    let upi = cfg.units_per_icon.max(1.0);
+    let max_per_col = cfg.max_icons_per_column.max(1);
+    let icon_size = cfg.icon_size.max(8);
+    let icon_pad = (icon_size as f64 * 0.18) as i32;
+    let col_w = icon_size + icon_pad;
+    let col_h = (max_per_col * (icon_size + icon_pad) + icon_pad).max(80);
+
+    let cols: Vec<i32> = (0..n)
+        .map(|i| {
+            let count = (cfg.values[i] / upi).round() as i32;
+            ((count + max_per_col - 1) / max_per_col).max(1)
+        })
+        .collect();
+    let counts: Vec<i32> = (0..n)
+        .map(|i| (cfg.values[i] / upi).round() as i32)
+        .collect();
+
+    let cat_pad = col_w;
+    let total_cols: i32 = cols.iter().sum::<i32>() + (n as i32 - 1).max(0);
+    let plot_w = total_cols * col_w + cat_pad;
+    let pl = 60;
+    let pt = 60;
+    let pb = 60;
+    let pr = 60;
+    let w = (plot_w + pl + pr).max(cfg.width);
+    let h = (col_h + pt + pb).max(cfg.height);
+
+    let mut f = Frame::new_html(cfg.title, w, h, pl, pt, pb, pr, n as usize * 800 + 4096);
+    f.open(cfg.title, true);
+
+    if !cfg.unit_description.is_empty() {
+        push_b(&mut f.buf, b"<text x=\"");
+        push_i(&mut f.buf, pl - 10);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, pt - 12);
+        push_b(
+            &mut f.buf,
+            b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">Each icon = ",
+        );
+        push_f2(&mut f.buf, upi);
+        push_b(&mut f.buf, b" ");
+        escape_xml(&mut f.buf, cfg.unit_description);
+        push_b(&mut f.buf, b"</text>");
+    }
+
+    let mut x_acc = pl + cat_pad / 2;
+    let baseline = pt + col_h - icon_pad;
+    for i in 0..n {
+        let count = counts[i];
+        let n_cols = cols[i];
+        let color = if cfg.color_hex != 0 {
+            cfg.color_hex
+        } else {
+            palette_color(cfg.palette, i)
+        };
+
+        let mut placed = 0;
+        for ci in 0..n_cols {
+            let in_col = (count - placed).min(max_per_col);
+            let cx = x_acc + ci * col_w + icon_size / 2;
+            for k in 0..in_col {
+                let cy = baseline - k * (icon_size + icon_pad) - icon_size / 2;
+                push_b(&mut f.buf, b"<rect data-idx=\"");
+                push_i(&mut f.buf, i as i32);
+                push_b(&mut f.buf, b"\" data-lbl=\"");
+                escape_xml(&mut f.buf, &cfg.labels[i]);
+                push_b(&mut f.buf, b"\" data-group=\"");
+                escape_xml(&mut f.buf, &cfg.labels[i]);
+                push_b(&mut f.buf, b"\" x=\"");
+                push_i(&mut f.buf, cx - icon_size / 2);
+                push_b(&mut f.buf, b"\" y=\"");
+                push_i(&mut f.buf, cy - icon_size / 2);
+                push_b(&mut f.buf, b"\" width=\"");
+                push_i(&mut f.buf, icon_size);
+                push_b(&mut f.buf, b"\" height=\"");
+                push_i(&mut f.buf, icon_size);
+                push_b(&mut f.buf, b"\" rx=\"3\" fill=\"");
+                push_hex(&mut f.buf, color);
+                push_b(&mut f.buf, b"\"/>");
+            }
+            placed += in_col;
+        }
+
+        let center_x = x_acc + (n_cols * col_w) / 2;
+        if cfg.show_text {
+            push_b(&mut f.buf, b"<text x=\"");
+            push_i(&mut f.buf, center_x);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, pt - 4);
+            push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#1f2937\">");
+            push_f2(&mut f.buf, cfg.values[i]);
+            push_b(&mut f.buf, b"</text>");
+        }
+
+        push_b(&mut f.buf, b"<text x=\"");
+        push_i(&mut f.buf, center_x);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, pt + col_h + 18);
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#475569\">");
+        escape_xml(&mut f.buf, &cfg.labels[i]);
+        push_b(&mut f.buf, b"</text>");
+
+        x_acc += n_cols * col_w + cat_pad;
+    }
+
+    f.html("[]")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stacked_icon_units_are_cube_shaped_with_a_gap_wide_enough_to_stay_visible() {
+        let values = [3.0];
+        let cfg = BarConfig {
+            values: &values,
+            units_per_icon: 1.0,
+            max_icons_per_column: 10,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 3);
+        let height = blocks[0].z1 - blocks[0].z0;
+        let footprint = blocks[0].hw * 2.0;
+        assert!(
+            (height - footprint).abs() < 1e-9,
+            "an icon unit should be a cube, not a flat brick: height={height} footprint={footprint}"
+        );
+        let gap = blocks[1].z0 - blocks[0].z1;
+        assert!(gap / height > 0.25, "the gap between stacked icons ({gap}) must stay a clearly resolvable fraction of icon height ({height}), or they visually fuse together");
+    }
+
+    #[test]
+    fn overflow_into_a_second_column_never_overlaps_the_first() {
+        let values = [12.0];
+        let cfg = BarConfig {
+            values: &values,
+            units_per_icon: 1.0,
+            max_icons_per_column: 10,
+            ..BarConfig::default()
+        };
+        let blocks = layout_3d(&cfg);
+        assert_eq!(blocks.len(), 12);
+        let col0_x = blocks[0].cx;
+        let col1_x = blocks[10].cx;
+        assert!(col1_x - col0_x > blocks[0].hw * 2.0, "a second icon column must clear the first column's footprint");
+    }
+}

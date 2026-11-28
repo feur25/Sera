@@ -1,223 +1,255 @@
-﻿# Bubble Map
+# Bubble Map
 
 <div class="lang-en">
 
+<style>
+.sp-preview-frame{width:100%;height:420px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
 ## Signature
 
-```python
-sp.build_bubble_map(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    latitudes: list[float] | None = None,
-    longitudes: list[float] | None = None,
-    iso_codes: list[str] | None = None,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    bubble_opacity: float = 0.6,
-    min_bubble_size: float = 5.0,
-    max_bubble_size: float = 50.0,
-) -> Chart
-```
+`sp.bubble_map(title, labels=None, values=None, *, variant="proportional", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
-Aliases: `sp.bubble_map`
-
----
+Aliases: `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
 
 ## Description
 
-World map with proportional bubbles at geographic coordinates.
-Use `iso_codes` for country-level data (the library resolves centroids automatically), or pass explicit `latitudes` / `longitudes`.
+`sp.bubble_map()` marks matched regions on a map with a proportionally-sized circle at each centroid by default — real bubbles, not filled shapes; pick `variant="filled"` instead when it's the regions themselves the reader should compare, not a magnitude. `map` selects which registered geographic region set to draw; `region` optionally restricts drawing to one named group inside that set. All three are read live from the same register/inventory system the rest of the framework uses — nothing below is hardcoded.
 
----
+## Variants
+
+<div data-sp-registry-table="variants" data-family="bubble_map"></div>
+
+## Region Sets
+
+<div data-sp-registry-table="regions"></div>
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Location names |
-| `values` | `list[float]` | required | Bubble sizes |
-| `latitudes` | `list[float] \| None` | `None` | Manual latitudes |
-| `longitudes` | `list[float] \| None` | `None` | Manual longitudes |
-| `iso_codes` | `list[str] \| None` | `None` | ISO-3166 alpha-3 country codes |
-| `color_hex` | `int` | `0x6366F1` | Bubble color |
-| `palette` | `list[int] \| None` | `None` | Multi-group palette |
-| `width` | `int` | `1000` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `bubble_opacity` | `float` | `0.6` | Bubble transparency (0–1) |
-| `min_bubble_size` | `float` | `5.0` | Minimum bubble radius in pixels |
-| `max_bubble_size` | `float` | `50.0` | Maximum bubble radius in pixels |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
+<div data-sp-registry-table="options" data-family="bubble_map"></div>
 
 ---
 
 ## Returns
 
-`Chart`
+`Chart` — object with `.html` property and `.show()` method.
 
 ---
 
-## Examples
+<div class="sp-cls sp-open" id="bubblemap-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bubblemap-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-en','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportional</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Filled</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Ring</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulse</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-en','pie_markers',this)"><span class="sp-cic">◕</span><span class="sp-clb">Pie Markers</span></button>
+</div>
+<div class="sp-cls-body">
 
-### GDP per country (ISO code lookup)
+<div class="sp-variant sp-von" id="bubblemap-en-proportional">
 
+The default, and the real graduated-symbol map: the base is muted, and a circle sits on each matched region's centroid, its radius scaled by `sqrt(value)` so *area* — not radius — reads proportionally to magnitude. `min_bubble_size` / `max_bubble_size` set the radius range in pixels.
 
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code></span><span><strong>Aliases</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code> / <code>"basic"</code> / <code>"default"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="bubble-map">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble-map','bubble-map-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-ts',this)">TypeScript</button></div>
-<div id="bubble-map-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.build_bubble_map(
-    "GDP by Country",
-    labels=["USA", "CHN", "DEU", "JPN", "FRA"],
-    values=[25500, 17700, 4400, 4200, 3100],
-)</code></pre></div>
-<div id="bubble-map-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.build_bubble_map("GDP by Country",
-["USA", "CHN", "DEU", "JPN", "FRA"],
-{
-    values: [25500, 17700, 4400, 4200, 3100]
-})</code></pre></div>
-<div id="bubble-map-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.build_bubble_map("GDP by Country",
-["USA", "CHN", "DEU", "JPN", "FRA"],
-{
-    values: [25500, 17700, 4400, 4200, 3100]
-})</code></pre></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bubblemap-en-filled">
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
+Not a bubble at all by design: each matched region filled solid with its own palette color and labeled at its centroid — a categorical highlight map, for when it's the regions themselves the reader should compare rather than a magnitude. Reach for `choropleth` instead if the fill color should encode a continuous value.
 
-<iframe src="../../previews/bubble-map.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"regions"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</details>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
+</div>
 
-### Custom coordinates
+<div class="sp-variant" id="bubblemap-en-globe">
 
-```python
-import seraplot as sp
+Proportional circles projected onto an orthographic sphere — every centroid is converted to real latitude/longitude and re-projected with actual globe math, so bubbles on the far side simply aren't drawn. `center_lat` / `center_lon` aim the view (default `15, 10`). Only region sets that expose a coordinate inversion support this — today, `"world"`.
 
-chart = sp.build_bubble_map(
-    "City Populations",
-    labels=["Paris", "Tokyo", "New York", "Lagos"],
-    values=[11, 37, 20, 15],
-    latitudes=[48.85, 35.68, 40.71, 6.52],
-    longitudes=[2.35, 139.69, -74.01, 3.38],
-)
-```
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"globe"</code></span><span><strong>Aliases</strong> <code>"globe"</code> / <code>"orthographic"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
----
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-ring">
+
+A hollow circle instead of a filled one — `stroke-width` carries the magnitude, not just radius, so a thin ring reads small and a thick ring reads large even where two circles overlap and one would otherwise hide behind the other.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ring"</code></span><span><strong>Aliases</strong> <code>"ring"</code> / <code>"donut"</code> / <code>"outline"</code> / <code>"hollow"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-ring.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-pulse">
+
+Two faint concentric rings behind the solid marker, fading out with distance — a static radar-ping look, well suited to data that reads as an alert or a hotspot rather than a plain quantity.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pulse"</code></span><span><strong>Aliases</strong> <code>"pulse"</code> / <code>"ripple"</code> / <code>"radar"</code> / <code>"ping"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-hexbin">
+
+A density map, not a values map: pass raw `lats`/`lons` samples instead of `labels`/`values` and each point is binned into a hexagonal grid — real axial hex-coordinate binning with cube-coordinate rounding, the same technique a proper geographic hexbin uses, not a nearest-center search. Each hexagon is sized and colored by how many samples landed inside it, with the count itself labeled once a cell holds more than one.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"hexbin"</code></span><span><strong>Aliases</strong> <code>"hexbin"</code> / <code>"hex"</code> / <code>"density"</code> / <code>"honeycomb"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-en-pie_markers">
+
+A proportional symbol map where the symbol is a real pie, not a circle: pass a `series` of per-point category breakdowns plus shared `categories` names instead of a flat `values` array, and each point draws its own mini pie sized by its category total (`sqrt`-scaled, same convention as `proportional`) with genuine arc-path slices — not a bubble with a label. Category colors stay fixed across every point so two pies stay comparable at a glance, with a legend rendered top-right.
+
+`sub_variant` picks the glyph itself from `sp.pie()`'s own variant vocabulary — `"donut"`, `"semi"`, `"exploded"`, `"nightingale"`, `"waffle"` render each map point with that exact 2D pie style, scaled down. `donut`/`semi`/`exploded` call the identical shared renderer a standalone `sp.pie(variant=...)` uses, just aimed at a small per-marker area; `nightingale` and `waffle` reimplement the same polar-area and largest-remainder-apportionment math at marker scale, since their 2D renderers build a full standalone document rather than a reusable sub-area piece. Any other `sub_variant` (or none) falls back to a plain pie.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pie_markers"</code></span><span><strong>Aliases</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pie_markers.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>
 
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
-<h2>Signature</h2>
+## Signature
 
-```python
-sp.build_bubble_map(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    latitudes: list[float] | None = None,
-    longitudes: list[float] | None = None,
-    iso_codes: list[str] | None = None,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    hover_json: str | None = None,
-    bubble_opacity: float = 0.6,
-    min_bubble_size: float = 5.0,
-    max_bubble_size: float = 50.0,
-) -> Chart
-```
+`sp.bubble_map(title, labels=None, values=None, *, variant="proportional", map="world", region=None, center_lat=None, center_lon=None, **kwargs) -> Chart`
 
-Aliases: `sp.bubble_map`
+Alias : `sp.bubble_map`, `sp.bubblemap`, `sp.bubble_map_chart`, `sp.geo_bubble`, `sp.geo_bubble_map`, `sp.build_bubble_map`
+
+## Description
+
+`sp.bubble_map()` repère les régions correspondantes sur une carte avec, par défaut, un cercle de taille proportionnelle à son centroïde — de vraies bulles, pas des régions remplies ; prendre `variant="filled"` plutôt quand ce sont les régions elles-mêmes que le lecteur doit comparer, pas une magnitude. `map` sélectionne l'ensemble de régions géographiques enregistré à dessiner ; `region` restreint optionnellement le dessin à un seul groupe nommé de cet ensemble. Les trois sont lus en direct depuis le même système de register/inventory utilisé dans tout le framework — rien ci-dessous n'est codé en dur.
+
+## Variantes
+
+<div data-sp-registry-table="variants" data-family="bubble_map"></div>
+
+## Ensembles de régions
+
+<div data-sp-registry-table="regions"></div>
+
+## Paramètres
+
+<div data-sp-registry-table="options" data-family="bubble_map"></div>
 
 ---
 
-<h2>Description</h2>
+## Retourne
 
-Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques. Utilisez `iso_codes` pour les données par pays (la bibliothèque résout les centroïdes automatiquement), ou passez des `latitudes` / `longitudes` explicites.
-
----
-
-<h2>Paramètres</h2>
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Noms des lieux |
-| `values` | `list[float]` | requis | Tailles des bulles |
-| `latitudes` | `list[float] \| None` | `None` | Latitudes manuelles |
-| `longitudes` | `list[float] \| None` | `None` | Longitudes manuelles |
-| `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 des pays |
-| `color_hex` | `int` | `0x6366F1` | Couleur des bulles |
-| `palette` | `list[int] \| None` | `None` | Palette multi-groupes |
-| `width` | `int` | `1000` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `bubble_opacity` | `float` | `0.6` | Transparence des bulles (0–1) |
-| `min_bubble_size` | `float` | `5.0` | Rayon minimal des bulles en pixels |
-| `max_bubble_size` | `float` | `50.0` | Rayon maximal des bulles en pixels |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
 ---
 
-<h2>Retourne</h2>
+<div class="sp-cls sp-open" id="bubblemap-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bubblemap-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubblemap-fr','proportional',this)"><span class="sp-cic">●</span><span class="sp-clb">Proportionnel</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','filled',this)"><span class="sp-cic">▧</span><span class="sp-clb">Rempli</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','globe',this)"><span class="sp-cic">◉</span><span class="sp-clb">Globe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','ring',this)"><span class="sp-cic">○</span><span class="sp-clb">Anneau</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pulse',this)"><span class="sp-cic">◍</span><span class="sp-clb">Pulsation</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','hexbin',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubblemap-fr','pie_markers',this)"><span class="sp-cic">◕</span><span class="sp-clb">Marqueurs camembert</span></button>
+</div>
+<div class="sp-cls-body">
 
-`Chart`
+<div class="sp-variant sp-von" id="bubblemap-fr-proportional">
 
----
+Le défaut, et la vraie carte à symboles proportionnels : le fond est estompé, et un cercle se place sur le centroïde de chaque région correspondante, son rayon mis à l'échelle par `sqrt(valeur)` pour que ce soit l'*aire* — pas le rayon — qui soit proportionnelle à la magnitude. `min_bubble_size` / `max_bubble_size` règlent la plage de rayon en pixels.
 
-<h2>Exemples</h2>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code></span><span><strong>Alias</strong> <code>"proportional"</code> / <code>"bubble"</code> / <code>"graduated"</code> / <code>"sized"</code> / <code>"basic"</code> / <code>"default"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
-```python
-import seraplot as sp
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-proportional.html"></iframe>
+</div>
 
-chart = sp.build_bubble_map(
-    "PIB par pays",
-    labels=["USA", "CHN", "DEU", "JPN", "FRA"],
-    values=[25500, 17700, 4400, 4200, 3100],
-)
-```
+<div class="sp-variant" id="bubblemap-fr-filled">
 
-```python
-import seraplot as sp
+Pas du tout des bulles, volontairement : chaque région correspondante remplie en aplat de sa propre couleur de palette et étiquetée à son centroïde — une carte de mise en évidence catégorielle, pour quand ce sont les régions elles-mêmes que le lecteur doit comparer plutôt qu'une magnitude. Utiliser plutôt `choropleth` si la couleur de remplissage doit encoder une valeur continue.
 
-chart = sp.build_bubble_map(
-    "Populations urbaines",
-    labels=["Paris", "Tokyo", "New York", "Lagos"],
-    values=[11, 37, 20, 15],
-    latitudes=[48.85, 35.68, 40.71, 6.52],
-    longitudes=[2.35, 139.69, -74.01, 3.38],
-)
-```
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"regions"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
----
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-filled.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-globe">
+
+Cercles proportionnels projetés sur une sphère orthographique — chaque centroïde est converti en vraie latitude/longitude puis reprojeté avec une véritable trigonométrie de globe, si bien que les bulles de la face cachée ne sont tout simplement pas dessinées. `center_lat` / `center_lon` orientent la vue (par défaut `15, 10`). Seuls les ensembles de régions exposant une inversion de coordonnées supportent ceci — aujourd'hui, `"world"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"globe"</code></span><span><strong>Alias</strong> <code>"globe"</code> / <code>"orthographic"</code> / <code>"sphere"</code> / <code>"space"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-globe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-ring">
+
+Un cercle creux plutôt que rempli — c'est `stroke-width` qui porte la magnitude, pas seulement le rayon, si bien qu'un anneau fin se lit petit et un anneau épais se lit grand même quand deux cercles se chevauchent et que l'un masquerait sinon l'autre.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ring"</code></span><span><strong>Alias</strong> <code>"ring"</code> / <code>"donut"</code> / <code>"outline"</code> / <code>"hollow"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-ring.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-pulse">
+
+Deux anneaux concentriques discrets derrière le marqueur plein, qui s'estompent avec la distance — une allure de ping radar statique, bien adaptée aux données qui se lisent comme une alerte ou un point chaud plutôt qu'une simple quantité.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pulse"</code></span><span><strong>Alias</strong> <code>"pulse"</code> / <code>"ripple"</code> / <code>"radar"</code> / <code>"ping"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pulse.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-hexbin">
+
+Une carte de densité, pas une carte de valeurs : passez des échantillons bruts `lats`/`lons` plutôt que `labels`/`values`, et chaque point est regroupé dans une grille hexagonale — un vrai binning en coordonnées hexagonales axiales avec arrondi en coordonnées cubiques, la même technique qu'un hexbin géographique correct, pas une recherche du centre le plus proche. Chaque hexagone est dimensionné et coloré selon le nombre d'échantillons tombés à l'intérieur, avec le compte lui-même affiché dès qu'une cellule contient plus d'un point.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"hexbin"</code></span><span><strong>Alias</strong> <code>"hexbin"</code> / <code>"hex"</code> / <code>"density"</code> / <code>"honeycomb"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-hexbin.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubblemap-fr-pie_markers">
+
+Une carte à symboles proportionnels où le symbole est un vrai camembert, pas un cercle : passez un `series` de répartitions par catégorie pour chaque point, plus des `categories` nommées partagées, au lieu d'un tableau `values` plat, et chaque point dessine son propre mini-camembert dimensionné selon son total de catégories (mise à l'échelle en `sqrt`, même convention que `proportional`) avec de vraies parts en arc-path — pas une bulle avec une étiquette. Les couleurs de catégorie restent fixes sur tous les points pour que deux camemberts restent comparables d'un coup d'œil, avec une légende en haut à droite.
+
+`sub_variant` choisit le glyphe lui-même parmi le vocabulaire de variantes de `sp.pie()` — `"donut"`, `"semi"`, `"exploded"`, `"nightingale"`, `"waffle"` dessinent chaque point avec exactement ce style de camembert 2D, réduit à l'échelle d'un marqueur. `donut`/`semi`/`exploded` appellent le même moteur de rendu partagé qu'utilise un `sp.pie(variant=...)` autonome, juste visé sur une petite zone par marqueur ; `nightingale` et `waffle` réimplémentent les mêmes mathématiques (aire polaire à rayon variable, apportionnement par plus grand reste) à l'échelle d'un marqueur, puisque leurs moteurs 2D construisent un document autonome complet plutôt qu'une pièce réutilisable sur une sous-zone. Tout autre `sub_variant` (ou son absence) retombe sur un camembert simple.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pie_markers"</code></span><span><strong>Alias</strong> <code>"pie_markers"</code> / <code>"pie_map"</code> / <code>"mini_pie"</code> / <code>"category_pie"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" data-src="../../previews/bubble-map-pie_markers.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>

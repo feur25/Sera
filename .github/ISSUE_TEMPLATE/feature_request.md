@@ -1,20 +1,20 @@
 ---
 name: Feature request
-about: Suggest a new chart type, method, or capability
-title: ""
-labels: enhancement
+about: Suggest an idea for this project
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
-**What are you trying to do?**
-Describe the use case, not just the requested API shape.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-**What's missing today?**
-What you tried, and where it falls short (e.g. no equivalent chart, no way to configure X, missing Python binding for Y).
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-**Proposed API (optional)**
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-```python
-import seraplot as sp
-
-# what you'd want to be able to write
-```
+**Additional context**
+Add any other context or screenshots about the feature request here.

@@ -1,11 +1,7 @@
-pub mod extractor;
-pub mod metadata;
 pub mod api;
 pub mod language;
+pub mod metadata;
 
-pub use extractor::*;
-pub use metadata::*;
 pub use api::*;
 pub use language::*;
-
-
+pub use metadata::*;

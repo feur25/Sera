@@ -1,6 +1,6 @@
+use crate::html::fast_exporter::FastHtmlExporter;
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_int};
-use crate::html::fast_exporter::FastHtmlExporter;
 
 #[no_mangle]
 pub extern "C" fn sera_fast_export_create(
@@ -11,7 +11,7 @@ pub extern "C" fn sera_fast_export_create(
     if title.is_null() {
         return std::ptr::null_mut();
     }
-    
+
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let exporter = FastHtmlExporter::new(width, height, title_str);
     Box::into_raw(Box::new(exporter))
@@ -41,10 +41,10 @@ pub extern "C" fn sera_fast_build_html(
     }
 
     let value_vec = unsafe { std::slice::from_raw_parts(values, count).to_vec() };
-    
+
     let exporter = unsafe { &*exporter };
     let html = exporter.build_optimized(label_vec, value_vec);
-    
+
     let c_string = CString::new(html).unwrap_or_default();
     c_string.into_raw()
 }
@@ -66,5 +66,3 @@ pub extern "C" fn sera_fast_export_destroy(exporter: *mut FastHtmlExporter) {
         }
     }
 }
-
-

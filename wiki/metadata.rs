@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use super::language::CodeExample;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MethodDoc {
@@ -56,60 +56,80 @@ impl WikiExport {
     }
 
     pub fn to_markdown(&self, lang: &super::language::ProgrammingLanguage) -> String {
-        let mut md = format!("# {} API Documentation\n\nVersion: {}\nLanguage: {}\n\n", self.framework_name, self.version, lang.name());
-        
+        let mut md = format!(
+            "# {} API Documentation\n\nVersion: {}\nLanguage: {}\n\n",
+            self.framework_name,
+            self.version,
+            lang.name()
+        );
+
         for module in &self.modules {
             md.push_str(&format!("## {}\n\n{}\n\n", module.name, module.description));
-            
+
             for method in &module.methods {
                 md.push_str(&format!("### `{}`\n\n", method.name));
-                
+
                 let signature = match lang {
                     super::language::ProgrammingLanguage::Python => &method.python_signature,
                     super::language::ProgrammingLanguage::CSharp => &method.csharp_signature,
                     super::language::ProgrammingLanguage::Cpp => &method.cpp_signature,
                     super::language::ProgrammingLanguage::Rust => &method.rust_signature,
                 };
-                
-                md.push_str(&format!("**Signature:**\n```{}\n{}\n```\n\n", lang.file_extension(), signature));
+
+                md.push_str(&format!(
+                    "**Signature:**\n```{}\n{}\n```\n\n",
+                    lang.file_extension(),
+                    signature
+                ));
                 md.push_str(&format!("{}\n\n", method.description));
-                
+
                 if !method.parameters.is_empty() {
                     md.push_str("**Parameters:**\n\n");
                     for param in &method.parameters {
-                        md.push_str(&format!("- `{}` (`{}`): {}\n", param.name, param.param_type, param.description));
+                        md.push_str(&format!(
+                            "- `{}` (`{}`): {}\n",
+                            param.name, param.param_type, param.description
+                        ));
                     }
                     md.push_str("\n");
                 }
-                
+
                 if let Some(ret) = &method.returns {
                     md.push_str(&format!("**Returns:** `{}`\n\n", ret));
                 }
-                
+
                 if !method.examples.is_empty() {
                     md.push_str("**Examples:**\n\n");
                     for example in &method.examples {
-                        md.push_str(&format!("```{}\n{}\n```\n\n", lang.file_extension(), example.get(lang)));
+                        md.push_str(&format!(
+                            "```{}\n{}\n```\n\n",
+                            lang.file_extension(),
+                            example.get(lang)
+                        ));
                     }
                 }
-                
+
                 if let Some(version) = &method.since_version {
                     md.push_str(&format!("**Since:** {}\n\n", version));
                 }
-                
+
                 if method.deprecated {
                     md.push_str("**⚠️ DEPRECATED**\n\n");
                 }
             }
         }
-        
+
         md
     }
 
     pub fn to_html(&self, lang: &super::language::ProgrammingLanguage) -> String {
         let mut html = String::new();
         html.push_str("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n");
-        html.push_str(&format!("<title>{} API - {}</title>\n", self.framework_name, lang.name()));
+        html.push_str(&format!(
+            "<title>{} API - {}</title>\n",
+            self.framework_name,
+            lang.name()
+        ));
         html.push_str("<style>\n");
         html.push_str("* { margin: 0; padding: 0; box-sizing: border-box; }\n");
         html.push_str("body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 2rem; }\n");
@@ -139,34 +159,49 @@ impl WikiExport {
         html.push_str("</style>\n");
         html.push_str("</head>\n<body>\n");
         html.push_str("<div class=\"container\">\n");
-        html.push_str(&format!("<div class=\"header\">\n<h1>{} API Documentation</h1>\n", self.framework_name));
+        html.push_str(&format!(
+            "<div class=\"header\">\n<h1>{} API Documentation</h1>\n",
+            self.framework_name
+        ));
         html.push_str(&format!("<div><span class=\"lang-badge\">📖 Version {}</span><span class=\"lang-badge\">💻 {}</span></div>\n", self.version, lang.name()));
         html.push_str("</div>\n");
         html.push_str("<div class=\"content\">\n");
-        
+
         for module in &self.modules {
-            html.push_str(&format!("<div class=\"module\">\n<h2>{}</h2>\n", module.name));
-            html.push_str(&format!("<p class=\"module-desc\">{}</p>\n", module.description));
-            
+            html.push_str(&format!(
+                "<div class=\"module\">\n<h2>{}</h2>\n",
+                module.name
+            ));
+            html.push_str(&format!(
+                "<p class=\"module-desc\">{}</p>\n",
+                module.description
+            ));
+
             for method in &module.methods {
                 html.push_str("<div class=\"method\">\n");
                 html.push_str(&format!("<h3>{}</h3>\n", method.name));
-                
+
                 if method.deprecated {
                     html.push_str("<div class=\"deprecated\">⚠️ DEPRECATED</div>\n");
                 }
-                
-                html.push_str(&format!("<p class=\"method-desc\">{}</p>\n", method.description));
-                
+
+                html.push_str(&format!(
+                    "<p class=\"method-desc\">{}</p>\n",
+                    method.description
+                ));
+
                 let signature = match lang {
                     super::language::ProgrammingLanguage::Python => &method.python_signature,
                     super::language::ProgrammingLanguage::CSharp => &method.csharp_signature,
                     super::language::ProgrammingLanguage::Cpp => &method.cpp_signature,
                     super::language::ProgrammingLanguage::Rust => &method.rust_signature,
                 };
-                
-                html.push_str(&format!("<div class=\"signature\">{}</div>\n", html_escape(signature)));
-                
+
+                html.push_str(&format!(
+                    "<div class=\"signature\">{}</div>\n",
+                    html_escape(signature)
+                ));
+
                 if !method.parameters.is_empty() {
                     html.push_str("<div class=\"params\">\n<h4>Parameters:</h4>\n");
                     for param in &method.parameters {
@@ -175,30 +210,36 @@ impl WikiExport {
                     }
                     html.push_str("</div>\n");
                 }
-                
+
                 if let Some(ret) = &method.returns {
-                    html.push_str(&format!("<div class=\"returns\"><h4>Returns:</h4><code>{}</code></div>\n", ret));
+                    html.push_str(&format!(
+                        "<div class=\"returns\"><h4>Returns:</h4><code>{}</code></div>\n",
+                        ret
+                    ));
                 }
-                
+
                 if !method.examples.is_empty() {
                     html.push_str("<div class=\"examples\">\n<h4>Examples:</h4>\n");
                     for example in &method.examples {
                         let code = example.get(lang);
-                        html.push_str(&format!("<div class=\"code-block\">{}</div>\n", html_escape(code)));
+                        html.push_str(&format!(
+                            "<div class=\"code-block\">{}</div>\n",
+                            html_escape(code)
+                        ));
                     }
                     html.push_str("</div>\n");
                 }
-                
+
                 if let Some(version) = &method.since_version {
                     html.push_str(&format!("<p class=\"version\">Since: {}</p>\n", version));
                 }
-                
+
                 html.push_str("</div>\n");
             }
-            
+
             html.push_str("</div>\n");
         }
-        
+
         html.push_str("</div>\n</div>\n</body>\n</html>\n");
         html
     }
@@ -211,5 +252,3 @@ fn html_escape(s: &str) -> String {
         .replace("\"", "&quot;")
         .replace("'", "&#39;")
 }
-
-

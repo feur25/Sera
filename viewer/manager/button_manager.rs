@@ -59,11 +59,14 @@ impl ButtonManager {
     }
 
     fn default_buttons() -> Vec<ButtonDefinition> {
-        BUTTON_ORDER.iter().map(|(id, icon, text)| ButtonDefinition {
-            id: id.clone(),
-            icon: icon.to_string(),
-            text: text.to_string(),
-        }).collect()
+        BUTTON_ORDER
+            .iter()
+            .map(|(id, icon, text)| ButtonDefinition {
+                id: id.clone(),
+                icon: icon.to_string(),
+                text: text.to_string(),
+            })
+            .collect()
     }
 
     pub fn toggle_state(&mut self, id: &ButtonId) {
@@ -100,7 +103,7 @@ impl ButtonManager {
                     self.toggle_state(&button_def.id);
                     clicked.insert(button_def.id, true);
                 }
-                
+
                 if self.show_info {
                     ui.label(&button_def.text);
                 }
@@ -124,11 +127,14 @@ pub struct ButtonManagerBuilder {
 impl ButtonManagerBuilder {
     pub fn new() -> Self {
         Self {
-            buttons: BUTTON_ORDER.iter().map(|(id, icon, text)| ButtonDefinition {
-                id: id.clone(),
-                icon: icon.to_string(),
-                text: text.to_string(),
-            }).collect()
+            buttons: BUTTON_ORDER
+                .iter()
+                .map(|(id, icon, text)| ButtonDefinition {
+                    id: id.clone(),
+                    icon: icon.to_string(),
+                    text: text.to_string(),
+                })
+                .collect(),
         }
     }
 
@@ -155,7 +161,7 @@ mod tests {
     #[test]
     fn test_button_manager_states() {
         let mut manager = ButtonManager::new();
-        
+
         manager.set_state(ButtonId::Elements, true);
         assert!(manager.get_state(&ButtonId::Elements));
 
@@ -172,10 +178,9 @@ pub struct ButtonDescription {
 
 impl ButtonDescription {
     pub fn get_description(id: &ButtonId) -> Option<(String, String)> {
-        BUTTON_ORDER.iter()
+        BUTTON_ORDER
+            .iter()
             .find(|(btn_id, _, _)| btn_id == id)
             .map(|(_, icon, text)| (icon.to_string(), text.to_string()))
     }
 }
-
-

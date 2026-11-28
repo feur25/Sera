@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MDBOOK_VERSION: 0.4.51
+  MDBOOK_VERSION: 0.5.2
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -41,50 +41,12 @@ jobs:
           chmod +x /usr/local/bin/mdbook
           mdbook --version
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: tools
-
-      - name: Build tools
-        run: cargo build --release --manifest-path tools/Cargo.toml
-
-      - name: Install SeraPlot (optional — previews skipped if unavailable)
-        run: pip install seraplot==2.3.47 || echo "seraplot not on PyPI — chart previews will be skipped"
-
-      - name: Generate chart previews
-        run: ./tools/target/release/gen_previews
-
-      - name: Generate API index
-        run: ./tools/target/release/gen_index
-
-      - name: Check for docs changes
-        id: check_changes
-        run: |
-          if git diff --quiet docs/; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit docs changes
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/
-          git diff --cached --quiet || git commit -m "docs: regenerate previews and index"
-          git push
-
       - name: Build docs
         run: |
           mdbook build -d book/html
-          mkdir -p book/html/docs/theme
-          cp docs/theme/seraplot_bg.wasm book/html/docs/theme/seraplot_bg.wasm
-          cp docs/theme/seraplot_bg.wasm book/html/theme/seraplot_bg.wasm 2>/dev/null || true
+          mkdir -p book/html/docs/theme/wasm book/html/docs/theme/images
+          cp docs/theme/wasm/seraplot_bg.wasm book/html/docs/theme/wasm/seraplot_bg.wasm
+          cp docs/theme/images/logo_banner.png book/html/docs/theme/images/logo_banner.png
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -106,6 +68,9 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: book/html
+
+      - name: Wait for artifact to propagate
+        run: sleep 15
 
       - name: Deploy to GitHub Pages
         id: deployment

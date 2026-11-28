@@ -19,6 +19,7 @@ pub struct TextCommand {
     pub color: egui::Color32,
 }
 
+#[allow(dead_code)]
 trait CommandBuffer<T> {
     fn acquire(&self) -> Vec<T>;
     fn release(&self, buffer: Vec<T>);
@@ -102,6 +103,7 @@ pub struct AdvancedBatchRenderer {
     circles: Vec<DrawCommand>,
     lines: Vec<LineCommand>,
     text_items: Vec<TextCommand>,
+    #[allow(dead_code)]
     pool: std::sync::Arc<VectorPool>,
     batch_size: usize,
 }
@@ -130,14 +132,13 @@ impl AdvancedBatchRenderer {
         self.circles.extend(commands);
     }
 
-    pub fn add_line(
-        &mut self,
-        from: egui::Pos2,
-        to: egui::Pos2,
-        color: egui::Color32,
-        width: f32,
-    ) {
-        self.lines.push(LineCommand { from, to, color, width });
+    pub fn add_line(&mut self, from: egui::Pos2, to: egui::Pos2, color: egui::Color32, width: f32) {
+        self.lines.push(LineCommand {
+            from,
+            to,
+            color,
+            width,
+        });
     }
 
     pub fn add_text(&mut self, pos: egui::Pos2, text: String, color: egui::Color32) {
@@ -284,7 +285,7 @@ impl DataCache {
         }
     }
 
-    pub fn update(&mut self, values: &[f64], colors: &[egui::Color32], hash: u64) {
+    pub fn update(&mut self, _values: &[f64], _colors: &[egui::Color32], hash: u64) {
         self.data_hash = hash;
         self.is_valid = self.data_hash == hash && !self.cached_points.is_empty();
     }
@@ -312,5 +313,3 @@ impl DataCache {
         self.is_valid = true;
     }
 }
-
-

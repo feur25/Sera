@@ -1,0 +1,330 @@
+use super::common::{bin_to_edges, compute_bins};
+use super::config::HistogramConfig;
+use super::normalized::gaussian_kde;
+use super::variant::HistogramVariant;
+use crate::plot::statistical::_3d::generic::{grouped_columns, plate_columns};
+use crate::plot::statistical::_3d::zone::Fit;
+use crate::plot::statistical::bar::Bar3DBlock;
+use std::collections::HashMap;
+
+pub const HEIGHT_RATIO: f64 = 0.8;
+const BIN_HW: f64 = 0.49;
+const BIN_DEPTH: f64 = 0.42;
+const HORIZ_THICKNESS: f64 = 0.4;
+const HORIZ_ROW: f64 = 1.0;
+const PLATE_SHARE: f64 = 0.02;
+const GROUP_LIMIT: usize = 60;
+
+pub fn fit_3d(variant: HistogramVariant) -> Fit {
+    match variant {
+        HistogramVariant::Horizontal => Fit::Stretch,
+        _ => Fit::Uniform,
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Measure {
+    Count,
+    Density,
+    Cumulative,
+}
+
+#[derive(Clone, Copy)]
+enum Arrangement {
+    Single,
+    Stacked,
+    Overlay,
+}
+
+#[derive(Clone, Copy)]
+struct Recipe {
+    measure: Measure,
+    arrangement: Arrangement,
+    plates: bool,
+    swap: bool,
+}
+
+impl Recipe {
+    const fn of(measure: Measure) -> Self {
+        Self { measure, arrangement: Arrangement::Single, plates: false, swap: false }
+    }
+
+    const fn arranged(mut self, arrangement: Arrangement) -> Self {
+        self.arrangement = arrangement;
+        self
+    }
+
+    const fn plated(mut self) -> Self {
+        self.plates = true;
+        self
+    }
+
+    const fn swapped(mut self) -> Self {
+        self.swap = true;
+        self
+    }
+}
+
+fn recipe(variant: HistogramVariant) -> Recipe {
+    use HistogramVariant::*;
+    let count = Recipe::of(Measure::Count);
+    match variant {
+        Basic => count,
+        Horizontal => count.swapped(),
+        Normalized => Recipe::of(Measure::Density),
+        Cumulative => Recipe::of(Measure::Cumulative),
+        Stacked => count.arranged(Arrangement::Stacked),
+        Overlay => count.arranged(Arrangement::Overlay),
+        Step => count.plated(),
+    }
+}
+
+fn counted(cfg: &HistogramConfig, edges: &[f64]) -> Vec<(String, Vec<u64>)> {
+    if !cfg.categories.is_empty() {
+        let mut slots: HashMap<&str, usize> = HashMap::new();
+        let mut names: Vec<String> = Vec::new();
+        let mut buckets: Vec<Vec<f64>> = Vec::new();
+        for (i, &v) in cfg.values.iter().enumerate() {
+            let key = cfg.categories.get(i).map(|c| c.as_str()).unwrap_or("");
+            let slot = *slots.entry(key).or_insert_with(|| {
+                names.push(key.to_string());
+                buckets.push(Vec::new());
+                buckets.len() - 1
+            });
+            buckets[slot].push(v);
+        }
+        return names
+            .into_iter()
+            .zip(buckets)
+            .take(GROUP_LIMIT)
+            .map(|(name, bucket)| (name, bin_to_edges(&bucket, edges).0))
+            .collect();
+    }
+    let (first, second) = match cfg.series_names {
+        Some((a, b)) => (a.to_string(), b.to_string()),
+        None => ("A".to_string(), "B".to_string()),
+    };
+    match cfg.overlay_values {
+        Some(overlay) => vec![
+            (first, bin_to_edges(cfg.values, edges).0),
+            (second, bin_to_edges(overlay, edges).0),
+        ],
+        None => vec![(first, bin_to_edges(cfg.values, edges).0)],
+    }
+}
+
+fn measured(counts: &[u64], measure: Measure, width: f64) -> Vec<f64> {
+    let total: f64 = counts.iter().sum::<u64>() as f64;
+    match measure {
+        Measure::Count => counts.iter().map(|&c| c as f64).collect(),
+        Measure::Density => counts.iter().map(|&c| c as f64 / (total.max(1.0) * width.max(1e-12))).collect(),
+        Measure::Cumulative => counts
+            .iter()
+            .scan(0.0, |acc, &c| {
+                *acc += c as f64;
+                Some(*acc)
+            })
+            .collect(),
+    }
+}
+
+fn horizontal_columns(series: &[(String, Vec<f64>)], n_cats: usize, thickness: f64, row: f64, depth: f64) -> Vec<Bar3DBlock> {
+    let n_ser = series.len().max(1);
+    let mut out = Vec::with_capacity(n_cats * n_ser);
+    for ci in 0..n_cats {
+        for (si, (_, vals)) in series.iter().enumerate() {
+            let v = vals.get(ci).copied().unwrap_or(0.0).max(0.0);
+            let half = (v / 2.0).max(1e-6);
+            let sub = if n_ser > 1 { (si as f64 - (n_ser as f64 - 1.0) / 2.0) * row * 0.28 } else { 0.0 };
+            out.push(Bar3DBlock::new(half, ci as f64 * row + sub, 0.0, thickness, half, depth, si));
+        }
+    }
+    out
+}
+
+fn overlaid_columns(series: &[(String, Vec<f64>)], n_cats: usize, hw: f64, depth: f64) -> Vec<Bar3DBlock> {
+    let mut out = Vec::with_capacity(n_cats * series.len());
+    for ci in 0..n_cats {
+        for (si, (_, vals)) in series.iter().enumerate() {
+            let v = vals.get(ci).copied().unwrap_or(0.0);
+            if !v.is_finite() {
+                continue;
+            }
+            out.push(Bar3DBlock::new(ci as f64, 0.0, 0.0, v, hw, depth, si));
+        }
+    }
+    out
+}
+
+fn density_curve(cfg: &HistogramConfig, edges: &[f64], n_bins: usize) -> Vec<f64> {
+    if !matches!(cfg.variant, HistogramVariant::Normalized) {
+        return Vec::new();
+    }
+    let centers: Vec<f64> = (0..n_bins).map(|i| (edges[i] + edges[i + 1]) / 2.0).collect();
+    gaussian_kde(cfg.values, &centers)
+}
+
+pub fn layout_3d(cfg: &HistogramConfig) -> Vec<Bar3DBlock> {
+    layout_named(cfg).0
+}
+
+pub fn layout_named(cfg: &HistogramConfig) -> (Vec<Bar3DBlock>, Vec<String>, Vec<f64>) {
+    if cfg.values.is_empty() {
+        return (Vec::new(), Vec::new(), Vec::new());
+    }
+    let (_, edges) = compute_bins(cfg.values, cfg.bins);
+    let n_bins = edges.len().saturating_sub(1);
+    if n_bins == 0 {
+        return (Vec::new(), Vec::new(), Vec::new());
+    }
+    let plan = recipe(cfg.variant);
+    let width = (edges[n_bins] - edges[0]) / n_bins as f64;
+    let series: Vec<(String, Vec<f64>)> = counted(cfg, &edges)
+        .into_iter()
+        .map(|(name, counts)| (name, measured(&counts, plan.measure, width)))
+        .collect();
+    let trend = density_curve(cfg, &edges, n_bins);
+    let blocks = if plan.plates {
+        let peak = series.iter().flat_map(|(_, v)| v.iter().cloned()).fold(1e-12, f64::max);
+        series
+            .iter()
+            .enumerate()
+            .flat_map(|(s, (_, values))| {
+                plate_columns(values, peak * PLATE_SHARE, 0.5, BIN_DEPTH)
+                    .into_iter()
+                    .map(move |b| Bar3DBlock { ci: s, ..b })
+            })
+            .collect()
+    } else if plan.swap {
+        horizontal_columns(&series, n_bins, HORIZ_THICKNESS, HORIZ_ROW, BIN_DEPTH)
+    } else if matches!(plan.arrangement, Arrangement::Overlay) {
+        overlaid_columns(&series, n_bins, BIN_HW, BIN_DEPTH)
+    } else {
+        let stacked = matches!(plan.arrangement, Arrangement::Stacked);
+        grouped_columns(&series, n_bins, stacked, BIN_HW, BIN_DEPTH)
+    };
+    (blocks, series.into_iter().map(|(name, _)| name).collect(), trend)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const VALUES: [f64; 12] = [1.0, 1.5, 2.0, 2.2, 2.4, 3.0, 3.1, 3.3, 4.0, 4.2, 5.0, 5.5];
+
+    fn blocks_for(variant: HistogramVariant) -> Vec<Bar3DBlock> {
+        layout_3d(&HistogramConfig {
+            variant,
+            values: &VALUES,
+            bins: 4,
+            ..HistogramConfig::default()
+        })
+    }
+
+    #[test]
+    fn every_histogram_variant_draws_something() {
+        for variant in HistogramVariant::all() {
+            assert!(!blocks_for(*variant).is_empty(), "{} must draw blocks", variant.name());
+        }
+    }
+
+    #[test]
+    fn basic_draws_one_column_per_bin_and_counts_every_sample() {
+        let blocks = blocks_for(HistogramVariant::Basic);
+        assert_eq!(blocks.len(), 4);
+        assert_eq!(blocks.iter().map(|b| b.z1).sum::<f64>(), 12.0);
+    }
+
+    #[test]
+    fn cumulative_grows_to_the_sample_count_and_normalized_integrates_to_one() {
+        let cumulative = blocks_for(HistogramVariant::Cumulative);
+        assert_eq!(cumulative.last().unwrap().z1, 12.0);
+        assert!(cumulative.windows(2).all(|w| w[1].z1 >= w[0].z1));
+        let density = blocks_for(HistogramVariant::Normalized);
+        let width = (VALUES[11] - VALUES[0]) / 4.0;
+        assert!((density.iter().map(|b| b.z1 * width).sum::<f64>() - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn stacked_and_overlay_split_the_samples_by_group_or_overlay_series() {
+        let groups: Vec<String> = (0..12).map(|i| if i % 2 == 0 { "A" } else { "B" }.to_string()).collect();
+        let stacked = layout_3d(&HistogramConfig {
+            variant: HistogramVariant::Stacked,
+            values: &VALUES,
+            bins: 4,
+            categories: &groups,
+            ..HistogramConfig::default()
+        });
+        assert_eq!(stacked.len(), 8);
+        let overlay = layout_3d(&HistogramConfig {
+            variant: HistogramVariant::Overlay,
+            values: &VALUES,
+            overlay_values: Some(&VALUES),
+            bins: 4,
+            ..HistogramConfig::default()
+        });
+        assert_eq!(overlay.len(), 8);
+        assert!(overlay.iter().all(|b| b.cy == 0.0), "overlay bars must share one footprint per bin, like the 2D chart's superimposed rects");
+        for bin in overlay.chunks(2) {
+            assert_eq!(bin[0].cx, bin[1].cx, "both series must land on the exact same bin position to truly overlap");
+            assert_ne!(bin[0].ci, bin[1].ci, "each series keeps its own color");
+        }
+    }
+
+    #[test]
+    fn step_is_a_row_of_thin_plates() {
+        let plates = blocks_for(HistogramVariant::Step);
+        assert!(plates.iter().all(|b| b.z1 - b.z0 < 0.5));
+    }
+
+    #[test]
+    fn horizontal_lays_each_bin_out_as_a_flat_row_with_count_as_the_x_span() {
+        let horizontal = blocks_for(HistogramVariant::Horizontal);
+        let rows: std::collections::BTreeSet<i64> = horizontal.iter().map(|b| (b.cy * 1000.0).round() as i64).collect();
+        assert_eq!(rows.len(), horizontal.len(), "each bin must sit on its own row, like the 2D horizontal histogram");
+        assert!(horizontal.iter().all(|b| (b.z1 - b.z0) < 1.0), "horizontal bars must stay a flat slab, the count belongs on x not z");
+        let basic = blocks_for(HistogramVariant::Basic);
+        assert!(basic.iter().any(|b| (b.z1 - b.z0) > 1.0), "basic must still stand tall for this comparison to mean anything");
+        assert_eq!(fit_3d(HistogramVariant::Horizontal), Fit::Stretch);
+        assert_eq!(fit_3d(HistogramVariant::Basic), Fit::Uniform);
+    }
+
+    #[test]
+    fn normalized_carries_a_kde_curve_that_other_variants_dont() {
+        let (_, _, trend) = layout_named(&HistogramConfig {
+            variant: HistogramVariant::Normalized,
+            values: &VALUES,
+            bins: 4,
+            ..HistogramConfig::default()
+        });
+        assert_eq!(trend.len(), 4);
+        assert!(trend.iter().all(|v| v.is_finite() && *v >= 0.0));
+        let (_, _, basic_trend) = layout_named(&HistogramConfig {
+            variant: HistogramVariant::Basic,
+            values: &VALUES,
+            bins: 4,
+            ..HistogramConfig::default()
+        });
+        assert!(basic_trend.is_empty());
+    }
+
+    #[test]
+    fn huge_samples_with_many_groups_stay_within_the_bin_and_group_limits() {
+        let values: Vec<f64> = (0..400_000u64).map(|i| ((i * 7919) % 10_007) as f64).collect();
+        let groups: Vec<String> = (0..400_000u64).map(|i| format!("G{}", i % 500)).collect();
+        let blocks = layout_3d(&HistogramConfig {
+            variant: HistogramVariant::Stacked,
+            values: &values,
+            categories: &groups,
+            bins: 5000,
+            ..HistogramConfig::default()
+        });
+        assert!(blocks.len() <= 512 * GROUP_LIMIT);
+        assert!(!blocks.is_empty());
+    }
+
+    #[test]
+    fn empty_values_draw_nothing() {
+        assert!(layout_3d(&HistogramConfig::default()).is_empty());
+    }
+}

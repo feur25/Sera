@@ -35,7 +35,9 @@ impl ViewerState {
     }
 
     pub fn rebuild_canvas(&mut self) {
-        if let (Some(ref data), Some(ref x_col), Some(ref y_col)) = (&self.csv_data, &self.selected_x_col, &self.selected_y_col) {
+        if let (Some(ref data), Some(ref x_col), Some(ref y_col)) =
+            (&self.csv_data, &self.selected_x_col, &self.selected_y_col)
+        {
             let x = data.get_numeric_column(x_col);
             let y = data.get_numeric_column(y_col);
 
@@ -44,7 +46,11 @@ impl ViewerState {
                 let labels: Vec<String> = (0..len).map(|i| i.to_string()).collect();
                 let values: Vec<f64> = y[..len].to_vec();
 
-                self.canvas = Some(Canvas::new_with_data(&labels, &values, self.selected_chart_type));
+                self.canvas = Some(Canvas::new_with_data(
+                    &labels,
+                    &values,
+                    self.selected_chart_type,
+                ));
             }
         }
     }
@@ -65,21 +71,21 @@ impl ViewerState {
     }
 
     pub fn get_numeric_columns(&self) -> Vec<String> {
-        self.csv_data.as_ref()
+        self.csv_data
+            .as_ref()
             .map(|d| d.numeric_columns.clone())
             .unwrap_or_default()
     }
 
     pub fn get_all_columns(&self) -> Vec<String> {
-        self.csv_data.as_ref()
+        self.csv_data
+            .as_ref()
             .map(|d| d.headers.clone())
             .unwrap_or_default()
     }
 
     pub fn get_row_count(&self) -> usize {
-        self.csv_data.as_ref()
-            .map(|d| d.len())
-            .unwrap_or(0)
+        self.csv_data.as_ref().map(|d| d.len()).unwrap_or(0)
     }
 
     pub fn export_chart_svg(&self) -> Option<String> {
@@ -115,7 +121,9 @@ impl ViewerApp {
             ui.text_edit_singleline(&mut self.file_path);
             if ui.button("Load").clicked() {
                 match self.state.load_csv(&self.file_path) {
-                    Ok(_) => self.status_message = format!("Loaded {} rows", self.state.get_row_count()),
+                    Ok(_) => {
+                        self.status_message = format!("Loaded {} rows", self.state.get_row_count())
+                    }
                     Err(e) => self.status_message = format!("Error: {}", e),
                 }
             }
@@ -126,16 +134,24 @@ impl ViewerApp {
         ui.horizontal(|ui| {
             ui.label("Chart Type:");
             let chart_types = crate::plot::default::get_current_group_types();
-            let current_name = chart_types.iter()
+            let current_name = chart_types
+                .iter()
                 .find(|(id, _)| *id == self.state.selected_chart_type)
                 .map(|(_, name)| name.clone())
                 .unwrap_or_else(|| "Unknown".to_string());
-            
+
             egui::ComboBox::from_label("")
                 .selected_text(&current_name)
                 .show_ui(ui, |ui| {
                     for (type_id, type_name) in &chart_types {
-                        if ui.selectable_value(&mut self.state.selected_chart_type, *type_id, type_name).changed() {
+                        if ui
+                            .selectable_value(
+                                &mut self.state.selected_chart_type,
+                                *type_id,
+                                type_name,
+                            )
+                            .changed()
+                        {
                             self.state.set_chart_type(*type_id);
                         }
                     }
@@ -151,7 +167,14 @@ impl ViewerApp {
                     .selected_text(&current_x)
                     .show_ui(ui, |ui| {
                         for col in &numeric_cols {
-                            if ui.selectable_value(&mut self.state.selected_x_col, Some(col.clone()), col).changed() {
+                            if ui
+                                .selectable_value(
+                                    &mut self.state.selected_x_col,
+                                    Some(col.clone()),
+                                    col,
+                                )
+                                .changed()
+                            {
                                 self.state.rebuild_canvas();
                             }
                         }
@@ -165,7 +188,14 @@ impl ViewerApp {
                     .selected_text(&current_y)
                     .show_ui(ui, |ui| {
                         for col in &numeric_cols {
-                            if ui.selectable_value(&mut self.state.selected_y_col, Some(col.clone()), col).changed() {
+                            if ui
+                                .selectable_value(
+                                    &mut self.state.selected_y_col,
+                                    Some(col.clone()),
+                                    col,
+                                )
+                                .changed()
+                            {
                                 self.state.rebuild_canvas();
                             }
                         }
@@ -206,5 +236,3 @@ pub fn run_viewer() -> Result<(), eframe::Error> {
         Box::new(|cc| Box::new(ViewerApp::new(cc))),
     )
 }
-
-

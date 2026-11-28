@@ -13,7 +13,9 @@ impl ImageLoader {
             "{}/.seraplot_cache",
             std::env::var("TEMP").unwrap_or_else(|_| ".".to_string())
         );
-        std::fs::create_dir_all(&download_dir).ok();
+        if let Err(e) = std::fs::create_dir_all(&download_dir) {
+            eprintln!("seraplot: could not create image cache dir '{download_dir}': {e}");
+        }
 
         Self {
             cache: Arc::new(Mutex::new(HashMap::new())),
@@ -23,7 +25,7 @@ impl ImageLoader {
 
     pub fn load_image(&self, path: &str) -> Option<egui::ColorImage> {
         let cache_key = path.to_string();
-        
+
         {
             let cache = self.cache.lock().unwrap();
             if let Some(img) = cache.get(&cache_key) {
@@ -46,7 +48,13 @@ impl ImageLoader {
     }
 
     fn load_local_image(&self, path: &str) -> Option<egui::ColorImage> {
-        let image = image::open(path).ok()?;
+        let image = match image::open(path) {
+            Ok(img) => img,
+            Err(e) => {
+                eprintln!("seraplot: failed to load image '{path}': {e}");
+                return None;
+            }
+        };
         let rgba = image.to_rgba8();
         let (w, h) = rgba.dimensions();
         let pixels = rgba.into_raw();
@@ -65,19 +73,33 @@ impl ImageLoader {
             return self.load_local_image(&cache_path);
         }
 
-        let rt = tokio::runtime::Runtime::new().ok()?;
+        let rt = match tokio::runtime::Runtime::new() {
+            Ok(rt) => rt,
+            Err(e) => {
+                eprintln!("seraplot: could not start async runtime to fetch image '{url}': {e}");
+                return None;
+            }
+        };
         let bytes = rt.block_on(async {
-            reqwest::get(url)
-                .await
-                .ok()?
-                .bytes()
-                .await
-                .ok()
+            match reqwest::get(url).await {
+                Ok(resp) => match resp.bytes().await {
+                    Ok(b) => Some(b),
+                    Err(e) => {
+                        eprintln!("seraplot: failed to read response body for image '{url}': {e}");
+                        None
+                    }
+                },
+                Err(e) => {
+                    eprintln!("seraplot: failed to fetch image '{url}': {e}");
+                    None
+                }
+            }
         })?;
 
-        std::fs::write(&cache_path, &bytes).ok()?;
+        if let Err(e) = std::fs::write(&cache_path, &bytes) {
+            eprintln!("seraplot: failed to cache image to '{cache_path}': {e}");
+            return None;
+        }
         self.load_local_image(&cache_path)
     }
 }
-
-

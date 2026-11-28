@@ -1,0 +1,15 @@
+crate::plot_family! {
+    pub enum PieVariant default Basic family "pie" {
+        Basic        => "basic" | "pie",
+        Donut        => "donut" | "ring" | "hole",
+        Exploded     => "exploded" | "pulled" | "pull" | "explode",
+        Subplots     => "subplots" | "grid" | "facet" | "multi",
+        Proportional => "proportional" | "scaled" | "scalegroup" | "area_proportional",
+        Semi         => "semi" | "semicircle" | "half" | "halfpie" | "half_pie",
+        Kpi          => "kpi" | "center" | "centered" | "indicator" | "donut_kpi" | "metric",
+        Nested       => "nested" | "concentric" | "rings" | "double_ring" | "multi_ring",
+        Pattern      => "pattern" | "patterned" | "textured" | "hatched",
+        Nightingale  => "nightingale" | "rose" | "coxcomb" | "polar_area",
+        Waffle       => "waffle" | "square" | "pie_square" | "grid_pie" | "squarepie",
+    }
+}

@@ -1,0 +1,515 @@
+use std::collections::HashMap;
+use std::ffi::CStr;
+use std::os::raw::c_char;
+use std::sync::{Mutex, OnceLock};
+
+pub type ChartRenderer = fn(crate::plot::default::PlotRenderContext);
+pub type SvgChartRenderer = fn(&mut String, &[f64], &[&'static str], i32, i32, i32, f64, bool);
+
+pub struct ChartTypeEntry {
+    pub group: &'static str,
+    pub id: u8,
+    pub name: &'static str,
+    pub renderer: ChartRenderer,
+    pub svg_renderer: Option<SvgChartRenderer>,
+    pub color: u32,
+}
+
+inventory::collect!(ChartTypeEntry);
+
+pub fn register_group_from_inventory(group: &'static str) {
+    let mut ids: Vec<u8> = inventory::iter::<ChartTypeEntry>()
+        .filter(|entry| entry.group == group)
+        .map(|entry| {
+            let mut builder = ChartTypeBuilder::new(entry.id)
+                .with_name(entry.name)
+                .with_renderer(entry.renderer);
+            if let Some(svg_rend) = entry.svg_renderer {
+                builder = builder.with_svg_renderer(svg_rend);
+            }
+            if let Err(e) = builder.build() {
+                eprintln!(
+                    "seraplot: failed to register chart type '{}' (id {}) in group '{group}': {e}",
+                    entry.name, entry.id
+                );
+            }
+            with_registry_mut("register_group_from_inventory/color", |reg| {
+                reg.register_color(entry.id, entry.color)
+            });
+            entry.id
+        })
+        .collect();
+    ids.sort_unstable();
+
+    match get_group_registry().lock() {
+        Ok(mut grp_reg) => grp_reg.register_group(group.to_string(), ids),
+        Err(_) => warn_registry_lock_once("register_group_from_inventory"),
+    }
+}
+
+pub fn list_all_groups() -> Vec<(String, Vec<(u8, String)>)> {
+    let Ok(grp_reg) = get_group_registry().lock() else {
+        warn_registry_lock_once("list_all_groups");
+        return Vec::new();
+    };
+    let Ok(reg) = get_registry().lock() else {
+        warn_registry_lock_once("list_all_groups");
+        return Vec::new();
+    };
+
+    let mut groups = grp_reg.list_groups();
+    groups.sort();
+    groups
+        .into_iter()
+        .map(|name| {
+            let mut types: Vec<(u8, String)> = grp_reg
+                .get_group(&name)
+                .unwrap_or_default()
+                .into_iter()
+                .filter_map(|id| reg.get(id).map(|(n, _)| (id, n)))
+                .collect();
+            types.sort_by_key(|(id, _)| *id);
+            (name, types)
+        })
+        .collect()
+}
+
+pub struct ChartRegistry {
+    entries: HashMap<u8, (String, ChartRenderer)>,
+    svg_renderers: HashMap<u8, SvgChartRenderer>,
+    colors: HashMap<u8, u32>,
+}
+
+impl ChartRegistry {
+    fn new() -> Self {
+        Self {
+            entries: HashMap::new(),
+            svg_renderers: HashMap::new(),
+            colors: HashMap::new(),
+        }
+    }
+
+    fn register(&mut self, id: u8, name: String, renderer: ChartRenderer) {
+        self.entries.insert(id, (name, renderer));
+    }
+
+    pub fn register_color(&mut self, id: u8, color: u32) {
+        self.colors.insert(id, color);
+    }
+
+    pub fn register_svg(&mut self, id: u8, renderer: SvgChartRenderer) {
+        self.svg_renderers.insert(id, renderer);
+    }
+
+    fn get(&self, id: u8) -> Option<(String, ChartRenderer)> {
+        self.entries.get(&id).map(|(n, r)| (n.clone(), *r))
+    }
+
+    pub fn get_svg(&self, id: u8) -> Option<SvgChartRenderer> {
+        self.svg_renderers.get(&id).copied()
+    }
+
+    fn list(&self) -> Vec<(u8, String, u32)> {
+        self.entries
+            .iter()
+            .map(|(&id, (name, _))| {
+                let color = self.colors.get(&id).copied().unwrap_or(0x4a90e2);
+                (id, name.clone(), color)
+            })
+            .collect()
+    }
+
+    pub fn get_color(&self, id: u8) -> u32 {
+        self.colors.get(&id).copied().unwrap_or(0x4a90e2)
+    }
+}
+
+pub struct ChartGroupRegistry {
+    groups: HashMap<String, Vec<u8>>,
+    current: String,
+}
+
+impl ChartGroupRegistry {
+    fn new() -> Self {
+        Self {
+            groups: HashMap::new(),
+            current: String::from("default"),
+        }
+    }
+
+    pub fn register_group(&mut self, name: String, types: Vec<u8>) {
+        self.groups.insert(name, types);
+    }
+
+    fn get_group(&self, name: &str) -> Option<Vec<u8>> {
+        self.groups.get(name).cloned()
+    }
+
+    fn set_current(&mut self, name: String) -> bool {
+        if self.groups.contains_key(&name) {
+            self.current = name;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn get_current(&self) -> &str {
+        &self.current
+    }
+
+    fn list_groups(&self) -> Vec<String> {
+        self.groups.keys().cloned().collect()
+    }
+}
+
+static REGISTRY: OnceLock<Mutex<ChartRegistry>> = OnceLock::new();
+static GROUP_REGISTRY: OnceLock<Mutex<ChartGroupRegistry>> = OnceLock::new();
+
+pub fn get_registry() -> &'static Mutex<ChartRegistry> {
+    REGISTRY.get_or_init(|| Mutex::new(ChartRegistry::new()))
+}
+
+static REGISTRY_LOCK_WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn warn_registry_lock_once(caller: &str) {
+    if !REGISTRY_LOCK_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot: chart registry lock poisoned in {caller} -- chart type lookups/registration \
+             will silently fail from here on; this warning prints once"
+        );
+    }
+}
+
+/// Locks the chart registry and applies `f`, logging once (not per-call) if
+/// the lock is poisoned instead of silently doing nothing.
+pub fn with_registry_mut(caller: &str, f: impl FnOnce(&mut ChartRegistry)) {
+    match get_registry().lock() {
+        Ok(mut reg) => f(&mut reg),
+        Err(_) => warn_registry_lock_once(caller),
+    }
+}
+
+pub fn get_svg_renderer(id: u8) -> Option<SvgChartRenderer> {
+    match get_registry().lock() {
+        Ok(reg) => reg.get_svg(id),
+        Err(_) => {
+            warn_registry_lock_once("get_svg_renderer");
+            None
+        }
+    }
+}
+
+pub fn list_dataset_types() -> Vec<(u8, String, u32)> {
+    match get_registry().lock() {
+        Ok(reg) => reg.list(),
+        Err(_) => {
+            warn_registry_lock_once("list_dataset_types");
+            Vec::new()
+        }
+    }
+}
+
+pub fn get_group_registry() -> &'static Mutex<ChartGroupRegistry> {
+    GROUP_REGISTRY.get_or_init(|| Mutex::new(ChartGroupRegistry::new()))
+}
+
+pub struct ChartTypeBuilder {
+    id: u8,
+    name: String,
+    renderer: Option<ChartRenderer>,
+    svg_renderer: Option<SvgChartRenderer>,
+}
+
+impl ChartTypeBuilder {
+    pub fn new(id: u8) -> Self {
+        Self {
+            id,
+            name: String::new(),
+            renderer: None,
+            svg_renderer: None,
+        }
+    }
+
+    pub fn with_name(mut self, name: &str) -> Self {
+        self.name = name.to_string();
+        self
+    }
+
+    pub fn with_renderer(mut self, renderer: ChartRenderer) -> Self {
+        self.renderer = Some(renderer);
+        self
+    }
+
+    pub fn with_svg_renderer(mut self, renderer: SvgChartRenderer) -> Self {
+        self.svg_renderer = Some(renderer);
+        self
+    }
+
+    pub fn build(self) -> Result<(), String> {
+        if self.name.is_empty() {
+            return Err("Name required".to_string());
+        }
+
+        let renderer = self.renderer.ok_or("Renderer required")?;
+
+        with_registry_mut("ChartTypeBuilder::build", |reg| {
+            reg.register(self.id, self.name.clone(), renderer);
+            if let Some(svg_rend) = self.svg_renderer {
+                reg.register_svg(self.id, svg_rend);
+            }
+        });
+
+        Ok(())
+    }
+}
+
+pub struct ChartGroupBuilder {
+    types: Vec<(u8, String, ChartRenderer)>,
+}
+
+impl ChartGroupBuilder {
+    pub fn new() -> Self {
+        Self { types: Vec::new() }
+    }
+
+    pub fn add(mut self, id: u8, name: String, renderer: ChartRenderer) -> Self {
+        self.types.push((id, name, renderer));
+        self
+    }
+
+    pub fn build(self) -> Vec<(u8, String, ChartRenderer)> {
+        self.types
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_register_chart_group(
+    group_name: *const c_char,
+    type_ids: *const u8,
+    count: u32,
+) -> bool {
+    if group_name.is_null() || type_ids.is_null() || count == 0 {
+        return false;
+    }
+
+    let name = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
+    let types = unsafe { std::slice::from_raw_parts(type_ids, count as usize).to_vec() };
+
+    if let Ok(mut grp_reg) = get_group_registry().lock() {
+        grp_reg.register_group(name, types);
+        true
+    } else {
+        false
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_current_chart_group(group_name: *const c_char) -> bool {
+    if group_name.is_null() {
+        return false;
+    }
+
+    let name = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
+
+    if let Ok(mut grp_reg) = get_group_registry().lock() {
+        grp_reg.set_current(name)
+    } else {
+        false
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_current_chart_group() -> *const c_char {
+    if let Ok(grp_reg) = get_group_registry().lock() {
+        Box::leak(grp_reg.get_current().to_string().into_boxed_str()) as *const str as *const c_char
+    } else {
+        std::ptr::null()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_chart_group_types(
+    group_name: *const c_char,
+    count: *mut u32,
+) -> *const u8 {
+    if group_name.is_null() || count.is_null() {
+        return std::ptr::null();
+    }
+
+    let name = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
+
+    if let Ok(grp_reg) = get_group_registry().lock() {
+        if let Some(types) = grp_reg.get_group(&name) {
+            unsafe { *count = types.len() as u32 };
+            Box::leak(types.into_boxed_slice()).as_ptr()
+        } else {
+            unsafe { *count = 0 };
+            std::ptr::null()
+        }
+    } else {
+        unsafe { *count = 0 };
+        std::ptr::null()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_list_chart_groups(count: *mut u32) -> *const *const c_char {
+    if count.is_null() {
+        return std::ptr::null();
+    }
+
+    if let Ok(grp_reg) = get_group_registry().lock() {
+        let groups: Vec<String> = grp_reg.list_groups();
+        let result: Vec<*const c_char> = groups
+            .into_iter()
+            .map(|g| Box::leak(g.into_boxed_str()) as *const str as *const c_char)
+            .collect();
+
+        unsafe { *count = result.len() as u32 };
+        Box::leak(result.into_boxed_slice()).as_ptr()
+    } else {
+        unsafe { *count = 0 };
+        std::ptr::null()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_list_chart_types() -> u32 {
+    if let Ok(reg) = get_registry().lock() {
+        reg.list().len() as u32
+    } else {
+        0
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_chart_type(id: u8) -> bool {
+    if let Ok(reg) = get_registry().lock() {
+        reg.get(id).is_some()
+    } else {
+        false
+    }
+}
+
+pub fn render_by_type(id: u8, ctx: crate::plot::default::PlotRenderContext) {
+    if let Ok(reg) = get_registry().lock() {
+        if let Some((_, renderer)) = reg.get(id) {
+            renderer(ctx);
+        }
+    }
+}
+
+pub fn get_current_group_types() -> Vec<(u8, String)> {
+    if let Ok(grp_reg) = get_group_registry().lock() {
+        let group_name = grp_reg.get_current().to_string();
+        if let Some(type_ids) = grp_reg.get_group(&group_name) {
+            if let Ok(reg) = get_registry().lock() {
+                return type_ids
+                    .into_iter()
+                    .filter_map(|id| reg.get(id).map(|(name, _)| (id, name)))
+                    .collect();
+            }
+        }
+    }
+    Vec::new()
+}
+
+pub fn set_current_chart_group(name: &str) -> bool {
+    if let Ok(mut grp_reg) = get_group_registry().lock() {
+        grp_reg.set_current(name.to_string())
+    } else {
+        false
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod test_support {
+    use super::ChartTypeEntry;
+    use std::collections::HashSet;
+
+    pub fn group_entries(group: &'static str) -> Vec<&'static ChartTypeEntry> {
+        inventory::iter::<ChartTypeEntry>().filter(|e| e.group == group).collect()
+    }
+
+    pub fn assert_group_well_formed(group: &'static str) {
+        let entries = group_entries(group);
+        assert!(!entries.is_empty(), "group '{group}' has no registered entries");
+
+        let ids: Vec<u8> = entries.iter().map(|e| e.id).collect();
+        let unique_ids: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(ids.len(), unique_ids.len(), "duplicate ids in group '{group}': {ids:?}");
+
+        let names: Vec<&str> = entries.iter().map(|e| e.name).collect();
+        let unique_names: HashSet<&str> = names.iter().copied().collect();
+        assert_eq!(names.len(), unique_names.len(), "duplicate names in group '{group}': {names:?}");
+
+        for entry in &entries {
+            assert!(!entry.name.is_empty(), "entry id {} in group '{group}' has an empty name", entry.id);
+        }
+    }
+
+    pub fn assert_registered_group_matches_inventory(group: &'static str, register_fn: fn()) {
+        let inventory_ids: HashSet<u8> = group_entries(group).into_iter().map(|e| e.id).collect();
+
+        register_fn();
+        super::set_current_chart_group(group);
+        let registered_ids: HashSet<u8> = super::get_current_group_types()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+
+        assert_eq!(registered_ids, inventory_ids, "registered group '{group}' drifted from its inventory entries");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn all_chart_type_entries_share_a_globally_unique_id_space() {
+        let ids: Vec<u8> = inventory::iter::<ChartTypeEntry>().map(|e| e.id).collect();
+        let unique: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(
+            ids.len(),
+            unique.len(),
+            "duplicate ids across ChartTypeEntry groups (they share one flat u8 registry): {ids:?}"
+        );
+    }
+
+    #[test]
+    fn switching_current_chart_kind_to_any_native_type_in_any_group_finds_a_real_renderer() {
+        let mut group_names: Vec<&'static str> =
+            inventory::iter::<ChartTypeEntry>().map(|e| e.group).collect();
+        group_names.sort_unstable();
+        group_names.dedup();
+
+        for group in &group_names {
+            register_group_from_inventory(group);
+        }
+
+        for group in &group_names {
+            assert!(
+                set_current_chart_group(group),
+                "group '{group}' failed to become current after being registered"
+            );
+            let types = get_current_group_types();
+            assert!(
+                !types.is_empty(),
+                "group '{group}' listed no types after registration"
+            );
+            for (id, name) in types {
+                let found = get_registry()
+                    .lock()
+                    .map(|reg| reg.get(id).is_some())
+                    .unwrap_or(false);
+                assert!(
+                    found,
+                    "type '{name}' (id {id}) listed under group '{group}' has no renderer in the flat registry"
+                );
+            }
+        }
+    }
+}

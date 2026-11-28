@@ -71,14 +71,17 @@ impl PointCompute {
         let point_count = total_count as f32;
         let spacing = (point_count - 1.0).max(1.0);
 
-        if vertical {
-            let x = plot_rect.left() + (plot_rect.width() / spacing) * idx as f32;
-            let y = plot_rect.bottom() - norm_val * plot_rect.height();
-            egui::pos2(x, y)
-        } else {
-            let x = plot_rect.left() + norm_val * plot_rect.width();
-            let y = plot_rect.top() + (plot_rect.height() / spacing) * idx as f32;
-            egui::pos2(x, y)
+        match vertical {
+            true => {
+                let x = plot_rect.left() + (plot_rect.width() / spacing) * idx as f32;
+                let y = plot_rect.bottom() - norm_val * plot_rect.height();
+                egui::pos2(x, y)
+            }
+            false => {
+                let x = plot_rect.left() + norm_val * plot_rect.width();
+                let y = plot_rect.top() + (plot_rect.height() / spacing) * idx as f32;
+                egui::pos2(x, y)
+            }
         }
     }
 }
@@ -197,7 +200,13 @@ pub struct ChunkRenderer {
 }
 
 impl ChunkRenderer {
-    pub fn render(&self, painter: &egui::Painter, points: &[egui::Pos2], colors: &[egui::Color32], radius: f32) {
+    pub fn render(
+        &self,
+        painter: &egui::Painter,
+        points: &[egui::Pos2],
+        colors: &[egui::Color32],
+        radius: f32,
+    ) {
         if self.enable_lod && points.len() > self.lod_threshold {
             self.render_lod(painter, points, colors, radius);
         } else {
@@ -334,6 +343,7 @@ pub enum RenderingStrategy {
 
 pub struct VisibilityOptimizer {
     viewport_padding: f32,
+    #[allow(dead_code)]
     use_frustum_culling: bool,
 }
 
@@ -345,11 +355,7 @@ impl VisibilityOptimizer {
         }
     }
 
-    pub fn filter_visible(
-        &self,
-        points: &[egui::Pos2],
-        viewport: egui::Rect,
-    ) -> Vec<usize> {
+    pub fn filter_visible(&self, points: &[egui::Pos2], viewport: egui::Rect) -> Vec<usize> {
         let padded_rect = egui::Rect::from_min_max(
             egui::pos2(
                 viewport.left() - self.viewport_padding,
@@ -379,5 +385,3 @@ impl Default for VisibilityOptimizer {
         Self::new()
     }
 }
-
-

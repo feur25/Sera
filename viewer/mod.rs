@@ -1,17 +1,17 @@
-pub mod chart;
-pub mod gui;
-pub mod utils;
 pub mod cache;
-pub mod render;
-pub mod hybrid;
+#[cfg(feature = "gui")]
+pub mod chart;
+#[cfg(feature = "gui")]
+pub mod gui;
 pub mod manager;
+pub mod render;
+pub mod utils;
 
-pub use chart::*;
-pub use gui::*;
-pub use utils::*;
 pub use cache::*;
-pub use render::*;
+#[cfg(feature = "gui")]
+pub use chart::*;
+#[cfg(feature = "gui")]
+pub use gui::*;
 pub use manager::*;
-pub use hybrid::*;
-
-
+pub use render::*;
+pub use utils::*;

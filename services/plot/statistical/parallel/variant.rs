@@ -1,0 +1,13 @@
+crate::plot_family! {
+    pub enum ParallelVariant default Basic family "parallel" {
+        Basic       => "basic" | "default" | "classic" | "lines",
+        Smooth      => "smooth" | "curved" | "bezier" | "spline",
+        Categorical => "categorical" | "category" | "groups" | "colored",
+        Highlight   => "highlight" | "spotlight" | "focus" | "dim",
+        Density     => "density" | "fade" | "translucent" | "alpha",
+        Arc         => "arc" | "bezier_color" | "smooth_color" | "colored_bezier",
+        Ribbon      => "ribbon" | "flow" | "band" | "filled_bezier",
+        Lineage     => "lineage" | "movements" | "timeline_flow" | "influence" | "genealogy",
+        Chronicle   => "chronicle" | "category_flow" | "year_bundle" | "annual_flow" | "decade_in_review",
+    }
+}
