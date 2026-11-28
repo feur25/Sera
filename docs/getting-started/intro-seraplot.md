@@ -74,13 +74,23 @@ plt.savefig("chart.png")</code></pre></div>
 
 ---
 
-## Why Seraplot?
+## Why SeraPlot?
 
-As you’ve probably understood by now, Seraplot is a tool designed to be extremely customizable, while also being much faster and more resource-efficient than existing solutions. It also provides a wide range of helpful features, such as the Seraplot extension for VSCode, which allows you to generate plots or ML methods very quickly and live, between each save of your scripts.
+**Fun facts, independently verified** — full raw data and the scripts to reproduce every one of them live in [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks):
 
-In addition, Seraplot is available across multiple languages such as: JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. The main goal is to be highly accessible: from one language to another, the commands remain the same for greater simplicity.
+- A dashboard that builds 500 bar charts in a row finishes before Matplotlib has drawn its 30th — Matplotlib didn't complete a single 500-build sustained loop on categorical charts within a 90-second cap, in any of 3 tested environments.
+- One `pip install seraplot` replaces Matplotlib + Plotly + Dash + Streamlit + Seaborn and part of scikit-learn — one engine, zero runtime dependencies, no CDN, no backend.
+- SeraPlot isn't faster at everything. At very large datasets (1,000,000+ points), Matplotlib actually wins on a couple of chart types — we measure that too and say so, because a benchmark you can't contradict isn't a benchmark.
+- SeraPlot is also available across JS/TS, Rust, Python, C#, and C++, with the same command names in every language.
 
-In summary, Seraplot is a much more practical and independent tool that enables the generation of 2D & 3D plots, while also aiming to provide machine learning-related methods that you will find throughout the documentation. More surprises await you, such as the ability to choose different themes, a chunk system in case of crashes to resume from the error point, and even multiple aliases to use the same method (e.g., sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
+### Why SeraPlot, and not Plotly or Matplotlib?
+
+Plotly and Matplotlib are mature, excellent tools — SeraPlot isn't trying to replace them for every job. Reach for SeraPlot when:
+
+- You're shipping charts to people who don't control their environment — email, S3, Notion, air-gapped networks, PDFs. A self-contained HTML file a few tens of KB large just works, without a multi-megabyte bundle or a static image.
+- You're building something that renders a lot of charts fast — a live dashboard, a report generator, a CLI tool — where the gap is widest.
+- You want one engine for plotting, basic ML, and dataframe work instead of stitching three ecosystems together, with a chunk-resume system for recovering from a crash and multiple aliases for the same method (e.g. `sp.build_bar_chart` / `sp.bar_chart` / `sp.bar` / `sp.bars`).
+- You're fine being an early adopter: SeraPlot is a one-person project, and its benchmark claims get republished with full raw data every time they're challenged — including the two real bugs found and fixed while building this very page ([#29](https://github.com/feur25/Sera/issues/29), [#30](https://github.com/feur25/Sera/issues/30)).
 
 ---
 
@@ -90,17 +100,17 @@ Same code, same random data, same machine. Full HTML output timed.
 
 <div class="sp-tabs" id="g-bench">
 <div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('g-bench','gb-sp',this)">SeraPlot — 6 ms</button>
-<button class="sp-tb" onclick="spTab('g-bench','gb-pl',this)">Plotly — 37 s</button>
-<button class="sp-tb" onclick="spTab('g-bench','gb-mp',this)">Matplotlib — 60 s</button>
+<button class="sp-tb sp-act" onclick="spTab('g-bench','gb-sp',this)">SeraPlot — 44 ms</button>
+<button class="sp-tb" onclick="spTab('g-bench','gb-pl',this)">Plotly — 18.4 s</button>
+<button class="sp-tb" onclick="spTab('g-bench','gb-mp',this)">Matplotlib — 31.8 s</button>
 </div>
 <div id="gb-sp" class="sp-tc sp-on">
 <pre><code class="language-python">import seraplot as sp
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
 data = [...]  # 1000 pre-generated lists
 for i in range(1000):
-    sp.bar(f"Report #{i+1}", categories, data[i]).html</code></pre>
-<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1000 charts in 6 ms — 6 µs/chart</p>
+    sp.bar(f"Report #{i+1}", labels=categories, values=data[i]).html</code></pre>
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1000 charts in 44 ms — 44 µs/chart</p>
 <iframe src="../previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 <div id="gb-pl" class="sp-tc">
@@ -111,7 +121,7 @@ for i in range(1000):
     fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
     fig.update_layout(title=f"Report #{i+1}", template="plotly_dark")
     fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
-<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 37,023 ms — 6,170× slower</p>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 18,368 ms — 421× slower</p>
 <iframe src="../previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 <div id="gb-mp" class="sp-tc">
@@ -126,16 +136,18 @@ for i in range(1000):
     ax.set_title(f"Report #{i+1}")
     fig.savefig(f"chart_{i}.png")
     plt.close()</code></pre>
-<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 60,352 ms — 10,058× slower</p>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 31,833 ms — 730× slower</p>
 <iframe src="../previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 </div>
 
+Measured on the same machine, same data, same loop, re-run and re-checked for this page -- not carried over from an older release. Full methodology and raw numbers in [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).
+
 | Scale | SeraPlot | Plotly | Matplotlib |
 |-------|:--------:|:------:|:----------:|
-| 1,000 charts | **6 ms** | 37 s | 60 s |
-| 10,000 charts | **~60 ms** | ~6 min | ~10 min |
-| 100,000 charts | **~600 ms** | ~1 h | ~1.7 h |
+| 1,000 charts | **44 ms** | 18.4 s | 31.8 s |
+| 10,000 charts | **~440 ms** | ~3 min | ~5.3 min |
+| 100,000 charts | **~4.4 s** | ~31 min | ~53 min |
 
 ---
 
@@ -385,13 +397,23 @@ plt.savefig("chart.png")</code></pre></div>
 
 ---
 
-## Pourquoi Seraplot ?
+## Pourquoi SeraPlot ?
 
-Comme vous l’aurez compris en arrivant jusqu’ici, Seraplot est un outil qui a pour objectif d’être extrêmement personnalisable, mais aussi beaucoup plus rapide et moins gourmand que ce qui existe déjà, en plus de proposer tout un panel d’aides, comme l’extension Seraplot dans VSCode, qui vous permettra de générer des plots ou des méthodes ML très rapidement et en live, entre chaque sauvegarde de vos scripts.
+**Fun facts, vérifiés indépendamment** — données brutes et scripts de reproduction complets dans [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks) :
 
-En plus de cela, Seraplot se voit distribué dans différents langages comme : JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. L’objectif étant vraiment d’être ultra accessible : d’un langage à un autre, les commandes restent les mêmes pour plus de simplicité.
+- Un dashboard qui construit 500 graphiques en barres d'affilée a terminé avant que Matplotlib n'ait dessiné le 30e — Matplotlib n'a jamais terminé une seule boucle soutenue de 500 constructions sur des graphiques catégoriels dans les 90 secondes imparties, dans aucun des 3 environnements testés.
+- Un seul `pip install seraplot` remplace Matplotlib + Plotly + Dash + Streamlit + Seaborn et une partie de scikit-learn — un seul moteur, zéro dépendance d'exécution, pas de CDN, pas de backend.
+- SeraPlot n'est pas plus rapide sur tout. Sur de très gros volumes (1 000 000+ points), Matplotlib l'emporte réellement sur deux types de graphiques — on le mesure aussi et on le dit, parce qu'un benchmark qu'on ne peut pas contredire n'en est pas un.
+- SeraPlot est aussi disponible en JS/TS, Rust, Python, C# et C++, avec les mêmes noms de commandes dans chaque langage.
 
-Pour résumer, Seraplot est un outil beaucoup plus pratique de ce qui existe déjà et complétement indépendant, en plus de compilé différente fonctionnalitée. En autre il permet la génération de plots 2D & 3D, mais aussi qui tend à proposer des méthodes liées au ML, que vous pourrez retrouver au cours de votre documentation. D’autres surprises vous attendent, que ce soit la possibilité de choisir différents thèmes, ou bien le système de chunks en cas de crash pour reprendre au point d’erreur, ou encore pour n'en citer que un dernier, le fait d’avoir différents alias pour utiliser une même méthode (ex : sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
+### Pourquoi SeraPlot, et pas Plotly ou Matplotlib ?
+
+Plotly et Matplotlib sont des outils matures et excellents — SeraPlot ne cherche pas à les remplacer pour tous les usages. Préférez SeraPlot quand :
+
+- Vous livrez des graphiques à des gens qui ne contrôlent pas leur environnement — email, S3, Notion, réseaux isolés, PDF. Un fichier HTML autonome de quelques dizaines de Ko fonctionne tout simplement, sans bundle de plusieurs mégaoctets ni image statique.
+- Vous construisez quelque chose qui génère beaucoup de graphiques rapidement — un dashboard en direct, un générateur de rapports, un outil CLI — là où l'écart est le plus large.
+- Vous voulez un seul moteur pour la visualisation, le ML de base et le travail sur dataframes plutôt que d'assembler trois écosystèmes, avec un système de reprise par chunks en cas de crash et plusieurs alias pour une même méthode (ex : `sp.build_bar_chart` / `sp.bar_chart` / `sp.bar` / `sp.bars`).
+- Vous acceptez d'être un early adopter : SeraPlot est un projet développé par une seule personne, et ses affirmations de performance sont republiées avec toutes les données brutes à chaque fois qu'elles sont contestées — y compris les deux vrais bugs trouvés et corrigés en construisant cette page même ([#29](https://github.com/feur25/Sera/issues/29), [#30](https://github.com/feur25/Sera/issues/30)).
 
 ---
 
@@ -401,17 +423,17 @@ Même code, mêmes données aléatoires, même machine. Sortie HTML complète ch
 
 <div class="sp-tabs" id="g-bench-fr">
 <div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('g-bench-fr','gb-sp-fr',this)">SeraPlot — 6 ms</button>
-<button class="sp-tb" onclick="spTab('g-bench-fr','gb-pl-fr',this)">Plotly — 37 s</button>
-<button class="sp-tb" onclick="spTab('g-bench-fr','gb-mp-fr',this)">Matplotlib — 60 s</button>
+<button class="sp-tb sp-act" onclick="spTab('g-bench-fr','gb-sp-fr',this)">SeraPlot — 44 ms</button>
+<button class="sp-tb" onclick="spTab('g-bench-fr','gb-pl-fr',this)">Plotly — 18,4 s</button>
+<button class="sp-tb" onclick="spTab('g-bench-fr','gb-mp-fr',this)">Matplotlib — 31,8 s</button>
 </div>
 <div id="gb-sp-fr" class="sp-tc sp-on">
 <pre><code class="language-python">import seraplot as sp
 categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
 data = [...]
 for i in range(1000):
-    sp.bar(f"Rapport #{i+1}", categories, data[i]).html</code></pre>
-<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1 000 graphiques en 6 ms — 6 µs/graphique</p>
+    sp.bar(f"Rapport #{i+1}", labels=categories, values=data[i]).html</code></pre>
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1 000 graphiques en 44 ms — 44 µs/graphique</p>
 <iframe src="../previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 <div id="gb-pl-fr" class="sp-tc">
@@ -422,7 +444,7 @@ for i in range(1000):
     fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
     fig.update_layout(title=f"Rapport #{i+1}", template="plotly_dark")
     fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
-<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 37 023 ms — 6 170× plus lent</p>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 18 368 ms — 421× plus lent</p>
 <iframe src="../previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 <div id="gb-mp-fr" class="sp-tc">
@@ -437,16 +459,18 @@ for i in range(1000):
     ax.set_title(f"Rapport #{i+1}")
     fig.savefig(f"chart_{i}.png")
     plt.close()</code></pre>
-<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 60 352 ms — 10 058× plus lent</p>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 31 833 ms — 730× plus lent</p>
 <iframe src="../previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 </div>
 </div>
 
+Mesuré sur la même machine, les mêmes données, la même boucle, rejoué et revérifié pour cette page -- pas repris d'une ancienne version. Méthodologie complète et chiffres bruts dans [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).
+
 | Échelle | SeraPlot | Plotly | Matplotlib |
 |---------|:--------:|:------:|:----------:|
-| 1 000 graphiques | **6 ms** | 37 s | 60 s |
-| 10 000 graphiques | **~60 ms** | ~6 min | ~10 min |
-| 100 000 graphiques | **~600 ms** | ~1 h | ~1,7 h |
+| 1 000 graphiques | **44 ms** | 18,4 s | 31,8 s |
+| 10 000 graphiques | **~440 ms** | ~3 min | ~5,3 min |
+| 100 000 graphiques | **~4,4 s** | ~31 min | ~53 min |
 
 ---
 
