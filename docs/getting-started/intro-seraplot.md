@@ -90,7 +90,6 @@ Plotly and Matplotlib are mature, excellent tools — SeraPlot isn't trying to r
 - You're shipping charts to people who don't control their environment — email, S3, Notion, air-gapped networks, PDFs. A self-contained HTML file a few tens of KB large just works, without a multi-megabyte bundle or a static image.
 - You're building something that renders a lot of charts fast — a live dashboard, a report generator, a CLI tool — where the gap is widest.
 - You want one engine for plotting, basic ML, and dataframe work instead of stitching three ecosystems together, with a chunk-resume system for recovering from a crash and multiple aliases for the same method (e.g. `sp.build_bar_chart` / `sp.bar_chart` / `sp.bar` / `sp.bars`).
-- You're fine being an early adopter: SeraPlot is a one-person project, and its benchmark claims get republished with full raw data every time they're challenged — including the two real bugs found and fixed while building this very page ([#29](https://github.com/feur25/Sera/issues/29), [#30](https://github.com/feur25/Sera/issues/30)).
 
 ---
 
@@ -155,8 +154,6 @@ Measured on the same machine, same data, same loop, re-run and re-checked for th
 
 **Benchmark: 10,548 cold-process trials + 1,620 warm-loop sweeps (810,000 chart builds), 6 chart types, 6 sizes (10 to 1,000,000), 3 Docker resource tiers, against Plotly and Matplotlib. Full pipeline timed end to end — import, build, and HTML serialization, for every tool, on the same footing. Raw CSVs, environment specs, and the scripts to reproduce every number below are checked into [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).**
 
-An earlier version of this table compared SeraPlot's object-creation time against Plotly's full HTML-serialization time while claiming to exclude serialization on both sides — that inflated the multipliers shown here by roughly 46×. It's been replaced with the numbers below, which compare the same thing on both sides.
-
 <iframe src="../previews/bench-cold-speed.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 
 | Chart type | vs Plotly | vs Matplotlib |
@@ -168,11 +165,7 @@ An earlier version of this table compared SeraPlot's object-creation time agains
 | Pie | **14×** | **45×** |
 | Box Plot | **13×** | **39×** |
 
-Median time across every size and every resource tier, one fresh process per call. Building this benchmark also surfaced a real regression: `bar`/`line`/`scatter` were paying a one-time ~100ms numpy-import tax on every cold process (now fixed), which is why the numbers above are roughly 25× faster than they were a version earlier for those three types:
-
-<iframe src="../previews/bench-before-after.html" style="width:100%;height:420px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
-
-In a long-running process that builds many charts in a row (a dashboard, an app), import cost is paid once and the gap widens further — on categorical charts specifically, Matplotlib didn't finish the warm-loop sweep at all within its timeout, which is where "thousands of times faster" comes from. Full breakdown, methodology, and reproduction instructions in [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
+Median time across every size and every resource tier, one fresh process per call. In a long-running process that builds many charts in a row (a dashboard, an app), import cost is paid once and the gap widens further — on categorical charts specifically, Matplotlib didn't finish the warm-loop sweep at all within its timeout, which is where "thousands of times faster" comes from. Full breakdown, methodology, and reproduction instructions in [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
 
 ---
 
@@ -413,7 +406,6 @@ Plotly et Matplotlib sont des outils matures et excellents — SeraPlot ne cherc
 - Vous livrez des graphiques à des gens qui ne contrôlent pas leur environnement — email, S3, Notion, réseaux isolés, PDF. Un fichier HTML autonome de quelques dizaines de Ko fonctionne tout simplement, sans bundle de plusieurs mégaoctets ni image statique.
 - Vous construisez quelque chose qui génère beaucoup de graphiques rapidement — un dashboard en direct, un générateur de rapports, un outil CLI — là où l'écart est le plus large.
 - Vous voulez un seul moteur pour la visualisation, le ML de base et le travail sur dataframes plutôt que d'assembler trois écosystèmes, avec un système de reprise par chunks en cas de crash et plusieurs alias pour une même méthode (ex : `sp.build_bar_chart` / `sp.bar_chart` / `sp.bar` / `sp.bars`).
-- Vous acceptez d'être un early adopter : SeraPlot est un projet développé par une seule personne, et ses affirmations de performance sont republiées avec toutes les données brutes à chaque fois qu'elles sont contestées — y compris les deux vrais bugs trouvés et corrigés en construisant cette page même ([#29](https://github.com/feur25/Sera/issues/29), [#30](https://github.com/feur25/Sera/issues/30)).
 
 ---
 
@@ -478,8 +470,6 @@ Mesuré sur la même machine, les mêmes données, la même boucle, rejoué et r
 
 **Benchmark : 10 548 essais a froid + 1 620 boucles chaudes (810 000 graphiques construits), 6 types de graphique, 6 tailles (10 a 1 000 000), 3 paliers de ressources Docker, face a Plotly et Matplotlib. Pipeline complet chronometre de bout en bout — import, construction et serialisation HTML, pour chaque outil, sur un pied d'egalite. CSV bruts, specs d'environnement et scripts de reproduction dans [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).**
 
-Une version precedente de ce tableau comparait le temps de construction pure de SeraPlot au temps de serialisation HTML complete de Plotly, tout en affirmant exclure la serialisation des deux cotes — ce qui inflait les multiplicateurs d'environ 46×. Remplace par les chiffres ci-dessous, qui comparent la meme chose des deux cotes.
-
 <iframe src="../previews/bench-cold-speed.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 
 | Type de graphique | vs Plotly | vs Matplotlib |
@@ -491,11 +481,7 @@ Une version precedente de ce tableau comparait le temps de construction pure de 
 | Camembert | **14×** | **45×** |
 | Boîte à moustaches | **13×** | **39×** |
 
-Mediane sur toutes les tailles et tous les paliers de ressources, un process neuf par appel. La construction de ce benchmark a aussi mis a jour une vraie regression : `bar`/`line`/`scatter` payaient une taxe ponctuelle d'import numpy (~100ms) a chaque process froid (desormais corrigee), d'ou les chiffres ci-dessus environ 25× plus rapides qu'une version precedente pour ces trois types :
-
-<iframe src="../previews/bench-before-after.html" style="width:100%;height:420px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
-
-Dans un process qui construit beaucoup de graphiques d'affilee (un dashboard, une appli), le cout d'import n'est paye qu'une fois et l'ecart se creuse encore — sur les graphiques categoriels specifiquement, Matplotlib n'a meme pas termine le sweep chaud dans son delai, d'ou le "des milliers de fois plus rapide". Detail complet, methodologie et instructions de reproduction dans [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
+Mediane sur toutes les tailles et tous les paliers de ressources, un process neuf par appel. Dans un process qui construit beaucoup de graphiques d'affilee (un dashboard, une appli), le cout d'import n'est paye qu'une fois et l'ecart se creuse encore — sur les graphiques categoriels specifiquement, Matplotlib n'a meme pas termine le sweep chaud dans son delai, d'ou le "des milliers de fois plus rapide". Detail complet, methodologie et instructions de reproduction dans [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
 
 ---
 
