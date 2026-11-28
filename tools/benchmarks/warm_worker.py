@@ -90,7 +90,7 @@ def one_matplotlib(plt, data):
         ax.hist(vals, bins=min(50, max(5, N // 10) or 5))
     elif CHART == "pie":
         cats, vals = data
-        ax.pie(vals, labels=cats if N <= 50 else None)
+        ax.pie(vals, labels=cats)
     elif CHART == "boxplot":
         labels, vals = data
         groups = {}
@@ -126,7 +126,7 @@ def one_plotly(go, data):
             groups.setdefault(lb, []).append(v)
         fig = go.Figure(data=[go.Box(y=v, name=k) for k, v in groups.items()])
     fig.update_layout(title="Benchmark", template="plotly_white")
-    return fig.to_html(include_plotlyjs="cdn")
+    return fig.to_html(include_plotlyjs=True)
 
 
 def main():

@@ -110,7 +110,7 @@ def run_matplotlib():
     elif CHART == "pie":
         cats, vals = gen_categorical(N)
         t_data = perf_counter()
-        ax.pie(vals, labels=cats if N <= 50 else None)
+        ax.pie(vals, labels=cats)
     elif CHART == "boxplot":
         groups = gen_groups(N)
         t_data = perf_counter()
@@ -158,7 +158,7 @@ def run_plotly():
     fig.update_layout(title="Benchmark", template="plotly_white")
     t_build = perf_counter()
     path = out_path("html")
-    fig.write_html(path, include_plotlyjs="cdn")
+    fig.write_html(path, include_plotlyjs=True)
     t_render = perf_counter()
     return t_import, t_data, t_build, t_render, path
 
