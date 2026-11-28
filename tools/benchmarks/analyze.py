@@ -43,6 +43,36 @@ def load_warm():
     return df
 
 
+def load_delivery():
+    files = glob.glob(os.path.join(RESULTS, "delivery_*.csv"))
+    if not files:
+        return None
+    frames = [pd.read_csv(f) for f in files]
+    df = pd.concat(frames, ignore_index=True)
+    for c in ["import_ms", "total_delivery_ms", "ms_per_chart", "total_output_bytes", "avg_output_bytes", "peak_mem_mb"]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    df.to_csv(os.path.join(OUT, "raw_delivery.csv"), index=False)
+    return df
+
+
+def chart_delivery(delivery):
+    if delivery is None:
+        return None, None
+    ok = delivery[delivery["success"] == True]  # noqa: E712
+    agg = ok.groupby("tool")["ms_per_chart"].median()
+    size_agg = ok.groupby("tool")["avg_output_bytes"].median() / 1024
+    chart = sp.bar(
+        "Self-contained HTML/PNG delivery cost, 1000 charts, real files written to disk (median ms/chart)",
+        labels=["seraplot", "plotly", "matplotlib"],
+        values=[agg.get(t, 0) for t in ["seraplot", "plotly", "matplotlib"]],
+        y_label="ms/chart (log scale)",
+        log_y=True,
+    )
+    path = os.path.join(OUT, "delivery_cost.html")
+    chart.save(path)
+    return path, (agg, size_agg)
+
+
 def load_warm_supplementary():
     path = os.path.join(RESULTS, "warm_supplementary_bar_pie.csv")
     if not os.path.exists(path):
@@ -53,23 +83,38 @@ def load_warm_supplementary():
     return df
 
 
+def cell_ratios(ok, metric):
+    cell = ok.groupby(["tool", "chart_type", "n", "env"])[metric].median().unstack("tool")
+    cell = cell.dropna(subset=["seraplot"]).reset_index()
+    cell["mpl_ratio"] = cell["matplotlib"] / cell["seraplot"]
+    cell["ply_ratio"] = cell["plotly"] / cell["seraplot"]
+    rows = []
+    for ct, grp in cell.groupby("chart_type"):
+        m = grp["mpl_ratio"].dropna()
+        p = grp["ply_ratio"].dropna()
+        rows.append({
+            "chart_type": ct,
+            "mpl_median": m.median(), "mpl_min": m.min(), "mpl_max": m.max(),
+            "ply_median": p.median(), "ply_min": p.min(), "ply_max": p.max(),
+        })
+    return pd.DataFrame(rows).set_index("chart_type")
+
+
 def chart_cold_multiplier(cold):
     ok = cold[cold["success"] == True]  # noqa: E712
-    agg = ok.groupby(["tool", "chart_type"])["lib_ms"].median().unstack("tool")
-    chart_types = agg.index.tolist()
-    mpl_ratio = (agg["matplotlib"] / agg["seraplot"]).tolist()
-    plotly_ratio = (agg["plotly"] / agg["seraplot"]).tolist()
+    dist = cell_ratios(ok, "total_ms")
+    chart_types = dist.index.tolist()
     chart = sp.bar(
-        "Cold single-call speed, by chart type (median across all sizes/environments, x = SeraPlot's own time)",
+        "Cold single-call speed, by chart type (per-cell ratio, median of medians across size/environment combinations, full pipeline incl. data generation)",
         labels=chart_types,
-        series=[mpl_ratio, plotly_ratio],
+        series=[dist["mpl_median"].tolist(), dist["ply_median"].tolist()],
         series_names=["matplotlib", "plotly"],
-        y_label="x slower than SeraPlot",
+        y_label="x slower than SeraPlot (full pipeline)",
         variant="grouped",
     )
     path = os.path.join(OUT, "cold_multiplier.html")
     chart.save(path)
-    return path, agg
+    return path, dist
 
 
 def chart_env_robustness(cold):
@@ -179,6 +224,7 @@ def main():
     cold = load_cold()
     warm = load_warm()
     supp = load_warm_supplementary()
+    delivery = load_delivery()
 
     p1, cold_agg = chart_cold_multiplier(cold)
     p2, env_agg = chart_env_robustness(cold)
@@ -186,6 +232,7 @@ def main():
     p4, fail_piv = chart_failure_rate(cold)
     p5, warm_ratios = chart_warm(warm)
     p6, dnf_ratios = chart_warm_dnf(supp)
+    p7, delivery_stats = chart_delivery(delivery)
 
     versions = {}
     for f in glob.glob(os.path.join(RESULTS, "*_env.json")):
@@ -198,11 +245,14 @@ def main():
     if warm is not None:
         print("warm n_trials:", len(warm), "successes:", (warm["success"] == True).sum(), "x K=500 each")  # noqa: E712
     print("versions:", versions)
-    print("cold multiplier (median lib_ms by tool/chart_type):\n", cold_agg)
+    print("cold multiplier (per-cell ratio distribution, total_ms, by chart_type):\n", cold_agg)
     print("warm_ratios (matplotlib/seraplot, n=1000):", warm_ratios)
     print("dnf_ratios (matplotlib/seraplot, bar/pie supplementary):", dnf_ratios)
     print("mpl filesize note:", mpl_note)
     print("failure_rate pivot:\n", fail_piv)
+    if delivery_stats is not None:
+        print("delivery ms/chart by tool:\n", delivery_stats[0])
+        print("delivery avg KB/chart by tool:\n", delivery_stats[1])
     print("charts written to:", OUT)
 
 
