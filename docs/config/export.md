@@ -21,7 +21,7 @@ any browser, attached to an email, or served statically — no server, no CDN.
 ```python
 import seraplot as sp
 
-chart = sp.build_bar_chart("Revenue", ["Q1", "Q2"], [120, 180])
+chart = sp.build_bar_chart("Revenue", labels=["Q1", "Q2"], values=[120, 180])
 sp.savefig(chart, "revenue.html")
 ```
 
@@ -136,7 +136,7 @@ statique — aucun serveur, aucun CDN.
 ```python
 import seraplot as sp
 
-chart = sp.build_bar_chart("Chiffre d'affaires", ["T1", "T2"], [120, 180])
+chart = sp.build_bar_chart("Chiffre d'affaires", labels=["T1", "T2"], values=[120, 180])
 sp.savefig(chart, "revenue.html")
 ```
 
