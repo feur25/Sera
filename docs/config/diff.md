@@ -9,8 +9,8 @@ Compare two charts structurally — useful for visual CI / regression testing.
 ```python
 import seraplot as sp
 
-a = sp.bar([1,2,3], ["x","y","z"])
-b = sp.bar([1,2,4], ["x","y","z"])
+a = sp.bar("", labels=["x","y","z"], values=[1,2,3])
+b = sp.bar("", labels=["x","y","z"], values=[1,2,4])
 result = a.diff(b)
 print(result)
 ```
@@ -35,8 +35,8 @@ Compare deux charts structurellement — utile pour les CI visuelles / tests de 
 ```python
 import seraplot as sp
 
-a = sp.bar([1,2,3], ["x","y","z"])
-b = sp.bar([1,2,4], ["x","y","z"])
+a = sp.bar("", labels=["x","y","z"], values=[1,2,3])
+b = sp.bar("", labels=["x","y","z"], values=[1,2,4])
 result = a.diff(b)
 print(result)
 ```
