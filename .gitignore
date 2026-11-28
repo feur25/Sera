@@ -4,6 +4,7 @@ target/
 .DS_Store
 src/telemetry/
 *.csv
+!tools/benchmarks/results/*.csv
 licensing/
 v2/csharp/**/*.g.cs
 v2/cpp/**/*.g.h
