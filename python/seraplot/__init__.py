@@ -238,6 +238,12 @@ def _make_fn(name):
     native = name in _NATIVE_PUSH_BUILDERS
 
     def _fn(*args, **kwargs):
+        if len(args) > 1:
+            raise TypeError(
+                f"{name}() only takes the title as a positional argument; "
+                f"pass labels/values/x/y and the rest as keyword arguments "
+                f"(got {len(args)} positional arguments)"
+            )
         if args:
             kwargs = _coerce_call_args(args[0], kwargs)
         kwargs = {k: _json_ready(v) for k, v in kwargs.items()}
