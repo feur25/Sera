@@ -62,8 +62,7 @@ def chart_cold_multiplier(cold):
     chart = sp.bar(
         "Cold single-call speed, by chart type (median across all sizes/environments, x = SeraPlot's own time)",
         labels=chart_types,
-        values=mpl_ratio,
-        series=[plotly_ratio],
+        series=[mpl_ratio, plotly_ratio],
         series_names=["matplotlib", "plotly"],
         y_label="x slower than SeraPlot",
         variant="grouped",
@@ -80,8 +79,7 @@ def chart_env_robustness(cold):
     chart = sp.bar(
         "Median cold render time by resource tier (robustness across environments)",
         labels=ENVS,
-        values=agg["seraplot"].tolist(),
-        series=[agg["plotly"].tolist(), agg["matplotlib"].tolist()],
+        series=[agg["seraplot"].tolist(), agg["plotly"].tolist(), agg["matplotlib"].tolist()],
         series_names=["seraplot", "plotly", "matplotlib"],
         y_label="milliseconds (log scale)",
         variant="grouped",
@@ -100,8 +98,7 @@ def chart_filesize_1m(cold):
     chart = sp.bar(
         "Output file size at n=1,000,000 (MB) -- SeraPlot vs Plotly, self-contained HTML only",
         labels=chart_types,
-        values=[agg.loc["seraplot", c] for c in chart_types],
-        series=[[agg.loc["plotly", c] for c in chart_types]],
+        series=[[agg.loc["seraplot", c] for c in chart_types], [agg.loc["plotly", c] for c in chart_types]],
         series_names=["seraplot", "plotly"],
         y_label="MB",
         variant="grouped",
@@ -125,8 +122,7 @@ def chart_failure_rate(cold):
     chart = sp.bar(
         "Success rate at n=100,000 categories (45s timeout cap, 15 trials/cell, all 3 environments combined)",
         labels=piv.index.tolist(),
-        values=piv["seraplot"].tolist(),
-        series=[piv["plotly"].tolist(), piv["matplotlib"].tolist()],
+        series=[piv["seraplot"].tolist(), piv["plotly"].tolist(), piv["matplotlib"].tolist()],
         series_names=["seraplot", "plotly", "matplotlib"],
         y_label="% trials completed",
         variant="grouped",
@@ -146,8 +142,7 @@ def chart_warm(warm):
     chart = sp.bar(
         "Warm sustained rate at n=1,000 (same process, import paid once -- median of 10 x 500-iteration trials per cell)",
         labels=chart_types,
-        values=chart_types_agg["seraplot"].tolist(),
-        series=[chart_types_agg["plotly"].tolist(), chart_types_agg["matplotlib"].tolist()],
+        series=[chart_types_agg["seraplot"].tolist(), chart_types_agg["plotly"].tolist(), chart_types_agg["matplotlib"].tolist()],
         series_names=["seraplot", "plotly", "matplotlib"],
         y_label="ms/chart (log scale)",
         variant="grouped",
@@ -168,8 +163,7 @@ def chart_warm_dnf(supp):
     chart = sp.bar(
         "Categorical warm rate at n=1,000 -- supplementary K=20 run (matplotlib timed out at K=500 in the main sweep, 30/30 trials, all 3 environments)",
         labels=chart_types,
-        values=agg["seraplot"].tolist(),
-        series=[agg["plotly"].tolist(), agg["matplotlib"].tolist()],
+        series=[agg["seraplot"].tolist(), agg["plotly"].tolist(), agg["matplotlib"].tolist()],
         series_names=["seraplot", "plotly", "matplotlib"],
         y_label="ms/chart (log scale)",
         variant="grouped",
