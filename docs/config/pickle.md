@@ -10,7 +10,7 @@
 import seraplot as sp
 import pickle
 
-chart = sp.bar([1,2,3], ["a","b","c"])
+chart = sp.bar("", labels=["a","b","c"], values=[1,2,3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
@@ -44,7 +44,7 @@ Les objets `Chart` sont sérialisables via `__getstate__` / `__setstate__` — c
 import seraplot as sp
 import pickle
 
-chart = sp.bar([1,2,3], ["a","b","c"])
+chart = sp.bar("", labels=["a","b","c"], values=[1,2,3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
