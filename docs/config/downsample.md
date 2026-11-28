@@ -9,7 +9,7 @@ Reduce massive datasets while preserving visual shape using the **Largest-Triang
 ```python
 import seraplot as sp
 
-chart = sp.scatter(big_x, big_y).downsample(n=5000)
+chart = sp.scatter("", x=big_x, y=big_y).downsample(n=5000)
 
 points = sp.lttb(list(zip(big_x, big_y)), threshold=5000)
 ```
@@ -40,7 +40,7 @@ Réduit les datasets massifs en préservant la forme visuelle avec l'algorithme 
 ```python
 import seraplot as sp
 
-chart = sp.scatter(big_x, big_y).downsample(n=5000)
+chart = sp.scatter("", x=big_x, y=big_y).downsample(n=5000)
 
 points = sp.lttb(list(zip(big_x, big_y)), threshold=5000)
 ```
