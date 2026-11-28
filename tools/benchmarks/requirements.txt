@@ -1,0 +1,5 @@
+numpy==1.26.4
+seraplot==2.8.8
+matplotlib==3.9.2
+plotly==5.24.1
+pandas
