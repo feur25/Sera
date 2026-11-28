@@ -9,7 +9,7 @@ Combine multiple charts into a grid layout — one call instead of manually comp
 ```python
 import seraplot as sp
 
-charts = [sp.bar([1,2,3], ["a","b","c"], title=region) for region in ["EU","US","APAC"]]
+charts = [sp.bar(region, labels=["a","b","c"], values=[1,2,3]) for region in ["EU","US","APAC"]]
 grid = sp.facet(charts, cols=3, gap=12, cell_height=400)
 grid.save("regions.html")
 ```
@@ -42,7 +42,7 @@ Combine plusieurs charts dans une grille — un seul appel au lieu de composer l
 ```python
 import seraplot as sp
 
-charts = [sp.bar([1,2,3], ["a","b","c"], title=region) for region in ["EU","US","APAC"]]
+charts = [sp.bar(region, labels=["a","b","c"], values=[1,2,3]) for region in ["EU","US","APAC"]]
 grid = sp.facet(charts, cols=3, gap=12, cell_height=400)
 grid.save("regions.html")
 ```
