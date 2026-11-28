@@ -14,7 +14,7 @@
 import seraplot as sp
 
 sp.theme("dark")
-chart = sp.bar("Revenue", labels, values)
+chart = sp.bar("Revenue", labels=labels, values=values)
 
 sp.reset_theme()
 ```
@@ -100,13 +100,13 @@ sp.reset_theme()
 import seraplot as sp
 
 sp.theme("dark")
-sp.bar("Revenue", ["Q1", "Q2", "Q3", "Q4"], [120, 145, 98, 180]).show()
+sp.bar("Revenue", labels=["Q1", "Q2", "Q3", "Q4"], values=[120, 145, 98, 180]).show()
 
 sp.theme("neon")
-sp.scatter("Clusters", x, y).show()
+sp.scatter("Clusters", x=x, y=y).show()
 
 sp.theme("scientific")
-sp.line("Population Growth", years, values).show()
+sp.line("Population Growth", labels=years, values=values).show()
 
 sp.reset_theme()
 ```
@@ -147,7 +147,7 @@ sp.config(font_size=16, border_radius=12)
 import seraplot as sp
 
 sp.theme("dark")
-graphique = sp.bar("Revenus", labels, values)
+graphique = sp.bar("Revenus", labels=labels, values=values)
 
 sp.reset_theme()
 ```
