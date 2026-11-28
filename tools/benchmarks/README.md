@@ -12,12 +12,26 @@ numbers and conflating them is misleading:
 
 - **Cold** (`bench_worker.py` + `orchestrator.py`): one fresh Python
   subprocess per trial. Measures import + data generation + build + render,
-  each timed separately. This is the realistic cost of a one-shot script,
-  a CLI tool, or a serverless/subprocess-per-request workload.
+  each timed separately. `total_ms` is the full pipeline (every phase
+  included); `lib_ms` is `import_ms + build_ms + render_ms` alone, excluding
+  data generation, useful when isolating the library's own cost from the
+  Python-level random-data loop. Ratios reported in `analyze.py` use
+  `total_ms` and are computed per (chart_type, n, env) cell first, then
+  summarized as a median/min/max across cells -- not a single ratio of
+  blended medians across every size and environment at once.
 - **Warm** (`warm_worker.py` + `warm_orchestrator.py`): one process builds
   the same chart `K=500` times in a loop. Import is paid once; this is the
   realistic cost of a long-running dashboard or app that builds many charts
   per process lifetime.
+- **Delivery** (`delivery_worker.py` + `delivery_orchestrator.py`): one
+  process builds and actually writes 1,000 self-contained files to disk
+  (SeraPlot/Plotly HTML, Matplotlib PNG), measuring real wall-clock
+  delivery cost and output size -- not just in-memory object construction.
+  Plotly is built with `include_plotlyjs=True` (the whole engine embedded
+  inline) rather than `include_plotlyjs="cdn"`, so every tool's output is
+  genuinely self-contained and comparable; Matplotlib's pie chart keeps its
+  labels at every size instead of silently dropping them above 50
+  categories, so every tool renders the same chart.
 
 Both run across three Docker resource tiers to rule out "it only wins on a
 beefy machine":
@@ -52,6 +66,10 @@ docker run --rm --cpus=1 --memory=512m -v "$PWD/results:/results" \
 docker run --rm --cpus=1 --memory=512m -v "$PWD/results:/results" \
   bench-seraplot python -I warm_orchestrator.py seraplot constrained /results/warm_seraplot_constrained.csv
 
+# delivery sweep, same shape
+docker run --rm --cpus=1 --memory=512m -v "$PWD/results:/results" \
+  bench-seraplot python -I delivery_orchestrator.py seraplot constrained /results/delivery_seraplot_constrained.csv /tmp/out
+
 python -I analyze.py
 ```
 
@@ -71,19 +89,21 @@ reads every CSV in `results/`, writes the merged `raw_cold.csv` /
   of the real K=500 trials for those two chart types in every tier (a
   real, reported finding, not a methodology gap -- see the failure data
   in `warm_*.csv` itself).
+- `delivery_{tool}_{tier}.csv` -- real-file delivery trials, 1,000
+  self-contained files per trial, 10 trials per (tool, tier).
 
-## What this benchmark already found
-
-Building and running this suite surfaced two real SeraPlot bugs (now
-fixed) and one real documentation bug (not yet fixed):
+## Issues this benchmark surfaced
 
 - #29 -- chart builders silently dropped positional arguments beyond the
-  title instead of raising an error.
+  title instead of raising an error. Fixed.
 - #30 -- native fast-path builders (`bar`/`line`/`heatmap`/...) paid a
   ~100ms one-time numpy-import tax on the first call of a cold process,
-  even when the caller never touched numpy. This alone explained most of
-  the "SeraPlot seems to have gotten slower on bar/line/scatter" reports.
-- #31 -- `docs/getting-started/intro-seraplot.md`'s speed table compares
-  non-equivalent columns, inflating its multiplier by roughly 46x. Still
-  open; will be fixed when that page is rewritten from this benchmark's
-  numbers.
+  even when the caller never touched numpy. Fixed.
+- #31 -- the old render-speed table compared non-equivalent columns,
+  inflating its multiplier by roughly 46x. Fixed.
+- Cold ratios were computed from `lib_ms` (library cost only) while being
+  described as a full-pipeline comparison, output formats weren't
+  equivalent (Plotly used CDN mode, not self-contained), Matplotlib's pie
+  chart silently dropped labels above 50 categories, and ratios were a
+  single number blended across every size and environment instead of a
+  per-cell distribution. All four fixed above.
