@@ -178,13 +178,22 @@ impl<'py, T: numpy::Element> NumSource<'py, T> {
     }
 }
 
+fn numpy_already_imported(py: Python<'_>) -> bool {
+    py.import("sys")
+        .and_then(|sys| sys.getattr("modules"))
+        .and_then(|modules| modules.contains("numpy"))
+        .unwrap_or(false)
+}
+
 pub(crate) fn extract_num_source<'py, T>(v: &Bound<'py, PyAny>) -> Option<NumSource<'py, T>>
 where
     T: numpy::Element,
     Vec<T>: pyo3::FromPyObject<'py>,
 {
-    if let Ok(arr) = v.extract::<numpy::PyReadonlyArray1<'py, T>>() {
-        return Some(NumSource::Zerocopy(arr));
+    if numpy_already_imported(v.py()) {
+        if let Ok(arr) = v.extract::<numpy::PyReadonlyArray1<'py, T>>() {
+            return Some(NumSource::Zerocopy(arr));
+        }
     }
     v.extract::<Vec<T>>().ok().map(NumSource::Owned)
 }
