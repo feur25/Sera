@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>SeraPlot</RootNamespace>
+    <AssemblyName>SeraPlot.Interop</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>SeraPlot</PackageId>
+    <Version>2.8.7</Version>
+    <Authors>Quentin</Authors>
+    <Description>Rust-native data visualization engine for .NET. Compiled straight to a native library and called through .NET's own P/Invoke -- no interpreter, no bridge, one hop from Rust to your C# code. 60+ chart families, 400+ variants, chainable styling, all discovered live from the same registry the engine ships with.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/feur25/Sera</RepositoryUrl>
+    <PackageProjectUrl>https://feur25.github.io/Sera/</PackageProjectUrl>
+    <PackageTags>dataviz;charts;rust;ffi</PackageTags>
+    <IncludeSymbols>false</IncludeSymbols>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" />
+    <None Include="runtimes/win-x64/native/seraplot.dll" Pack="true" PackagePath="runtimes/win-x64/native/seraplot.dll" Condition="Exists('runtimes/win-x64/native/seraplot.dll')" />
+    <None Include="runtimes/win-x64/native/seraplot.dll" Link="seraplot.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" Condition="Exists('runtimes/win-x64/native/seraplot.dll')" />
+  </ItemGroup>
+
+</Project>

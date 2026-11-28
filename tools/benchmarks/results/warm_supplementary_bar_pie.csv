@@ -1,0 +1,7 @@
+tool,env,chart_type,n,k,trial,success,error,import_ms,first_iter_ms,mean_warm_ms,total_loop_ms,note
+seraplot,standard,bar,1000,20,0,True,,8.111908002319979,161.41394099759054,0.6137781054253297,181.1876330029918,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep
+plotly,standard,bar,1000,20,0,True,,3.0567400026484393,124.83276700004353,7.528362842046925,270.92840100158355,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep
+matplotlib,standard,bar,1000,20,0,True,,447.71871600096347,1220.1490830011608,1166.859760315626,23838.203244999022,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep
+seraplot,standard,pie,1000,20,0,True,,5.401476999395527,3.279812000982929,1.4852773688050405,36.90155900767422,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep
+plotly,standard,pie,1000,20,0,True,,2.7550970007723663,101.83471599884797,7.555075578956779,248.13624899979914,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep
+matplotlib,standard,pie,1000,20,0,True,,489.9431820012978,586.9445589996758,601.685637999732,12508.91486299588,supplementary_k20_because_matplotlib_timed_out_at_k500_in_main_sweep

@@ -7,8 +7,11 @@ dist/
 .DS_Store
 src/telemetry/
 *.csv
+licensing/
 v2/
 tools/
+!tools/benchmarks/
+!tools/benchmarks/results/*.csv
 secret/
 python/seraplot/*.pyd
 python/seraplot/*.pyd.bak

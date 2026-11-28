@@ -4,7 +4,7 @@
 
 **Plot anything. Train anything. Ship anywhere.**
 
-*A Rust-native engine for visualization, machine learning, and zero-friction delivery — 6,000× faster than Plotly, 200× smaller, zero dependencies.*
+*A Rust-native engine for visualization, machine learning, and zero-friction delivery — independently benchmarked at 12×-116× faster than Plotly and Matplotlib, 200× smaller, zero dependencies.*
 
 [![PyPI](https://img.shields.io/pypi/v/seraplot)](https://pypi.org/project/seraplot/)
 [![npm](https://img.shields.io/npm/v/seraplot)](https://www.npmjs.com/package/seraplot)
@@ -141,62 +141,26 @@ for i in range(1000):
 
 ## Render core speed
 
-**Benchmark: Diabetes dataset (n=768, 40 runs). Rust render time — chart object creation, not full HTML serialization.**
+**Benchmark: 10,548 cold-process trials + 1,620 warm-loop sweeps (810,000 chart builds), 6 chart types, 6 sizes (10 to 1,000,000), 3 Docker resource tiers, against Plotly and Matplotlib. Full pipeline timed end to end — import, build, and HTML serialization, for every tool, on the same footing. Raw CSVs, environment specs, and the scripts to reproduce every number below are checked into [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).**
 
-<div style="font-family:monospace;margin:1.2em 0">
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Pie</span>
-  <div style="background:#6366f1;width:300px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">7,956×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Bar</span>
-  <div style="background:#6366f1;width:245px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">6,488×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Lollipop</span>
-  <div style="background:#6366f1;width:150px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">3,983×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Grouped Bar</span>
-  <div style="background:#6366f1;width:136px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">3,596×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Candlestick</span>
-  <div style="background:#6366f1;width:77px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">2,038×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Radar</span>
-  <div style="background:#6366f1;width:56px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">1,498×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">KDE</span>
-  <div style="background:#6366f1;width:28px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">753×</b>
-</div>
-</div>
+An earlier version of this table compared SeraPlot's object-creation time against Plotly's full HTML-serialization time while claiming to exclude serialization on both sides — that inflated the multipliers shown here by roughly 46×. It's been replaced with the numbers below, which compare the same thing on both sides.
 
-| Chart | SeraPlot | Plotly figure | Plotly → HTML | Matplotlib |
-|-------|----------|--------------|-------------|------------|
-| Pie | **4.2** | 725 | 33,416 | 15,085 |
-| Bar | **2.8** | 658 | 18,166 | 13,596 |
-| Grouped Bar | **5.0** | 558 | 17,981 | 17,445 |
-| Histogram | **12.4** | 2,496 | 32,762 | 37,973 |
-| Scatter | **17.0** | 3,916 | 21,615 | 14,141 |
-| Violin | **16.7** | 2,616 | 21,347 | 21,211 |
-| Box Plot | **18.4** | 2,329 | 21,799 | 15,590 |
-| KDE | **26.3** | 2,981 | 19,807 | 40,108 |
-| Radar | **11.8** | 962 | 17,679 | 20,942 |
-| Lollipop | **6.3** | 8,382 | 25,096 | 9,072 |
-| Candlestick | **8.8** | 1,478 | 17,934 | N/A |
-| Ridgeline | **88.8** | N/A | N/A | N/A |
+<iframe src="../previews/bench-cold-speed.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 
-All times in µs.
+| Chart type | vs Plotly | vs Matplotlib |
+|-------|:--------:|:--------:|
+| Bar | **22×** | **116×** |
+| Line | **23×** | **59×** |
+| Scatter | **22×** | **61×** |
+| Histogram | **12×** | **41×** |
+| Pie | **14×** | **45×** |
+| Box Plot | **13×** | **39×** |
+
+Median time across every size and every resource tier, one fresh process per call. Building this benchmark also surfaced a real regression: `bar`/`line`/`scatter` were paying a one-time ~100ms numpy-import tax on every cold process (now fixed), which is why the numbers above are roughly 25× faster than they were a version earlier for those three types:
+
+<iframe src="../previews/bench-before-after.html" style="width:100%;height:420px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+
+In a long-running process that builds many charts in a row (a dashboard, an app), import cost is paid once and the gap widens further — on categorical charts specifically, Matplotlib didn't finish the warm-loop sweep at all within its timeout, which is where "thousands of times faster" comes from. Full breakdown, methodology, and reproduction instructions in [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
 
 ---
 
@@ -488,62 +452,26 @@ for i in range(1000):
 
 ## Vitesse du moteur de rendu
 
-**Benchmark : dataset Diabetes (n=768, 40 itérations). Temps de rendu Rust — création de l'objet graphique, pas la sérialisation HTML complète.**
+**Benchmark : 10 548 essais a froid + 1 620 boucles chaudes (810 000 graphiques construits), 6 types de graphique, 6 tailles (10 a 1 000 000), 3 paliers de ressources Docker, face a Plotly et Matplotlib. Pipeline complet chronometre de bout en bout — import, construction et serialisation HTML, pour chaque outil, sur un pied d'egalite. CSV bruts, specs d'environnement et scripts de reproduction dans [`tools/benchmarks/`](https://github.com/feur25/Sera/tree/main/tools/benchmarks).**
 
-<div style="font-family:monospace;margin:1.2em 0">
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Camembert</span>
-  <div style="background:#6366f1;width:300px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">7 956×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Barres</span>
-  <div style="background:#6366f1;width:245px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">6 488×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Sucette</span>
-  <div style="background:#6366f1;width:150px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">3 983×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Barres groupées</span>
-  <div style="background:#6366f1;width:136px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">3 596×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Bougie</span>
-  <div style="background:#6366f1;width:77px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">2 038×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">Radar</span>
-  <div style="background:#6366f1;width:56px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">1 498×</b>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
-  <span style="min-width:130px;font-size:.85em">KDE</span>
-  <div style="background:#6366f1;width:28px;height:16px;border-radius:3px"></div>
-  <b style="color:#6366f1;font-size:.85em">753×</b>
-</div>
-</div>
+Une version precedente de ce tableau comparait le temps de construction pure de SeraPlot au temps de serialisation HTML complete de Plotly, tout en affirmant exclure la serialisation des deux cotes — ce qui inflait les multiplicateurs d'environ 46×. Remplace par les chiffres ci-dessous, qui comparent la meme chose des deux cotes.
 
-| Graphique | SeraPlot | Plotly figure | Plotly → HTML | Matplotlib |
-|-----------|----------|--------------|-------------|------------|
-| Camembert | **4,2** | 725 | 33 416 | 15 085 |
-| Barres | **2,8** | 658 | 18 166 | 13 596 |
-| Barres groupées | **5,0** | 558 | 17 981 | 17 445 |
-| Histogramme | **12,4** | 2 496 | 32 762 | 37 973 |
-| Nuage de points | **17,0** | 3 916 | 21 615 | 14 141 |
-| Violon | **16,7** | 2 616 | 21 347 | 21 211 |
-| Boîte à moustaches | **18,4** | 2 329 | 21 799 | 15 590 |
-| KDE | **26,3** | 2 981 | 19 807 | 40 108 |
-| Radar | **11,8** | 962 | 17 679 | 20 942 |
-| Sucette | **6,3** | 8 382 | 25 096 | 9 072 |
-| Bougie | **8,8** | 1 478 | 17 934 | N/A |
-| Ridgeline | **88,8** | N/A | N/A | N/A |
+<iframe src="../previews/bench-cold-speed.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
 
-Toutes les valeurs en µs.
+| Type de graphique | vs Plotly | vs Matplotlib |
+|-------|:--------:|:--------:|
+| Barres | **22×** | **116×** |
+| Ligne | **23×** | **59×** |
+| Nuage de points | **22×** | **61×** |
+| Histogramme | **12×** | **41×** |
+| Camembert | **14×** | **45×** |
+| Boîte à moustaches | **13×** | **39×** |
+
+Mediane sur toutes les tailles et tous les paliers de ressources, un process neuf par appel. La construction de ce benchmark a aussi mis a jour une vraie regression : `bar`/`line`/`scatter` payaient une taxe ponctuelle d'import numpy (~100ms) a chaque process froid (desormais corrigee), d'ou les chiffres ci-dessus environ 25× plus rapides qu'une version precedente pour ces trois types :
+
+<iframe src="../previews/bench-before-after.html" style="width:100%;height:420px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+
+Dans un process qui construit beaucoup de graphiques d'affilee (un dashboard, une appli), le cout d'import n'est paye qu'une fois et l'ecart se creuse encore — sur les graphiques categoriels specifiquement, Matplotlib n'a meme pas termine le sweep chaud dans son delai, d'ou le "des milliers de fois plus rapide". Detail complet, methodologie et instructions de reproduction dans [`tools/benchmarks/README.md`](https://github.com/feur25/Sera/blob/main/tools/benchmarks/README.md).
 
 ---
 
